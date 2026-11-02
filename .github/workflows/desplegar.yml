@@ -121,6 +121,7 @@ jobs:
           ORQ_WEB: ${{ vars.ORQ_WEB }}
           ORQ_GPU: ${{ vars.ORQ_GPU }}
           ORQ_GPU_USD_HORA: ${{ vars.ORQ_GPU_USD_HORA }}
+          ORQ_ANOTAR: "1"
         run: |
           extra=""
           if [ "${{ inputs.primera_vez }}" = "true" ]; then extra="--modelos --motor"; fi

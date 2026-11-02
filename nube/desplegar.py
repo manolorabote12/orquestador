@@ -181,6 +181,12 @@ def ejecutar(endpoint: str, entrada: dict, espera_s: float) -> dict:
 	raise ErrorRunPod("Tiempo agotado esperando el trabajo " + json.dumps(entrada))
 
 
+def _anotar(e: BaseException) -> None:
+	"""En el despliegue real (ORQ_ANOTAR=1), el error sale en el resumen de GitHub sin abrir el registro."""
+	if os.environ.get("ORQ_ANOTAR"):
+		print("::error::" + (type(e).__name__ + ": " + str(e)).replace("\n", " ")[:900])
+
+
 def main(argv: list[str] | None = None) -> int:
 	p = argparse.ArgumentParser(description="Despliega Orquestador en RunPod")
 	p.add_argument("--imagen-fabrica", default="")
@@ -199,9 +205,7 @@ def main(argv: list[str] | None = None) -> int:
 			return 0
 		except ErrorRunPod as e:
 			print("ERROR:", e, file=sys.stderr)
-		if os.environ.get("GITHUB_ACTIONS"):
-			## Que se vea en el resumen de GitHub sin abrir el registro entero.
-			print("::error::" + str(e).replace("\n", " ")[:900])
+			_anotar(e)
 			return 1
 	if not a.imagen_fabrica or not a.imagen_gpu:
 		p.error("--imagen-fabrica e --imagen-gpu son obligatorias (salvo con --muestras-en)")
@@ -209,9 +213,7 @@ def main(argv: list[str] | None = None) -> int:
 		inf = desplegar(a.imagen_fabrica, a.imagen_gpu, a.modelos, a.motor, imagen_voces=a.imagen_voces, muestras=a.muestras)
 	except ErrorRunPod as e:
 		print("ERROR:", e, file=sys.stderr)
-		if os.environ.get("GITHUB_ACTIONS"):
-			## Que se vea en el resumen de GitHub sin abrir el registro entero.
-			print("::error::" + str(e).replace("\n", " ")[:900])
+		_anotar(e)
 		return 1
 	print(json.dumps(inf, indent=1, ensure_ascii=False))
 	if a.salida:
@@ -221,4 +223,8 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
-	sys.exit(main())
+	try:
+		sys.exit(main())
+	except Exception as e:
+		_anotar(e)
+		raise
