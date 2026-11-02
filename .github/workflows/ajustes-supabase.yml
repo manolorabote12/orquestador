@@ -19,7 +19,19 @@ jobs:
         run: |
           python3 - <<'EOF'
           import os, sys
+          import urllib.request, urllib.error
           import conectar
+          _abrir = urllib.request.urlopen
+          def abrir(*a, **k):
+              try:
+                  return _abrir(*a, **k)
+              except urllib.error.HTTPError as e:
+                  print("::error::Supabase HTTP %s: %s" % (e.code, e.read()[:300].decode("utf-8", "replace").replace(chr(10), " ")))
+                  raise
+              except Exception as e:
+                  print("::error::Supabase sin respuesta: %s" % e)
+                  raise
+          urllib.request.urlopen = abrir
           d = {k: os.environ.get(k, "") for k in ("SUPABASE_URL", "SUPABASE_ACCESS_TOKEN", "ORQ_WEB",
                "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET")}
           d["SUPABASE_URL"] = d["SUPABASE_URL"].rstrip("/")
