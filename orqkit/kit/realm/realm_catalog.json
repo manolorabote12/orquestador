@@ -1,0 +1,28 @@
+{
+ "_doc": "Catalogo del reino (kit/realm/realm_map.gd y fabrica/contenido.py). res: recursos (nombre). buildings: role (center: manda en los demas; prod: produce res a rate*nivel por segundo; train: entrena troop a speed*nivel por segundo gastando su coste; wall: defensa), cost (madera y piedra del nivel 2), time (segundos del nivel 2), growth (cuanto sube cada nivel), look. troops: hp, atk, cost por soldado, beats (a quien gana: x1,5 de dano; el contrario x0,75), look. camps: los pone cada nivel. heroes: bonus de ataque a un tipo de tropa.",
+ "default": {
+  "realm": "Reino",
+  "res": {"food": {"name": "Comida"}, "wood": {"name": "Madera"}, "stone": {"name": "Piedra"}},
+  "buildings": {
+   "castillo": {"name": "Castillo", "role": "center", "look": "castle", "cost": {"wood": 60, "stone": 40}, "time": 6, "growth": 1.75, "order": 1},
+   "granja": {"name": "Granja", "role": "prod", "res": "food", "rate": 3.0, "look": "farm", "cost": {"wood": 20, "stone": 0}, "time": 3, "growth": 1.6, "order": 2},
+   "aserradero": {"name": "Aserradero", "role": "prod", "res": "wood", "rate": 2.0, "look": "mill", "cost": {"wood": 10, "stone": 10}, "time": 3, "growth": 1.6, "order": 3},
+   "cantera": {"name": "Cantera", "role": "prod", "res": "stone", "rate": 1.4, "look": "quarry", "cost": {"wood": 20, "stone": 0}, "time": 3, "growth": 1.6, "order": 4},
+   "cuartel": {"name": "Cuartel", "role": "train", "troop": "infantry", "speed": 0.35, "look": "barracks", "cost": {"wood": 30, "stone": 20}, "time": 4, "growth": 1.6, "order": 5},
+   "establo": {"name": "Establo", "role": "train", "troop": "cavalry", "speed": 0.25, "look": "stable", "cost": {"wood": 40, "stone": 30}, "time": 5, "growth": 1.6, "order": 6},
+   "arqueria": {"name": "Arquería", "role": "train", "troop": "archer", "speed": 0.3, "look": "range", "cost": {"wood": 40, "stone": 20}, "time": 5, "growth": 1.6, "order": 7}
+  },
+  "troops": {
+   "infantry": {"name": "Lanceros", "hp": 12, "atk": 3, "cost": {"food": 4}, "beats": "cavalry", "look": "spear"},
+   "cavalry": {"name": "Jinetes", "hp": 14, "atk": 4, "cost": {"food": 7}, "beats": "archer", "look": "horse"},
+   "archer": {"name": "Arqueros", "hp": 7, "atk": 5, "cost": {"food": 4, "wood": 1}, "beats": "infantry", "look": "bow"}
+  },
+  "heroes": {
+   "jabel": {"name": "Jabel", "troop": "cavalry", "bonus": 0.25, "look": "knight"},
+   "amadea": {"name": "Amadea", "troop": "infantry", "bonus": 0.25, "look": "shield"},
+   "saul": {"name": "Saúl", "troop": "archer", "bonus": 0.25, "look": "hood"}
+  },
+  "camp_names": ["Campamento bandido", "Torre de los saqueadores", "Guarida del lobo", "Fuerte rebelde", "Fortaleza del Rey Bandido"]
+ },
+ "presets": {}
+}

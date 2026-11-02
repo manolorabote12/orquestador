@@ -1,0 +1,17 @@
+import { ancho, avisos, operaciones, pintar, piezas } from "./.editor.mjs";
+let fallos = 0;
+const check = (n, ok, d = "") => { console.log((ok ? "  OK   " : "  FALLO ") + n + (ok ? "" : "  " + d)); if (!ok) fallos++; };
+const j = { genero: "plataformas", enemigos: ["walker"], jefe: false };
+const fila = (s) => s.padEnd(20, ".");
+const m = [...Array(7).fill(fila("")), fila("P.......C.........G"), "#".repeat(20)].slice(0, 9);
+m.splice(7, 1);
+const base = [...Array(7).fill(fila("")), fila("P.......C........G"), "#".repeat(20)];
+check("nivel bueno sin avisos", avisos(j, base).length === 0, JSON.stringify(avisos(j, base)));
+check("la salida se mueve, no se duplica", pintar(base, 5, 3, "P", "plataformas").join("").split("P").length - 1 === 1);
+check("borrar la meta avisa", avisos(j, pintar(base, 17, 7, ".", "plataformas")).some((a) => a.includes("meta")));
+check("solo enemigos que el juego tiene", piezas(j).some((p) => p.letra === "E") && !piezas(j).some((p) => p.letra === "K" || p.letra === "B"));
+check("alargar pone suelo", ancho(base, 30)[8] === "#".repeat(30) && ancho(base, 30)[0].length === 30);
+check("solo los niveles cambiados", operaciones([base, base], [base, pintar(base, 3, 3, "C", "plataformas")]).map((o) => o.indice).join() === "1");
+check("pintar fuera no rompe", pintar(base, 99, 99, "#", "plataformas") === base);
+console.log(`== ${fallos} fallos ==`);
+process.exit(fallos ? 1 : 0);

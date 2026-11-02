@@ -1,0 +1,47 @@
+
+
+## >> genero __ES__ (creado por nuevo_genero.py: cambia el generador junto con las reglas del juego)
+def generar___ES__(i: int, n: int, enemigos: list[str], dificultad: str, semilla: int, ajuste: float = 0.0,
+		opciones: dict | None = None) -> list[str]:
+	"""Cuadricula vista desde arriba: # roca, . suelo, P salida, C moneda, X pinchos.
+	Reglas de justicia (las mismas que comprueba kit/__ID__/__ID___map.gd):
+	1 - Una sola salida abajo en el centro, con sus 4 vecinas libres.
+	2 - Todas las monedas se alcanzan sin pisar pinchos ni rocas.
+	3 - Mas rocas, pinchos y monedas segun avanza el juego y la dificultad."""
+	rnd = random.Random(semilla)
+	dif = {"facil": 0.0, "normal": 1.0, "dificil": 2.0}.get(dificultad, 1.0) + ajuste * 2.0
+	ancho = 7
+	alto = 9 + min(i, 4)
+	salida = (alto - 1, ancho // 2)
+	libres_salida = {salida, (alto - 2, ancho // 2), (alto - 1, ancho // 2 - 1), (alto - 1, ancho // 2 + 1)}
+	for _ in range(400):
+		g = [["." for _ in range(ancho)] for _ in range(alto)]
+		g[salida[0]][salida[1]] = "P"
+		celdas = [(y, x) for y in range(alto) for x in range(ancho) if (y, x) not in libres_salida]
+		rnd.shuffle(celdas)
+		n_rocas = int(ancho * alto * (0.12 + 0.03 * max(dif, 0.0)))
+		n_pinchos = max(1, int(1 + i + dif * 1.5))
+		n_monedas = 5 + 2 * min(i, 4)
+		for y, x in celdas[:n_rocas]:
+			g[y][x] = "#"
+		for y, x in celdas[n_rocas:n_rocas + n_pinchos]:
+			g[y][x] = "X"
+		monedas = celdas[n_rocas + n_pinchos:n_rocas + n_pinchos + n_monedas]
+		for y, x in monedas:
+			g[y][x] = "C"
+		visto = {salida}
+		cola = [salida]
+		while cola:
+			y, x = cola.pop()
+			for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+				ny, nx = y + dy, x + dx
+				if 0 <= ny < alto and 0 <= nx < ancho and (ny, nx) not in visto and g[ny][nx] not in "#X":
+					visto.add((ny, nx))
+					cola.append((ny, nx))
+		if all(m in visto for m in monedas):
+			return ["".join(f) for f in g]
+	filas = ["." * ancho for _ in range(alto)]
+	filas[0] = "C" * ancho
+	filas[-1] = "." * (ancho // 2) + "P" + "." * (ancho - ancho // 2 - 1)
+	return filas
+## << genero __ES__

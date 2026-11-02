@@ -1,0 +1,41 @@
+# Publicar un juego en la App Store. Apple solo compila en Mac: este trabajo corre en un Mac de
+# GitHub y lo lanza la funcion publish-ios (cada vez que un usuario pulsa "Subir a la App Store").
+# Secretos: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ORQ_LLAVES_SECRETO (los mismos del despliegue).
+name: App Store
+
+on:
+  workflow_dispatch:
+    inputs:
+      trabajo:
+        description: "Id del trabajo game_ios"
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 90
+    env:
+      GODOT_VERSION: "4.6.3"
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      ORQ_LLAVES_SECRETO: ${{ secrets.ORQ_LLAVES_SECRETO }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pillow numpy jsonschema cryptography
+      - name: Godot y plantillas de exportacion
+        run: |
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_macos.universal.zip"
+          unzip -q godot.zip
+          echo "GODOT=$PWD/Godot.app/Contents/MacOS/Godot" >> "$GITHUB_ENV"
+          curl -sSL -o plantillas.tpz "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          unzip -q plantillas.tpz
+          DEST="$HOME/Library/Application Support/Godot/export_templates/${GODOT_VERSION}.stable"
+          mkdir -p "$DEST" && mv templates/* "$DEST/"
+      - name: Compilar y subir a App Store Connect
+        run: python nube/ios/mac.py "${{ inputs.trabajo }}"

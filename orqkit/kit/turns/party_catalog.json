@@ -1,0 +1,542 @@
+{
+ "_doc": "Catalogo del RPG de equipo (kit/turns/turns_party.gd y fabrica/niveles/rpg_equipo.py lo leen): heroes, enemigos (una letra), habilidades, equipo por defecto y estilos (presets).",
+ "default": {
+  "heroes": {
+   "guerrero": {
+    "hp": 170.0,
+    "atk": 18.0,
+    "def": 35.0,
+    "spd": 95.0,
+    "element": "fire",
+    "look": "sword",
+    "skills": [
+     "golpe",
+     "provocar",
+     "tajo"
+    ],
+    "name": "Guerrero"
+   },
+   "maga": {
+    "hp": 100.0,
+    "atk": 25.0,
+    "def": 10.0,
+    "spd": 105.0,
+    "element": "water",
+    "look": "staff",
+    "skills": [
+     "chispa",
+     "tormenta",
+     "escarcha"
+    ],
+    "name": "Maga"
+   },
+   "sanadora": {
+    "hp": 115.0,
+    "atk": 14.0,
+    "def": 15.0,
+    "spd": 112.0,
+    "element": "light",
+    "look": "cross",
+    "skills": [
+     "luz",
+     "curar",
+     "bendicion"
+    ],
+    "name": "Sanadora"
+   },
+   "arquero": {
+    "hp": 105.0,
+    "atk": 21.0,
+    "def": 12.0,
+    "spd": 122.0,
+    "element": "nature",
+    "look": "bow",
+    "skills": [
+     "flecha",
+     "lluvia",
+     "veneno"
+    ],
+    "name": "Arquero"
+   }
+  },
+  "enemies": {
+   "W": {
+    "name": "goblin",
+    "hp": 75.0,
+    "atk": 14.0,
+    "def": 10.0,
+    "spd": 90.0,
+    "element": "nature",
+    "skills": [
+     "mordisco"
+    ]
+   },
+   "S": {
+    "name": "espinoso",
+    "hp": 85.0,
+    "atk": 12.0,
+    "def": 28.0,
+    "spd": 80.0,
+    "element": "water",
+    "thorns": 0.15,
+    "skills": [
+     "mordisco"
+    ]
+   },
+   "F": {
+    "name": "murcielago",
+    "hp": 52.0,
+    "atk": 15.0,
+    "def": 5.0,
+    "spd": 130.0,
+    "element": "dark",
+    "skills": [
+     "mordisco",
+     "chillido"
+    ]
+   },
+   "M": {
+    "name": "chaman",
+    "hp": 62.0,
+    "atk": 15.0,
+    "def": 8.0,
+    "spd": 100.0,
+    "element": "fire",
+    "skills": [
+     "mordisco",
+     "bola_fuego",
+     "curar_aliado"
+    ]
+   },
+   "B": {
+    "name": "jefe",
+    "hp": 460.0,
+    "atk": 21.0,
+    "def": 25.0,
+    "spd": 100.0,
+    "element": "dark",
+    "boss": true,
+    "skills": [
+     "zarpazo",
+     "rugido",
+     "aplastar"
+    ]
+   }
+  },
+  "skills": {
+   "golpe": {
+    "target": "enemy",
+    "power": 1.0,
+    "name": "Golpe"
+   },
+   "provocar": {
+    "target": "self",
+    "effects": [
+     {
+      "status": "taunt",
+      "turns": 2
+     },
+     {
+      "status": "def_up",
+      "turns": 2
+     }
+    ],
+    "cooldown": 3,
+    "name": "Provocar"
+   },
+   "tajo": {
+    "target": "enemy",
+    "power": 2.0,
+    "cooldown": 3,
+    "name": "Tajo"
+   },
+   "chispa": {
+    "target": "enemy",
+    "power": 1.0,
+    "name": "Chispa"
+   },
+   "tormenta": {
+    "target": "all_enemies",
+    "power": 0.75,
+    "cooldown": 3,
+    "name": "Tormenta"
+   },
+   "escarcha": {
+    "target": "enemy",
+    "power": 1.2,
+    "effects": [
+     {
+      "status": "stun",
+      "turns": 1
+     }
+    ],
+    "cooldown": 4,
+    "name": "Escarcha"
+   },
+   "luz": {
+    "target": "enemy",
+    "power": 0.9,
+    "name": "Luz"
+   },
+   "curar": {
+    "target": "all_allies",
+    "heal": 0.25,
+    "cooldown": 3,
+    "name": "Curar"
+   },
+   "bendicion": {
+    "target": "all_allies",
+    "effects": [
+     {
+      "status": "atk_up",
+      "turns": 2
+     }
+    ],
+    "cleanse": true,
+    "cooldown": 4,
+    "name": "Bendición"
+   },
+   "flecha": {
+    "target": "enemy",
+    "power": 0.55,
+    "hits": 2,
+    "name": "Flecha doble"
+   },
+   "lluvia": {
+    "target": "all_enemies",
+    "power": 0.6,
+    "cooldown": 3,
+    "name": "Lluvia de flechas"
+   },
+   "veneno": {
+    "target": "enemy",
+    "power": 0.6,
+    "effects": [
+     {
+      "status": "poison",
+      "turns": 3
+     }
+    ],
+    "cooldown": 3,
+    "name": "Flecha venenosa"
+   },
+   "mordisco": {
+    "target": "enemy",
+    "power": 1.0,
+    "name": "Mordisco"
+   },
+   "chillido": {
+    "target": "all_enemies",
+    "effects": [
+     {
+      "status": "def_down",
+      "turns": 2
+     }
+    ],
+    "cooldown": 4,
+    "name": "Chillido"
+   },
+   "bola_fuego": {
+    "target": "enemy",
+    "power": 1.3,
+    "effects": [
+     {
+      "status": "burn",
+      "turns": 2
+     }
+    ],
+    "cooldown": 3,
+    "name": "Bola de fuego"
+   },
+   "curar_aliado": {
+    "target": "ally",
+    "heal": 0.3,
+    "cooldown": 3,
+    "name": "Curar"
+   },
+   "zarpazo": {
+    "target": "enemy",
+    "power": 1.0,
+    "name": "Zarpazo"
+   },
+   "rugido": {
+    "target": "all_enemies",
+    "power": 0.55,
+    "effects": [
+     {
+      "status": "atk_down",
+      "turns": 2
+     }
+    ],
+    "cooldown": 3,
+    "name": "Rugido"
+   },
+   "aplastar": {
+    "target": "enemy",
+    "power": 2.6,
+    "cooldown": 4,
+    "telegraph": true,
+    "name": "Aplastar"
+   }
+  },
+  "party": [
+   "guerrero",
+   "maga",
+   "sanadora"
+  ],
+  "lineup": false
+ },
+ "presets": {
+  "equipo": {
+   "party": [
+    "guerrero",
+    "maga",
+    "sanadora",
+    "arquero"
+   ],
+   "enemies": {
+    "N": {
+     "name": "dríade",
+     "hp": 70.0,
+     "atk": 14.0,
+     "def": 12.0,
+     "spd": 105.0,
+     "element": "water",
+     "skills": [
+      "mordisco",
+      "curar_aliado"
+     ]
+    },
+    "L": {
+     "name": "paladín oscuro",
+     "hp": 110.0,
+     "atk": 16.0,
+     "def": 30.0,
+     "spd": 85.0,
+     "element": "light",
+     "skills": [
+      "mordisco",
+      "chillido"
+     ]
+    }
+   }
+  },
+  "criaturas": {
+   "lineup": true,
+   "party": [
+    "llamita",
+    "gotin",
+    "brotin"
+   ],
+   "heroes": {
+    "llamita": {
+     "hp": 120.0,
+     "atk": 22.0,
+     "def": 18.0,
+     "spd": 110.0,
+     "element": "fire",
+     "look": "beast",
+     "skills": [
+      "placaje",
+      "ascuas",
+      "grunido",
+      "fuego_fatuo"
+     ],
+     "name": "Llamita"
+    },
+    "gotin": {
+     "hp": 135.0,
+     "atk": 19.0,
+     "def": 24.0,
+     "spd": 100.0,
+     "element": "water",
+     "look": "beast",
+     "skills": [
+      "placaje",
+      "pistola_agua",
+      "refugio",
+      "burbuja"
+     ],
+     "name": "Gotín"
+    },
+    "brotin": {
+     "hp": 140.0,
+     "atk": 18.0,
+     "def": 22.0,
+     "spd": 95.0,
+     "element": "nature",
+     "look": "beast",
+     "skills": [
+      "placaje",
+      "latigo",
+      "drenaje",
+      "polvo_veneno"
+     ],
+     "name": "Brotín"
+    }
+   },
+   "enemies": {
+    "W": {
+     "name": "ratón",
+     "hp": 95.0,
+     "atk": 17.0,
+     "def": 15.0,
+     "spd": 115.0,
+     "element": "",
+     "skills": [
+      "placaje",
+      "grunido"
+     ]
+    },
+    "F": {
+     "name": "chispa",
+     "hp": 100.0,
+     "atk": 20.0,
+     "def": 15.0,
+     "spd": 105.0,
+     "element": "fire",
+     "skills": [
+      "placaje",
+      "ascuas"
+     ]
+    },
+    "S": {
+     "name": "charco",
+     "hp": 110.0,
+     "atk": 17.0,
+     "def": 22.0,
+     "spd": 90.0,
+     "element": "water",
+     "skills": [
+      "placaje",
+      "pistola_agua"
+     ]
+    },
+    "M": {
+     "name": "hojita",
+     "hp": 105.0,
+     "atk": 18.0,
+     "def": 20.0,
+     "spd": 95.0,
+     "element": "nature",
+     "skills": [
+      "placaje",
+      "latigo",
+      "drenaje"
+     ]
+    },
+    "B": {
+     "name": "líder",
+     "hp": 260.0,
+     "atk": 23.0,
+     "def": 26.0,
+     "spd": 100.0,
+     "element": "dark",
+     "boss": true,
+     "skills": [
+      "placaje",
+      "mordisco_sombra",
+      "grunido",
+      "aplastar"
+     ]
+    }
+   },
+   "skills": {
+    "placaje": {
+     "target": "enemy",
+     "power": 1.0,
+     "name": "Placaje"
+    },
+    "ascuas": {
+     "target": "enemy",
+     "power": 1.4,
+     "effects": [
+      {
+       "status": "burn",
+       "turns": 2
+      }
+     ],
+     "cooldown": 2,
+     "name": "Ascuas"
+    },
+    "grunido": {
+     "target": "enemy",
+     "effects": [
+      {
+       "status": "atk_down",
+       "turns": 3
+      }
+     ],
+     "cooldown": 3,
+     "name": "Gruñido"
+    },
+    "fuego_fatuo": {
+     "target": "enemy",
+     "power": 2.0,
+     "cooldown": 4,
+     "name": "Fuego fatuo"
+    },
+    "pistola_agua": {
+     "target": "enemy",
+     "power": 1.4,
+     "cooldown": 2,
+     "name": "Pistola agua"
+    },
+    "refugio": {
+     "target": "self",
+     "effects": [
+      {
+       "status": "def_up",
+       "turns": 3
+      }
+     ],
+     "heal": 0.15,
+     "cooldown": 3,
+     "name": "Refugio"
+    },
+    "burbuja": {
+     "target": "enemy",
+     "power": 1.1,
+     "effects": [
+      {
+       "status": "stun",
+       "turns": 1
+      }
+     ],
+     "cooldown": 4,
+     "name": "Burbuja"
+    },
+    "latigo": {
+     "target": "enemy",
+     "power": 1.4,
+     "cooldown": 2,
+     "name": "Látigo"
+    },
+    "drenaje": {
+     "target": "enemy",
+     "power": 1.0,
+     "drain": 0.5,
+     "cooldown": 3,
+     "name": "Drenaje"
+    },
+    "polvo_veneno": {
+     "target": "enemy",
+     "effects": [
+      {
+       "status": "poison",
+       "turns": 4
+      }
+     ],
+     "cooldown": 4,
+     "name": "Polvo veneno"
+    },
+    "mordisco_sombra": {
+     "target": "enemy",
+     "power": 1.5,
+     "cooldown": 2,
+     "name": "Mordisco sombra"
+    }
+   }
+  }
+ }
+}

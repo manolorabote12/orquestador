@@ -1,0 +1,17 @@
+import { nivel, insignias, puntos } from "./.creador.mjs";
+let fallos = 0;
+const check = (n, ok, d = "") => { console.log((ok ? "  OK   " : "  FALLO ") + n + (ok ? "" : `  (${d})`)); if (!ok) fallos++; };
+const cero = { juegos: 0, publicados: 0, jugadas: 0, megusta: 0, remixes: 0, en_tienda: 0, podios: 0, victorias: 0 };
+check("empieza en Aprendiz sin insignias", nivel(cero).nombre === "Aprendiz" && insignias(cero).every((i) => !i.tiene));
+const p = { ...cero, juegos: 3, publicados: 1, jugadas: 50 };
+check("puntos: juegos, publicados y partidas", puntos(p) === 30 + 20 + 50);
+check("con 100 puntos justos sube a Creador", nivel(p).nombre === "Creador" && nivel(p).siguiente === "Artesano" && nivel(p).faltan === 300, JSON.stringify(nivel(p)));
+const q = { ...cero, juegos: 1, jugadas: 20 };
+check("faltan puntos y progreso entre 0 y 1", nivel(q).faltan === 70 && nivel(q).progreso > 0 && nivel(q).progreso < 1, JSON.stringify(nivel(q)));
+const top = { ...cero, jugadas: 9000 };
+check("nivel máximo: Leyenda sin siguiente", nivel(top).nombre === "Leyenda" && nivel(top).siguiente === null && nivel(top).progreso === 1);
+const r = { ...cero, juegos: 1, podios: 1, victorias: 1, en_tienda: 1 };
+const ids = insignias(r).filter((i) => i.tiene).map((i) => i.id);
+check("insignias de tienda, podio y campeón", ["primer", "tienda", "podio", "campeon"].every((x) => ids.includes(x)), ids.join(","));
+console.log(`== ${fallos} fallos ==`);
+process.exit(fallos ? 1 : 0);

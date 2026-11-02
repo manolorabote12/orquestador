@@ -1,0 +1,6 @@
+node_modules
+dist
+dist-demo
+android
+.env
+pruebas/.*.mjs

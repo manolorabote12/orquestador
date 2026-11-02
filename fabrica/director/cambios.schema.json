@@ -1,0 +1,639 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "orquestador/cambio/v1",
+	"title": "Plan de cambio sobre un juego ya fabricado",
+	"description": "La IA traduce una instruccion a operaciones de una lista cerrada. El coste lo calcula el codigo.",
+	"type": "object",
+	"required": [
+		"resumen",
+		"operaciones"
+	],
+	"additionalProperties": false,
+	"properties": {
+		"resumen": {
+			"type": "string",
+			"minLength": 4,
+			"maxLength": 260,
+			"description": "Lo que va a cambiar, dicho por Chispa en espanol, en primera persona y breve."
+		},
+		"pregunta": {
+			"type": "string",
+			"maxLength": 200,
+			"description": "Solo si la instruccion es imposible de interpretar: una pregunta corta. Entonces operaciones va vacia."
+		},
+		"no_puedo": {
+			"type": "string",
+			"maxLength": 240,
+			"description": "Parte de la peticion que el taller aun no sabe hacer, explicada en una frase."
+		},
+		"operaciones": {
+			"type": "array",
+			"maxItems": 6,
+			"items": {
+				"type": "object",
+				"required": [
+					"op"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"op": {
+						"enum": [
+							"textos",
+							"ajustes",
+							"redibujar",
+							"paleta",
+							"estilo",
+							"anadir_enemigo",
+							"quitar_enemigo",
+							"anadir_nivel",
+							"quitar_nivel",
+							"rehacer_nivel",
+							"poderes",
+							"disparo",
+							"jefe",
+							"musica",
+							"extras",
+							"genero",
+							"vista",
+							"historia",
+							"mapa",
+							"preguntas",
+							"funciones",
+							"prueba_ab",
+							"giros",
+							"idiomas"
+						]
+					},
+					"titulo": {
+						"type": "string",
+						"minLength": 2,
+						"maxLength": 28
+					},
+					"lema": {
+						"type": "string",
+						"minLength": 4,
+						"maxLength": 48
+					},
+					"heroe_nombre": {
+						"type": "string",
+						"minLength": 2,
+						"maxLength": 24
+					},
+					"coleccionable_plural": {
+						"type": "string",
+						"minLength": 2,
+						"maxLength": 20
+					},
+					"nombres_niveles": {
+						"type": "array",
+						"items": {
+							"type": "object",
+							"required": [
+								"indice",
+								"nombre"
+							],
+							"additionalProperties": false,
+							"properties": {
+								"indice": {
+									"type": "integer",
+									"minimum": 0
+								},
+								"nombre": {
+									"type": "string",
+									"minLength": 2,
+									"maxLength": 28
+								}
+							}
+						}
+					},
+					"sensacion": {
+						"enum": [
+							"agil",
+							"normal",
+							"pesada"
+						]
+					},
+					"dificultad": {
+						"enum": [
+							"facil",
+							"normal",
+							"dificil"
+						]
+					},
+					"vidas": {
+						"type": "integer",
+						"minimum": 1,
+						"maximum": 6
+					},
+					"velocidad_enemigos": {
+						"type": "object",
+						"additionalProperties": false,
+						"properties": {
+							"walker": {
+								"type": "number",
+								"minimum": 0.4,
+								"maximum": 1.8
+							},
+							"spiky": {
+								"type": "number",
+								"minimum": 0.4,
+								"maximum": 1.8
+							},
+							"flyer": {
+								"type": "number",
+								"minimum": 0.4,
+								"maximum": 1.8
+							}
+						}
+					},
+					"que": {
+						"enum": [
+							"heroe",
+							"enemigo_walker",
+							"enemigo_spiky",
+							"enemigo_flyer",
+							"moneda",
+							"suelo",
+							"jefe"
+						]
+					},
+					"descripcion": {
+						"type": "string",
+						"minLength": 8,
+						"maxLength": 240,
+						"description": "En INGLES, descripcion visual completa y fija."
+					},
+					"paleta": {
+						"type": "array",
+						"minItems": 8,
+						"maxItems": 16,
+						"items": {
+							"type": "string",
+							"pattern": "^#[0-9a-fA-F]{6}$"
+						}
+					},
+					"familia": {
+						"enum": [
+							"pixel_art",
+							"cartoon",
+							"low_poly",
+							"realista",
+							"pintado"
+						]
+					},
+					"tipo": {
+						"enum": [
+							"walker",
+							"spiky",
+							"flyer"
+						]
+					},
+					"nombre": {
+						"type": "string",
+						"minLength": 2,
+						"maxLength": 28
+					},
+					"despues_de": {
+						"type": "integer",
+						"minimum": -1
+					},
+					"indice": {
+						"type": "integer",
+						"minimum": 0
+					},
+					"hacia": {
+						"enum": [
+							"mas_facil",
+							"mas_dificil",
+							"distinto"
+						]
+					},
+					"activar": {
+						"type": "array",
+						"maxItems": 5,
+						"items": {
+							"enum": [
+								"corazon",
+								"doble_salto",
+								"iman",
+								"velocidad",
+								"estrella"
+							]
+						}
+					},
+					"desactivar": {
+						"type": "array",
+						"maxItems": 5,
+						"items": {
+							"enum": [
+								"corazon",
+								"doble_salto",
+								"iman",
+								"velocidad",
+								"estrella"
+							]
+						}
+					},
+					"activo": {
+						"type": "boolean"
+					},
+					"ambiente": {
+						"type": "string",
+						"minLength": 4,
+						"maxLength": 160,
+						"description": "En INGLES: estado de animo de la musica."
+					},
+					"tempo": {
+						"type": "integer",
+						"minimum": 60,
+						"maximum": 180
+					},
+					"puntos_control": {
+						"type": "boolean"
+					},
+					"plataformas_moviles": {
+						"type": "boolean"
+					},
+					"genero": {
+						"enum": [
+							"plataformas",
+							"runner",
+							"volador",
+							"horda",
+							"puzle",
+							"torres",
+							"carreras",
+							"naves",
+							"rompebloques",
+							"bloques",
+							"corredor",
+							"serpiente",
+							"memoria",
+							"cajas",
+							"preguntas",
+							"apilar",
+							"topos",
+							"saltos",
+							"arena",
+							"aldea",
+							"ritmo",
+							"clicker",
+							"cartas",
+							"rpg",
+							"laberinto",
+							"golf",
+							"pesca",
+							"fusion",
+							"tubos",
+							"burbujas",
+							"imperio",
+							"minas",
+							"mazmorras",
+							"granja",
+							"mazo",
+							"aventura",
+							"cocina",
+							"mahjong",
+							"aparcamiento",
+							"sopa",
+							"sudoku",
+							"nonograma",
+							"cortar",
+							"penaltis",
+							"agujero",
+							"ciudad",
+							"canasta",
+							"espiral",
+							"buscaminas",
+							"conecta",
+							"damas",
+							"billar",
+							"solitario",
+							"parchis",
+							"caida",
+							"bolos",
+							"mundo",
+							"royale",
+							"cruzar",
+							"arco",
+							"cubos",
+							"parkour",
+							"tienda",
+							"futbol",
+							"terror",
+							"conduccion",
+							"zombis",
+							"baloncesto",
+							"tenis",
+							"karts",
+							"supervivencia",
+							"triple",
+							"tornillos",
+							"hexas",
+							"autobus",
+							"duelo",
+							"escalada",
+							"tirachinas",
+							"plantas",
+							"palabra",
+							"letras",
+							"tycoon",
+							"tragaperras",
+							"reino",
+							"multitud",
+							"pedidos",
+							"a_medida",
+							"poder",
+							"diferencias",
+							"rompecabezas",
+							"pintar",
+							"cuchillos",
+							"arquero",
+							"flechas",
+							"numeros",
+							"cartas_locas",
+							"domino",
+							"bloques_colores",
+							"tuberias",
+							"ajedrez",
+							"reversi",
+							"buscar",
+							"deslizar",
+							"ahorcado",
+							"flota",
+							"simon",
+							"estrategia",
+							"autobatalla",
+							"gemas",
+							"coleccionables",
+							"roguelike",
+							"bombas",
+							"artilleria",
+							"comecocos",
+							"cadena",
+							"lucha",
+							"sandia",
+							"pinball",
+							"metroidvania",
+							"sigilo"
+						],
+						"description": "Para 'genero': runner (corre solo, tu saltas), volador (arcade de un toque), horda (vista desde arriba: sobrevives a oleadas con armas automaticas) o plataformas. puzle: combinar 3 en un tablero, torres (tower defense) o carreras (coches contra 3 rivales)."
+					},
+					"vista": {
+						"enum": [
+							"2d",
+							"3d"
+						],
+						"description": "Para 'vista' (solo carreras): '3d' coches en 3D con camara detras; '2d' vista desde arriba."
+					},
+					"historia": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": [
+							"niveles"
+						],
+						"description": "Op 'historia': los dialogos nuevos COMPLETOS (uno por nivel, en el orden de los niveles). Para quitarlos: activo false.",
+						"properties": {
+							"niveles": {
+								"type": "array",
+								"minItems": 1,
+								"maxItems": 8,
+								"items": {
+									"type": "object",
+									"additionalProperties": false,
+									"required": [
+										"intro"
+									],
+									"properties": {
+										"intro": {
+											"type": "array",
+											"minItems": 0,
+											"maxItems": 3,
+											"items": {
+												"type": "object",
+												"additionalProperties": false,
+												"required": [
+													"quien",
+													"texto"
+												],
+												"properties": {
+													"quien": {
+														"enum": [
+															"heroe",
+															"rival",
+															"jefe",
+															"narrador"
+														],
+														"description": "Quien habla: heroe, rival (el primer enemigo), jefe (solo si hay jefe) o narrador"
+													},
+													"texto": {
+														"type": "string",
+														"minLength": 2,
+														"maxLength": 90
+													}
+												}
+											}
+										},
+										"fin": {
+											"type": "array",
+											"maxItems": 2,
+											"items": {
+												"type": "object",
+												"additionalProperties": false,
+												"required": [
+													"quien",
+													"texto"
+												],
+												"properties": {
+													"quien": {
+														"enum": [
+															"heroe",
+															"rival",
+															"jefe",
+															"narrador"
+														],
+														"description": "Quien habla: heroe, rival (el primer enemigo), jefe (solo si hay jefe) o narrador"
+													},
+													"texto": {
+														"type": "string",
+														"minLength": 2,
+														"maxLength": 90
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"mapa": {
+						"type": "array",
+						"minItems": 3,
+						"maxItems": 24,
+						"items": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 400,
+							"pattern": "^[A-Za-z0-9#^=.]+$"
+						},
+						"description": "Solo del editor manual de la app: el nivel 'indice' dibujado a mano, fila a fila. La IA nunca lo usa."
+					},
+					"preguntas": {
+						"type": "array",
+						"minItems": 15,
+						"maxItems": 40,
+						"description": "Op 'preguntas' (solo juegos de preguntas): la lista COMPLETA nueva, de facil a dificil.",
+						"items": {
+							"type": "object",
+							"additionalProperties": false,
+							"required": [
+								"pregunta",
+								"opciones",
+								"correcta",
+								"explicacion"
+							],
+							"properties": {
+								"pregunta": {
+									"type": "string",
+									"minLength": 8,
+									"maxLength": 110
+								},
+								"opciones": {
+									"type": "array",
+									"minItems": 4,
+									"maxItems": 4,
+									"items": {
+										"type": "string",
+										"minLength": 1,
+										"maxLength": 40
+									}
+								},
+								"correcta": {
+									"type": "integer",
+									"minimum": 0,
+									"maximum": 3
+								},
+								"explicacion": {
+									"type": "string",
+									"minLength": 4,
+									"maxLength": 110
+								}
+							}
+						}
+					},
+					"tienda": {
+						"type": "boolean"
+					},
+					"pase": {
+						"type": "boolean"
+					},
+					"avisos": {
+						"type": "boolean"
+					},
+					"nube": {
+						"type": "boolean"
+					},
+					"online": {
+						"type": "boolean"
+					},
+					"publico": {
+						"enum": [
+							"todos",
+							"infantil"
+						]
+					},
+					"ganadora": {
+						"enum": [
+							"a",
+							"b"
+						],
+						"description": "Para 'prueba_ab': termina la prueba quedandose con la version A (la de siempre) o la B."
+					},
+					"referencia": {
+						"enum": [
+							"dibujo"
+						],
+						"description": "Solo para 'redibujar' el heroe con la imagen que ha subido y revisado el autor (la pone la app, nunca la IA)."
+					},
+					"giros": {
+						"type": "array",
+						"maxItems": 2,
+						"uniqueItems": true,
+						"items": {
+							"enum": [
+								"oscuridad",
+								"espejo",
+								"contrarreloj",
+								"racha",
+								"fantasma",
+								"cola",
+								"viento",
+								"tormenta",
+								"piedras",
+								"hielo",
+								"tuneles",
+								"niebla",
+								"barajar",
+								"dorado",
+								"invisibles",
+								"monstruos",
+								"apocalipsis",
+								"invierno",
+								"caza",
+								"equipo",
+								"criaturas",
+								"survivor",
+								"vampiros",
+								"fantasia",
+								"galactico",
+								"fiesta",
+								"mina",
+								"dados"
+							]
+						},
+						"description": "Para 'giros': la lista COMPLETA de giros que quedan en el juego (vacia = sin giros)."
+					},
+					"idiomas": {
+						"type": "array",
+						"maxItems": 28,
+						"uniqueItems": true,
+						"items": {
+							"enum": [
+								"ja",
+								"ko",
+								"zh",
+								"ru",
+								"uk",
+								"pl",
+								"nl",
+								"sv",
+								"da",
+								"no",
+								"fi",
+								"cs",
+								"ro",
+								"hu",
+								"el",
+								"tr",
+								"ar",
+								"he",
+								"hi",
+								"bn",
+								"id",
+								"ms",
+								"vi",
+								"th",
+								"fil",
+								"ca",
+								"eu",
+								"gl"
+							]
+						},
+						"description": "Para 'idiomas': la lista COMPLETA de idiomas extra que quedan en el juego (ademas de los 6 de siempre; vacia = solo los 6)."
+					}
+				}
+			}
+		}
+	}
+}

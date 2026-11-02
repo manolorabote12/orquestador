@@ -1,0 +1,14 @@
+{
+ "_doc": "Catalogo de fusion con pedidos (kit/mergeboard/mergeboard_map.gd). chains: cada cadena con su generador (gen), sus objetos de nivel 1 en adelante (items: nombres), look (dibujo) y color. Fusionar dos iguales da el siguiente. Los pedidos y la energia los pone cada nivel.",
+ "default": {
+  "place": "Café del puerto",
+  "chains": {
+   "bread": {"gen": "Horno", "look": "bread", "color": "#e3a04b", "items": ["Harina", "Masa", "Panecillo", "Pan", "Bollo", "Tarta", "Pastel", "Tarta de bodas"]},
+   "tea": {"gen": "Tetera", "look": "cup", "color": "#62b6e0", "items": ["Hojas", "Bolsita", "Taza", "Tetera", "Juego de té", "Samovar", "Salón de té", "Casa de té"]},
+   "flower": {"gen": "Jardín", "look": "flower", "color": "#f08fb6", "items": ["Semilla", "Brote", "Flor", "Ramito", "Ramo", "Jarrón", "Centro", "Jardín colgante"]},
+   "tool": {"gen": "Caja", "look": "tool", "color": "#9aa4b5", "items": ["Tornillo", "Clavo", "Martillo", "Llave", "Caja de herramientas", "Banco", "Taller", "Fábrica"]}
+  },
+  "people": ["Abuela Rosa", "Marta", "Capitán Leo", "Nico", "Doña Pilar", "Tomás"]
+ },
+ "presets": {}
+}

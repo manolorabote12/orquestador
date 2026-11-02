@@ -1,0 +1,197 @@
+# Despliega TODO en la nube cada vez que subes cambios a main (o a mano desde la pestana Actions).
+# Nada corre en tu PC: GitHub construye las imagenes, RunPod las ejecuta y Supabase guarda los datos.
+# Secretos que pegar una vez en GitHub -> Settings -> Secrets and variables -> Actions: ver nube/LEEME.md
+name: Desplegar
+
+on:
+  push:
+    branches: [main]
+    paths: ["fabrica/**", "orqkit/**", "nube/**", "supabase/**", ".github/workflows/desplegar.yml"]
+  workflow_dispatch:
+    inputs:
+      primera_vez:
+        description: "Primera vez (o al cambiar modelos.json / version de Godot): descarga los modelos y sube el motor web"
+        type: boolean
+        default: false
+      muestras:
+        description: "Partidas de muestra para «Probar» en el taller: las que faltan (normal) o todas otra vez (tras cambiar mucho el kit)"
+        type: choice
+        options: [faltan, todas]
+        default: faltan
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: desplegar
+  cancel-in-progress: false
+
+jobs:
+  comprobar:
+    # Un secreto mal pegado para aqui en segundos (con el motivo), no tras 40 minutos de imagenes.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Secretos
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+        run: python conectar.py --entorno
+
+  imagenes:
+    needs: comprobar
+    # Una maquina de GitHub por imagen: cada una con su disco limpio (las de GPU pesan mucho).
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - nombre: orq-fabrica
+            archivo: nube/fabrica/Dockerfile
+          - nombre: orq-imagenes
+            archivo: nube/imagenes/Dockerfile
+          - nombre: orq-voces
+            archivo: nube/voces/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+      - id: nombre
+        run: |
+          duenio="$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          echo "tag=ghcr.io/${duenio}/${{ matrix.nombre }}:${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - name: Liberar disco
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL && df -h /
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.archivo }}
+          push: true
+          tags: ${{ steps.nombre.outputs.tag }}
+          cache-from: type=gha,scope=${{ matrix.nombre }}
+          cache-to: type=gha,mode=min,scope=${{ matrix.nombre }}
+
+  runpod:
+    needs: imagenes
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    outputs:
+      fabrica: ${{ steps.desplegar.outputs.fabrica }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Probar el despliegue con RunPod simulado
+        run: python nube/prueba_desplegar.py
+      - id: desplegar
+        name: Crear o actualizar endpoints en RunPod
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+          GHCR_USUARIO: ${{ github.actor }}
+          GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ORQ_LLAVES_SECRETO: ${{ secrets.ORQ_LLAVES_SECRETO }}
+          ORQ_PLAY_CUENTA: ${{ secrets.ORQ_PLAY_CUENTA }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          ORQ_RUNPOD_DC: ${{ vars.ORQ_RUNPOD_DC }}
+          ORQ_WEB: ${{ vars.ORQ_WEB }}
+          ORQ_GPU: ${{ vars.ORQ_GPU }}
+          ORQ_GPU_USD_HORA: ${{ vars.ORQ_GPU_USD_HORA }}
+        run: |
+          extra=""
+          if [ "${{ inputs.primera_vez }}" = "true" ]; then extra="--modelos --motor"; fi
+          base="ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
+          v="${GITHUB_SHA::12}"
+          python nube/desplegar.py --imagen-fabrica "$base/orq-fabrica:$v" --imagen-gpu "$base/orq-imagenes:$v" \
+            --imagen-voces "$base/orq-voces:$v" $extra
+
+  muestras:
+    # «Probar» en el catálogo del taller: una partida de muestra por género (fabrica/muestras.py).
+    # Solo fabrica las que faltan (los géneros nuevos); si falla, no frena el resto del despliegue.
+    # Despues de Supabase: el indice de muestras (JSON) necesita su migracion.
+    needs: [runpod, supabase]
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fabricar y subir las muestras que faltan
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+        run: |
+          python nube/desplegar.py --muestras-en "${{ needs.runpod.outputs.fabrica }}" --muestras "${{ inputs.muestras || 'faltan' }}"
+
+  supabase:
+    needs: runpod
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Base de datos y funciones
+        run: |
+          supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+          supabase db push
+          supabase functions deploy
+      - name: Secretos del servidor (nunca en la app)
+        env:
+          TIENDA: ${{ secrets.ORQ_PLAY_TIENDA_CUENTA }}
+          YT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          DISPARO: ${{ secrets.ORQ_GITHUB_DISPATCH }}
+          LLAVES: ${{ secrets.ORQ_LLAVES_SECRETO }}
+          YT_SECRETO: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          PLAY: ${{ secrets.ORQ_PLAY_CUENTA }}
+          REVISOR: ${{ secrets.ORQ_REVISOR }}
+        run: |
+          supabase secrets set \
+            RUNPOD_API_KEY="${{ secrets.RUNPOD_API_KEY }}" \
+            RUNPOD_FABRICA_ENDPOINT="${{ needs.runpod.outputs.fabrica }}" \
+            ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}"
+          if [ -n "${{ secrets.ORQ_PLAY_CUENTA_CORREO }}" ]; then
+            supabase secrets set ORQ_PLAY_CUENTA_CORREO="${{ secrets.ORQ_PLAY_CUENTA_CORREO }}"
+          fi
+          # Compras de la app (Google Play Billing): cuenta de servicio con permiso financiero sobre la app.
+          if [ -n "$TIENDA" ]; then supabase secrets set ORQ_PLAY_TIENDA_CUENTA="$TIENDA"; fi
+          # App Store: el servidor cifra la clave .p8 y despierta al Mac de GitHub (ios.yml).
+          supabase secrets set ORQ_LLAVES_SECRETO="$LLAVES" GITHUB_REPO="${{ github.repository }}"
+          if [ -n "$DISPARO" ]; then supabase secrets set GITHUB_DISPATCH_TOKEN="$DISPARO"; fi
+          if [ -n "$YT_ID" ]; then supabase secrets set GOOGLE_OAUTH_CLIENT_ID="$YT_ID" GOOGLE_OAUTH_CLIENT_SECRET="$YT_SECRETO"; fi
+          if [ -n "$PLAY" ]; then supabase secrets set ORQ_PLAY_CUENTA="$PLAY"; fi
+          # Cuenta para quien revisa la app en Google Play ("correo:codigo de 6 cifras").
+          if [ -n "$REVISOR" ]; then supabase secrets set ORQ_REVISOR="$REVISOR"; fi
+          supabase secrets set ORQ_APP_PAQUETE="${{ vars.ORQ_APP_PAQUETE || 'com.orquestador.app' }}"
+          if [ -n "${{ vars.ADMOB_REWARDED_AD_UNIT }}" ]; then
+            supabase secrets set ADMOB_REWARDED_AD_UNIT="${{ vars.ADMOB_REWARDED_AD_UNIT }}"
+          fi

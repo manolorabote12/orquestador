@@ -1,0 +1,20 @@
+import { decidir, tipoImagen, rutaReferencia } from "./.referencias.mjs";
+let fallos = 0;
+const ok = (n, c) => { console.log((c ? "  OK   " : "  FALLO ") + n); if (!c) fallos++; };
+const j = (o) => "Aquí va: " + JSON.stringify(o);
+const base = { tipo: "dibujo", persona_real: false, personaje_conocido: false, no_apto: false, descripcion: "A round orange cat with a green scarf, crayon style" };
+ok("dibujo apto", decidir(j(base)).ok && decidir(j(base)).descripcion.startsWith("A round orange cat"));
+ok("foto de persona: no", !decidir(j({ ...base, persona_real: true })).ok && decidir(j({ ...base, persona_real: true })).motivo.includes("privacidad"));
+ok("tipo persona: no", !decidir(j({ ...base, tipo: "persona" })).ok);
+ok("personaje conocido: no", !decidir(j({ ...base, personaje_conocido: true })).ok);
+ok("no apto: no", !decidir(j({ ...base, no_apto: true })).ok);
+ok("respuesta rara: no", !decidir("no sé").ok && !decidir(j({ descripcion: "x" })).ok);
+ok("descripcion limpia y corta", decidir(j({ ...base, descripcion: "<b>cat</b>\n{evil} " + "x".repeat(300) })).descripcion.length <= 200
+  && !/[<>{}]/.test(decidir(j({ ...base, descripcion: "<b>cat</b> with {x} hat ok" })).descripcion));
+ok("png", tipoImagen(new Uint8Array([0x89, 0x50, 0x4e, 0x47, 13, 10, 26, 10, 0])) === "image/png");
+ok("jpeg", tipoImagen(new Uint8Array([0xff, 0xd8, 0xff, 0xe0])) === "image/jpeg");
+ok("webp", tipoImagen(new TextEncoder().encode("RIFF\u0000\u0000\u0000\u0000WEBPVP8 ")) === "image/webp");
+ok("svg/html no", tipoImagen(new TextEncoder().encode("<svg xmlns=")) === null);
+ok("ruta", rutaReferencia("u1", "p1") === "u1/p1/heroe.png");
+console.log(fallos ? `== ${fallos} fallos ==` : "== 0 fallos ==");
+process.exit(fallos ? 1 : 0);

@@ -1,0 +1,13 @@
+# Configuracion minima para la CLI de Supabase (la usa GitHub Actions para desplegar).
+project_id = "orquestador"
+
+# Google llama a esta funcion para confirmar los anuncios con recompensa: no lleva sesion de usuario.
+[functions.admob-reward]
+verify_jwt = false
+
+# Google vuelve a esta funcion tras dar permiso de YouTube (sin sesion de la app).
+[functions.youtube]
+verify_jwt = false
+
+[functions.review-login]
+verify_jwt = false

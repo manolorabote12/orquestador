@@ -1,0 +1,82 @@
+# Compila la app Orquestador para Android en GitHub (sin Android Studio ni PC):
+# APK de prueba siempre y .aab firmado para Google Play si existe la llave de subida.
+# Secretos: SUPABASE_URL, SUPABASE_ANON_KEY (la publica; nunca la service_role)
+#           ORQ_APP_KEYSTORE_B64, ORQ_APP_KEYSTORE_PASS (opcionales, ver NUBE-LEEME.md)
+name: App Android
+
+on:
+  push:
+    branches: [main]
+    paths: ["app/**", ".github/workflows/app.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: app
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      VITE_MOTOR_URL: ${{ secrets.SUPABASE_URL }}/storage/v1/object/public/motor/godot/4.6.3
+      # AdMob de la propia app Orquestador (anuncio con premio = +5 tuercas). Sin ellos, sin anuncios.
+      VITE_ADMOB_REWARDED: ${{ vars.ORQ_APP_ADMOB_PREMIO }}
+      VITE_WEB: ${{ vars.ORQ_WEB }}
+      # Entrar con Google en el movil: el ID del cliente web (publico; el secreto solo esta en Supabase).
+      VITE_GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
+      ADMOB_APP_ID: ${{ vars.ORQ_APP_ADMOB_APP_ID }}
+      HAY_LLAVE: ${{ secrets.ORQ_APP_KEYSTORE_B64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - name: Pruebas
+        run: npm test
+      - name: Compilar la web de la app
+        run: npm run build
+      - name: Proyecto Android (Capacitor)
+        run: |
+          npx cap add android
+          # Icono adaptativo y pantalla de arranque desde app/assets (los genera app/marca/render.py).
+          npx capacitor-assets generate --android --iconBackgroundColor '#0f2a4a' \
+            --splashBackgroundColor '#0f2a4a' --splashBackgroundColorDark '#0a1e36'
+          npx cap sync android
+          # Version que sube sola, Android 16 (API 36) e ID de AdMob en el manifiesto.
+          node scripts/preparar-android.mjs ${{ github.run_number }}
+      - name: APK de prueba
+        working-directory: app/android
+        run: ./gradlew --no-daemon assembleDebug
+      - name: AAB firmado para Google Play
+        if: env.HAY_LLAVE == 'true'
+        env:
+          LLAVE: ${{ secrets.ORQ_APP_KEYSTORE_B64 }}
+          CLAVE: ${{ secrets.ORQ_APP_KEYSTORE_PASS }}
+        working-directory: app/android
+        run: |
+          echo "$LLAVE" | base64 -d > "$RUNNER_TEMP/subida.jks"
+          ./gradlew --no-daemon bundleRelease \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/subida.jks" \
+            -Pandroid.injected.signing.store.password="$CLAVE" \
+            -Pandroid.injected.signing.key.alias=subida \
+            -Pandroid.injected.signing.key.password="$CLAVE"
+          rm -f "$RUNNER_TEMP/subida.jks"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orquestador-android-${{ github.run_number }}
+          path: |
+            app/android/app/build/outputs/apk/debug/*.apk
+            app/android/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: warn

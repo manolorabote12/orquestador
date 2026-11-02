@@ -1,0 +1,10 @@
+Diccionarios de los juegos de palabras (es.txt, en.txt, pt.txt, fr.txt, de.txt, it.txt)
+
+Listas de palabras sacadas de wordfreq (https://github.com/rspeer/wordfreq),
+de Robyn Speer y colaboradores, con licencia Creative Commons Atribucion-CompartirIgual 4.0
+(CC BY-SA 4.0, https://creativecommons.org/licenses/by-sa/4.0/).
+
+Cambios: solo palabras de 3 a 8 letras, en mayusculas y sin tildes, sin nombres propios
+(filtradas con los diccionarios hunspell de LibreOffice) y sin palabrotas; marcadas con '*'
+las que pueden ser solucion. Estas listas se publican con la misma licencia CC BY-SA 4.0.
+La licencia afecta solo a estas listas, no al resto del juego.

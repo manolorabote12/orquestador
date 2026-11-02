@@ -1,0 +1,102 @@
+# Web publica de Orquestador en GitHub Pages: portada, privacidad (tambien la de cada juego:
+# privacidad.html?j=<id>), terminos y borrar la cuenta. Se publica al cambiar web/ o a mano.
+# Activar una vez: Settings -> Pages -> Source: GitHub Actions. Despues pon la URL en la variable
+# ORQ_WEB (la usa la fabrica para la URL de privacidad de cada juego).
+name: web
+on:
+  push:
+    branches: [main]
+    paths: ["web/**", "app/src/**", "app/index.html", "nube/seo.py", ".github/workflows/web.yml"]
+  # Cada dia: las paginas para buscadores crecen con los juegos nuevos del escaparate (nube/seo.py).
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ vars.ORQ_WEB_REPO == '' && 'github-pages' || 'web-publica' }}
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Rellenar config.js (todo publico)
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          ORQ_CORREO: ${{ vars.ORQ_CORREO }}
+          ORQ_RESPONSABLE: ${{ vars.ORQ_RESPONSABLE }}
+          ORQ_PLAY_URL: ${{ vars.ORQ_PLAY_URL }}
+        run: |
+          test -n "$SUPABASE_URL" && test -n "$SUPABASE_ANON_KEY" || { echo "Faltan las variables SUPABASE_URL y SUPABASE_ANON_KEY"; exit 1; }
+          python3 - <<'PY'
+          import base64, json, os
+          k = os.environ["SUPABASE_ANON_KEY"]
+          ## Nunca la clave de servicio en una web publica.
+          if k.startswith("sb_secret_"):
+              raise SystemExit("SUPABASE_ANON_KEY es una clave secreta")
+          if k.count(".") == 2:
+              carga = k.split(".")[1]
+              rol = json.loads(base64.urlsafe_b64decode(carga + "=" * (-len(carga) % 4))).get("role")
+              if rol != "anon":
+                  raise SystemExit(f"SUPABASE_ANON_KEY tiene rol {rol}, no anon")
+          p = "web/config.js"
+          s = open(p, encoding="utf-8").read()
+          for k in ("SUPABASE_URL", "SUPABASE_ANON_KEY", "ORQ_CORREO", "ORQ_RESPONSABLE", "ORQ_PLAY_URL"):
+              s = s.replace(f'"__{k}__"', json.dumps(os.environ.get(k, "") or f"__{k}__"))
+          open(p, "w", encoding="utf-8").write(s)
+          PY
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Paginas para buscadores (una por tipo de juego en espanol e ingles y una por juego del escaparate)
+        run: python3 nube/seo.py --salida web --supabase "${{ vars.SUPABASE_URL }}" --anon "${{ vars.SUPABASE_ANON_KEY }}" --web "${{ vars.ORQ_WEB }}"
+      # La app tambien en el navegador (PC o movil, sin instalar): web/app/. Las compras y los
+      # anuncios con premio solo existen en la app de Google Play.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: App web
+        working-directory: app
+        env:
+          VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          VITE_MOTOR_URL: ${{ vars.SUPABASE_URL }}/storage/v1/object/public/motor/godot/4.6.3
+          VITE_WEB: ${{ vars.ORQ_WEB }}
+        run: |
+          npm ci
+          npm run build
+          rm -rf ../web/app && cp -r dist ../web/app
+      # Cuenta gratis de GitHub: Pages no sirve repositorios privados. conectar.py crea entonces un
+      # repositorio PUBLICO solo para la web (variable ORQ_WEB_REPO) y una llave de despliegue que
+      # solo puede escribir en el (secreto ORQ_WEB_DEPLOY_KEY). El codigo sigue siendo privado.
+      - name: Publicar en el repositorio publico de la web
+        if: vars.ORQ_WEB_REPO != ''
+        env:
+          LLAVE: ${{ secrets.ORQ_WEB_DEPLOY_KEY }}
+          REPO: ${{ vars.ORQ_WEB_REPO }}
+        run: |
+          test -n "$LLAVE" || { echo "Falta el secreto ORQ_WEB_DEPLOY_KEY (vuelve a lanzar conectar.py)"; exit 1; }
+          mkdir -p ~/.ssh && printf '%s\n' "$LLAVE" > ~/.ssh/web && chmod 600 ~/.ssh/web
+          ssh-keyscan github.com >> ~/.ssh/known_hosts 2>/dev/null
+          cd web && touch .nojekyll && git init -q -b main && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "Web $GITHUB_SHA"
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/web -o IdentitiesOnly=yes" git push -qf "git@github.com:$REPO.git" main
+          rm -f ~/.ssh/web
+      - if: vars.ORQ_WEB_REPO == ''
+        uses: actions/configure-pages@v5
+      - if: vars.ORQ_WEB_REPO == ''
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - id: despliegue
+        if: vars.ORQ_WEB_REPO == ''
+        uses: actions/deploy-pages@v4

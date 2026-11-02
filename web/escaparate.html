@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Escaparate · Orquestador</title>
+<meta name="description" content="Juegos creados por la comunidad de Orquestador. Juégalos gratis en el navegador.">
+<meta property="og:image" content="og.png">
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="estilo.css">
+<script src="config.js"></script>
+</head>
+<body>
+<main>
+  <h1>Escaparate</h1>
+  <p class="dim">Juegos que la comunidad ha creado describiéndolos con palabras. Tócalos para jugar en el navegador.</p>
+  <div class="pestanas" role="group" aria-label="Orden">
+    <button type="button" data-orden="top" aria-pressed="true">Lo mejor</button>
+    <button type="button" data-orden="nuevos" aria-pressed="false">Lo nuevo</button>
+  </div>
+  <div class="galeria" id="galeria"><p class="dim">Cargando...</p></div>
+</main>
+<script src="comun.js"></script>
+<script>
+(function () {
+  var c = window.ORQ || {};
+  var g = document.getElementById("galeria");
+  function cargar(orden) {
+    g.innerHTML = '<p class="dim">Cargando...</p>';
+    fetch(c.supabase + "/rest/v1/rpc/escaparate_lista", { method: "POST",
+      headers: { apikey: c.anon, "Content-Type": "application/json" }, body: JSON.stringify({ p_orden: orden }) })
+      .then(function (r) { return r.json(); })
+      .then(function (lista) {
+        g.replaceChildren();
+        if (!Array.isArray(lista) || !lista.length) { g.innerHTML = '<p class="dim">Aún no hay juegos. ¡Sé el primero!</p>'; return; }
+        lista.forEach(function (f) {
+          var a = document.createElement("a");
+          a.href = "jugar.html?j=" + encodeURIComponent(f.project_id);
+          var img = document.createElement("img");
+          img.loading = "lazy"; img.alt = "";
+          img.src = c.supabase + "/storage/v1/object/public/escaparate/" + f.project_id + "/icono.png?v=" + f.version;
+          var t = document.createElement("b"); t.textContent = f.titulo;
+          var s = document.createElement("small"); s.className = "dim";
+          s.textContent = (f.autor ? f.autor + " · " : "") + "▶ " + f.jugadas + " · ♥ " + f.megusta;
+          a.append(img, t, s);
+          g.append(a);
+        });
+      })
+      .catch(function () { g.innerHTML = '<p class="msg error">Sin conexión.</p>'; });
+  }
+  document.querySelectorAll(".pestanas button").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".pestanas button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      cargar(b.dataset.orden);
+    });
+  });
+  cargar("top");
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,182 @@
+{
+ "_doc": "Catalogo de la tragaperras con aldea (kit/slots/slots_map.gd y fabrica/niveles/tragaperras.py). symbols: w (lo que sale, peso), kind (coins: tres iguales pagan pay; spin: tres dan pay tiradas; pick: elige 1 de 3 cofres x1/x2/x4 sobre pay; raid: excava 3 de 9 hoyos sobre pay), one (lo que paga cada uno suelto), look (dibujo), name. buildings: name, look, order y costs (3 mejoras, por la escala del nivel). Monedas de mentira: casino social. Estilo dados (tipo Monopoly Go): mode dice, board (20 casillas: go, coins, bag, pick, raid, spin, tax), tiles (pay de cada una) y pass (lo que da pasar por la salida).",
+ "default": {
+  "cur": "",
+  "village": "Aldea",
+  "symbols": {
+   "coin": {
+    "name": "Moneda",
+    "look": "coin",
+    "kind": "coins",
+    "w": 26,
+    "pay": 200,
+    "one": 30,
+    "order": 1
+   },
+   "bag": {
+    "name": "Saco",
+    "look": "bag",
+    "kind": "coins",
+    "w": 14,
+    "pay": 600,
+    "one": 0,
+    "order": 2
+   },
+   "star": {
+    "name": "Estrella",
+    "look": "star",
+    "kind": "coins",
+    "w": 14,
+    "pay": 400,
+    "one": 0,
+    "order": 3
+   },
+   "chest": {
+    "name": "Cofre",
+    "look": "chest",
+    "kind": "coins",
+    "w": 6,
+    "pay": 1500,
+    "one": 0,
+    "order": 4
+   },
+   "energy": {
+    "name": "Rayo",
+    "look": "energy",
+    "kind": "spin",
+    "w": 12,
+    "pay": 8,
+    "one": 0,
+    "order": 5
+   },
+   "hammer": {
+    "name": "Martillo",
+    "look": "hammer",
+    "kind": "pick",
+    "w": 10,
+    "pay": 500,
+    "one": 0,
+    "order": 6
+   },
+   "pig": {
+    "name": "Cerdito",
+    "look": "pig",
+    "kind": "raid",
+    "w": 10,
+    "pay": 600,
+    "one": 0,
+    "order": 7
+   }
+  },
+  "buildings": {
+   "casa": {
+    "name": "Casa",
+    "look": "house",
+    "order": 1,
+    "costs": [
+     30,
+     70,
+     150
+    ]
+   },
+   "molino": {
+    "name": "Molino",
+    "look": "mill",
+    "order": 2,
+    "costs": [
+     40,
+     90,
+     190
+    ]
+   },
+   "pozo": {
+    "name": "Pozo",
+    "look": "well",
+    "order": 3,
+    "costs": [
+     50,
+     110,
+     230
+    ]
+   },
+   "torre": {
+    "name": "Torre",
+    "look": "tower",
+    "order": 4,
+    "costs": [
+     65,
+     140,
+     290
+    ]
+   },
+   "estatua": {
+    "name": "Estatua",
+    "look": "statue",
+    "order": 5,
+    "costs": [
+     80,
+     170,
+     360
+    ]
+   }
+  }
+ },
+ "presets": {
+  "dados": {
+   "mode": "dice",
+   "pass": 28,
+   "board": [
+    "go",
+    "coins",
+    "bag",
+    "coins",
+    "pick",
+    "tax",
+    "coins",
+    "spin",
+    "bag",
+    "coins",
+    "raid",
+    "coins",
+    "bag",
+    "tax",
+    "coins",
+    "pick",
+    "coins",
+    "spin",
+    "bag",
+    "raid"
+   ],
+   "tiles": {
+    "coins": {
+     "name": "Monedas",
+     "pay": 8
+    },
+    "bag": {
+     "name": "Saco",
+     "pay": 22
+    },
+    "pick": {
+     "name": "Cofres",
+     "pay": 20
+    },
+    "raid": {
+     "name": "Asalto",
+     "pay": 24
+    },
+    "spin": {
+     "name": "Tiradas",
+     "pay": 3
+    },
+    "tax": {
+     "name": "Impuesto",
+     "pay": -7
+    },
+    "go": {
+     "name": "Salida",
+     "pay": 0
+    }
+   }
+  }
+ }
+}

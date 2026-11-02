@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- 1 - Tuerca de laton con una chispa dentro: la moneda de la app y la asistente. -->
+  <defs>
+    <linearGradient id="laton" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f8d98b"/>
+      <stop offset=".45" stop-color="#e8b04b"/>
+      <stop offset="1" stop-color="#a8701f"/>
+    </linearGradient>
+    <radialGradient id="hueco" cx=".5" cy=".42" r=".6">
+      <stop offset="0" stop-color="#1a4069"/>
+      <stop offset="1" stop-color="#0a1e36"/>
+    </radialGradient>
+    <radialGradient id="brillo" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#fff6d6" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#f6cf7a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <g transform="translate(512 512)">
+    <polygon points="0,-300 260,-150 260,150 0,300 -260,150 -260,-150" fill="url(#laton)" stroke="#6b4612" stroke-width="14" stroke-linejoin="round"/>
+    <polygon points="0,-262 227,-131 227,131 0,262 -227,131 -227,-131" fill="none" stroke="#fff3c9" stroke-opacity=".35" stroke-width="8" stroke-linejoin="round"/>
+    <circle r="150" fill="url(#hueco)" stroke="#6b4612" stroke-width="14"/>
+    <circle r="120" fill="url(#brillo)"/>
+    <path d="M0,-112 C10,-30 30,-10 112,0 C30,10 10,30 0,112 C-10,30 -30,10 -112,0 C-30,-10 -10,-30 0,-112 Z" fill="#fff8e1"/>
+    <circle cx="70" cy="-72" r="13" fill="#fff8e1"/>
+  </g>
+</svg>

@@ -1,0 +1,173 @@
+{
+ "_doc": "Catalogo del tycoon (kit/tycoon/tycoon_map.gd y fabrica/niveles/tycoon.py). mode: biz (negocios en paralelo, tipo AdVenture Capitalist) o mine (pozos, ascensor y almacen en cadena, tipo Idle Miner). biz: cost (primera unidad), growth (cada unidad mas cara), time (segundos por ciclo), profit (por unidad y ciclo), manager (coste del gerente), look (dibujo). mine: shafts con cost (abrirlo), value (dinero por ciclo y nivel), time, up (subir al nivel 2), growth, manager; lift y store con cap (lo que llevan por viaje y nivel), time, up, growth, manager. milestones: unidades que hacen ir el doble de rapido; every: niveles que doblan lo que da. upgrades: multiplicadores (si no hay, se ponen solos).",
+ "default": {
+  "mode": "biz",
+  "cur": "$",
+  "milestones": [
+   25,
+   50,
+   100,
+   200,
+   300,
+   400
+  ],
+  "biz": {
+   "limonada": {
+    "name": "Limonada",
+    "look": "lemon",
+    "cost": 4,
+    "growth": 1.07,
+    "time": 0.6,
+    "profit": 1,
+    "manager": 1000
+   },
+   "periodicos": {
+    "name": "Periódicos",
+    "look": "paper",
+    "cost": 60,
+    "growth": 1.15,
+    "time": 3,
+    "profit": 60,
+    "manager": 15000
+   },
+   "lavadero": {
+    "name": "Lavadero de coches",
+    "look": "car",
+    "cost": 720,
+    "growth": 1.14,
+    "time": 6,
+    "profit": 540,
+    "manager": 100000
+   },
+   "pizzeria": {
+    "name": "Pizzería",
+    "look": "pizza",
+    "cost": 8640,
+    "growth": 1.13,
+    "time": 12,
+    "profit": 4320,
+    "manager": 500000
+   },
+   "donuts": {
+    "name": "Donuts",
+    "look": "donut",
+    "cost": 103680,
+    "growth": 1.12,
+    "time": 24,
+    "profit": 51840,
+    "manager": 1200000
+   },
+   "pescado": {
+    "name": "Pescadería",
+    "look": "fish",
+    "cost": 1244160,
+    "growth": 1.11,
+    "time": 96,
+    "profit": 622080,
+    "manager": 10000000
+   },
+   "estadio": {
+    "name": "Estadio",
+    "look": "ball",
+    "cost": 14929920,
+    "growth": 1.1,
+    "time": 384,
+    "profit": 7464960,
+    "manager": 111111111
+   },
+   "cine": {
+    "name": "Cine",
+    "look": "film",
+    "cost": 179159040,
+    "growth": 1.09,
+    "time": 1536,
+    "profit": 89579520,
+    "manager": 555555555
+   }
+  }
+ },
+ "presets": {
+  "mina": {
+   "mode": "mine",
+   "every": 10,
+   "shafts": {
+    "carbon": {
+     "name": "Carbón",
+     "look": "coal",
+     "cost": 0,
+     "value": 5,
+     "time": 2.5,
+     "up": 5,
+     "growth": 1.12,
+     "manager": 100
+    },
+    "hierro": {
+     "name": "Hierro",
+     "look": "iron",
+     "cost": 400,
+     "value": 50,
+     "time": 3,
+     "up": 60,
+     "growth": 1.12,
+     "manager": 2500
+    },
+    "cobre": {
+     "name": "Cobre",
+     "look": "copper",
+     "cost": 8000,
+     "value": 900,
+     "time": 3.5,
+     "up": 1100,
+     "growth": 1.12,
+     "manager": 50000
+    },
+    "plata": {
+     "name": "Plata",
+     "look": "silver",
+     "cost": 160000,
+     "value": 16000,
+     "time": 4,
+     "up": 20000,
+     "growth": 1.12,
+     "manager": 1000000
+    },
+    "oro": {
+     "name": "Oro",
+     "look": "gold",
+     "cost": 3200000,
+     "value": 300000,
+     "time": 4.5,
+     "up": 360000,
+     "growth": 1.12,
+     "manager": 20000000
+    },
+    "diamante": {
+     "name": "Diamantes",
+     "look": "gem",
+     "cost": 64000000,
+     "value": 5400000,
+     "time": 5,
+     "up": 6500000,
+     "growth": 1.12,
+     "manager": 400000000
+    }
+   },
+   "lift": {
+    "name": "Ascensor",
+    "cap": 10,
+    "time": 2.5,
+    "up": 8,
+    "growth": 1.1,
+    "manager": 150
+   },
+   "store": {
+    "name": "Almacén",
+    "cap": 10,
+    "time": 2.5,
+    "up": 8,
+    "growth": 1.1,
+    "manager": 150
+   }
+  }
+ }
+}

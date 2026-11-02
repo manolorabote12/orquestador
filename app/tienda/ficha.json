@@ -1,0 +1,26 @@
+{
+ "paquete": "com.orquestador.app",
+ "categoria": "Entretenimiento",
+ "etiquetas": [
+  "Creación",
+  "Videojuegos"
+ ],
+ "idiomas": {
+  "es-ES": {
+   "titulo": "Orquestador: crea tu juego",
+   "corta": "Describe un juego con palabras y juégalo en minutos. Publícalo en Google Play.",
+   "larga": "¿Tienes una idea de juego? Escríbela. Orquestador la convierte en un juego de verdad para móvil, con niveles, personajes, música y efectos, listo para jugar en minutos.\n\nCÓMO FUNCIONA\n• Cuéntale tu idea a Chispa, la asistente: «un gato ninja que salta por los tejados de noche».\n• Chispa diseña los niveles, dibuja los personajes y los fondos, compone la música, crea los efectos y hasta le pone voz al protagonista.\n• Antes de dártelo, unos bots juegan todos los niveles para comprobar que se pueden pasar.\n• Juégalo al instante dentro de la app.\n\nMÁS DE 50 PLANTILLAS Y 29 TIPOS DE JUEGO\n• Plataformas, runner, puzles, tubos de colores, tower defense, carreras, RPG, minigolf, pesca, fusión y muchos más.\n• Giros que no tiene nadie: a oscuras, mundo espejo, cajas sobre hielo, notas invisibles, laberinto serpiente…\n• ¿Sin ideas? Pide a Chispa tres juegos originales a partir de una palabra.\n\nCÁMBIALO HABLANDO\n• «Hazlo más difícil», «que el gato sea un robot», «pon un jefe final»: cada cambio es una versión nueva.\n• Chispa te dice qué hará y cuántas tuercas cuesta antes de cobrar nada.\n• ¿Algo que el taller no sabe hacer? Chispa lo programa, lo comprueba y lo prueba con bots.\n• Vuelve a cualquier versión anterior gratis.\n\nPUBLÍCALO\n• Paquete firmado para Google Play, ficha, capturas, icono y gráfico destacado.\n• Guía paso a paso con las respuestas de los cuestionarios de Play Console.\n• Anuncios con AdMob en tu juego si quieres ganar dinero con él.\n• Vídeos verticales y tráiler para redes, y subida a tu canal de YouTube.\n• También para iPhone con tu cuenta de Apple.\n\nRETO DE LA SEMANA\nCada semana un tema nuevo. Los tres juegos más jugados ganan tuercas.\n\nLA LANZADERA\nGoogle pide 12 probadores durante 14 días para publicar. En la Lanzadera la comunidad prueba tu juego y tú pruebas los suyos.\n\nTUYO DE VERDAD\nTodo lo que creas es tuyo: código, arte y sonido se hacen con modelos de uso comercial. Descarga el proyecto de Godot cuando quieras.\n\nLas tuercas se ganan al empezar, viendo anuncios con premio o con packs; premium da tuercas cada mes y prioridad en la Lanzadera."
+  },
+  "en-US": {
+   "titulo": "Orquestador: make your game",
+   "corta": "Describe a game in words and play it in minutes. Publish it on Google Play.",
+   "larga": "Got a game idea? Write it down. Orquestador turns it into a real mobile game with levels, characters, music and sound effects, ready to play in minutes.\n\nHOW IT WORKS\n• Tell Chispa, your assistant, your idea: \"a ninja cat jumping across rooftops at night\".\n• Chispa designs the levels, draws characters and backgrounds, composes the music, makes the sound effects and even voices the hero.\n• Before you get it, bots play every level to make sure it can be beaten.\n• Play it instantly inside the app.\n\n50+ TEMPLATES AND 29 GAME TYPES\n• Platformers, runners, puzzles, color sort tubes, tower defense, racing, RPG, mini golf, fishing, merge and many more.\n• Twists nobody else has: in the dark, mirror world, boxes on ice, invisible notes, snake maze…\n• Out of ideas? Ask Chispa for three original games from a single word.\n\nCHANGE IT BY TALKING\n• \"Make it harder\", \"turn the cat into a robot\", \"add a final boss\": every change is a new version.\n• Chispa tells you what she will do and how many nuts it costs before charging anything.\n• Something the workshop can't do? Chispa codes it, checks it and tests it with bots.\n• Go back to any previous version for free.\n\nPUBLISH IT\n• Signed Google Play bundle, store listing, screenshots, icon and feature graphic.\n• Step-by-step guide with the answers for the Play Console questionnaires.\n• AdMob ads in your game if you want to earn money with it.\n• Vertical videos and a trailer for social media, uploaded to your YouTube channel.\n• iPhone too, with your Apple account.\n\nWEEKLY CHALLENGE\nA new theme every week. The three most played games win nuts.\n\nTHE LAUNCHPAD\nGoogle asks for 12 testers for 14 days before publishing. In the Launchpad the community tests your game and you test theirs.\n\nTRULY YOURS\nEverything you make is yours: code, art and sound come from commercially usable models. Download the Godot project any time.\n\nNuts come with your account, from rewarded ads or packs; premium gives nuts every month and priority in the Launchpad."
+  }
+ },
+ "contacto": {
+  "correo": "(vars.ORQ_CORREO)",
+  "web": "(vars.ORQ_WEB)",
+  "privacidad": "(vars.ORQ_WEB)/privacidad.html",
+  "borrar_cuenta": "(vars.ORQ_WEB)/borrar-cuenta.html"
+ }
+}

@@ -1,0 +1,10 @@
+import { quedan } from "./.reto.mjs";
+let fallos = 0;
+const check = (n, ok, d = "") => { console.log((ok ? "  OK   " : "  FALLO ") + n + (ok ? "" : `  (${d})`)); if (!ok) fallos++; };
+const ahora = new Date("2026-10-18T10:00:00Z");
+check("días y horas", quedan("2026-10-21T14:00:00Z", ahora) === "3 d 4 h", quedan("2026-10-21T14:00:00Z", ahora));
+check("solo horas", quedan("2026-10-18T15:30:00Z", ahora) === "5 h");
+check("minutos al final", quedan("2026-10-18T10:20:00Z", ahora) === "20 min");
+check("terminado: 0 min, nunca negativo", quedan("2026-10-17T10:00:00Z", ahora) === "0 min");
+console.log(`== ${fallos} fallos ==`);
+process.exit(fallos ? 1 : 0);

@@ -1,0 +1,636 @@
+{
+ "_doc": "Catalogo de las hordas (kit/horde/horde_game.gd y fabrica/contenido.py): armas (pattern: shot, fan, orbit, aura, nova, chain, bomb, whip; cada numero o una lista por nivel), mejoras (stat: speed, hp, magnet, power, haste, area, count), evoluciones (arma al maximo + mejora), enemigos (cambios a walker/spiky/flyer/boss) y prioridad del bot. Estilos en presets.",
+ "default": {
+  "start": "rayo",
+  "max_level": 5,
+  "weapons": {
+   "rayo": {
+    "name": "Chispazo",
+    "desc": "Dispara al enemigo mas cercano",
+    "pattern": "shot",
+    "cd": [
+     0.7,
+     0.64,
+     0.58,
+     0.52,
+     0.46
+    ],
+    "count": [
+     1,
+     2,
+     2,
+     3,
+     3
+    ],
+    "dmg": [
+     2.2,
+     2.8,
+     3.4,
+     4.0,
+     4.6
+    ],
+    "pierce": [
+     1,
+     1,
+     2,
+     2,
+     2
+    ],
+    "range": 720,
+    "color": "accent"
+   },
+   "orbes": {
+    "name": "Orbes",
+    "desc": "Giran a tu alrededor",
+    "pattern": "orbit",
+    "count": [
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "radius": [
+     116,
+     122,
+     128,
+     134,
+     140
+    ],
+    "dmg": [
+     1.6,
+     2.0,
+     2.4,
+     2.8,
+     3.2
+    ],
+    "spin": 3.2,
+    "gap": 0.4,
+    "color": "coin"
+   },
+   "aura": {
+    "name": "Aura",
+    "desc": "Hiere a todo lo que se acerca",
+    "pattern": "aura",
+    "radius": [
+     108,
+     126,
+     144,
+     162,
+     180
+    ],
+    "dmg": [
+     1.1,
+     1.4,
+     1.7,
+     2.0,
+     2.3
+    ],
+    "cd": 0.6,
+    "color": "accent"
+   },
+   "abanico": {
+    "name": "Abanico",
+    "desc": "Lanza cuchillas hacia delante",
+    "pattern": "fan",
+    "cd": [
+     1.4,
+     1.28,
+     1.16,
+     1.04,
+     0.92
+    ],
+    "count": [
+     3,
+     4,
+     5,
+     6,
+     7
+    ],
+    "dmg": [
+     2.5,
+     3.0,
+     3.5,
+     4.0,
+     4.5
+    ],
+    "pierce": 2,
+    "spread": 0.22,
+    "color": "#ffffff"
+   }
+  },
+  "passives": {
+   "botas": {
+    "name": "Botas",
+    "desc": "Te mueves mas rapido",
+    "stat": "speed",
+    "per": 0.1
+   },
+   "vida": {
+    "name": "Corazon",
+    "desc": "Un corazon mas y te curas",
+    "stat": "hp",
+    "per": 1
+   },
+   "iman": {
+    "name": "Iman",
+    "desc": "Atraes las gemas desde mas lejos",
+    "stat": "magnet",
+    "per": 0.35
+   },
+   "fuerza": {
+    "name": "Fuerza",
+    "desc": "Todas tus armas hacen mas dano",
+    "stat": "power",
+    "per": 0.15
+   },
+   "prisa": {
+    "name": "Prisa",
+    "desc": "Tus armas disparan mas a menudo",
+    "stat": "haste",
+    "per": 0.08
+   }
+  },
+  "evolutions": [],
+  "enemies": {},
+  "bot": [
+   "orbes",
+   "aura",
+   "vida",
+   "rayo",
+   "fuerza",
+   "abanico",
+   "prisa",
+   "botas",
+   "iman"
+  ]
+ },
+ "presets": {
+  "survivor": {
+   "start": "kunai",
+   "weapons": {
+    "rayo": null,
+    "abanico": null,
+    "orbes": null,
+    "aura": null,
+    "kunai": {
+     "name": "Kunai",
+     "desc": "Cuchillos al enemigo mas cercano",
+     "pattern": "shot",
+     "cd": [
+      0.55,
+      0.5,
+      0.45,
+      0.42,
+      0.38
+     ],
+     "count": [
+      1,
+      2,
+      2,
+      3,
+      4
+     ],
+     "dmg": [
+      2.0,
+      2.5,
+      3.0,
+      3.4,
+      3.8
+     ],
+     "pierce": [
+      1,
+      1,
+      1,
+      2,
+      2
+     ],
+     "range": 700,
+     "color": "#e0e0e0"
+    },
+    "drones": {
+     "name": "Drones",
+     "desc": "Bombardean donde mas enemigos hay",
+     "pattern": "bomb",
+     "cd": [
+      2.2,
+      2.0,
+      1.8,
+      1.6,
+      1.4
+     ],
+     "count": [
+      1,
+      1,
+      2,
+      2,
+      3
+     ],
+     "dmg": [
+      3.0,
+      3.6,
+      4.2,
+      4.8,
+      5.6
+     ],
+     "radius": [
+      70,
+      78,
+      86,
+      94,
+      104
+     ],
+     "range": 600,
+     "color": "#ffb74d"
+    },
+    "relampago": {
+     "name": "Relampago",
+     "desc": "Un rayo que salta de enemigo en enemigo",
+     "pattern": "chain",
+     "cd": [
+      1.6,
+      1.45,
+      1.3,
+      1.15,
+      1.0
+     ],
+     "count": [
+      3,
+      4,
+      5,
+      6,
+      7
+     ],
+     "dmg": [
+      2.4,
+      2.8,
+      3.2,
+      3.6,
+      4.0
+     ],
+     "range": 520,
+     "color": "#80d8ff"
+    },
+    "guardian": {
+     "name": "Guardian",
+     "desc": "Escudos que giran a tu alrededor",
+     "pattern": "orbit",
+     "count": [
+      2,
+      2,
+      3,
+      3,
+      4
+     ],
+     "radius": [
+      110,
+      116,
+      122,
+      128,
+      134
+     ],
+     "dmg": [
+      1.8,
+      2.3,
+      2.8,
+      3.3,
+      3.8
+     ],
+     "spin": 3.6,
+     "gap": 0.35,
+     "color": "#90caf9"
+    },
+    "onda": {
+     "name": "Onda",
+     "desc": "Anillo de energia en todas direcciones",
+     "pattern": "nova",
+     "cd": [
+      2.4,
+      2.2,
+      2.0,
+      1.8,
+      1.6
+     ],
+     "count": [
+      8,
+      10,
+      12,
+      14,
+      16
+     ],
+     "dmg": [
+      1.8,
+      2.1,
+      2.4,
+      2.7,
+      3.0
+     ],
+     "pierce": 2,
+     "color": "#ce93d8"
+    },
+    "tormenta_kunai": {
+     "name": "Tormenta de kunais",
+     "desc": "Kunais sin parar",
+     "pattern": "shot",
+     "evolved": true,
+     "cd": 0.22,
+     "count": 5,
+     "dmg": 4.5,
+     "pierce": 3,
+     "range": 760,
+     "color": "#fff59d"
+    },
+    "escudo_eterno": {
+     "name": "Escudo eterno",
+     "desc": "Seis escudos que lo arrasan todo",
+     "pattern": "orbit",
+     "evolved": true,
+     "count": 6,
+     "radius": 150,
+     "dmg": 5.0,
+     "spin": 4.2,
+     "gap": 0.25,
+     "color": "#4fc3f7"
+    },
+    "tormenta_rayos": {
+     "name": "Tormenta electrica",
+     "desc": "Rayos que saltan sin fin",
+     "pattern": "chain",
+     "evolved": true,
+     "cd": 0.7,
+     "count": 10,
+     "dmg": 4.8,
+     "range": 600,
+     "color": "#e1f5fe"
+    }
+   },
+   "passives": {
+    "cargador": {
+     "name": "Cargador",
+     "desc": "Un proyectil mas en cada arma",
+     "stat": "count",
+     "per": 1,
+     "max": 2
+    },
+    "zona": {
+     "name": "Zona",
+     "desc": "Area y alcance mas grandes",
+     "stat": "area",
+     "per": 0.12
+    }
+   },
+   "evolutions": [
+    {
+     "weapon": "kunai",
+     "passive": "prisa",
+     "into": "tormenta_kunai"
+    },
+    {
+     "weapon": "guardian",
+     "passive": "vida",
+     "into": "escudo_eterno"
+    },
+    {
+     "weapon": "relampago",
+     "passive": "iman",
+     "into": "tormenta_rayos"
+    }
+   ],
+   "bot": [
+    "guardian",
+    "relampago",
+    "kunai",
+    "vida",
+    "onda",
+    "drones",
+    "fuerza",
+    "cargador",
+    "prisa",
+    "zona",
+    "botas",
+    "iman"
+   ]
+  },
+  "vampiros": {
+   "start": "latigo",
+   "weapons": {
+    "rayo": null,
+    "abanico": null,
+    "orbes": null,
+    "aura": null,
+    "latigo": {
+     "name": "Latigo",
+     "desc": "Azota a izquierda y derecha",
+     "pattern": "whip",
+     "cd": [
+      1.1,
+      1.0,
+      0.9,
+      0.85,
+      0.8
+     ],
+     "count": [
+      2,
+      2,
+      2,
+      2,
+      2
+     ],
+     "dmg": [
+      4.5,
+      5.2,
+      6.0,
+      6.8,
+      7.6
+     ],
+     "radius": [
+      170,
+      180,
+      190,
+      205,
+      220
+     ],
+     "color": "#d7ccc8"
+    },
+    "ajo": {
+     "name": "Ajo",
+     "desc": "Un halo que quema a los que se acercan",
+     "pattern": "aura",
+     "radius": [
+      100,
+      115,
+      130,
+      145,
+      160
+     ],
+     "dmg": [
+      1.1,
+      1.4,
+      1.7,
+      2.0,
+      2.4
+     ],
+     "cd": 0.6,
+     "color": "#f0f4c3"
+    },
+    "agua_bendita": {
+     "name": "Agua bendita",
+     "desc": "Charcos que hieren",
+     "pattern": "bomb",
+     "cd": [
+      2.6,
+      2.4,
+      2.2,
+      2.0,
+      1.8
+     ],
+     "count": [
+      1,
+      2,
+      2,
+      3,
+      3
+     ],
+     "dmg": [
+      2.6,
+      3.0,
+      3.4,
+      3.8,
+      4.4
+     ],
+     "radius": [
+      64,
+      70,
+      76,
+      84,
+      92
+     ],
+     "range": 420,
+     "color": "#4fc3f7"
+    },
+    "libro": {
+     "name": "Libro",
+     "desc": "Gira a tu alrededor",
+     "pattern": "orbit",
+     "count": [
+      2,
+      2,
+      3,
+      3,
+      4
+     ],
+     "radius": [
+      120,
+      125,
+      130,
+      135,
+      140
+     ],
+     "dmg": [
+      2.0,
+      2.4,
+      2.8,
+      3.2,
+      3.6
+     ],
+     "spin": 3.0,
+     "gap": 0.45,
+     "color": "#fff176"
+    },
+    "varita": {
+     "name": "Varita",
+     "desc": "Proyectiles al enemigo mas cercano",
+     "pattern": "shot",
+     "cd": [
+      0.9,
+      0.8,
+      0.72,
+      0.64,
+      0.56
+     ],
+     "count": [
+      1,
+      1,
+      2,
+      2,
+      3
+     ],
+     "dmg": [
+      2.2,
+      2.8,
+      3.2,
+      3.6,
+      4.0
+     ],
+     "pierce": 1,
+     "range": 680,
+     "color": "#b39ddb"
+    },
+    "latigo_sangriento": {
+     "name": "Latigo sangriento",
+     "desc": "Azota y te cura",
+     "pattern": "whip",
+     "evolved": true,
+     "cd": 0.7,
+     "count": 2,
+     "dmg": 7.0,
+     "radius": 230,
+     "heal_every": 40,
+     "color": "#ef5350"
+    },
+    "biblia_eterna": {
+     "name": "Biblia eterna",
+     "desc": "Libros que nunca paran",
+     "pattern": "orbit",
+     "evolved": true,
+     "count": 5,
+     "radius": 150,
+     "dmg": 4.8,
+     "spin": 4.0,
+     "gap": 0.3,
+     "color": "#ffee58"
+    }
+   },
+   "passives": {
+    "espinaca": {
+     "name": "Espinaca",
+     "desc": "Todas tus armas hacen mas dano",
+     "stat": "power",
+     "per": 0.12
+    },
+    "corona": {
+     "name": "Candelabro",
+     "desc": "Area mas grande",
+     "stat": "area",
+     "per": 0.12
+    }
+   },
+   "evolutions": [
+    {
+     "weapon": "latigo",
+     "passive": "vida",
+     "into": "latigo_sangriento"
+    },
+    {
+     "weapon": "libro",
+     "passive": "prisa",
+     "into": "biblia_eterna"
+    }
+   ],
+   "bot": [
+    "latigo",
+    "libro",
+    "ajo",
+    "vida",
+    "agua_bendita",
+    "espinaca",
+    "fuerza",
+    "varita",
+    "prisa",
+    "corona",
+    "botas",
+    "iman"
+   ]
+  }
+ }
+}

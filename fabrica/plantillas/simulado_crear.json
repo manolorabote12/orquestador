@@ -1,0 +1,7 @@
+{
+	"1": {"class_type": "CLIPTextEncode", "inputs": {"text": ""}, "_meta": {"title": "PROMPT"}},
+	"2": {"class_type": "CLIPTextEncode", "inputs": {"text": ""}, "_meta": {"title": "NEGATIVO"}},
+	"3": {"class_type": "KSampler", "inputs": {"seed": 0}, "_meta": {"title": "SEED"}},
+	"4": {"class_type": "EmptyLatentImage", "inputs": {"width": 1024, "height": 1024}, "_meta": {"title": "ANCHO"}},
+	"9": {"class_type": "SaveImage", "inputs": {"filename_prefix": "orq"}, "_meta": {"title": "SALIDA"}}
+}

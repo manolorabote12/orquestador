@@ -1,0 +1,110 @@
+{
+ "version": 1,
+ "juego": "Salto de Prueba",
+ "familia": "pixel_art",
+ "sprites": {
+  "heroe": {
+   "rol": "jugador",
+   "celda": [
+    32,
+    32
+   ],
+   "animaciones": {
+    "idle": {
+     "sheet": "res://assets/heroe/idle.png",
+     "frames": 4,
+     "fps": 6.0,
+     "bucle": true
+    },
+    "run": {
+     "sheet": "res://assets/heroe/run.png",
+     "frames": 6,
+     "fps": 12.0,
+     "bucle": true
+    },
+    "jump": {
+     "sheet": "res://assets/heroe/jump.png",
+     "frames": 1,
+     "fps": 1.0,
+     "bucle": false
+    },
+    "fall": {
+     "sheet": "res://assets/heroe/fall.png",
+     "frames": 1,
+     "fps": 1.0,
+     "bucle": false
+    }
+   }
+  },
+  "chatarrilla": {
+   "rol": "enemigo",
+   "celda": [
+    32,
+    32
+   ],
+   "animaciones": {
+    "run": {
+     "sheet": "res://assets/chatarrilla/run.png",
+     "frames": 4,
+     "fps": 10.0,
+     "bucle": true
+    },
+    "hurt": {
+     "sheet": "res://assets/chatarrilla/hurt.png",
+     "frames": 1,
+     "fps": 1.0,
+     "bucle": false
+    }
+   }
+  },
+  "moneda": {
+   "rol": "objeto",
+   "celda": [
+    16,
+    16
+   ],
+   "animaciones": {
+    "spin": {
+     "sheet": "res://assets/moneda/spin.png",
+     "frames": 4,
+     "fps": 8.0,
+     "bucle": true
+    }
+   }
+  }
+ },
+ "tiles": {
+  "tejados": "res://assets/tiles/tejados.png"
+ },
+ "sfx": {
+  "jump": "res://assets/sfx/jump.wav",
+  "coin": "res://assets/sfx/coin.wav",
+  "hurt": "res://assets/sfx/hurt.wav",
+  "land": "res://assets/sfx/land.wav",
+  "win": "res://assets/sfx/win.wav",
+  "click": "res://assets/sfx/click.wav",
+  "stomp": "res://assets/sfx/stomp.wav",
+  "powerup": "res://assets/sfx/powerup.wav",
+  "shoot": "res://assets/sfx/shoot.wav"
+ },
+ "ui": {
+  "perfil": "pixel",
+  "colores": {
+   "fondo": "#16233a",
+   "panel": "#2d394e",
+   "panel_hi": "#4f6787",
+   "borde": "#0a101a",
+   "texto": "#e8f0fa",
+   "texto_suave": "#a7b0be",
+   "acento": "#e8b04b",
+   "acento_texto": "#0b0f1a",
+   "exito": "#8fe3a5",
+   "peligro": "#ff6b5b"
+  }
+ },
+ "musica": {
+  "menu": "res://assets/musica/menu.wav",
+  "nivel": "res://assets/musica/nivel.wav",
+  "victoria": "res://assets/musica/victoria.wav"
+ }
+}

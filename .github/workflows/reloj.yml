@@ -1,0 +1,60 @@
+# Red de seguridad y aprendizaje, gratis en GitHub Actions:
+#  - cada 15 minutos: si queda algo en la cola (un aviso se perdio), despierta la fabrica de RunPod;
+#  - cada 6 horas: la fabrica recalibra la dificultad con las partidas de los jugadores;
+#  - cada 15 minutos: la Lanzadera marca abandonos y campanas listas para produccion.
+name: Reloj
+
+on:
+  schedule:
+    - cron: "7,22,37,52 * * * *"
+    - cron: "41 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  despertar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+    steps:
+      - name: Lanzadera (abandonos y campanas listas)
+        run: |
+          curl -sf -X POST "$SUPABASE_URL/rest/v1/rpc/lz_revisar" -H "Content-Type: application/json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -d '{}'
+      - name: Premiar el reto de la semana pasada (si aun no; no paga dos veces)
+        run: |
+          curl -sf -X POST "$SUPABASE_URL/rest/v1/rpc/reto_premiar_anterior" -H "Content-Type: application/json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -d '{}' || true
+      - name: Cerrar trabajos colgados (devuelve las tuercas segun las reglas)
+        run: |
+          curl -sf -X POST "$SUPABASE_URL/rest/v1/rpc/expire_stuck_jobs" -H "Content-Type: application/json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -d '{}' || true
+      - name: Reembolsos de Google Play (cada 6 horas)
+        if: github.event.schedule == '41 */6 * * *'
+        run: |
+          curl -sf -X POST "$SUPABASE_URL/functions/v1/play-voided" \
+            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/json" -d '{}' || true
+      - name: Buscar la fabrica
+        id: ep
+        run: |
+          id=$(curl -sf -H "Authorization: Bearer $RUNPOD_API_KEY" https://rest.runpod.io/v1/endpoints \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get('data',[]); print(next((e['id'] for e in d if e.get('name')=='orq-fabrica'),''))")
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+      - name: Aprender (cada 6 horas)
+        if: github.event.schedule == '41 */6 * * *' && steps.ep.outputs.id != ''
+        run: |
+          curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
+            -d '{"input": {"tarea": "aprender"}}' "https://api.runpod.ai/v2/${{ steps.ep.outputs.id }}/run"
+      - name: Despertar si hay cola
+        if: steps.ep.outputs.id != ''
+        run: |
+          n=$(curl -sf "$SUPABASE_URL/rest/v1/jobs?status=eq.queued&select=id&limit=1" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            | python3 -c "import json,sys; print(len(json.load(sys.stdin)))")
+          echo "En cola: $n"
+          if [ "$n" != "0" ]; then
+            curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
+              -d '{"input": {"despertar": "reloj"}}' "https://api.runpod.ai/v2/${{ steps.ep.outputs.id }}/run"
+          fi

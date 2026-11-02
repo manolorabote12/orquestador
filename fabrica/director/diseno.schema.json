@@ -1,0 +1,950 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "orquestador/diseno/v1",
+	"title": "Diseno de juego (lo que decide la IA directora)",
+	"description": "La IA solo decide contenido y gusto. Niveles, fisica y codigo los ponen piezas probadas.",
+	"type": "object",
+	"required": [
+		"titulo",
+		"lema",
+		"resumen",
+		"estilo",
+		"heroe",
+		"coleccionable",
+		"escenario",
+		"enemigos",
+		"sensacion",
+		"dificultad",
+		"niveles",
+		"sonido",
+		"musica"
+	],
+	"additionalProperties": false,
+	"properties": {
+		"titulo": {
+			"type": "string",
+			"minLength": 2,
+			"maxLength": 28,
+			"description": "Nombre comercial con gancho, en espanol, original."
+		},
+		"lema": {
+			"type": "string",
+			"minLength": 4,
+			"maxLength": 48,
+			"description": "Frase corta bajo el titulo."
+		},
+		"resumen": {
+			"type": "string",
+			"minLength": 10,
+			"maxLength": 300
+		},
+		"estilo": {
+			"type": "object",
+			"required": [
+				"familia",
+				"descripcion",
+				"paleta"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"familia": {
+					"enum": [
+						"pixel_art",
+						"cartoon",
+						"low_poly",
+						"realista",
+						"pintado"
+					]
+				},
+				"descripcion": {
+					"type": "string",
+					"minLength": 10,
+					"maxLength": 240,
+					"description": "En INGLES: estilo visual para todos los prompts de imagen."
+				},
+				"paleta": {
+					"type": "array",
+					"minItems": 8,
+					"maxItems": 16,
+					"items": {
+						"type": "string",
+						"pattern": "^#[0-9a-fA-F]{6}$"
+					}
+				}
+			}
+		},
+		"heroe": {
+			"type": "object",
+			"required": [
+				"nombre",
+				"descripcion"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"nombre": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 24
+				},
+				"descripcion": {
+					"type": "string",
+					"minLength": 15,
+					"maxLength": 240,
+					"description": "En INGLES: aspecto fijo y reconocible."
+				}
+			}
+		},
+		"coleccionable": {
+			"type": "object",
+			"required": [
+				"nombre",
+				"nombre_plural",
+				"descripcion"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"nombre": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 20
+				},
+				"nombre_plural": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 20
+				},
+				"descripcion": {
+					"type": "string",
+					"minLength": 8,
+					"maxLength": 200,
+					"description": "En INGLES."
+				}
+			}
+		},
+		"escenario": {
+			"type": "object",
+			"required": [
+				"descripcion"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"descripcion": {
+					"type": "string",
+					"minLength": 8,
+					"maxLength": 200,
+					"description": "En INGLES: material del suelo, repetible."
+				}
+			}
+		},
+		"enemigos": {
+			"type": "array",
+			"minItems": 0,
+			"maxItems": 3,
+			"items": {
+				"type": "object",
+				"required": [
+					"tipo",
+					"nombre",
+					"descripcion"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"tipo": {
+						"enum": [
+							"walker",
+							"spiky",
+							"flyer"
+						]
+					},
+					"nombre": {
+						"type": "string",
+						"minLength": 2,
+						"maxLength": 24
+					},
+					"descripcion": {
+						"type": "string",
+						"minLength": 15,
+						"maxLength": 220,
+						"description": "En INGLES. spiky debe llevar pinchos visibles arriba; flyer debe tener alas o volar."
+					}
+				}
+			}
+		},
+		"sensacion": {
+			"enum": [
+				"agil",
+				"normal",
+				"pesada"
+			]
+		},
+		"dificultad": {
+			"enum": [
+				"facil",
+				"normal",
+				"dificil"
+			]
+		},
+		"niveles": {
+			"type": "array",
+			"minItems": 3,
+			"maxItems": 8,
+			"items": {
+				"type": "string",
+				"minLength": 2,
+				"maxLength": 28
+			}
+		},
+		"sonido": {
+			"enum": [
+				"retro",
+				"suave",
+				"metalico"
+			]
+		},
+		"musica": {
+			"type": "object",
+			"required": [
+				"ambiente",
+				"instrumentos",
+				"tempo"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"ambiente": {
+					"type": "string",
+					"maxLength": 160,
+					"description": "En INGLES."
+				},
+				"instrumentos": {
+					"type": "array",
+					"minItems": 1,
+					"maxItems": 6,
+					"items": {
+						"type": "string",
+						"maxLength": 40
+					}
+				},
+				"tempo": {
+					"type": "integer",
+					"minimum": 60,
+					"maximum": 180
+				}
+			}
+		},
+		"extra": {
+			"type": "object",
+			"additionalProperties": false,
+			"description": "Ajustes finos pedidos en el taller (no los rellena la directora al crear).",
+			"properties": {
+				"vidas": {
+					"type": "integer",
+					"minimum": 1,
+					"maximum": 6
+				},
+				"velocidad": {
+					"type": "object",
+					"additionalProperties": false,
+					"properties": {
+						"walker": {
+							"type": "number",
+							"minimum": 0.4,
+							"maximum": 1.8
+						},
+						"spiky": {
+							"type": "number",
+							"minimum": 0.4,
+							"maximum": 1.8
+						},
+						"flyer": {
+							"type": "number",
+							"minimum": 0.4,
+							"maximum": 1.8
+						}
+					}
+				}
+			}
+		},
+		"poderes": {
+			"type": "array",
+			"maxItems": 5,
+			"uniqueItems": true,
+			"items": {
+				"enum": [
+					"corazon",
+					"doble_salto",
+					"iman",
+					"velocidad",
+					"estrella"
+				]
+			},
+			"description": "Poderes que aparecen por los niveles (0 a 5)."
+		},
+		"disparo": {
+			"type": "boolean",
+			"description": "El heroe dispara (magia, laser, bolas...). Solo si la idea lo pide o encaja mucho."
+		},
+		"jefe": {
+			"type": "object",
+			"required": [
+				"nombre",
+				"descripcion"
+			],
+			"additionalProperties": false,
+			"description": "Jefe final al acabar el ultimo nivel. Omitir para juegos de peques o muy relajados.",
+			"properties": {
+				"nombre": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 24
+				},
+				"descripcion": {
+					"type": "string",
+					"minLength": 15,
+					"maxLength": 220,
+					"description": "En INGLES: grande, imponente, distinto de los enemigos."
+				}
+			}
+		},
+		"extras": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"puntos_control": {
+					"type": "boolean",
+					"description": "Banderas de control a mitad de nivel (recomendado)."
+				},
+				"plataformas_moviles": {
+					"type": "boolean",
+					"description": "Huecos que se cruzan en plataformas que van y vienen."
+				}
+			}
+		},
+		"genero": {
+			"type": "string",
+			"enum": [
+				"plataformas",
+				"runner",
+				"volador",
+				"horda",
+				"puzle",
+				"torres",
+				"carreras",
+				"naves",
+				"rompebloques",
+				"bloques",
+				"corredor",
+				"serpiente",
+				"memoria",
+				"cajas",
+				"preguntas",
+				"apilar",
+				"topos",
+				"saltos",
+				"arena",
+				"aldea",
+				"ritmo",
+				"clicker",
+				"cartas",
+				"rpg",
+				"laberinto",
+				"golf",
+				"pesca",
+				"fusion",
+				"tubos",
+				"burbujas",
+				"imperio",
+				"minas",
+				"mazmorras",
+				"granja",
+				"mazo",
+				"aventura",
+				"cocina",
+				"mahjong",
+				"aparcamiento",
+				"sopa",
+				"sudoku",
+				"nonograma",
+				"cortar",
+				"penaltis",
+				"agujero",
+				"ciudad",
+				"canasta",
+				"espiral",
+				"buscaminas",
+				"conecta",
+				"damas",
+				"billar",
+				"solitario",
+				"parchis",
+				"caida",
+				"bolos",
+				"mundo",
+				"royale",
+				"cruzar",
+				"arco",
+				"cubos",
+				"parkour",
+				"tienda",
+				"futbol",
+				"terror",
+				"conduccion",
+				"zombis",
+				"baloncesto",
+				"tenis",
+				"karts",
+				"supervivencia",
+				"triple",
+				"tornillos",
+				"hexas",
+				"autobus",
+				"duelo",
+				"escalada",
+				"tirachinas",
+				"plantas",
+				"palabra",
+				"letras",
+				"tycoon",
+				"tragaperras",
+				"reino",
+				"multitud",
+				"pedidos",
+				"a_medida",
+				"poder",
+				"diferencias",
+				"rompecabezas",
+				"pintar",
+				"cuchillos",
+				"arquero",
+				"flechas",
+				"numeros",
+				"cartas_locas",
+				"domino",
+				"bloques_colores",
+				"tuberias",
+				"ajedrez",
+				"reversi",
+				"buscar",
+				"deslizar",
+				"ahorcado",
+				"flota",
+				"simon",
+				"estrategia",
+				"autobatalla",
+				"gemas",
+				"coleccionables",
+				"roguelike",
+				"bombas",
+				"artilleria",
+				"comecocos",
+				"cadena",
+				"lucha",
+				"sandia",
+				"pinball",
+				"metroidvania",
+				"sigilo"
+			],
+			"description": "plataformas (te mueves tu, jefe opcional), runner (corre solo, tu saltas), volador (arcade de un toque: tocas para volar entre columnas) u horda (vista desde arriba: sobrevives a oleadas con armas automaticas y eliges mejoras al subir de nivel). puzle: combinar 3 piezas iguales en un tablero con movimientos limitados, torres (tower defense: pones torres junto al camino para que los enemigos no lleguen a tu base) o carreras (coches vistos desde arriba: esquivas trafico y adelantas a 3 rivales)."
+		},
+		"voz": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"inicio",
+				"victoria",
+				"derrota"
+			],
+			"description": "Lo que grita el heroe (en ESPANOL, cortisimo, con su personalidad). Se dice en voz alta en el juego.",
+			"properties": {
+				"inicio": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 40
+				},
+				"victoria": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 40
+				},
+				"derrota": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 40
+				}
+			}
+		},
+		"vista": {
+			"enum": [
+				"2d",
+				"3d"
+			],
+			"description": "Solo carreras: '3d' (coches low-poly en 3D con cámara detrás, por defecto) o '2d' (vista desde arriba, para ideas retro/pixel o 'vista desde arriba')."
+		},
+		"historia": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"niveles"
+			],
+			"description": "Dialogos cortos entre niveles en ESPANOL, para todos los publicos, con la personalidad de cada personaje. Uno por nivel, en el mismo orden que 'niveles'.",
+			"properties": {
+				"niveles": {
+					"type": "array",
+					"minItems": 1,
+					"maxItems": 8,
+					"items": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": [
+							"intro"
+						],
+						"properties": {
+							"intro": {
+								"type": "array",
+								"minItems": 0,
+								"maxItems": 3,
+								"items": {
+									"type": "object",
+									"additionalProperties": false,
+									"required": [
+										"quien",
+										"texto"
+									],
+									"properties": {
+										"quien": {
+											"enum": [
+												"heroe",
+												"rival",
+												"jefe",
+												"narrador"
+											],
+											"description": "Quien habla: heroe, rival (el primer enemigo), jefe (solo si hay jefe) o narrador"
+										},
+										"texto": {
+											"type": "string",
+											"minLength": 2,
+											"maxLength": 90
+										}
+									}
+								}
+							},
+							"fin": {
+								"type": "array",
+								"maxItems": 2,
+								"items": {
+									"type": "object",
+									"additionalProperties": false,
+									"required": [
+										"quien",
+										"texto"
+									],
+									"properties": {
+										"quien": {
+											"enum": [
+												"heroe",
+												"rival",
+												"jefe",
+												"narrador"
+											],
+											"description": "Quien habla: heroe, rival (el primer enemigo), jefe (solo si hay jefe) o narrador"
+										},
+										"texto": {
+											"type": "string",
+											"minLength": 2,
+											"maxLength": 90
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"preguntas": {
+			"type": "array",
+			"minItems": 15,
+			"maxItems": 40,
+			"description": "Solo genero preguntas: las preguntas del juego en ESPANOL, ordenadas de facil a dificil, sobre el tema de la idea. Datos ciertos y comprobables, nada polemico.",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"pregunta",
+					"opciones",
+					"correcta",
+					"explicacion"
+				],
+				"properties": {
+					"pregunta": {
+						"type": "string",
+						"minLength": 8,
+						"maxLength": 110
+					},
+					"opciones": {
+						"type": "array",
+						"minItems": 4,
+						"maxItems": 4,
+						"items": {
+							"type": "string",
+							"minLength": 1,
+							"maxLength": 40
+						}
+					},
+					"correcta": {
+						"type": "integer",
+						"minimum": 0,
+						"maximum": 3
+					},
+					"explicacion": {
+						"type": "string",
+						"minLength": 4,
+						"maxLength": 110
+					}
+				}
+			}
+		},
+		"publico": {
+			"enum": [
+				"todos",
+				"infantil"
+			],
+			"description": "Para quien es el juego. 'infantil' (menores de 13): sin compras, sin avisos, sin nada online abierto y anuncios para ninos."
+		},
+		"funciones": {
+			"type": "object",
+			"additionalProperties": false,
+			"description": "Que lleva el juego publicado (las decide el autor en la app).",
+			"properties": {
+				"tienda": {
+					"type": "boolean"
+				},
+				"pase": {
+					"type": "boolean"
+				},
+				"avisos": {
+					"type": "boolean"
+				},
+				"nube": {
+					"type": "boolean"
+				},
+				"online": {
+					"type": "boolean"
+				}
+			}
+		},
+		"plantilla": {
+			"type": "string",
+			"maxLength": 40,
+			"description": "Plantilla de exito de la que sale (la pone la fabrica)."
+		},
+		"prueba_ab": {
+			"type": "object",
+			"additionalProperties": false,
+			"required": [
+				"nivel",
+				"hacia",
+				"id"
+			],
+			"description": "Prueba A/B de un nivel en marcha (la pone el taller, nunca la directora): la mitad de los jugadores juega la version B.",
+			"properties": {
+				"nivel": {
+					"type": "integer",
+					"minimum": 0
+				},
+				"hacia": {
+					"enum": [
+						"mas_facil",
+						"mas_dificil",
+						"distinto"
+					]
+				},
+				"id": {
+					"type": "string",
+					"pattern": "^[a-z0-9_]{1,16}$"
+				}
+			}
+		},
+		"tutorial": {
+			"type": "array",
+			"maxItems": 6,
+			"description": "Opcional (ver TUTORIAL): textos del tutorial de la primera partida con el tema de este juego, en el orden de los pasos de su genero.",
+			"items": {
+				"type": "string",
+				"minLength": 4,
+				"maxLength": 120
+			}
+		},
+		"contenido": {
+			"type": "object",
+			"description": "Solo rpg, supervivencia, horda, zombis, imperio y karts (ver CONTENIDO PROPIO): heroes, habilidades y enemigos, u objetos, recursos, recetas y criaturas inventados para este juego. Son datos con margenes; la fabrica los prueba con bots."
+		},
+		"giros": {
+			"type": "array",
+			"maxItems": 2,
+			"uniqueItems": true,
+			"items": {
+				"enum": [
+					"oscuridad",
+					"espejo",
+					"contrarreloj",
+					"racha",
+					"fantasma",
+					"cola",
+					"viento",
+					"tormenta",
+					"piedras",
+					"hielo",
+					"tuneles",
+					"niebla",
+					"barajar",
+					"dorado",
+					"invisibles",
+					"monstruos",
+					"apocalipsis",
+					"invierno",
+					"caza",
+					"equipo",
+					"criaturas",
+					"survivor",
+					"vampiros",
+					"fantasia",
+					"galactico",
+					"fiesta",
+					"mina",
+					"dados"
+				]
+			},
+			"description": "Giros opcionales encima del genero (ver GIROS DISPONIBLES): solo los de la lista de su genero."
+		},
+		"aventura": {
+			"type": "array",
+			"minItems": 1,
+			"maxItems": 10,
+			"description": "Solo genero aventura: un capitulo por nivel, en ESPANOL y apto para todos los publicos. La primera escena es el principio. Cada decision cambia valor, amistad u oro o da un objeto; algunas piden un minimo o un objeto. Tiene que haber un camino al FIN_BUENO empezando con todo a cero, ningun callejon sin salida y todas las escenas alcanzables.",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"titulo",
+					"escenas",
+					"finales"
+				],
+				"properties": {
+					"titulo": {
+						"type": "string",
+						"maxLength": 40
+					},
+					"escenas": {
+						"type": "array",
+						"minItems": 4,
+						"maxItems": 16,
+						"items": {
+							"type": "object",
+							"additionalProperties": false,
+							"required": [
+								"id",
+								"quien",
+								"texto",
+								"opciones"
+							],
+							"properties": {
+								"id": {
+									"type": "string",
+									"maxLength": 12
+								},
+								"quien": {
+									"type": "string",
+									"enum": [
+										"narrador",
+										"heroe",
+										"rival",
+										"jefe",
+										"aliado"
+									]
+								},
+								"texto": {
+									"type": "string",
+									"minLength": 10,
+									"maxLength": 240
+								},
+								"opciones": {
+									"type": "array",
+									"minItems": 1,
+									"maxItems": 3,
+									"items": {
+										"type": "object",
+										"additionalProperties": false,
+										"required": [
+											"texto",
+											"va_a"
+										],
+										"properties": {
+											"texto": {
+												"type": "string",
+												"minLength": 2,
+												"maxLength": 60
+											},
+											"va_a": {
+												"type": "string",
+												"description": "id de otra escena del capitulo o FIN_BUENO, FIN_REGULAR o FIN_MALO"
+											},
+											"efecto": {
+												"type": "object",
+												"additionalProperties": false,
+												"properties": {
+													"valor": {
+														"type": "integer",
+														"minimum": -2,
+														"maximum": 2
+													},
+													"amistad": {
+														"type": "integer",
+														"minimum": -2,
+														"maximum": 2
+													},
+													"oro": {
+														"type": "integer",
+														"minimum": -10,
+														"maximum": 10
+													},
+													"objeto": {
+														"type": "string",
+														"maxLength": 24
+													}
+												}
+											},
+											"requiere": {
+												"type": "object",
+												"additionalProperties": false,
+												"properties": {
+													"stat": {
+														"type": "string",
+														"enum": [
+															"valor",
+															"amistad",
+															"oro"
+														]
+													},
+													"min": {
+														"type": "integer",
+														"minimum": 1,
+														"maximum": 10
+													},
+													"objeto": {
+														"type": "string",
+														"maxLength": 24
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					},
+					"finales": {
+						"type": "object",
+						"additionalProperties": false,
+						"required": [
+							"bueno",
+							"regular",
+							"malo"
+						],
+						"properties": {
+							"bueno": {
+								"type": "string",
+								"minLength": 5,
+								"maxLength": 200
+							},
+							"regular": {
+								"type": "string",
+								"minLength": 5,
+								"maxLength": 200
+							},
+							"malo": {
+								"type": "string",
+								"minLength": 5,
+								"maxLength": 200
+							}
+						}
+					}
+				}
+			}
+		},
+		"sopa": {
+			"type": "array",
+			"minItems": 1,
+			"maxItems": 10,
+			"description": "Solo genero sopa: las palabras de cada nivel (una lista por nivel), del tema del juego, de 3 a 10 letras, una sola palabra cada una, de 4 a 10 por nivel y cada vez mas largas.",
+			"items": {
+				"type": "array",
+				"minItems": 3,
+				"maxItems": 12,
+				"items": {
+					"type": "string",
+					"minLength": 2,
+					"maxLength": 12
+				}
+			}
+		},
+		"originalidad": {
+			"type": "integer",
+			"minimum": 0,
+			"maximum": 100,
+			"description": "Indice de originalidad frente a los juegos de la fabrica (lo pone la fabrica, no la IA)"
+		},
+		"idiomas": {
+			"type": "array",
+			"maxItems": 28,
+			"uniqueItems": true,
+			"items": {
+				"enum": [
+					"ja",
+					"ko",
+					"zh",
+					"ru",
+					"uk",
+					"pl",
+					"nl",
+					"sv",
+					"da",
+					"no",
+					"fi",
+					"cs",
+					"ro",
+					"hu",
+					"el",
+					"tr",
+					"ar",
+					"he",
+					"hi",
+					"bn",
+					"id",
+					"ms",
+					"vi",
+					"th",
+					"fil",
+					"ca",
+					"eu",
+					"gl"
+				]
+			},
+			"description": "Idiomas extra (ademas de es, en, pt, fr, de, it) que pide la idea"
+		},
+		"a_medida": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"descripcion": {
+					"type": "string",
+					"maxLength": 1200
+				}
+			},
+			"description": "Solo con genero a_medida (lo pone la fabrica): el juego que hay que programar."
+		},
+		"a_medida_mapas": {
+			"type": "array",
+			"description": "Solo con genero a_medida (lo pone la fabrica): variantes de cada nivel."
+		}
+	}
+}

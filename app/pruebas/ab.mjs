@@ -1,0 +1,15 @@
+import { veredictoAb } from "./.ab.mjs";
+let fallos = 0;
+const ok = (n, c) => { console.log((c ? "  OK   " : "  FALLO ") + n); if (!c) fallos++; };
+const g = (jugadores, superan) => ({ jugadores, intentos: jugadores * 2, ganados: superan, salidas: 0, muertes: 1, superan });
+const inf = (a, b) => ({ nivel: 1, hacia: "mas_facil", version: 3, grupos: { a, b } });
+ok("sin informe: faltan datos", veredictoAb(null).estado === "pocos");
+ok("pocos jugadores: faltan datos", veredictoAb(inf(g(20, 5), g(25, 20))).estado === "pocos");
+ok("diferencia clara: gana B", veredictoAb(inf(g(100, 40), g(100, 70))).estado === "b");
+ok("diferencia clara: gana A", veredictoAb(inf(g(80, 60), g(80, 30))).estado === "a");
+ok("diferencia pequeña: empate", veredictoAb(inf(g(60, 30), g(60, 34))).estado === "empate");
+const v = veredictoAb(inf(g(100, 40), g(100, 70)));
+ok("porcentajes", v.a === 0.4 && v.b === 0.7 && v.texto.includes("70 %"));
+ok("todos lo superan en las dos: empate", veredictoAb(inf(g(50, 50), g(50, 50))).estado === "empate");
+console.log(fallos ? `== ${fallos} fallos ==` : "== 0 fallos ==");
+process.exit(fallos ? 1 : 0);

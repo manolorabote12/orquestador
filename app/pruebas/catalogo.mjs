@@ -1,0 +1,17 @@
+import { encaja, nuevos, plano } from "./.catalogo.mjs";
+let fallos = 0;
+const ok = (n, c, extra = "") => { console.log((c ? "  OK   " : "  FALLO ") + n + (extra ? "  " + extra : "")); if (!c) fallos++; };
+const t = (id, nombre, que) => ({ id, nombre, que });
+ok("plano: sin tildes ni mayúsculas, la ñ se queda", plano("Dominó ÁRBOL Niño") === "domino arbol niño");
+ok("vacío: todos", encaja(t("x", "X", "y"), "  "));
+ok("por nombre sin tildes", encaja(t("domino", "Dominó", "Fichas"), "domino"));
+ok("por lo que se hace", encaja(t("tuberias", "Tuberías", "Gira y conecta"), "conecta"));
+ok("por familia: cartas encuentra el solitario", encaja(t("solitario", "Solitario", "Ordena la baraja"), "cartas"));
+ok("por familia: coches encuentra el aparcamiento", encaja(t("aparcamiento", "Aparcamiento", "Saca tu coche"), "coches"));
+ok("plural o singular", encaja(t("karts", "Karts 3D", "Derrapa"), "coche"));
+ok("todas las palabras cuentan", !encaja(t("ajedrez", "Ajedrez", "Jaque mate"), "ajedrez coches") && encaja(t("ajedrez", "Ajedrez", "Jaque mate"), "mesa jaque"));
+ok("no encaja lo que no es", !encaja(t("golf", "Golf", "Mete la bola"), "palabras"));
+const n = nuevos(["a", "b", "c", "d"], 2);
+ok("nuevos: los últimos", n.has("d") && n.has("c") && !n.has("a"));
+console.log(`== ${fallos} fallos ==`);
+if (fallos) process.exit(1);

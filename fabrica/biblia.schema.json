@@ -1,0 +1,481 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"$id": "orquestador/biblia/v1",
+	"title": "Biblia del juego (Orquestador v1)",
+	"description": "Lo primero que escribe el director. Todos los generadores (arte, musica, voces, sonido) la obedecen para que el juego sea coherente.",
+	"type": "object",
+	"required": [
+		"schema",
+		"juego",
+		"estilo",
+		"personajes"
+	],
+	"additionalProperties": false,
+	"properties": {
+		"schema": {
+			"const": "orquestador/biblia/v1"
+		},
+		"juego": {
+			"type": "object",
+			"required": [
+				"titulo",
+				"genero"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"titulo": {
+					"type": "string",
+					"minLength": 1,
+					"maxLength": 40
+				},
+				"genero": {
+					"type": "string",
+					"maxLength": 40
+				},
+				"resumen": {
+					"type": "string",
+					"maxLength": 400
+				},
+				"publico": {
+					"type": "string",
+					"maxLength": 80
+				}
+			}
+		},
+		"estilo": {
+			"type": "object",
+			"required": [
+				"familia",
+				"descripcion",
+				"paleta"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"familia": {
+					"enum": [
+						"pixel_art",
+						"cartoon",
+						"realista",
+						"pintado",
+						"low_poly"
+					]
+				},
+				"descripcion": {
+					"type": "string",
+					"minLength": 10,
+					"maxLength": 300,
+					"description": "Frase de estilo que se anade a TODOS los prompts de imagen."
+				},
+				"paleta": {
+					"type": "array",
+					"minItems": 4,
+					"maxItems": 32,
+					"items": {
+						"$ref": "#/$defs/color"
+					}
+				},
+				"forzar_paleta": {
+					"type": "boolean",
+					"default": true,
+					"description": "Cada pixel opaco se lleva al color de la paleta mas cercano."
+				},
+				"contorno": {
+					"enum": [
+						"ninguno",
+						"oscuro_1px"
+					],
+					"default": "ninguno"
+				},
+				"fondo_chroma": {
+					"$ref": "#/$defs/color",
+					"default": "#FF00FF",
+					"description": "Color plano de fondo que se pide al generador y luego se elimina."
+				},
+				"negativo": {
+					"type": "string",
+					"maxLength": 300
+				}
+			}
+		},
+		"personajes": {
+			"type": "array",
+			"minItems": 1,
+			"maxItems": 12,
+			"items": {
+				"$ref": "#/$defs/sprite"
+			}
+		},
+		"objetos": {
+			"type": "array",
+			"maxItems": 24,
+			"items": {
+				"$ref": "#/$defs/sprite"
+			}
+		},
+		"escenarios": {
+			"type": "array",
+			"maxItems": 8,
+			"items": {
+				"type": "object",
+				"required": [
+					"id",
+					"descripcion",
+					"tile"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"$ref": "#/$defs/id"
+					},
+					"descripcion": {
+						"type": "string",
+						"maxLength": 300
+					},
+					"tile": {
+						"type": "integer",
+						"enum": [
+							16,
+							24,
+							32,
+							48,
+							64
+						]
+					},
+					"piezas": {
+						"type": "array",
+						"items": {
+							"enum": [
+								"suelo",
+								"plataforma",
+								"pared"
+							]
+						},
+						"default": [
+							"suelo"
+						]
+					}
+				}
+			}
+		},
+		"musica": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"tonalidad": {
+					"type": "string",
+					"maxLength": 20
+				},
+				"tempo": {
+					"type": "integer",
+					"minimum": 50,
+					"maximum": 200
+				},
+				"instrumentos": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"maxLength": 40
+					},
+					"maxItems": 8
+				},
+				"ambiente": {
+					"type": "string",
+					"maxLength": 200
+				},
+				"pistas": {
+					"type": "array",
+					"maxItems": 8,
+					"items": {
+						"type": "object",
+						"required": [
+							"id",
+							"intensidad",
+							"segundos"
+						],
+						"additionalProperties": false,
+						"properties": {
+							"id": {
+								"$ref": "#/$defs/id"
+							},
+							"intensidad": {
+								"type": "number",
+								"minimum": 0,
+								"maximum": 1
+							},
+							"segundos": {
+								"type": "integer",
+								"minimum": 15,
+								"maximum": 240
+							},
+							"bucle": {
+								"type": "boolean",
+								"default": true
+							}
+						}
+					}
+				}
+			}
+		},
+		"voces": {
+			"type": "array",
+			"maxItems": 12,
+			"items": {
+				"type": "object",
+				"required": [
+					"id",
+					"descripcion"
+				],
+				"additionalProperties": false,
+				"properties": {
+					"id": {
+						"$ref": "#/$defs/id"
+					},
+					"descripcion": {
+						"type": "string",
+						"maxLength": 200
+					},
+					"idioma": {
+						"type": "string",
+						"default": "es"
+					},
+					"emocion": {
+						"type": "number",
+						"minimum": 0,
+						"maximum": 1,
+						"default": 0.5
+					},
+					"frases": {
+						"type": "array",
+						"maxItems": 40,
+						"items": {
+							"type": "string",
+							"maxLength": 160
+						}
+					}
+				}
+			}
+		},
+		"interfaz": {
+			"type": "object",
+			"additionalProperties": false,
+			"description": "Menus y botones. Si falta, se deduce del estilo y de la paleta.",
+			"properties": {
+				"perfil": {
+					"enum": [
+						"pixel",
+						"cartoon",
+						"low_poly",
+						"realista"
+					],
+					"description": "Por defecto: pixel_art->pixel, cartoon->cartoon, low_poly->low_poly, realista/pintado->realista."
+				},
+				"fuente": {
+					"enum": [
+						"PixelifySans.ttf",
+						"Fredoka.ttf",
+						"ChakraPetch-Bold.ttf",
+						"Exo2.ttf"
+					]
+				},
+				"colores": {
+					"type": "object",
+					"additionalProperties": false,
+					"description": "Opcional: fija colores concretos. Se corrigen solos si no se leen bien.",
+					"properties": {
+						"fondo": {
+							"$ref": "#/$defs/color"
+						},
+						"panel": {
+							"$ref": "#/$defs/color"
+						},
+						"panel_hi": {
+							"$ref": "#/$defs/color"
+						},
+						"borde": {
+							"$ref": "#/$defs/color"
+						},
+						"texto": {
+							"$ref": "#/$defs/color"
+						},
+						"texto_suave": {
+							"$ref": "#/$defs/color"
+						},
+						"acento": {
+							"$ref": "#/$defs/color"
+						},
+						"acento_texto": {
+							"$ref": "#/$defs/color"
+						},
+						"exito": {
+							"$ref": "#/$defs/color"
+						},
+						"peligro": {
+							"$ref": "#/$defs/color"
+						}
+					}
+				}
+			}
+		},
+		"sonido": {
+			"type": "object",
+			"additionalProperties": false,
+			"properties": {
+				"paleta": {
+					"enum": [
+						"retro",
+						"suave",
+						"metalico"
+					],
+					"default": "retro"
+				},
+				"efectos": {
+					"type": "array",
+					"items": {
+						"enum": [
+							"jump",
+							"coin",
+							"hurt",
+							"land",
+							"win",
+							"click",
+							"powerup",
+							"stomp",
+							"shoot"
+						]
+					}
+				}
+			}
+		},
+		"dialogos": {
+			"type": "array",
+			"maxItems": 16,
+			"description": "Frases de la historia que se graban con voz (clave d<nivel>_<i> o f<nivel>_<i>)",
+			"items": {
+				"type": "object",
+				"additionalProperties": false,
+				"required": [
+					"clave",
+					"texto",
+					"quien"
+				],
+				"properties": {
+					"clave": {
+						"type": "string",
+						"pattern": "^[df][0-9]_[0-9]$"
+					},
+					"texto": {
+						"type": "string",
+						"minLength": 2,
+						"maxLength": 90
+					},
+					"quien": {
+						"enum": [
+							"heroe",
+							"rival",
+							"jefe"
+						]
+					},
+					"descripcion": {
+						"type": "string",
+						"maxLength": 200
+					}
+				}
+			}
+		}
+	},
+	"$defs": {
+		"color": {
+			"type": "string",
+			"pattern": "^#[0-9a-fA-F]{6}$"
+		},
+		"id": {
+			"type": "string",
+			"pattern": "^[a-z][a-z0-9_]{0,31}$"
+		},
+		"sprite": {
+			"type": "object",
+			"required": [
+				"id",
+				"descripcion",
+				"tamano",
+				"animaciones"
+			],
+			"additionalProperties": false,
+			"properties": {
+				"id": {
+					"$ref": "#/$defs/id"
+				},
+				"nombre": {
+					"type": "string",
+					"maxLength": 40
+				},
+				"descripcion": {
+					"type": "string",
+					"minLength": 10,
+					"maxLength": 300,
+					"description": "Aspecto fijo: se repite en todas sus imagenes."
+				},
+				"rol": {
+					"enum": [
+						"jugador",
+						"enemigo",
+						"npc",
+						"objeto"
+					],
+					"default": "objeto"
+				},
+				"tamano": {
+					"type": "array",
+					"items": {
+						"type": "integer",
+						"minimum": 8,
+						"maximum": 256
+					},
+					"minItems": 2,
+					"maxItems": 2,
+					"description": "Celda final en pixeles [ancho, alto]."
+				},
+				"mira_a": {
+					"enum": [
+						"derecha",
+						"frente"
+					],
+					"default": "derecha"
+				},
+				"animaciones": {
+					"type": "object",
+					"minProperties": 1,
+					"additionalProperties": {
+						"type": "object",
+						"required": [
+							"frames"
+						],
+						"additionalProperties": false,
+						"properties": {
+							"frames": {
+								"type": "integer",
+								"minimum": 1,
+								"maximum": 12
+							},
+							"fps": {
+								"type": "number",
+								"minimum": 1,
+								"maximum": 30,
+								"default": 8
+							},
+							"bucle": {
+								"type": "boolean",
+								"default": true
+							},
+							"pose": {
+								"type": "string",
+								"maxLength": 200,
+								"description": "Opcional: describe la accion si no es una de la biblioteca de poses."
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

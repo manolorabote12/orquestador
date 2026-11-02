@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Borrar mi cuenta · Orquestador</title>
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="estilo.css">
+<script src="config.js"></script>
+</head>
+<body>
+<main>
+  <h1>Borrar mi cuenta</h1>
+  <p>Puedes borrar tu cuenta de <b>Orquestador</b> desde la app (<b>Ajustes → Borrar mi cuenta</b>) o aquí mismo, sin instalar nada.</p>
+
+  <div class="card">
+    <b>Qué se borra</b>
+    <ul>
+      <li>Tu cuenta y tu correo, tus tuercas y su historial.</li>
+      <li>Tus juegos, todas sus versiones, imágenes, música, vídeos y políticas de privacidad.</li>
+      <li>Tus llaves de firma y de App Store, el permiso de YouTube y tu actividad en la Lanzadera.</li>
+    </ul>
+    <b>Qué no</b>
+    <ul>
+      <li>Los juegos que ya publicaste en <i>tu</i> cuenta de Google Play o App Store (son tuyos: se gestionan allí).</li>
+      <li>Una suscripción premium activa: <a href="https://play.google.com/store/account/subscriptions">cancélala en Google Play</a> para que no se renueve.</li>
+      <li>Los números de pedido de Google Play, sin nada que te identifique, el tiempo que exige la ley fiscal.</li>
+    </ul>
+    <span class="dim">Es inmediato y no se puede deshacer.</span>
+  </div>
+
+  <div class="card" id="paso1">
+    <label for="correo"><b>1. Tu correo de Orquestador</b></label>
+    <input id="correo" type="email" autocomplete="email" placeholder="tu@correo.com">
+    <button class="btn" id="enviar">Enviarme un código</button>
+    <div class="msg" id="m1" role="status"></div>
+  </div>
+
+  <div class="card" id="paso2" hidden>
+    <label for="codigo"><b>2. El código que te ha llegado</b></label>
+    <input id="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="10" placeholder="123456">
+    <label for="confirmar"><b>3. Escribe BORRAR para confirmar</b></label>
+    <input id="confirmar" autocomplete="off" placeholder="BORRAR">
+    <button class="btn peligro" id="borrar" disabled>Borrar mi cuenta para siempre</button>
+    <div class="msg" id="m2" role="status"></div>
+  </div>
+
+  <p class="dim">¿No puedes entrar? Escribe a <a data-correo href="#">nuestro correo de contacto</a> desde el correo de tu cuenta y la borramos en un máximo de 30 días.</p>
+</main>
+<script src="comun.js"></script>
+<script>
+(function () {
+  var c = window.ORQ || {};
+  var $ = function (id) { return document.getElementById(id); };
+  var cabeceras = { apikey: c.anon, "Content-Type": "application/json" };
+  function msg(el, texto, clase) { el.textContent = texto; el.className = "msg " + (clase || ""); }
+
+  $("enviar").addEventListener("click", function () {
+    var correo = $("correo").value.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) return msg($("m1"), "Ese correo no parece válido.", "error");
+    $("enviar").disabled = true;
+    msg($("m1"), "Enviando...");
+    // create_user=false: un correo sin cuenta no crea una nueva.
+    fetch(c.supabase + "/auth/v1/otp", { method: "POST", headers: cabeceras, body: JSON.stringify({ email: correo, create_user: false }) })
+      .then(function (r) {
+        // Mismo mensaje exista o no la cuenta: no se revela quien tiene cuenta.
+        msg($("m1"), r.status === 429 ? "Demasiados intentos. Espera un minuto." : "Si ese correo tiene cuenta, te hemos enviado un código.", r.status === 429 ? "error" : "ok");
+        if (r.status !== 429) $("paso2").hidden = false;
+      })
+      .catch(function () { msg($("m1"), "Sin conexión. Inténtalo otra vez.", "error"); })
+      .finally(function () { $("enviar").disabled = false; });
+  });
+
+  function listo() { $("borrar").disabled = !($("codigo").value.trim().length >= 6 && $("confirmar").value.trim() === "BORRAR"); }
+  $("codigo").addEventListener("input", listo);
+  $("confirmar").addEventListener("input", listo);
+
+  $("borrar").addEventListener("click", function () {
+    var correo = $("correo").value.trim().toLowerCase();
+    $("borrar").disabled = true;
+    msg($("m2"), "Comprobando el código...");
+    fetch(c.supabase + "/auth/v1/verify", { method: "POST", headers: cabeceras,
+      body: JSON.stringify({ type: "email", email: correo, token: $("codigo").value.trim() }) })
+      .then(function (r) { return r.json().then(function (d) { if (!r.ok || !d.access_token) throw new Error("codigo"); return d.access_token; }); })
+      .then(function (token) {
+        msg($("m2"), "Borrando...");
+        return fetch(c.supabase + "/functions/v1/delete-account", { method: "POST",
+          headers: { apikey: c.anon, Authorization: "Bearer " + token, "Content-Type": "application/json" },
+          body: JSON.stringify({ confirmar: "BORRAR" }) });
+      })
+      .then(function (r) { return r.json().then(function (d) { if (!r.ok) throw new Error(d.message || "fallo"); return d; }); })
+      .then(function (d) {
+        $("paso1").hidden = true;
+        msg($("m2"), "Tu cuenta se ha borrado." + (d.premium_activo ? " Recuerda cancelar la suscripción en Google Play." : ""), "ok");
+        $("codigo").disabled = $("confirmar").disabled = true;
+      })
+      .catch(function (e) {
+        msg($("m2"), e.message === "codigo" ? "El código no es correcto o ha caducado." : e.message === "Failed to fetch" ? "Sin conexión. Inténtalo otra vez." : e.message, "error");
+        listo();
+      });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "name": "orquestador-app",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:demo": "tsc --noEmit && vite build --mode demo",
+    "android": "npm run build && npx cap sync android && npx cap open android",
+    "test": "esbuild src/aprendizaje.ts --format=esm --outfile=pruebas/.aprendizaje.mjs --log-level=error && node pruebas/aprendizaje.mjs && esbuild src/editor.ts --format=esm --outfile=pruebas/.editor.mjs --log-level=error && node pruebas/editor.mjs && esbuild src/asesor.ts --bundle --format=esm --outfile=pruebas/.asesor.mjs --log-level=error && node pruebas/asesor.mjs && esbuild src/ab.ts --bundle --format=esm --outfile=pruebas/.ab.mjs --log-level=error && node pruebas/ab.mjs && esbuild src/redes.ts --format=esm --outfile=pruebas/.redes.mjs --log-level=error && node pruebas/redes.mjs && esbuild src/cuenta-atras.ts --format=esm --outfile=pruebas/.reto.mjs --log-level=error && node pruebas/reto.mjs && esbuild src/creador.ts --format=esm --outfile=pruebas/.creador.mjs --log-level=error && node pruebas/creador.mjs && esbuild src/errores.ts --format=esm --outfile=pruebas/.errores.mjs --log-level=error && node pruebas/errores.mjs && esbuild src/ganancias.ts --format=esm --outfile=pruebas/.ganancias.mjs --log-level=error && node pruebas/ganancias.mjs && esbuild src/produccion.ts --format=esm --outfile=pruebas/.produccion.mjs --log-level=error && node pruebas/produccion.mjs && esbuild src/lanzamiento.ts --format=esm --outfile=pruebas/.lanzamiento.mjs --log-level=error && node pruebas/lanzamiento.mjs && esbuild src/catalogo.ts --format=esm --outfile=pruebas/.catalogo.mjs --log-level=error && node pruebas/catalogo.mjs && esbuild src/premio.ts --format=esm --outfile=pruebas/.premio.mjs --log-level=error && node pruebas/premio.mjs && esbuild src/regalo.ts --format=esm --outfile=pruebas/.regalo.mjs --log-level=error && node pruebas/regalo.mjs && esbuild src/clase.ts --format=esm --outfile=pruebas/.clase.mjs --log-level=error && node pruebas/clase.mjs && esbuild src/usos.ts --format=esm --outfile=pruebas/.usos.mjs --log-level=error && node pruebas/usos.mjs && esbuild src/cartel.ts --format=esm --outfile=pruebas/.cartel.mjs --log-level=error && node pruebas/cartel.mjs && esbuild src/idioma.ts --bundle --format=esm --outfile=pruebas/.idioma.mjs --log-level=error && node pruebas/idioma.mjs",
+    "marca": "python3 marca/render.py && capacitor-assets generate --android --iconBackgroundColor '#0f2a4a' --splashBackgroundColor '#0f2a4a' --splashBackgroundColorDark '#0a1e36'",
+    "bot": "npm run build:demo && node pruebas/bot-recorre.cjs && node pruebas/bot-flujos.cjs"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "^8.2.1",
+    "@capacitor-community/in-app-review": "^8.0.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/browser": "^8.0.5",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.4",
+    "@capacitor/haptics": "^8.0.2",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/network": "^8.0.1",
+    "@capacitor/share": "^8.0.3",
+    "@capgo/capacitor-social-login": "^8.7.3",
+    "@capgo/native-purchases": "^8.9.2",
+    "@fontsource/atkinson-hyperlegible": "^5.3.0",
+    "@fontsource/big-shoulders-stencil-display": "^5.3.0",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@supabase/supabase-js": "^2.117.3",
+    "qrcode-generator": "^1.4.4"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/assets": "^3.0.5",
+    "@capacitor/cli": "^8.5.3",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.4",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}

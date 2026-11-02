@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orquestador</title>
+<meta name="description" content="Crea tu propio juego para móvil describiéndolo con palabras, pruébalo y publícalo en Google Play.">
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="estilo.css">
+<script src="config.js"></script>
+</head>
+<body>
+<main>
+  <h1>Describe un juego.<br>Juégalo en minutos.</h1>
+  <p class="dim">Orquestador es una app para crear juegos de móvil con palabras: tú cuentas la idea y Chispa, la asistente, diseña los niveles, dibuja los personajes, compone la música y prueba el juego con bots antes de dártelo.</p>
+  <p><a class="btn" id="play" href="#">Descargar en Google Play</a> <a class="btn" style="background:transparent;color:var(--brass-hi);border:1px solid var(--brass)" href="escaparate.html">Jugar juegos de la comunidad</a> <a class="btn" style="background:transparent;color:var(--ink);border:1px solid rgba(232,240,250,.4)" href="app/">Crear desde el navegador</a></p>
+  <p><a href="crear/index.html">Todos los tipos de juego que puedes crear</a> · <a href="en/create/index.html">English</a></p>
+  <div class="grid3">
+    <div class="card"><b>Crea</b><br><span class="dim">Plataformas, hordas, puzles... con arte, música, efectos y voz hechos para tu idea.</span></div>
+    <div class="card"><b>Cambia</b><br><span class="dim">“Hazlo más difícil”, “que el gato sea un robot”: cada cambio es una versión nueva y puedes volver atrás.</span></div>
+    <div class="card"><b>Publica</b><br><span class="dim">Ficha, capturas, vídeos para redes, anuncios con AdMob y la guía paso a paso para Google Play.</span></div>
+  </div>
+</main>
+<script src="comun.js"></script>
+<script>
+  var url = (window.ORQ || {}).play || "";
+  var b = document.getElementById("play");
+  if (url && url.indexOf("__") !== 0) b.href = url; else b.remove();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+# Orquestador
+# Secretos y llaves: NUNCA en git
+.conectar/
+conectar.env
+*.jks
+*.p12
+*.keystore
+salida/
+# Generado
+node_modules/
+dist/
+dist-demo/
+app/android/
+app/ios/
+.godot/
+__pycache__/
+proyectos_*/
+*.apk
+*.aab

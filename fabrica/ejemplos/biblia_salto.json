@@ -1,0 +1,92 @@
+{
+	"schema": "orquestador/biblia/v1",
+	"juego": {
+		"titulo": "Salto de Prueba",
+		"genero": "plataformas",
+		"resumen": "Un pequeno robot de laton recorre tejados de noche recogiendo tuercas, esquivando pinchos y aplastando robots de chatarra.",
+		"publico": "todos"
+	},
+	"estilo": {
+		"familia": "pixel_art",
+		"descripcion": "16-bit pixel art, clean readable shapes, limited palette, soft night lighting, warm brass accents",
+		"paleta": [
+			"#0b0f1a", "#16233a", "#24395c", "#3e5c84", "#6b8db8", "#a9c4e0",
+			"#e8f0fa", "#5c3d0e", "#9c6b1f", "#e8b04b", "#f6cf7a", "#d9774a",
+			"#8a3b2a", "#ff6b5b", "#3e7a4a", "#8fe3a5"
+		],
+		"forzar_paleta": true,
+		"contorno": "oscuro_1px",
+		"fondo_chroma": "#FF00FF",
+		"negativo": "blurry, photo, 3d render, text, watermark, multiple characters, cropped"
+	},
+	"personajes": [
+		{
+			"id": "heroe",
+			"nombre": "Remache",
+			"descripcion": "small round brass robot with one big glowing eye, short antenna with a spark, copper body with a hex nut on the chest, tiny dark feet",
+			"rol": "jugador",
+			"tamano": [32, 32],
+			"mira_a": "derecha",
+			"animaciones": {
+				"idle": {"frames": 4, "fps": 6, "bucle": true},
+				"run": {"frames": 6, "fps": 12, "bucle": true},
+				"jump": {"frames": 1, "fps": 1, "bucle": false},
+				"fall": {"frames": 1, "fps": 1, "bucle": false}
+			}
+		},
+		{
+			"id": "chatarrilla",
+			"nombre": "Chatarrilla",
+			"descripcion": "small rusty scrap beetle robot, round dented copper shell, two tiny red glowing eyes, short stubby metal legs, angry look",
+			"rol": "enemigo",
+			"tamano": [32, 32],
+			"mira_a": "derecha",
+			"animaciones": {
+				"run": {"frames": 4, "fps": 10, "bucle": true},
+				"hurt": {"frames": 1, "fps": 1, "bucle": false}
+			}
+		}
+	],
+	"objetos": [
+		{
+			"id": "moneda",
+			"descripcion": "shiny brass hex nut collectible, golden highlights",
+			"rol": "objeto",
+			"tamano": [16, 16],
+			"mira_a": "frente",
+			"animaciones": {"spin": {"frames": 4, "fps": 8, "bucle": true}}
+		}
+	],
+	"escenarios": [
+		{
+			"id": "tejados",
+			"descripcion": "night city rooftop bricks, blue slate tiles, subtle moonlight",
+			"tile": 32,
+			"piezas": ["suelo"]
+		}
+	],
+	"musica": {
+		"tonalidad": "D minor",
+		"tempo": 118,
+		"instrumentos": ["chiptune lead", "square bass", "noise drums", "soft pad"],
+		"ambiente": "adventurous night, hopeful, playful",
+		"pistas": [
+			{"id": "menu", "intensidad": 0.3, "segundos": 60, "bucle": true},
+			{"id": "nivel", "intensidad": 0.6, "segundos": 90, "bucle": true},
+			{"id": "victoria", "intensidad": 0.8, "segundos": 15, "bucle": false}
+		]
+	},
+	"voces": [
+		{
+			"id": "remache",
+			"descripcion": "small cheerful robot, high pitched, curious, slightly metallic",
+			"idioma": "es",
+			"emocion": 0.7,
+			"frases": ["¡Allá voy!", "¡Una tuerca más!", "¡Lo conseguí!"]
+		}
+	],
+	"sonido": {
+		"paleta": "retro",
+		"efectos": ["jump", "coin", "hurt", "land", "win", "click", "stomp", "powerup", "shoot"]
+	}
+}

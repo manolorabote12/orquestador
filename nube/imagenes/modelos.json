@@ -1,0 +1,114 @@
+{
+  "nota": "Modelos del endpoint de GPU (imagenes y musica). Todos con licencia que permite uso comercial (revisa el archivo LICENSE de cada version). Se descargan una vez al volumen de red con {\"input\": {\"tarea\": \"descargar_modelos\"}}.",
+  "modelos": [
+    {
+      "flujo": "crear_zimage",
+      "carpeta": "diffusion_models",
+      "archivo": "z_image_turbo_bf16.safetensors",
+      "licencia": "Apache-2.0",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors"
+    },
+    {
+      "flujo": "crear_zimage editar_klein",
+      "carpeta": "text_encoders",
+      "archivo": "qwen_3_4b.safetensors",
+      "licencia": "Apache-2.0",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors"
+    },
+    {
+      "flujo": "crear_zimage",
+      "carpeta": "vae",
+      "archivo": "ae.safetensors",
+      "licencia": "Apache-2.0",
+      "url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors"
+    },
+    {
+      "flujo": "editar_klein",
+      "carpeta": "diffusion_models",
+      "archivo": "flux-2-klein-4b-fp8.safetensors",
+      "licencia": "Apache-2.0",
+      "url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-4b-fp8/resolve/main/flux-2-klein-4b-fp8.safetensors"
+    },
+    {
+      "flujo": "editar_klein",
+      "carpeta": "vae",
+      "archivo": "flux2-vae.safetensors",
+      "licencia": "Apache-2.0",
+      "url": "https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors"
+    },
+    {
+      "flujo": "editar_qwen",
+      "carpeta": "diffusion_models",
+      "archivo": "qwen_image_edit_2511_fp8mixed.safetensors",
+      "licencia": "Apache-2.0",
+      "opcional": true,
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_2511_fp8mixed.safetensors"
+    },
+    {
+      "flujo": "editar_qwen",
+      "carpeta": "text_encoders",
+      "archivo": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "licencia": "Apache-2.0",
+      "opcional": true,
+      "url": "https://huggingface.co/Comfy-Org/HunyuanVideo_1.5_repackaged/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors"
+    },
+    {
+      "flujo": "editar_qwen",
+      "carpeta": "vae",
+      "archivo": "qwen_image_vae.safetensors",
+      "licencia": "Apache-2.0",
+      "opcional": true,
+      "url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors"
+    },
+    {
+      "flujo": "editar_qwen",
+      "carpeta": "loras",
+      "archivo": "Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors",
+      "licencia": "Apache-2.0",
+      "opcional": true,
+      "url": "https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning/resolve/main/Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors"
+    },
+    {
+      "flujo": "musica_acestep",
+      "carpeta": "diffusion_models",
+      "archivo": "acestep_v1.5_xl_turbo_bf16.safetensors",
+      "licencia": "ACE-Step 1.5 (abierta, uso comercial)",
+      "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/diffusion_models/acestep_v1.5_xl_turbo_bf16.safetensors"
+    },
+    {
+      "flujo": "musica_acestep",
+      "carpeta": "text_encoders",
+      "archivo": "qwen_0.6b_ace15.safetensors",
+      "licencia": "ACE-Step 1.5 (abierta, uso comercial)",
+      "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_0.6b_ace15.safetensors"
+    },
+    {
+      "flujo": "musica_acestep",
+      "carpeta": "text_encoders",
+      "archivo": "qwen_4b_ace15.safetensors",
+      "licencia": "ACE-Step 1.5 (abierta, uso comercial)",
+      "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/text_encoders/qwen_4b_ace15.safetensors"
+    },
+    {
+      "flujo": "musica_acestep",
+      "carpeta": "vae",
+      "archivo": "ace_1.5_vae.safetensors",
+      "licencia": "ACE-Step 1.5 (abierta, uso comercial)",
+      "url": "https://huggingface.co/Comfy-Org/ace_step_1.5_ComfyUI_files/resolve/main/split_files/vae/ace_1.5_vae.safetensors"
+    },
+    {
+      "flujo": "sfx_stableaudio",
+      "carpeta": "checkpoints",
+      "archivo": "stable_audio_3_medium.safetensors",
+      "licencia": "Stability AI Community License (comercial gratis por debajo de 1 M$/ano)",
+      "url": "https://huggingface.co/Comfy-Org/stable-audio-3/resolve/main/checkpoints/stable_audio_3_medium.safetensors"
+    },
+    {
+      "flujo": "sfx_stableaudio",
+      "carpeta": "text_encoders",
+      "archivo": "t5gemma_b_b_ul2.safetensors",
+      "licencia": "Gemma / Stability AI Community License",
+      "url": "https://huggingface.co/Comfy-Org/stable-audio-3/resolve/main/text_encoders/t5gemma_b_b_ul2.safetensors"
+    }
+  ]
+}

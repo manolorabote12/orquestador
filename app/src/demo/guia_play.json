@@ -1,0 +1,92 @@
+{
+ "juego": "Bigotes Veloces",
+ "paquete": "com.miestudio.bigotesveloces",
+ "violencia": "fantasia",
+ "anuncios": false,
+ "telemetria": false,
+ "pasos": [
+  {
+   "id": "cuenta",
+   "titulo": "Cuenta de desarrollador de Google Play",
+   "texto": "Si aún no la tienes: play.google.com/console, pago único de 25 $ y verificación de identidad. Solo una vez en la vida.",
+   "enlace": "https://play.google.com/console/signup"
+  },
+  {
+   "id": "crear",
+   "titulo": "Crea el juego en Play Console",
+   "texto": "Inicio > Crear aplicación. Copia estos datos tal cual:",
+   "campos": {
+    "Nombre de la aplicación": "Bigotes Veloces",
+    "Idioma predeterminado": "Español (España) – es-ES",
+    "Aplicación o juego": "Juego",
+    "Gratis o de pago": "Gratis"
+   },
+   "enlace": "https://play.google.com/console"
+  },
+  {
+   "id": "acceso",
+   "titulo": "Da permiso a Orquestador",
+   "texto": "Usuarios y permisos > Invitar a nuevos usuarios. Pega este correo, marca solo este juego y los permisos «Publicar en pistas de prueba» (o «Gestor de versiones») y «Responder a reseñas» y «Ver información financiera» (para comprobar las compras dentro del juego). Así Orquestador sube versiones, textos e imágenes por ti y te deja contestar reseñas desde la app.",
+   "campos": {
+    "Correo": "orquestador-publicador@orquestador.iam.gserviceaccount.com"
+   }
+  },
+  {
+   "id": "primer_aab",
+   "titulo": "Sube el primer .aab (solo esta vez)",
+   "texto": "Google exige que la primera versión de un juego nuevo se suba a mano. Pruebas > Prueba interna > Crear versión > sube el archivo que te damos y guarda. Si te pregunta por la firma de apps de Google Play, acepta.",
+   "campos": {
+    "Nombre del paquete": "com.miestudio.bigotesveloces"
+   }
+  },
+  {
+   "id": "contenido",
+   "titulo": "Contenido de la aplicación (formularios)",
+   "texto": "Política > Contenido de la aplicación. Respuestas para este juego:",
+   "campos": {
+    "Política de privacidad (URL)": "https://TU_PROYECTO.supabase.co/storage/v1/object/public/legal/demo/privacidad.html",
+    "Acceso a la aplicación": "Toda la funcionalidad está disponible sin restricciones",
+    "Anuncios": "No, mi aplicación no contiene anuncios",
+    "Público objetivo": "13-15, 16-17 y 18 o más (recomendado: así no entra en el programa de Familias)",
+    "¿Atrae a niños?": "No (si lo marcas, Google exige requisitos extra de Familias)",
+    "Aplicación de noticias": "No",
+    "Aplicaciones gubernamentales / financieras / salud": "No",
+    "ID de publicidad": "No"
+   }
+  },
+  {
+   "id": "clasificacion",
+   "titulo": "Clasificación de contenido (cuestionario IARC)",
+   "texto": "Categoría: Juego. Correo de contacto: el tuyo. Respuestas:",
+   "campos": {
+    "Correo": "tu@correo.com",
+    "Violencia": "Sí: violencia de fantasía o de dibujos animados, sin sangre ni personas reales",
+    "Miedo / terror": "No",
+    "Sexualidad / desnudos": "No",
+    "Lenguaje malsonante": "No",
+    "Drogas, alcohol o tabaco": "No",
+    "Apuestas o simulación de apuestas": "No",
+    "Interacción entre usuarios o chat": "No",
+    "Comparte la ubicación del usuario": "No",
+    "Compras digitales": "No"
+   }
+  },
+  {
+   "id": "datos",
+   "titulo": "Seguridad de los datos",
+   "texto": "El juego no recoge ni comparte datos.",
+   "datos": []
+  },
+  {
+   "id": "ficha",
+   "titulo": "Ficha de Play Store",
+   "texto": "No tienes que hacer nada: Orquestador sube título, descripciones, icono, gráfico destacado y capturas en español e inglés al publicar."
+  },
+  {
+   "id": "probadores",
+   "titulo": "Prueba cerrada (cuentas personales nuevas)",
+   "texto": "Para pasar a producción, Google pide 12 probadores durante 14 días seguidos en prueba cerrada. Orquestador sube cada versión a la pista de prueba cerrada; la Lanzadera te ayuda a conseguir los probadores."
+  }
+ ],
+ "aviso": "Revisa cada respuesta antes de enviarla: en Play Console el responsable eres tú."
+}

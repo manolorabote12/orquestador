@@ -1,0 +1,45 @@
+# Promocion diaria de Orquestador (fabrica/marketing/promo_orquestador.py): una publicacion al dia en
+# las redes conectadas (sin spam: el difusor pone limites y nunca repite) y borradores de respuesta a
+# conversaciones donde Orquestador ayuda, enviados al Telegram privado del responsable para revisarlos.
+# Sin secretos de redes no publica nada (y no falla).
+name: Promocion
+on:
+  schedule:
+    - cron: "23 9 * * *"
+  workflow_dispatch:
+jobs:
+  promocion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # El registro de publicaciones (limites por dia, textos ya usados) se guarda entre dias.
+      - uses: actions/cache@v4
+        with:
+          path: fabrica/datos
+          key: promocion-${{ github.run_id }}
+          restore-keys: promocion-
+      - name: Publicar y buscar conversaciones
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          ORQ_WEB: ${{ vars.ORQ_WEB }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ORQ_BSKY_USUARIO: ${{ secrets.ORQ_BSKY_USUARIO }}
+          ORQ_BSKY_CLAVE_APP: ${{ secrets.ORQ_BSKY_CLAVE_APP }}
+          ORQ_MASTODON_INSTANCIA: ${{ vars.ORQ_MASTODON_INSTANCIA }}
+          ORQ_MASTODON_TOKEN: ${{ secrets.ORQ_MASTODON_TOKEN }}
+          ORQ_TELEGRAM_TOKEN: ${{ secrets.ORQ_TELEGRAM_TOKEN }}
+          ORQ_TELEGRAM_CANAL: ${{ vars.ORQ_TELEGRAM_CANAL }}
+          ORQ_TELEGRAM_ADMIN: ${{ secrets.ORQ_TELEGRAM_ADMIN }}
+          ORQ_DISCORD_WEBHOOK: ${{ secrets.ORQ_DISCORD_WEBHOOK }}
+          ORQ_X_TOKEN: ${{ secrets.ORQ_X_TOKEN }}
+          ORQ_REDDIT_CLIENTE: ${{ secrets.ORQ_REDDIT_CLIENTE }}
+          ORQ_REDDIT_SECRETO: ${{ secrets.ORQ_REDDIT_SECRETO }}
+          ORQ_REDDIT_REFRESH: ${{ secrets.ORQ_REDDIT_REFRESH }}
+          ORQ_REDDIT_SUBS: ${{ vars.ORQ_REDDIT_SUBS }}
+        run: |
+          cd fabrica && python3 -m marketing.promo_orquestador

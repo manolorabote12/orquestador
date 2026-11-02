@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacidad · Orquestador</title>
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<link rel="stylesheet" href="estilo.css">
+<script src="config.js"></script>
+</head>
+<body>
+<main id="principal">
+  <h1>Política de privacidad</h1>
+  <small>Actualizada el 9 de octubre de 2026</small>
+
+  <p>Esta política explica qué datos usa la app <b>Orquestador</b> y su web. Los juegos que crea cada persona con Orquestador tienen su propia política, enlazada en su ficha de Google Play.</p>
+
+  <h2>Responsable</h2>
+  <p><span data-responsable>El titular de Orquestador</span>. Contacto: <a data-correo href="#">el correo indicado en la ficha de Google Play</a>.</p>
+
+  <h2>Qué datos usamos y para qué</h2>
+  <ul>
+    <li><b>Cuenta.</b> Tu correo electrónico, para entrar con un código y para avisarte de cosas de tu cuenta. Si eliges «Continuar con Google», Google nos confirma tu correo y nos da tu nombre y foto de perfil (no tu contraseña ni nada más de tu cuenta de Google). No pedimos teléfono.</li>
+    <li><b>Lo que creas.</b> Las ideas e instrucciones que escribes y los juegos, imágenes, música, voces y vídeos que se generan a partir de ellas, para fabricar, guardar y cambiar tus juegos.</li>
+    <li><b>Tuercas y compras.</b> Tu saldo, sus movimientos y, si compras en la app, el identificador del pedido de Google Play. No vemos los datos de tu tarjeta: el pago lo hace Google.</li>
+    <li><b>Anuncios con premio (opcional).</b> Si decides ver un anuncio para ganar tuercas, Google AdMob usa el identificador de publicidad del dispositivo, la dirección IP y datos de interacción con el anuncio. En el Espacio Económico Europeo te pedimos antes el consentimiento y puedes cambiarlo en Ajustes. <a href="https://policies.google.com/technologies/ads">Cómo usa Google estos datos</a>.</li>
+    <li><b>Publicar tus juegos (opcional).</b> El nombre de estudio y el correo de contacto que eliges para Google Play; la llave con la que se firman tus juegos (guardada cifrada); y, si conectas App Store, tu clave de App Store Connect (guardada cifrada, nunca vuelve a la app).</li>
+    <li><b>YouTube (opcional).</b> Si conectas tu canal, guardamos el permiso que nos da Google solo para subir los vídeos de tus juegos cuando tú lo pides. Puedes desconectarlo en la app o en <a href="https://myaccount.google.com/permissions">tu cuenta de Google</a>.</li>
+    <li><b>La Lanzadera (opcional).</b> Si apuntas un juego, otras personas de la comunidad ven su nombre, icono y enlace de prueba; si pruebas juegos, guardamos tus participaciones y puntos. No guardamos tu correo de Google: cada probador se une al grupo de prueba por su cuenta.</li>
+    <li><b>Datos técnicos.</b> Registros del servidor (fecha, errores) para que el servicio funcione y para evitar abusos.</li>
+  </ul>
+  <p>No vendemos tus datos ni los usamos para publicidad personalizada fuera de los anuncios con premio que tú eliges ver.</p>
+
+  <h2>Con quién se comparten (encargados del tratamiento)</h2>
+  <ul>
+    <li><b>Supabase</b>: base de datos, inicio de sesión y almacenamiento de archivos.</li>
+    <li><b>Anthropic (Claude)</b>: entiende tus ideas, diseña el juego y escribe el código. Recibe tus instrucciones y la descripción del juego.</li>
+    <li><b>RunPod</b>: ordenadores con tarjeta gráfica donde se generan imágenes, música, efectos y voces, y donde se compilan los juegos.</li>
+    <li><b>Google</b>: Google Play (compras y publicación), AdMob (anuncios) y YouTube (si lo conectas).</li>
+    <li><b>Apple</b>: solo si conectas App Store Connect para publicar tus juegos en iPhone.</li>
+    <li><b>GitHub</b>: compila las versiones de iPhone de tus juegos y aloja esta web.</li>
+  </ul>
+  <p>Algunos están en Estados Unidos; las transferencias se hacen con las garantías del RGPD (cláusulas contractuales tipo o el Marco de Privacidad de Datos UE-EE. UU.).</p>
+
+  <h2>Uso de datos de Google (YouTube)</h2>
+  <p>El uso y la transferencia a cualquier otra aplicación de la información recibida de las API de Google se ajustarán a la <a href="https://developers.google.com/terms/api-services-user-data-policy">Política de Datos de Usuario de los Servicios de API de Google</a>, incluidos los requisitos de uso limitado. Solo usamos el permiso de YouTube para subir los vídeos que tú pides; no leemos tus vídeos ni tus datos del canal más allá de su nombre.</p>
+
+  <h2>Cuánto tiempo</h2>
+  <p>Mientras tengas la cuenta. Si la borras, se eliminan tu cuenta, tus juegos, archivos, llaves y permisos en el momento. Solo conservamos, sin nada que te identifique, los identificadores de pedidos de Google Play durante el plazo que exige la ley fiscal. Las copias de seguridad del proveedor se sobrescriben en un máximo de 30 días.</p>
+
+  <h2>Tus derechos</h2>
+  <p>Puedes pedir acceso, rectificación, borrado, portabilidad, limitación u oponerte al tratamiento escribiendo al correo de contacto. Puedes <a href="borrar-cuenta.html">borrar tu cuenta</a> tú mismo desde la app (Ajustes → Borrar mi cuenta) o desde esta web. Si no estás conforme, puedes reclamar ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es">aepd.es</a>) o la autoridad de tu país.</p>
+
+  <h2>Edad</h2>
+  <p>Orquestador no está dirigido a menores de 16 años. Para publicar en Google Play o App Store hay que cumplir los requisitos de edad de esas tiendas.</p>
+
+  <h2>Cambios</h2>
+  <p>Si cambiamos algo importante, lo avisaremos en la app antes de que se aplique.</p>
+</main>
+<script src="comun.js"></script>
+<script>
+  // Politica de un juego: privacidad.html?j=<id> (la escribe la fabrica al publicar el juego).
+  (function () {
+    var j = new URLSearchParams(location.search).get("j") || "";
+    if (!/^[0-9a-f-]{36}$/i.test(j)) return;
+    var c = window.ORQ || {};
+    var main = document.getElementById("principal");
+    // La politica es del autor del juego, no de Orquestador: sin cabecera ni pie de la app.
+    document.querySelectorAll("header.top, footer").forEach(function (e) { e.remove(); });
+    main.innerHTML = '<p class="dim">Cargando la política del juego...</p>';
+    fetch(c.supabase + "/storage/v1/object/public/legal/" + j + "/privacidad.json")
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) {
+        document.title = d.titulo + " · Privacidad / Privacy";
+        var caja = document.createElement("div");
+        caja.className = "juego";
+        caja.innerHTML = d.cuerpo; // generado y escapado por la fabrica; solo el servidor escribe en 'legal'
+        main.replaceChildren(caja);
+      })
+      .catch(function () { main.innerHTML = "<h1>Política no encontrada</h1><p>Este juego no tiene una política publicada.</p>"; });
+  })();
+</script>
+</body>
+</html>

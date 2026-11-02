@@ -1,0 +1,12 @@
+# Los modelos estan en el volumen de red de RunPod (compartido por todos los trabajadores).
+volumen_runpod:
+  base_path: /runpod-volume/models/
+  diffusion_models: |
+    diffusion_models/
+    unet/
+  text_encoders: |
+    text_encoders/
+    clip/
+  vae: vae/
+  loras: loras/
+  checkpoints: checkpoints/

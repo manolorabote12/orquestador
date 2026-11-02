@@ -1,0 +1,17 @@
+extends RefCounted
+## Bot de los karts 3D: la misma cabeza que los rivales (kart_map.gd -> ai_control),
+## con derrapes y la linea de un buen piloto. Con prisa lo hace el
+## propio juego; sin prisa, el juego lo conduce en cada paso en cuanto lo despierta bot_step.
+
+static func run(tree: SceneTree, game: Node, max_frames: int) -> bool:
+	game.set("auto_retry", true)
+	game.set("fast", true)
+	for f: int in max_frames:
+		await tree.physics_frame
+		if not is_instance_valid(game):
+			return false
+		if bool(game.get("finished")) and not bool(game.get("failed")):
+			return true
+		if not bool(game.get("fast")) and bool(game.call("can_act")):
+			game.call("bot_step")
+	return false
