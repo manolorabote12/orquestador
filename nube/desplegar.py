@@ -199,6 +199,9 @@ def main(argv: list[str] | None = None) -> int:
 			return 0
 		except ErrorRunPod as e:
 			print("ERROR:", e, file=sys.stderr)
+		if os.environ.get("GITHUB_ACTIONS"):
+			## Que se vea en el resumen de GitHub sin abrir el registro entero.
+			print("::error::" + str(e).replace("\n", " ")[:900])
 			return 1
 	if not a.imagen_fabrica or not a.imagen_gpu:
 		p.error("--imagen-fabrica e --imagen-gpu son obligatorias (salvo con --muestras-en)")
@@ -206,6 +209,9 @@ def main(argv: list[str] | None = None) -> int:
 		inf = desplegar(a.imagen_fabrica, a.imagen_gpu, a.modelos, a.motor, imagen_voces=a.imagen_voces, muestras=a.muestras)
 	except ErrorRunPod as e:
 		print("ERROR:", e, file=sys.stderr)
+		if os.environ.get("GITHUB_ACTIONS"):
+			## Que se vea en el resumen de GitHub sin abrir el registro entero.
+			print("::error::" + str(e).replace("\n", " ")[:900])
 		return 1
 	print(json.dumps(inf, indent=1, ensure_ascii=False))
 	if a.salida:
