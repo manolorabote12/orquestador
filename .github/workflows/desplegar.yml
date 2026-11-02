@@ -172,9 +172,12 @@ jobs:
           version: latest
       - name: Base de datos y funciones
         run: |
-          supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
-          supabase db push
-          supabase functions deploy
+          # Si algo falla, las ultimas lineas salen en el resumen de GitHub (sin abrir el registro).
+          paso() { "$@" 2>&1 | tee /tmp/paso.log; r=${PIPESTATUS[0]}; if [ "$r" != 0 ]; then
+            echo "::error::$*: $(tail -c 900 /tmp/paso.log | tr '\n' ' ')"; exit "$r"; fi; }
+          paso supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
+          paso supabase db push --include-all --yes
+          paso supabase functions deploy
       - name: Secretos del servidor (nunca en la app)
         env:
           TIENDA: ${{ secrets.ORQ_PLAY_TIENDA_CUENTA }}
