@@ -52,8 +52,7 @@ jobs:
           u, c = os.environ.get("U", ""), os.environ.get("C", "")
           print("::notice::SMTP usuario=%s clave=%d letras (espacios: %s)" % (u, len(c), " " in c))
           try:
-              s = smtplib.SMTP("smtp.gmail.com", 587, timeout=30)
-              s.starttls()
+              s = smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=30)
               s.login(u, c)
               m = EmailMessage()
               m["From"], m["To"], m["Subject"] = u, u, "Prueba de Orquestador: el correo funciona"
