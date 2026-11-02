@@ -54,6 +54,8 @@ RUN pip3 install --no-cache-dir --break-system-packages \
 WORKDIR /app
 COPY orqkit /app/orqkit
 COPY fabrica /app/fabrica
+# La prueba de humo usa el handler real de las voces (con un modelo falso detras).
+COPY nube/voces/handler.py /app/nube/voces/handler.py
 # El plugin de AdMob baja aqui sus binarios de Android (los usan los .aab de tienda).
 RUN rm -rf /app/fabrica/datos /app/fabrica/salida_prueba /app/orqkit/.godot \
     && (timeout 600 godot --headless --path /app/orqkit --import > /dev/null 2>&1 || true) \
