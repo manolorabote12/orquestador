@@ -22,6 +22,7 @@ Variables (secretos de GitHub):
 import argparse
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -84,8 +85,19 @@ def asegurar(ruta: str, nombre: str, datos: dict, actualizar: bool = True) -> tu
 		return pedir("POST", REST + ruta, {"name": nombre, **datos}), "creado"
 	if not actualizar:
 		return ya, "igual"
-	pedir("PATCH", f"{REST}{ruta}/{ya['id']}", datos)
-	return {**ya, **datos}, "actualizado"
+	cambios = dict(datos)
+	for _ in range(3):
+		try:
+			pedir("PATCH", f"{REST}{ruta}/{ya['id']}", cambios)
+			break
+		except ErrorRunPod as e:
+			## Al actualizar, RunPod no admite algunos campos que si pide al crear (p. ej. isServerless o
+			## category de una plantilla): los quita y lo vuelve a intentar.
+			sobran = set(re.findall(r"not in input schema: '([A-Za-z0-9_]+)'", str(e))) & set(cambios)
+			if not sobran:
+				raise
+			cambios = {k: v for k, v in cambios.items() if k not in sobran}
+	return {**ya, **cambios}, "actualizado"
 
 
 def entorno(nombres: list[str]) -> dict:
