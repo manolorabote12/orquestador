@@ -16,24 +16,14 @@ jobs:
           ORQ_WEB: ${{ vars.ORQ_WEB }}
           GOOGLE_OAUTH_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+          ORQ_SMTP_USUARIO: ${{ secrets.ORQ_SMTP_USUARIO }}
+          ORQ_SMTP_CLAVE: ${{ secrets.ORQ_SMTP_CLAVE }}
         run: |
           python3 - <<'EOF'
           import os, sys
-          import urllib.request, urllib.error
           import conectar
-          _abrir = urllib.request.urlopen
-          def abrir(*a, **k):
-              try:
-                  return _abrir(*a, **k)
-              except urllib.error.HTTPError as e:
-                  print("::error::Supabase HTTP %s: %s" % (e.code, e.read()[:300].decode("utf-8", "replace").replace(chr(10), " ")))
-                  raise
-              except Exception as e:
-                  print("::error::Supabase sin respuesta: %s" % e)
-                  raise
-          urllib.request.urlopen = abrir
           d = {k: os.environ.get(k, "") for k in ("SUPABASE_URL", "SUPABASE_ACCESS_TOKEN", "ORQ_WEB",
-               "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET")}
+               "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET", "ORQ_SMTP_USUARIO", "ORQ_SMTP_CLAVE")}
           d["SUPABASE_URL"] = d["SUPABASE_URL"].rstrip("/")
           d["SUPABASE_PROJECT_REF"] = d["SUPABASE_URL"].split("//")[1].split(".")[0]
           sys.exit(0 if conectar.configurar_supabase(d) else 1)

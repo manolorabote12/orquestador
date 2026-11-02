@@ -92,19 +92,23 @@ PEDIR: list[tuple[str, bool, str, str]] = [
 	("GOOGLE_OAUTH_CLIENT_ID", False, "Para 'Entrar con Google' y YouTube: Google Cloud -> Credenciales -> ID de cliente OAuth de tipo "
 		"'Aplicacion web' (termina en .apps.googleusercontent.com). Puedes dejarlo para luego", "google_cliente"),
 	("GOOGLE_OAUTH_CLIENT_SECRET", False, "El secreto de ese mismo cliente web (va a Supabase y a GitHub, nunca a la app)", "texto"),
+	("ORQ_SMTP_USUARIO", False, "Correo que envia los codigos de entrada (p. ej. tu Gmail). Supabase gratis no deja poner el codigo "
+		"en el correo sin un servidor de correo propio", "correo"),
+	("ORQ_SMTP_CLAVE", False, "Contrasena de aplicacion de ese correo (Gmail: myaccount.google.com/apppasswords, 16 letras)", "texto"),
 ]
 
 ## A que secretos / variables de GitHub va cada cosa.
 SECRETOS = ["SUPABASE_URL", "SUPABASE_ANON_KEY", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_DB_PASSWORD",
 	"SUPABASE_ACCESS_TOKEN", "SUPABASE_PROJECT_REF", "ANTHROPIC_API_KEY", "RUNPOD_API_KEY", "GHCR_TOKEN",
 	"ORQ_LLAVES_SECRETO", "ORQ_REVISOR", "ORQ_APP_KEYSTORE_B64", "ORQ_APP_KEYSTORE_PASS",
-	"ORQ_PLAY_CUENTA", "ORQ_PLAY_CUENTA_CORREO", "ORQ_PLAY_TIENDA_CUENTA", "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET"]
+	"ORQ_PLAY_CUENTA", "ORQ_PLAY_CUENTA_CORREO", "ORQ_PLAY_TIENDA_CUENTA", "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET",
+	"ORQ_SMTP_USUARIO", "ORQ_SMTP_CLAVE"]
 VARIABLES = ["SUPABASE_URL", "SUPABASE_ANON_KEY", "ORQ_WEB", "ORQ_CORREO", "ORQ_RESPONSABLE", "ORQ_PLAY_URL",
 	"ORQ_APP_PAQUETE", "ORQ_APP_ADMOB_APP_ID", "ORQ_APP_ADMOB_PREMIO", "ADMOB_REWARDED_AD_UNIT", "GOOGLE_OAUTH_CLIENT_ID"]
 ## Nunca como variable (las variables de GitHub se pueden leer): comprobado antes de subir.
 NUNCA_VARIABLE = {"SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_DB_PASSWORD", "SUPABASE_ACCESS_TOKEN", "ANTHROPIC_API_KEY",
 	"RUNPOD_API_KEY", "GHCR_TOKEN", "ORQ_LLAVES_SECRETO", "ORQ_REVISOR", "ORQ_APP_KEYSTORE_B64",
-	"ORQ_APP_KEYSTORE_PASS", "ORQ_PLAY_CUENTA", "ORQ_PLAY_TIENDA_CUENTA", "ORQ_WEB_DEPLOY_KEY", "GOOGLE_OAUTH_CLIENT_SECRET"}
+	"ORQ_APP_KEYSTORE_PASS", "ORQ_PLAY_CUENTA", "ORQ_PLAY_TIENDA_CUENTA", "ORQ_WEB_DEPLOY_KEY", "GOOGLE_OAUTH_CLIENT_SECRET", "ORQ_SMTP_CLAVE"}
 
 GH = os.environ.get("ORQ_GH", "gh")
 GIT = os.environ.get("ORQ_GIT", "git")
@@ -466,14 +470,38 @@ def configurar_supabase(d: dict[str, str]) -> bool:
 		cuerpo["external_google_enabled"] = True
 		cuerpo["external_google_client_id"] = d["GOOGLE_OAUTH_CLIENT_ID"]
 		cuerpo["external_google_secret"] = d["GOOGLE_OAUTH_CLIENT_SECRET"]
+	## Servidor de correo propio: el plan gratis de Supabase solo deja cambiar las plantillas con uno.
+	usuario = d.get("ORQ_SMTP_USUARIO", "")
+	if usuario and d.get("ORQ_SMTP_CLAVE"):
+		gmail = usuario.lower().endswith(("@gmail.com", "@googlemail.com"))
+		cuerpo.update({
+			"smtp_host": d.get("ORQ_SMTP_HOST") or ("smtp.gmail.com" if gmail else "smtp." + usuario.split("@")[1]),
+			"smtp_port": d.get("ORQ_SMTP_PUERTO") or "587",
+			"smtp_user": usuario, "smtp_pass": d["ORQ_SMTP_CLAVE"],
+			"smtp_admin_email": usuario, "smtp_sender_name": "Orquestador",
+		})
 	url = f"{SUPABASE_API}/v1/projects/{d['SUPABASE_PROJECT_REF']}/config/auth"
-	req = urllib.request.Request(url, data=json.dumps(cuerpo).encode(), method="PATCH", headers={
-		"Authorization": "Bearer " + d["SUPABASE_ACCESS_TOKEN"], "Content-Type": "application/json"})
-	try:
-		with urllib.request.urlopen(req, timeout=30) as r:
-			ok = 200 <= r.status < 300
-	except (urllib.error.URLError, TimeoutError, OSError):
-		ok = False
+
+	def enviar(c: dict) -> tuple[bool, str]:
+		req = urllib.request.Request(url, data=json.dumps(c).encode(), method="PATCH", headers={
+			"Authorization": "Bearer " + d["SUPABASE_ACCESS_TOKEN"], "Content-Type": "application/json"})
+		try:
+			with urllib.request.urlopen(req, timeout=30) as r:
+				return 200 <= r.status < 300, ""
+		except urllib.error.HTTPError as e:
+			return False, e.read()[:300].decode("utf-8", "replace")
+		except (urllib.error.URLError, TimeoutError, OSError):
+			return False, ""
+
+	ok, motivo = enviar(cuerpo)
+	if not ok and "smtp" in motivo.lower() and "smtp_host" not in cuerpo:
+		## Sin correo propio: aplica lo demas y avisa (sin el codigo en el correo la app no deja entrar).
+		resto = {k: v for k, v in cuerpo.items() if not k.startswith("mailer_subjects") and not k.startswith("mailer_templates")}
+		enviar(resto)
+		decir("  AVISO: Supabase gratis no deja poner el codigo en el correo sin un servidor de correo propio.\n"
+			"  Rellena ORQ_SMTP_USUARIO y ORQ_SMTP_CLAVE en conectar.env (vale tu Gmail con una contrasena de\n"
+			"  aplicacion) y vuelve a lanzar conectar.py. Hasta entonces la app no puede enviar el codigo de entrada.")
+		return False
 	if ok:
 		decir("  Supabase: correo con codigo y confirmacion de cuenta, listos"
 			+ (" (y Entrar con Google)" if cuerpo.get("external_google_enabled") else ""))
