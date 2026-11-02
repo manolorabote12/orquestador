@@ -481,7 +481,11 @@ def configurar_supabase(d: dict[str, str]) -> bool:
 			"smtp_port": d.get("ORQ_SMTP_PUERTO") or "587",
 			"smtp_user": usuario, "smtp_pass": d["ORQ_SMTP_CLAVE"],
 			"smtp_admin_email": usuario, "smtp_sender_name": "Orquestador",
+			## Con correo propio Supabase deja subir el limite (por defecto 2 correos por hora para TODOS).
+			"rate_limit_email_sent": int(d.get("ORQ_CORREOS_HORA") or "60"),
 		})
+	## La app pide un codigo de 6 cifras (Supabase nuevo genera 8 si no se dice).
+	cuerpo["mailer_otp_length"] = 6
 	url = f"{SUPABASE_API}/v1/projects/{d['SUPABASE_PROJECT_REF']}/config/auth"
 
 	def enviar(c: dict) -> tuple[bool, str]:

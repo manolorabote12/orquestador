@@ -32,7 +32,7 @@ jobs:
           ini = fin - datetime.timedelta(hours=3)
           sql = ("select timestamp, event_message from auth_logs order by timestamp desc limit 40")
           q = urllib.parse.urlencode({"sql": sql, "iso_timestamp_start": ini.isoformat() + "Z", "iso_timestamp_end": fin.isoformat() + "Z"})
-          l = get("/analytics/endpoints/logs.all?" + q)
+          l = get("/analytics/endpoints/logs?" + q)
           filas = (l or {}).get("result") or []
           if not filas:
               print("::notice::REGISTROS " + json.dumps(l)[:900])
