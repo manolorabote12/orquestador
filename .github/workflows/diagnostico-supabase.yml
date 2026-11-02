@@ -30,14 +30,16 @@ jobs:
           print("::notice::PLANTILLA " + str(c.get("mailer_subjects_magic_link")) + " | " + str(c.get("mailer_subjects_confirmation")))
           fin = datetime.datetime.utcnow()
           ini = fin - datetime.timedelta(hours=3)
-          sql = ("SELECT timestamp, event_message FROM logs WHERE source_name = 'auth_logs' ORDER BY timestamp DESC LIMIT 60")
+          sql = ("SELECT * FROM logs ORDER BY timestamp DESC LIMIT 400")
           q = urllib.parse.urlencode({"sql": sql, "iso_timestamp_start": ini.isoformat() + "Z", "iso_timestamp_end": fin.isoformat() + "Z"})
           l = get("/analytics/endpoints/logs?" + q)
           filas = (l or {}).get("result") or []
           if not filas:
               print("::notice::REGISTROS " + json.dumps(l)[:900])
-          for f in filas[:40]:
-              m = str(f.get("event_message", ""))
+          if filas:
+              print("::notice::COLUMNAS " + ",".join(sorted(filas[0].keys()))[:600])
+          for f in filas:
+              m = json.dumps(f, ensure_ascii=False)
               if any(p in m.lower() for p in ("mail", "smtp", "otp", "rate", "error", "/otp", "magic")):
                   print("::notice::LOG " + m[:700])
           EOF
