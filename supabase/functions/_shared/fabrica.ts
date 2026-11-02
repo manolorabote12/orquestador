@@ -17,7 +17,8 @@ export async function despertarFabrica(motivo: string): Promise<boolean> {
   try {
     const r = await fetch(`${api}/${endpoint}/run`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${clave}`, "Content-Type": "application/json" },
+      // Agente propio: el Cloudflare de RunPod corta algunos agentes genericos (error 1010).
+      headers: { "Authorization": `Bearer ${clave}`, "Content-Type": "application/json", "User-Agent": "Orquestador/1.0" },
       body: JSON.stringify({ input: { despertar: motivo } }),
       signal: AbortSignal.timeout(5000),
     });

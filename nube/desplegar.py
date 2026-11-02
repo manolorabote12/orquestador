@@ -48,7 +48,9 @@ class ErrorRunPod(Exception):
 
 def pedir(metodo: str, url: str, cuerpo: dict | None = None) -> object:
 	req = urllib.request.Request(url, method=metodo, data=json.dumps(cuerpo).encode() if cuerpo is not None else None,
-		headers={"Authorization": "Bearer " + os.environ["RUNPOD_API_KEY"], "Content-Type": "application/json"})
+		headers={"Authorization": "Bearer " + os.environ["RUNPOD_API_KEY"], "Content-Type": "application/json",
+			## Cloudflare de RunPod corta el agente por defecto de Python (error 1010).
+			"User-Agent": "Orquestador/1.0 (+https://github.com)"})
 	for intento in range(4):
 		try:
 			with urllib.request.urlopen(req, timeout=60) as r:

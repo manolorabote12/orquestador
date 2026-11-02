@@ -124,6 +124,7 @@ CORREO_CUERPO = ("<h2>Tu codigo para entrar en Orquestador</h2>"
 
 
 PAUSA = float(os.environ.get("ORQ_PAUSA", "5"))
+AGENTE = "Orquestador/1.0 (+https://github.com)"
 
 
 class Parar(Exception):
@@ -288,7 +289,8 @@ def pedir_datos(interactivo: bool) -> dict[str, str]:
 # ------------------------------------------------------------------ comprobar (con red)
 
 def _http(url: str, cabeceras: dict[str, str], cuerpo: bytes | None = None) -> tuple[int, dict, bytes]:
-	req = urllib.request.Request(url, data=cuerpo, headers=cabeceras, method="POST" if cuerpo else "GET")
+	## Cloudflare (RunPod) corta el agente por defecto de Python (error 1010).
+	req = urllib.request.Request(url, data=cuerpo, headers={"User-Agent": AGENTE, **cabeceras}, method="POST" if cuerpo else "GET")
 	try:
 		with urllib.request.urlopen(req, timeout=20) as r:
 			return r.status, dict(r.headers), r.read()
@@ -744,7 +746,7 @@ RUNPOD_REST = os.environ.get("ORQ_RUNPOD_REST", "https://rest.runpod.io/v1").rst
 
 
 def _pedir(url: str, cabeceras: dict[str, str] | None = None, metodo: str = "GET") -> tuple[int, bytes]:
-	req = urllib.request.Request(url, headers=cabeceras or {}, method=metodo)
+	req = urllib.request.Request(url, headers={"User-Agent": AGENTE, **(cabeceras or {})}, method=metodo)
 	try:
 		with urllib.request.urlopen(req, timeout=20) as r:
 			return r.status, r.read()

@@ -43,7 +43,9 @@ class RunPodCliente:
 	def _pedir(self, metodo: str, ruta: str, cuerpo: dict | None = None) -> dict:
 		req = urllib.request.Request(f"{_api()}/{self.endpoint}{ruta}", method=metodo,
 			data=json.dumps(cuerpo).encode("utf-8") if cuerpo is not None else None,
-			headers={"Authorization": f"Bearer {self.clave}", "Content-Type": "application/json"})
+			headers={"Authorization": f"Bearer {self.clave}", "Content-Type": "application/json",
+				## Cloudflare de RunPod corta el agente por defecto de Python (error 1010).
+				"User-Agent": "Orquestador/1.0 (+https://github.com)"})
 		for intento in range(4):
 			try:
 				with urllib.request.urlopen(req, timeout=120) as r:
