@@ -1,0 +1,28 @@
+name: Ajustes de Supabase
+# Pone el correo con codigo de 6 cifras, las cuentas confirmadas y (si estan) Entrar con Google.
+# Lo mismo que hace conectar.py en tu PC, para cuando tu red no llega a api.supabase.com.
+on:
+  workflow_dispatch:
+
+jobs:
+  ajustes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Aplicar ajustes de acceso
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          ORQ_WEB: ${{ vars.ORQ_WEB }}
+          GOOGLE_OAUTH_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
+          GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+        run: |
+          python3 - <<'EOF'
+          import os, sys
+          import conectar
+          d = {k: os.environ.get(k, "") for k in ("SUPABASE_URL", "SUPABASE_ACCESS_TOKEN", "ORQ_WEB",
+               "GOOGLE_OAUTH_CLIENT_ID", "GOOGLE_OAUTH_CLIENT_SECRET")}
+          d["SUPABASE_URL"] = d["SUPABASE_URL"].rstrip("/")
+          d["SUPABASE_PROJECT_REF"] = d["SUPABASE_URL"].split("//")[1].split(".")[0]
+          sys.exit(0 if conectar.configurar_supabase(d) else 1)
+          EOF
