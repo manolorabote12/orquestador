@@ -67,6 +67,9 @@ def pedir(metodo: str, url: str, cuerpo: dict | None = None) -> object:
 
 def lista(ruta: str) -> list[dict]:
 	r = pedir("GET", REST + ruta)
+	if r is None:
+		## Una lista vacia de RunPod llega como "null".
+		return []
 	return r if isinstance(r, list) else list(r.get("data") or r.get("items") or [])
 
 
@@ -186,7 +189,10 @@ def ejecutar(endpoint: str, entrada: dict, espera_s: float) -> dict:
 def _anotar(e: BaseException) -> None:
 	"""En el despliegue real (ORQ_ANOTAR=1), el error sale en el resumen de GitHub sin abrir el registro."""
 	if os.environ.get("ORQ_ANOTAR"):
-		print("::error::" + (type(e).__name__ + ": " + str(e)).replace("\n", " ")[:900])
+		import traceback
+		donde = traceback.extract_tb(e.__traceback__)[-2:] if e.__traceback__ else []
+		sitio = " <- ".join(f"{f.name}:{f.lineno}" for f in reversed(donde))
+		print("::error::" + (type(e).__name__ + ": " + str(e) + (f" [{sitio}]" if sitio else "")).replace("\n", " ")[:900])
 
 
 def main(argv: list[str] | None = None) -> int:

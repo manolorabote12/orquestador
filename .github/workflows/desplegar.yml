@@ -18,6 +18,10 @@ on:
         type: choice
         options: [faltan, todas]
         default: faltan
+      etiqueta:
+        description: "Reusar imagenes ya construidas: las 12 primeras letras de su commit (vacio = construirlas)"
+        type: string
+        default: ""
 
 permissions:
   contents: read
@@ -52,6 +56,7 @@ jobs:
 
   imagenes:
     needs: comprobar
+    if: ${{ !inputs.etiqueta }}
     # Una maquina de GitHub por imagen: cada una con su disco limpio (las de GPU pesan mucho).
     runs-on: ubuntu-latest
     timeout-minutes: 120
@@ -90,6 +95,7 @@ jobs:
 
   runpod:
     needs: imagenes
+    if: ${{ !cancelled() && (needs.imagenes.result == 'success' || needs.imagenes.result == 'skipped') }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     outputs:
@@ -126,7 +132,8 @@ jobs:
           extra=""
           if [ "${{ inputs.primera_vez }}" = "true" ]; then extra="--modelos --motor"; fi
           base="ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
-          v="${GITHUB_SHA::12}"
+          v="${{ inputs.etiqueta }}"
+          if [ -z "$v" ]; then v="${GITHUB_SHA::12}"; fi
           python nube/desplegar.py --imagen-fabrica "$base/orq-fabrica:$v" --imagen-gpu "$base/orq-imagenes:$v" \
             --imagen-voces "$base/orq-voces:$v" $extra
 
@@ -135,6 +142,7 @@ jobs:
     # Solo fabrica las que faltan (los géneros nuevos); si falla, no frena el resto del despliegue.
     # Despues de Supabase: el indice de muestras (JSON) necesita su migracion.
     needs: [runpod, supabase]
+    if: ${{ !cancelled() && needs.supabase.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 350
     continue-on-error: true
@@ -151,6 +159,7 @@ jobs:
 
   supabase:
     needs: runpod
+    if: ${{ !cancelled() && needs.runpod.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
