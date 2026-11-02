@@ -41,3 +41,26 @@ jobs:
               if any(p in m.lower() for p in ("mail", "smtp", "otp", "rate", "error", "/otp", "magic")):
                   print("::notice::LOG " + m[:700])
           EOF
+      - name: Prueba del correo (entra en Gmail y se manda un correo a si mismo)
+        env:
+          U: ${{ secrets.ORQ_SMTP_USUARIO }}
+          C: ${{ secrets.ORQ_SMTP_CLAVE }}
+        run: |
+          python3 - <<'EOF'
+          import os, smtplib
+          from email.message import EmailMessage
+          u, c = os.environ.get("U", ""), os.environ.get("C", "")
+          print("::notice::SMTP usuario=%s clave=%d letras (espacios: %s)" % (u, len(c), " " in c))
+          try:
+              s = smtplib.SMTP("smtp.gmail.com", 587, timeout=30)
+              s.starttls()
+              s.login(u, c)
+              m = EmailMessage()
+              m["From"], m["To"], m["Subject"] = u, u, "Prueba de Orquestador: el correo funciona"
+              m.set_content("Si ves esto, Gmail deja enviar los codigos de Orquestador.")
+              s.send_message(m)
+              s.quit()
+              print("::notice::SMTP OK: Gmail acepta la clave y ha enviado un correo de prueba")
+          except Exception as e:
+              print("::error::SMTP FALLA: %s: %s" % (type(e).__name__, str(e)[:400]))
+          EOF
