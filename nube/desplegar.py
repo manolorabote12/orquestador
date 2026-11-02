@@ -63,6 +63,12 @@ def pedir(metodo: str, url: str, cuerpo: dict | None = None) -> object:
 				time.sleep(3 * (intento + 1))
 				continue
 			raise ErrorRunPod(f"{metodo} {url}: HTTP {e.code} {cuerpo_err}") from e
+		except (urllib.error.URLError, ConnectionError, TimeoutError, OSError) as e:
+			## Cortes de red sueltos (RemoteDisconnected, reset...): se reintenta igual que un 503.
+			if intento < 3:
+				time.sleep(5 * (intento + 1))
+				continue
+			raise ErrorRunPod(f"{metodo} {url}: sin respuesta ({type(e).__name__}: {e})") from e
 	raise ErrorRunPod("reintentos agotados")
 
 
