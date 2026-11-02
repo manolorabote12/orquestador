@@ -147,7 +147,13 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		if ep_voz:
 			informe["modelos_voz"] = ejecutar(ep_voz["id"], {"tarea": "descargar_modelos"}, espera_modelos_s)
 	if motor:
-		informe["motor"] = ejecutar(ep_cpu["id"], {"tarea": "motor"}, 1800)
+		try:
+			informe["motor"] = ejecutar(ep_cpu["id"], {"tarea": "motor"}, 1800)
+		except ErrorRunPod as e:
+			## La primera vez la base de datos (y su almacen "motor") aun no existe: se sube despues de Supabase.
+			if "Bucket not found" not in str(e):
+				raise
+			informe["motor"] = "despues_de_supabase"
 	if muestras:
 		informe["muestras"] = hacer_muestras(ep_cpu["id"], muestras == "todas")
 	return informe
@@ -205,8 +211,17 @@ def main(argv: list[str] | None = None) -> int:
 	p.add_argument("--muestras", choices=["faltan", "todas"], default="",
 		help="Partidas de muestra de cada genero para «Probar» en la app (las que faltan o todas otra vez)")
 	p.add_argument("--muestras-en", default="", help="Solo las muestras, en este endpoint de la fabrica ya desplegado")
+	p.add_argument("--motor-en", default="", help="Solo subir el motor web, en este endpoint de la fabrica ya desplegado")
 	p.add_argument("--salida", default=os.environ.get("GITHUB_OUTPUT", ""))
 	a = p.parse_args(argv)
+	if a.motor_en:
+		try:
+			print(json.dumps(ejecutar(a.motor_en, {"tarea": "motor"}, 1800), indent=1, ensure_ascii=False))
+			return 0
+		except ErrorRunPod as e:
+			print("ERROR:", e, file=sys.stderr)
+			_anotar(e)
+			return 1
 	if a.muestras_en:
 		try:
 			print(json.dumps(hacer_muestras(a.muestras_en, a.muestras == "todas"), indent=1, ensure_ascii=False))
@@ -216,7 +231,7 @@ def main(argv: list[str] | None = None) -> int:
 			_anotar(e)
 			return 1
 	if not a.imagen_fabrica or not a.imagen_gpu:
-		p.error("--imagen-fabrica e --imagen-gpu son obligatorias (salvo con --muestras-en)")
+		p.error("--imagen-fabrica e --imagen-gpu son obligatorias (salvo con --muestras-en o --motor-en)")
 	try:
 		inf = desplegar(a.imagen_fabrica, a.imagen_gpu, a.modelos, a.motor, imagen_voces=a.imagen_voces, muestras=a.muestras)
 	except ErrorRunPod as e:

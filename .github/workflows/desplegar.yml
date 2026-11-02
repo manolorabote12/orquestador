@@ -205,3 +205,9 @@ jobs:
           if [ -n "${{ vars.ADMOB_REWARDED_AD_UNIT }}" ]; then
             supabase secrets set ADMOB_REWARDED_AD_UNIT="${{ vars.ADMOB_REWARDED_AD_UNIT }}"
           fi
+      - name: Motor web (la primera vez, cuando ya existe su almacen en Supabase)
+        if: ${{ inputs.primera_vez }}
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+          ORQ_ANOTAR: "1"
+        run: python3 nube/desplegar.py --motor-en "${{ needs.runpod.outputs.fabrica }}"
