@@ -30,7 +30,7 @@ jobs:
           print("::notice::PLANTILLA " + str(c.get("mailer_subjects_magic_link")) + " | " + str(c.get("mailer_subjects_confirmation")))
           fin = datetime.datetime.utcnow()
           ini = fin - datetime.timedelta(hours=3)
-          sql = ("select timestamp, event_message from auth_logs order by timestamp desc limit 40")
+          sql = ("SELECT timestamp, event_message FROM logs WHERE source_name = 'auth_logs' ORDER BY timestamp DESC LIMIT 60")
           q = urllib.parse.urlencode({"sql": sql, "iso_timestamp_start": ini.isoformat() + "Z", "iso_timestamp_end": fin.isoformat() + "Z"})
           l = get("/analytics/endpoints/logs?" + q)
           filas = (l or {}).get("result") or []
