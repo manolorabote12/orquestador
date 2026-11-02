@@ -178,7 +178,7 @@ jobs:
             echo "::error::$*: $(tail -c 900 /tmp/paso.log | tr '\n' ' ')"; exit "$r"; fi; }
           paso supabase link --project-ref "${{ secrets.SUPABASE_PROJECT_REF }}"
           paso supabase db push --remote --include-all --yes
-          paso supabase functions deploy --project-ref "$REF"
+          paso supabase functions deploy --project-ref "$REF" --yes
       - name: Secretos del servidor (nunca en la app)
         env:
           TIENDA: ${{ secrets.ORQ_PLAY_TIENDA_CUENTA }}
@@ -189,25 +189,25 @@ jobs:
           PLAY: ${{ secrets.ORQ_PLAY_CUENTA }}
           REVISOR: ${{ secrets.ORQ_REVISOR }}
         run: |
-          supabase secrets set --project-ref "$REF" \
+          supabase secrets set --project-ref "$REF" --yes \
             RUNPOD_API_KEY="${{ secrets.RUNPOD_API_KEY }}" \
             RUNPOD_FABRICA_ENDPOINT="${{ needs.runpod.outputs.fabrica }}" \
             ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}"
           if [ -n "${{ secrets.ORQ_PLAY_CUENTA_CORREO }}" ]; then
-            supabase secrets set --project-ref "$REF" ORQ_PLAY_CUENTA_CORREO="${{ secrets.ORQ_PLAY_CUENTA_CORREO }}"
+            supabase secrets set --project-ref "$REF" --yes ORQ_PLAY_CUENTA_CORREO="${{ secrets.ORQ_PLAY_CUENTA_CORREO }}"
           fi
           # Compras de la app (Google Play Billing): cuenta de servicio con permiso financiero sobre la app.
-          if [ -n "$TIENDA" ]; then supabase secrets set --project-ref "$REF" ORQ_PLAY_TIENDA_CUENTA="$TIENDA"; fi
+          if [ -n "$TIENDA" ]; then supabase secrets set --project-ref "$REF" --yes ORQ_PLAY_TIENDA_CUENTA="$TIENDA"; fi
           # App Store: el servidor cifra la clave .p8 y despierta al Mac de GitHub (ios.yml).
-          supabase secrets set --project-ref "$REF" ORQ_LLAVES_SECRETO="$LLAVES" GITHUB_REPO="${{ github.repository }}"
-          if [ -n "$DISPARO" ]; then supabase secrets set --project-ref "$REF" GITHUB_DISPATCH_TOKEN="$DISPARO"; fi
-          if [ -n "$YT_ID" ]; then supabase secrets set --project-ref "$REF" GOOGLE_OAUTH_CLIENT_ID="$YT_ID" GOOGLE_OAUTH_CLIENT_SECRET="$YT_SECRETO"; fi
-          if [ -n "$PLAY" ]; then supabase secrets set --project-ref "$REF" ORQ_PLAY_CUENTA="$PLAY"; fi
+          supabase secrets set --project-ref "$REF" --yes ORQ_LLAVES_SECRETO="$LLAVES" GITHUB_REPO="${{ github.repository }}"
+          if [ -n "$DISPARO" ]; then supabase secrets set --project-ref "$REF" --yes GITHUB_DISPATCH_TOKEN="$DISPARO"; fi
+          if [ -n "$YT_ID" ]; then supabase secrets set --project-ref "$REF" --yes GOOGLE_OAUTH_CLIENT_ID="$YT_ID" GOOGLE_OAUTH_CLIENT_SECRET="$YT_SECRETO"; fi
+          if [ -n "$PLAY" ]; then supabase secrets set --project-ref "$REF" --yes ORQ_PLAY_CUENTA="$PLAY"; fi
           # Cuenta para quien revisa la app en Google Play ("correo:codigo de 6 cifras").
-          if [ -n "$REVISOR" ]; then supabase secrets set --project-ref "$REF" ORQ_REVISOR="$REVISOR"; fi
-          supabase secrets set --project-ref "$REF" ORQ_APP_PAQUETE="${{ vars.ORQ_APP_PAQUETE || 'com.orquestador.app' }}"
+          if [ -n "$REVISOR" ]; then supabase secrets set --project-ref "$REF" --yes ORQ_REVISOR="$REVISOR"; fi
+          supabase secrets set --project-ref "$REF" --yes ORQ_APP_PAQUETE="${{ vars.ORQ_APP_PAQUETE || 'com.orquestador.app' }}"
           if [ -n "${{ vars.ADMOB_REWARDED_AD_UNIT }}" ]; then
-            supabase secrets set --project-ref "$REF" ADMOB_REWARDED_AD_UNIT="${{ vars.ADMOB_REWARDED_AD_UNIT }}"
+            supabase secrets set --project-ref "$REF" --yes ADMOB_REWARDED_AD_UNIT="${{ vars.ADMOB_REWARDED_AD_UNIT }}"
           fi
       - name: Motor web (la primera vez, cuando ya existe su almacen en Supabase)
         if: ${{ inputs.primera_vez }}
