@@ -27,8 +27,8 @@ import time
 import urllib.error
 import urllib.request
 
-REST = os.environ.get("ORQ_RUNPOD_REST", "https://rest.runpod.io/v1").rstrip("/")
-SERVERLESS = os.environ.get("ORQ_RUNPOD_API", "https://api.runpod.ai/v2").rstrip("/")
+REST = (os.environ.get("ORQ_RUNPOD_REST") or "https://rest.runpod.io/v1").rstrip("/")
+SERVERLESS = (os.environ.get("ORQ_RUNPOD_API") or "https://api.runpod.ai/v2").rstrip("/")
 
 ## 1 - GPUs por orden de preferencia: 24 GB sobran para Z-Image + FLUX.2 klein (y Qwen en fp8).
 GPUS = ["NVIDIA GeForce RTX 4090", "NVIDIA L4", "NVIDIA RTX A5000", "NVIDIA GeForce RTX 3090"]
@@ -92,9 +92,9 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 	faltan = [k for k in OBLIGATORIOS if not os.environ.get(k)]
 	if faltan:
 		raise ErrorRunPod("Faltan secretos en GitHub: " + ", ".join(faltan))
-	dc = os.environ.get("ORQ_RUNPOD_DC", "EU-RO-1")
-	gpus = [g.strip() for g in os.environ.get("ORQ_GPU", ",".join(GPUS)).split(",") if g.strip()]
-	usd_hora = float(os.environ.get("ORQ_GPU_USD_HORA", str(USD_HORA_GPU)))
+	dc = (os.environ.get("ORQ_RUNPOD_DC") or "EU-RO-1")
+	gpus = [g.strip() for g in (os.environ.get("ORQ_GPU") or ",".join(GPUS)).split(",") if g.strip()]
+	usd_hora = float((os.environ.get("ORQ_GPU_USD_HORA") or str(USD_HORA_GPU)))
 	informe: dict = {"centro_datos": dc}
 
 	auth_id = ""
@@ -104,7 +104,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		auth_id = auth["id"]
 		informe["registro"] = estado
 
-	vol, estado = asegurar("/networkvolumes", "orq-modelos", {"size": int(os.environ.get("ORQ_VOLUMEN_GB", "100")),
+	vol, estado = asegurar("/networkvolumes", "orq-modelos", {"size": int((os.environ.get("ORQ_VOLUMEN_GB") or "100")),
 		"dataCenterId": dc}, actualizar=False)
 	informe["volumen"] = {"id": vol["id"], "estado": estado}
 
@@ -112,7 +112,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 	tpl_gpu, estado = asegurar("/templates", "orq-imagenes", {**base_tpl, "imageName": imagen_gpu,
 		"containerDiskInGb": 30, "category": "NVIDIA", "env": entorno(["HF_TOKEN"])})
 	ep_gpu, estado_ep = asegurar("/endpoints", "orq-imagenes", {"templateId": tpl_gpu["id"], "computeType": "GPU",
-		"gpuTypeIds": gpus, "gpuCount": 1, "workersMin": 0, "workersMax": int(os.environ.get("ORQ_GPU_MAX", "3")),
+		"gpuTypeIds": gpus, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_GPU_MAX") or "3")),
 		"idleTimeout": 20, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
 		"executionTimeoutMs": 3600000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
 	informe["imagenes"] = {"id": ep_gpu["id"], "estado": estado_ep, "gpus": gpus}
@@ -122,7 +122,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		tpl_voz, _ = asegurar("/templates", "orq-voces", {**base_tpl, "imageName": imagen_voces,
 			"containerDiskInGb": 25, "category": "NVIDIA", "env": entorno(["HF_TOKEN"])})
 		ep_voz, estado_ep = asegurar("/endpoints", "orq-voces", {"templateId": tpl_voz["id"], "computeType": "GPU",
-			"gpuTypeIds": GPUS_VOZ, "gpuCount": 1, "workersMin": 0, "workersMax": int(os.environ.get("ORQ_VOZ_MAX", "2")),
+			"gpuTypeIds": GPUS_VOZ, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_VOZ_MAX") or "2")),
 			"idleTimeout": 20, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
 			"executionTimeoutMs": 1800000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
 		informe["voces"] = {"id": ep_voz["id"], "estado": estado_ep}
@@ -133,7 +133,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 	tpl_cpu, _ = asegurar("/templates", "orq-fabrica", {**base_tpl, "imageName": imagen_fabrica,
 		"containerDiskInGb": 30, "category": "CPU", "env": env_fabrica})
 	ep_cpu, estado_ep = asegurar("/endpoints", "orq-fabrica", {"templateId": tpl_cpu["id"], "computeType": "CPU",
-		"cpuFlavorIds": ["cpu5c", "cpu3c"], "vcpuCount": 4, "workersMin": 0, "workersMax": int(os.environ.get("ORQ_FABRICA_MAX", "3")),
+		"cpuFlavorIds": ["cpu5c", "cpu3c"], "vcpuCount": 4, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_FABRICA_MAX") or "3")),
 		"idleTimeout": 30, "flashboot": True, "scalerType": "REQUEST_COUNT", "scalerValue": 1, "executionTimeoutMs": 3600000})
 	informe["fabrica"] = {"id": ep_cpu["id"], "estado": estado_ep}
 
