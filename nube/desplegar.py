@@ -32,7 +32,8 @@ REST = (os.environ.get("ORQ_RUNPOD_REST") or "https://rest.runpod.io/v1").rstrip
 SERVERLESS = (os.environ.get("ORQ_RUNPOD_API") or "https://api.runpod.ai/v2").rstrip("/")
 
 ## 1 - GPUs por orden de preferencia: 24 GB sobran para Z-Image + FLUX.2 klein (y Qwen en fp8).
-GPUS = ["NVIDIA GeForce RTX 4090", "NVIDIA L4", "NVIDIA RTX A5000", "NVIDIA GeForce RTX 3090"]
+## Primero las de 24 GB normales (~0,68 $/h); la 4090 (~1,12 $/h) solo si no hay otra libre.
+GPUS = ["NVIDIA RTX A5000", "NVIDIA L4", "NVIDIA GeForce RTX 3090", "NVIDIA GeForce RTX 4090"]
 USD_HORA_GPU = 1.10
 ## Voces: Chatterbox cabe de sobra en GPUs de 16-24 GB mas baratas.
 GPUS_VOZ = ["NVIDIA L4", "NVIDIA RTX A5000", "NVIDIA GeForce RTX 3090", "NVIDIA RTX A4500", "NVIDIA GeForce RTX 4090"]
@@ -135,9 +136,11 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 	tpl_gpu, estado = asegurar("/templates", "orq-imagenes", {**base_tpl, "imageName": imagen_gpu,
 		"containerDiskInGb": 30, "category": "NVIDIA", "env": entorno(["HF_TOKEN"])})
 	ep_gpu, estado_ep = asegurar("/endpoints", "orq-imagenes", {"templateId": tpl_gpu["id"], "computeType": "GPU",
-		"gpuTypeIds": gpus, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_GPU_MAX") or "3")),
-		"idleTimeout": 20, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
-		"executionTimeoutMs": 3600000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
+		"gpuTypeIds": gpus, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_GPU_MAX") or "1")),
+		## Una sola GPU: la fabrica pide las imagenes de una en una, y con mas maquinas RunPod arrancaba
+		## (y cobraba) varias a la vez mientras la primera aun cargaba los modelos.
+		"idleTimeout": 10, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
+		"executionTimeoutMs": 600000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
 	informe["imagenes"] = {"id": ep_gpu["id"], "estado": estado_ep, "gpus": gpus}
 
 	ep_voz = None
@@ -145,9 +148,9 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		tpl_voz, _ = asegurar("/templates", "orq-voces", {**base_tpl, "imageName": imagen_voces,
 			"containerDiskInGb": 25, "category": "NVIDIA", "env": entorno(["HF_TOKEN"])})
 		ep_voz, estado_ep = asegurar("/endpoints", "orq-voces", {"templateId": tpl_voz["id"], "computeType": "GPU",
-			"gpuTypeIds": GPUS_VOZ, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_VOZ_MAX") or "2")),
-			"idleTimeout": 20, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
-			"executionTimeoutMs": 1800000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
+			"gpuTypeIds": GPUS_VOZ, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_VOZ_MAX") or "1")),
+			"idleTimeout": 10, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
+			"executionTimeoutMs": 600000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
 		informe["voces"] = {"id": ep_voz["id"], "estado": estado_ep}
 
 	env_fabrica = {**entorno(SECRETOS_FABRICA), "RUNPOD_API_KEY": os.environ["RUNPOD_API_KEY"],
@@ -156,7 +159,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 	tpl_cpu, _ = asegurar("/templates", "orq-fabrica", {**base_tpl, "imageName": imagen_fabrica,
 		"containerDiskInGb": 30, "category": "CPU", "env": env_fabrica})
 	ep_cpu, estado_ep = asegurar("/endpoints", "orq-fabrica", {"templateId": tpl_cpu["id"], "computeType": "CPU",
-		"cpuFlavorIds": ["cpu5c", "cpu3c"], "vcpuCount": 4, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_FABRICA_MAX") or "3")),
+		"cpuFlavorIds": ["cpu5c", "cpu3c"], "vcpuCount": 4, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_FABRICA_MAX") or "2")),
 		"idleTimeout": 30, "flashboot": True, "scalerType": "REQUEST_COUNT", "scalerValue": 1, "executionTimeoutMs": 3600000})
 	informe["fabrica"] = {"id": ep_cpu["id"], "estado": estado_ep}
 
@@ -195,7 +198,8 @@ def hacer_muestras(endpoint: str, todas: bool, tandas: int = 8) -> dict:
 
 def ejecutar(endpoint: str, entrada: dict, espera_s: float) -> dict:
 	"""Lanza un trabajo en un endpoint serverless y espera su resultado."""
-	r = pedir("POST", f"{SERVERLESS}/{endpoint}/run", {"input": entrada})
+	## El limite de este trabajo va con el (descargar modelos tarda mas que el limite normal del endpoint).
+	r = pedir("POST", f"{SERVERLESS}/{endpoint}/run", {"input": entrada, "policy": {"executionTimeout": int(espera_s * 1000)}})
 	tid = r["id"]
 	limite = time.time() + espera_s
 	pausa = 1.0
@@ -207,6 +211,10 @@ def ejecutar(endpoint: str, entrada: dict, espera_s: float) -> dict:
 			raise ErrorRunPod(f"El trabajo {entrada} acabo en {e.get('status')}: {str(e.get('error') or e.get('output'))[:400]}")
 		time.sleep(pausa)
 		pausa = min(15.0, pausa * 1.5)
+	try:
+		pedir("POST", f"{SERVERLESS}/{endpoint}/cancel/{tid}")
+	except ErrorRunPod:
+		pass
 	raise ErrorRunPod("Tiempo agotado esperando el trabajo " + json.dumps(entrada))
 
 

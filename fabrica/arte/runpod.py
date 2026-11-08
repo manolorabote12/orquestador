@@ -28,13 +28,13 @@ def _api() -> str:
 
 
 class RunPodCliente:
-	def __init__(self, endpoint: str, clave: str = "", timeout: float = 900.0, usd_seg: float | None = None):
+	def __init__(self, endpoint: str, clave: str = "", timeout: float = 600.0, usd_seg: float | None = None):
 		self.endpoint = endpoint.replace("runpod://", "").strip("/")
 		self.clave = clave or os.environ.get("RUNPOD_API_KEY", "")
 		if not self.clave:
 			raise ComfyError("Falta RUNPOD_API_KEY para usar ComfyUI en RunPod")
 		self.timeout = timeout
-		self.usd_seg = usd_seg if usd_seg is not None else float(os.environ.get("ORQ_RUNPOD_USD_SEG", "0.00031"))
+		self.usd_seg = usd_seg if usd_seg is not None else float(os.environ.get("ORQ_RUNPOD_USD_SEG") or "0.00019")
 		self.imagenes: dict[str, bytes] = {}
 		self.usd = 0.0
 		self.segundos_gpu = 0.0
@@ -93,6 +93,19 @@ class RunPodCliente:
 			raise ComfyError(f"RunPod no acepto el trabajo: {r}")
 		limite = time.time() + self.timeout
 		espera = 0.5
+		try:
+			return self._esperar(tid, limite, espera)
+		except BaseException as e:
+			## Si la fabrica falla o se corta, el trabajo no se queda en RunPod gastando GPU.
+			if getattr(e, "terminado", False):
+				raise
+			try:
+				self._pedir("POST", f"/cancel/{tid}")
+			except ComfyError:
+				pass
+			raise
+
+	def _esperar(self, tid: str, limite: float, espera: float) -> dict:
 		while time.time() < limite:
 			e = self._pedir("GET", f"/status/{tid}")
 			estado = e.get("status")
@@ -104,14 +117,12 @@ class RunPodCliente:
 				salida = e.get("output") or {}
 				return salida if isinstance(salida, dict) else {"resultado": salida}
 			if estado in ("FAILED", "CANCELLED", "TIMED_OUT"):
-				raise ComfyError(f"RunPod {estado}: {str(e.get('error') or e.get('output'))[:400]}")
+				err = ComfyError(f"RunPod {estado}: {str(e.get('error') or e.get('output'))[:400]}")
+				err.terminado = True
+				raise err
 			## En cola o arrancando la maquina (arranque en frio): se espera cada vez un poco mas.
 			time.sleep(espera)
 			espera = min(3.0, espera * 1.4)
-		try:
-			self._pedir("POST", f"/cancel/{tid}")
-		except ComfyError:
-			pass
 		raise ComfyError("Tiempo de espera agotado esperando a RunPod")
 
 

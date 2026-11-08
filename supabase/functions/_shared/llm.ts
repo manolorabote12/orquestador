@@ -117,19 +117,31 @@ function costOf(model: string, u: Record<string, number>): number {
     (u.cache_read_input_tokens ?? 0) * p.in * 0.1 + (u.output_tokens ?? 0) * p.out) / 1e6;
 }
 
+// Modelos que rechazan tool_choice forzado: se piden con tool_choice "auto" y una instruccion.
+const SIN_FORZAR = new Set<string>();
+
 async function callTool(model: string, system: string, messages: Msg[], tool: Tool): Promise<{ input: unknown; costUsd: number }> {
   let res: Response;
+  const pedir = (forzar: boolean) => fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+    body: JSON.stringify({
+      model, max_tokens: 2000,
+      system: [{ type: "text", text: forzar ? system : system + `\n\nResponde SIEMPRE llamando a la herramienta ${tool.name}, sin texto aparte.`,
+        cache_control: { type: "ephemeral" } }],
+      tools: [tool], tool_choice: forzar ? { type: "tool", name: tool.name } : { type: "auto" }, messages,
+    }),
+    signal: AbortSignal.timeout(60_000),
+  });
   try {
-    res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "x-api-key": ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
-      body: JSON.stringify({
-        model, max_tokens: 2000,
-        system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-        tools: [tool], tool_choice: { type: "tool", name: tool.name }, messages,
-      }),
-      signal: AbortSignal.timeout(60_000),
-    });
+    res = await pedir(!SIN_FORZAR.has(model));
+    if (res.status === 400 && !SIN_FORZAR.has(model)) {
+      const txt = await res.clone().text().catch(() => "");
+      if (txt.includes("tool_choice")) {
+        SIN_FORZAR.add(model);
+        res = await pedir(false);
+      }
+    }
   } catch (e) {
     throw new LlmError("No se pudo contactar con la IA: " + (e as Error).message, 0);
   }

@@ -23,6 +23,8 @@ PRECIOS = {
 	"claude-sonnet-5-5": (2.0, 10.0),
 }
 PRECIO_DESCONOCIDO = (5.0, 25.0)
+## Modelos que rechazan tool_choice forzado (se descubren solos al primer error 400).
+SIN_FORZAR: set[str] = set()
 
 
 class ErrorIA(Exception):
@@ -68,6 +70,12 @@ def llamar_herramienta(modelo: str, sistema: str, mensajes: list[dict], herramie
 	datos = json.dumps(cuerpo).encode("utf-8")
 	ultimo = ""
 	for intento in range(reintentos):
+		if modelo in SIN_FORZAR and cuerpo["tool_choice"]["type"] != "auto":
+			## Algunos modelos nuevos no admiten forzar la herramienta: se pide con palabras.
+			cuerpo["tool_choice"] = {"type": "auto"}
+			cuerpo["system"] = [{**cuerpo["system"][0], "text": sistema + "\n\nResponde SIEMPRE llamando a la herramienta "
+				+ herramienta["name"] + ", sin texto aparte."}]
+			datos = json.dumps(cuerpo).encode("utf-8")
 		req = urllib.request.Request(API_URL, data=datos, method="POST", headers={
 			"x-api-key": clave(), "anthropic-version": "2023-06-01", "content-type": "application/json",
 		})
@@ -77,6 +85,9 @@ def llamar_herramienta(modelo: str, sistema: str, mensajes: list[dict], herramie
 				resp = json.loads(r.read().decode("utf-8"))
 		except urllib.error.HTTPError as e:
 			ultimo = f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:300]}"
+			if e.code == 400 and "tool_choice" in ultimo and modelo not in SIN_FORZAR and intento < reintentos - 1:
+				SIN_FORZAR.add(modelo)
+				continue
 			## 2 - Saturacion o limite: se espera y se reintenta. Otros errores no se reintentan.
 			if e.code in (429, 500, 502, 503, 529) and intento < reintentos - 1:
 				time.sleep(2.0 * (intento + 1))

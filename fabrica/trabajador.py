@@ -84,17 +84,58 @@ class Supabase:
 		return ruta
 
 
+## Supabase gratis no admite archivos de mas de 50 MB.
+LIMITE_SUBIDA = int(os.environ.get("ORQ_LIMITE_SUBIDA_MB") or "49") * 1024 * 1024
+
+
 def comprimir_proyecto(proyecto: Path, destino: Path) -> Path:
+	_comprimir(proyecto, destino, con_versiones=True)
+	if destino.stat().st_size > LIMITE_SUBIDA:
+		## Si aun asi no cabe, se guardan solo el juego actual y su memoria (sin las versiones viejas).
+		print(f"[trabajador] proyecto de {destino.stat().st_size // 1048576} MB: se guarda sin versiones antiguas", flush=True)
+		_comprimir(proyecto, destino, con_versiones=False)
+	return destino
+
+
+def _comprimir(proyecto: Path, destino: Path, con_versiones: bool) -> Path:
 	"""Proyecto de Godot listo para abrir (sin cache, compilaciones ni el arte en bruto). Incluye
 	la memoria y las versiones (fabrica/memoria.json y fabrica/versiones): asi se puede seguir
 	cambiando y volver atras."""
+	## Las instantaneas de versiones repiten casi todo el juego: un archivo identico al del juego
+	## actual no se guarda dos veces (Supabase gratis no admite archivos de mas de 50 MB).
+	iguales: list[str] = []
 	with zipfile.ZipFile(destino, "w", zipfile.ZIP_DEFLATED) as z:
 		for f in proyecto.rglob("*"):
 			rel = f.relative_to(proyecto)
 			if f.is_dir() or rel.parts[0] in (".godot", "build", "android") or (rel.parts[0] == "fabrica" and len(rel.parts) > 1 and rel.parts[1] == "arte"):
 				continue
+			if rel.parts[:2] == ("fabrica", "versiones") and not con_versiones:
+				continue
+			if rel.parts[:2] == ("fabrica", "versiones") and len(rel.parts) > 3:
+				vivo = proyecto.joinpath(*rel.parts[3:])
+				if vivo.is_file() and vivo.stat().st_size == f.stat().st_size and vivo.read_bytes() == f.read_bytes():
+					iguales.append(rel.as_posix())
+					continue
 			z.write(f, rel.as_posix())
+		z.writestr(IGUALES, json.dumps(iguales))
 	return destino
+
+
+IGUALES = "fabrica/versiones_iguales.json"
+
+
+def descomprimir_proyecto(zipf: Path, proyecto: Path) -> None:
+	"""Al reves que comprimir_proyecto: vuelve a poner en las versiones los archivos que eran iguales."""
+	with zipfile.ZipFile(zipf) as z:
+		z.extractall(proyecto)
+	lista = proyecto / IGUALES
+	if lista.exists():
+		for rel in json.loads(lista.read_text(encoding="utf-8")):
+			partes = Path(rel).parts
+			origen = proyecto.joinpath(*partes[3:])
+			if origen.is_file():
+				(proyecto / rel).parent.mkdir(parents=True, exist_ok=True)
+				shutil.copy2(origen, proyecto / rel)
 
 
 def _subir_version(sb: Supabase, carpeta: str, inf: dict, proyecto: Path, tmp: Path) -> dict:
@@ -151,8 +192,7 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 		cadena.evento("preparar", "inicio", "Abriendo tu juego...")
 		zipf = sb.bajar(archivos_previos["proyecto"], tmp / "previo.zip")
 		proyecto = tmp / Path(archivos_previos["proyecto"]).name.replace("_godot.zip", "")
-		with zipfile.ZipFile(zipf) as z:
-			z.extractall(proyecto)
+		descomprimir_proyecto(zipf, proyecto)
 		mem = versiones.memoria(proyecto)
 		if int(mem["version"]) != int(trabajo.get("project_version") or 0):
 			raise RuntimeError(f"Versiones desalineadas: proyecto v{mem['version']}, servidor v{trabajo.get('project_version')}")
@@ -282,8 +322,7 @@ def _abrir_proyecto(sb: Supabase, trabajo: dict, tmp: Path) -> Path:
 	cadena.evento("preparar", "inicio", "Abriendo tu juego...")
 	zipf = sb.bajar(previos["proyecto"], tmp / "previo.zip")
 	proyecto = tmp / Path(previos["proyecto"]).name.replace("_godot.zip", "")
-	with zipfile.ZipFile(zipf) as z:
-		z.extractall(proyecto)
+	descomprimir_proyecto(zipf, proyecto)
 	## Herramientas de QA al dia (capturas y clips) aunque el juego se fabricara con un kit anterior.
 	for f in ("clip.gd", "clip.tscn", "capturas.gd", "capturas.tscn"):
 		shutil.copy2(cadena.KIT / "qa" / f, proyecto / "qa" / f)

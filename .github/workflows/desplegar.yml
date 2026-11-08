@@ -14,10 +14,10 @@ on:
         type: boolean
         default: false
       muestras:
-        description: "Partidas de muestra para «Probar» en el taller: las que faltan (normal) o todas otra vez (tras cambiar mucho el kit)"
+        description: "Partidas de muestra para «Probar» (cuestan GPU en RunPod: unos 10 $ todas). Ninguna, las que faltan o todas otra vez"
         type: choice
-        options: [faltan, todas]
-        default: faltan
+        options: [ninguna, faltan, todas]
+        default: ninguna
       etiqueta:
         description: "Reusar imagenes ya construidas: las 12 primeras letras de su commit (vacio = construirlas)"
         type: string
@@ -142,7 +142,8 @@ jobs:
     # Solo fabrica las que faltan (los géneros nuevos); si falla, no frena el resto del despliegue.
     # Despues de Supabase: el indice de muestras (JSON) necesita su migracion.
     needs: [runpod, supabase]
-    if: ${{ !cancelled() && needs.supabase.result == 'success' }}
+    # Solo a mano: cada muestra fabrica un juego entero con GPU (con todas, unos 10 $ de RunPod).
+    if: ${{ !cancelled() && needs.supabase.result == 'success' && (inputs.muestras == 'faltan' || inputs.muestras == 'todas') }}
     runs-on: ubuntu-latest
     timeout-minutes: 350
     continue-on-error: true
@@ -155,7 +156,7 @@ jobs:
         env:
           RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
         run: |
-          python nube/desplegar.py --muestras-en "${{ needs.runpod.outputs.fabrica }}" --muestras "${{ inputs.muestras || 'faltan' }}"
+          python nube/desplegar.py --muestras-en "${{ needs.runpod.outputs.fabrica }}" --muestras "${{ inputs.muestras }}"
 
   supabase:
     needs: runpod
