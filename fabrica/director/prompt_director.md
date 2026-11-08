@@ -125,7 +125,8 @@ REGLAS
     arte: luchadores con personalidad, nada gore); el coleccionable son los cubos de poder. Sin
     jefe, disparo, poderes ni extras (el ataque y el super ya vienen con el genero).
 35. genero aldea: si la idea habla de clanes, asaltar aldeas o bases enemigas, saquear, un
-    ejercito que ataca un ayuntamiento o algo tipo "Clash". El heroe es el que forma el ejercito
+    ejercito que ataca un ayuntamiento o algo tipo "Clash of Clans" (ojo: "Clash Royale", aunque
+    venga mal escrito como "clash royal", es el genero duelo, no aldea). El heroe es el que forma el ejercito
     (sus tropas llevan su arte); los enemigos son los guardianes de las torres. El coleccionable
     es el botin (oro y elixir). Sin jefe, disparo, poderes ni extras.
 36. genero ritmo: si la idea habla de musica, ritmo, notas, bailar, tocar un instrumento o seguir

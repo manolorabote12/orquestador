@@ -34,7 +34,7 @@ class RunPodCliente:
 		if not self.clave:
 			raise ComfyError("Falta RUNPOD_API_KEY para usar ComfyUI en RunPod")
 		self.timeout = timeout
-		self.usd_seg = usd_seg if usd_seg is not None else float(os.environ.get("ORQ_RUNPOD_USD_SEG") or "0.00019")
+		self.usd_seg = usd_seg if usd_seg is not None else float(os.environ.get("ORQ_RUNPOD_USD_SEG") or "0.00031")
 		self.imagenes: dict[str, bytes] = {}
 		self.usd = 0.0
 		self.segundos_gpu = 0.0

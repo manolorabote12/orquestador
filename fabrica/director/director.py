@@ -22,6 +22,31 @@ RAIZ = Path(__file__).resolve().parent
 ESQUEMA = json.loads((RAIZ / "diseno.schema.json").read_text(encoding="utf-8"))
 PROMPT = (RAIZ / "prompt_director.md").read_text(encoding="utf-8")
 
+
+def _plano(s: str) -> str:
+	import unicodedata
+	return "".join(c for c in unicodedata.normalize("NFD", (s or "").lower()) if unicodedata.category(c) != "Mn")
+
+
+def catalogo_generos() -> str:
+	"""Todos los generos que sabe hacer la fabrica, con lo que son y las palabras que los piden.
+	Sin esto la directora solo veia los ids y elegia a ciegas los generos nuevos."""
+	lineas = ["CATALOGO COMPLETO DE GENEROS (id: que es | palabras que lo piden). Elige SIEMPRE uno de estos ids:"]
+	for gid in generos.ORDEN:
+		g = generos.GENEROS[gid]
+		claves = ", ".join(g.get("claves", [])[:6])
+		lineas.append(f"- {gid}: {g.get('etiqueta', gid)}" + (f" | {claves}" if claves else ""))
+	return "\n".join(lineas)
+
+
+def pistas_genero(idea: str) -> list[str]:
+	"""Generos cuyas palabras clave aparecen en la idea (en el orden de prioridad de generos.ORDEN)."""
+	t = _plano(idea)
+	return [g for g in generos.ORDEN if any(_plano(c) in t for c in generos.GENEROS[g].get("claves", []))]
+
+
+PROMPT = PROMPT + "\n\n" + catalogo_generos()
+
 ## 1 - Nombres protegidos que nunca deben aparecer (la IA ya lo sabe; esto es la red de seguridad).
 PROTEGIDOS = [
 	"mario", "luigi", "sonic", "pokemon", "pikachu", "zelda", "link", "kirby", "disney", "mickey",
@@ -291,6 +316,10 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 		usuario += "\n" + plantillas.guia(plantilla)
 	if gancho:
 		usuario += f"\nGancho elegido: genero {gancho['genero']} obligatorio con los giros {', '.join(gancho['giros']) or 'ninguno'}."
+	pistas = [] if (gancho or plantilla) else pistas_genero(idea)
+	if pistas:
+		usuario += ("\nPista por palabras clave de la idea (el primero manda si encaja): " + ", ".join(pistas[:4])
+			+ ". Elige uno de estos salvo que la idea pida claramente otro.")
 	usuario += "\n\n" + giros.guia(gancho["genero"] if gancho else None)
 	import contenido
 	usuario += "\n\n" + contenido.guia(gancho["genero"] if gancho else None)

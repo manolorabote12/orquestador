@@ -32,8 +32,9 @@ REST = (os.environ.get("ORQ_RUNPOD_REST") or "https://rest.runpod.io/v1").rstrip
 SERVERLESS = (os.environ.get("ORQ_RUNPOD_API") or "https://api.runpod.ai/v2").rstrip("/")
 
 ## 1 - GPUs por orden de preferencia: 24 GB sobran para Z-Image + FLUX.2 klein (y Qwen en fp8).
-## Primero las de 24 GB normales (~0,68 $/h); la 4090 (~1,12 $/h) solo si no hay otra libre.
-GPUS = ["NVIDIA RTX A5000", "NVIDIA L4", "NVIDIA GeForce RTX 3090", "NVIDIA GeForce RTX 4090"]
+## La 4090 cuesta ~1,12 $/h pero dibuja unas 2 veces mas rapido que las de 24 GB normales (~0,68 $/h):
+## por imagen sale mas barata. La L4 es la mas lenta: la ultima.
+GPUS = ["NVIDIA GeForce RTX 4090", "NVIDIA GeForce RTX 3090", "NVIDIA RTX A5000", "NVIDIA L4"]
 USD_HORA_GPU = 1.10
 ## Voces: Chatterbox cabe de sobra en GPUs de 16-24 GB mas baratas.
 GPUS_VOZ = ["NVIDIA L4", "NVIDIA RTX A5000", "NVIDIA GeForce RTX 3090", "NVIDIA RTX A4500", "NVIDIA GeForce RTX 4090"]
