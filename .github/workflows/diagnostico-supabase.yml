@@ -37,6 +37,15 @@ jobs:
               except urllib.error.HTTPError as e:
                   return {"error": e.code, "cuerpo": e.read()[:300].decode("utf-8", "replace")}
           r = sql("select id, kind, status, cost, error, created_at, finished_at from public.jobs order by created_at desc limit 6")
+          lento = sql("select progress from public.jobs where status='failed' and finished_at - created_at > interval '10 minutes' order by created_at desc limit 1")
+          if isinstance(lento, list) and lento:
+              pasos = lento[0].get("progress") or []
+              if isinstance(pasos, str):
+                  pasos = json.loads(pasos)
+              t0 = pasos[0].get("t", 0) if pasos else 0
+              linea = " | ".join("%ds %s %s %s" % (int(p.get("t", 0) - t0), p.get("paso"), p.get("estado"), str(p.get("mensaje", ""))[:50]) for p in pasos)
+              for i in range(0, len(linea), 900):
+                  print("::notice::PASOS " + linea[i:i + 900])
           for f in (r if isinstance(r, list) else [r])[:6]:
               print("::notice::JOB " + json.dumps(f, ensure_ascii=False, default=str)[:900])
           fin = datetime.datetime.utcnow()
