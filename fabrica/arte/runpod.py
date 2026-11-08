@@ -22,6 +22,28 @@ from .comfy import ComfyError, rellenar
 
 API = "https://api.runpod.ai/v2"
 
+## Tope de GPU por juego (todas las maquinas juntas: imagenes, musica y voces). Al pasar el SUAVE
+## la fabrica deja de repetir lo que el control de calidad rechaza; al pasar el DURO ya no pide mas
+## (lo que falte sale procedural o el juego falla y se devuelven las tuercas). Nunca mas sustos.
+GASTO = {"usd": 0.0}
+
+
+def tope_suave() -> float:
+	return float(os.environ.get("ORQ_TOPE_GPU_SUAVE") or "0.35")
+
+
+def tope_duro() -> float:
+	return float(os.environ.get("ORQ_TOPE_GPU_DURO") or "0.90")
+
+
+def reiniciar_gasto() -> None:
+	GASTO["usd"] = 0.0
+
+
+def en_ahorro() -> bool:
+	"""True cuando este juego ya ha gastado el tope suave de GPU: nada de repeticiones."""
+	return GASTO["usd"] >= tope_suave()
+
 
 def _api() -> str:
 	return os.environ.get("ORQ_RUNPOD_API", API).rstrip("/")
@@ -87,6 +109,8 @@ class RunPodCliente:
 
 	def trabajo(self, entrada: dict) -> dict:
 		"""Lanza un trabajo en el endpoint, espera (arranque en frio incluido) y apunta el coste real."""
+		if GASTO["usd"] >= tope_duro():
+			raise ComfyError(f"Tope de gasto de GPU de este juego alcanzado ({GASTO['usd']:.2f} $)")
 		r = self._pedir("POST", "/run", {"input": entrada})
 		tid = r.get("id")
 		if not tid:
@@ -113,6 +137,7 @@ class RunPodCliente:
 				seg = float(e.get("executionTime", 0)) / 1000.0
 				self.segundos_gpu += seg
 				self.usd += seg * self.usd_seg
+				GASTO["usd"] += seg * self.usd_seg
 				self.trabajos += 1
 				salida = e.get("output") or {}
 				return salida if isinstance(salida, dict) else {"resultado": salida}

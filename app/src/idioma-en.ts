@@ -6,6 +6,7 @@ export const EN: Record<string, string> = {
   "taller de juegos": "game workshop",
   "Modo demostración: todo simulado, nada se cobra": "Demo mode: everything is simulated, nothing is charged",
   "¡Hola! Soy Chispa. Entra con tu cuenta de Google o dime tu correo y te mando un código.": "Hi! I'm Chispa. Sign in with Google or tell me your email and I'll send you a code.",
+  "¡Hola! Soy Chispa. Dime tu correo y te mando un código para entrar.": "Hi! I'm Chispa. Tell me your email and I'll send you a code to sign in.",
   "Entrar": "Sign in",
   "Continuar con Google": "Continue with Google",
   "o con tu correo": "or with your email",

@@ -23,6 +23,7 @@ from PIL import Image
 from . import biblia as bib
 from . import godot_export, iconos, musica, musica_ia, portada, post, prompts, qa_arte, revision_ia, sfx, sfx_ia, skin, voces_ia
 from .comfy import ComfyError
+from . import runpod
 from .runpod import cliente as cliente_comfy
 
 MAX_INTENTOS = 3
@@ -95,7 +96,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 			try:
 				rev_ia = revision_ia.revisar(_bytes_png(ficha), s["descripcion"], estilo["descripcion"], gasto_rev)
 				informe.setdefault("revision_ia", {})[sid] = rev_ia
-				if not rev_ia["ok"]:
+				if not rev_ia["ok"] and not runpod.en_ahorro():
 					print(f"[arte] {sid}: la revision visual pide repetir -> {rev_ia['problemas'] or rev_ia['parecido']}")
 					ficha = _imagen(cliente.generar(wf_editar, _valores(enc_dibujo, 1, args.lado, subida))[0]) if ref_autor \
 						else _imagen(cliente.generar(wf_crear, _valores(enc_ficha, 1, args.lado))[0])
@@ -121,6 +122,9 @@ def fabricar(args: argparse.Namespace) -> dict:
 				if rev["ok"]:
 					break
 				print(f"[arte] {sid}/{anim}: QA rechaza frames {sorted(rev['malos'])} -> {rev['malos']}")
+				if runpod.en_ahorro():
+					informe["avisos"].append(f"{sid}/{anim}: tope de gasto, se quedan los frames con detalles {rev['malos']}")
+					break
 				if intento == MAX_INTENTOS - 1:
 					informe["avisos"].append(f"{sid}/{anim}: tras {MAX_INTENTOS} intentos quedan frames con problemas {rev['malos']}")
 					break
@@ -140,7 +144,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 			informe["generaciones"] += 1
 			tile, cost, der = post.procesar_tile(crudo, int(esc["tile"]), estilo, paleta)
 			rev = qa_arte.revisar_tile(cost, der)
-			if rev["ok"]:
+			if rev["ok"] or runpod.en_ahorro():
 				break
 			informe["regeneradas"] += 1
 		tiles[esc["id"]] = tile

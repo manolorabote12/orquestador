@@ -71,6 +71,7 @@ jobs:
           VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
           VITE_MOTOR_URL: ${{ vars.SUPABASE_URL }}/storage/v1/object/public/motor/godot/4.6.3
           VITE_WEB: ${{ vars.ORQ_WEB }}
+          VITE_GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
         run: |
           npm ci
           npm run build

@@ -537,6 +537,9 @@ def vaciar_cola(sb: Supabase, opciones: argparse.Namespace, nombre: str, maximo:
 			break
 		if not filas:
 			break
+		## Cada trabajo empieza con su tope de GPU a cero.
+		from arte import runpod as _runpod
+		_runpod.reiniciar_gasto()
 		atender(sb, filas[0], opciones)
 		hechos += 1
 	return hechos
