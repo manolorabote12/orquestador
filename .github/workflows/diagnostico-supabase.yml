@@ -37,6 +37,14 @@ jobs:
               except urllib.error.HTTPError as e:
                   return {"error": e.code, "cuerpo": e.read()[:300].decode("utf-8", "replace")}
           r = sql("select id, kind, status, cost, error, created_at, finished_at from public.jobs order by created_at desc limit 6")
+          for f in (sql("select bucket_id, count(*) n, round(sum((metadata->>'size')::bigint)/1048576.0,1) mb from storage.objects group by 1 order by 3 desc") or []):
+              print("::notice::ALMACEN " + json.dumps(f, default=str))
+          for f in (sql("select name, round((metadata->>'size')::bigint/1048576.0,2) mb from storage.objects where bucket_id='juegos' order by created_at desc limit 25") or []):
+              print("::notice::TAMANOS " + json.dumps(f, default=str))
+          for f in (sql("select kind, status, count(*), round(sum(coalesce(provider_cost_usd,0)),3) usd, round(avg(extract(epoch from finished_at-started_at))) seg from public.jobs group by 1,2 order by 1") or []):
+              print("::notice::COSTES " + json.dumps(f, default=str))
+          for f in (sql("select reason, count(*), sum(amount) from public.credit_ledger group by 1 order by 1") or []):
+              print("::notice::LEDGER " + json.dumps(f, default=str))
           lento = sql("select progress from public.jobs where status='failed' and finished_at - created_at > interval '10 minutes' order by created_at desc limit 1")
           if isinstance(lento, list) and lento:
               pasos = lento[0].get("progress") or []
