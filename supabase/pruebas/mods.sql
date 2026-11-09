@@ -12,7 +12,7 @@ begin
   begin perform public.queue_mod(u, p, 'corto'); raise exception 'debia fallar';
   exception when others then assert sqlerrm like '%bad_instruction%', sqlerrm; end;
   select * into r from public.queue_mod(u, p, 'que el gato suelte chispas al saltar');
-  assert (select credits from public.profiles where id = u) = c - 30, 'cobra 30 tuercas';
+  assert (select credits from public.profiles where id = u) = c - (select credits from public.pricing where kind = 'game_mod'), 'cobra el precio del cambio programado';
   select * into j from public.claim_game_job('runpod-1');
   assert j.kind = 'game_mod' and j.detail ->> 'instruccion' = 'que el gato suelte chispas al saltar', j::text;
   perform public.complete_change_job(j.job_id, 0.12, 0, 'Bigotes', '{"titulo":"Bigotes"}'::jsonb, '{"proyecto":"y.zip"}'::jsonb, 2);

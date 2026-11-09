@@ -194,7 +194,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 		print("[voces] Chatterbox")
 		try:
 			from .runpod import RunPodCliente
-			cli_voz = RunPodCliente(destino_voz, timeout=600, usd_seg=float(os.environ.get("ORQ_VOZ_USD_SEG", "0.00019")))
+			cli_voz = RunPodCliente(destino_voz, timeout=600, usd_seg=float(os.environ.get("ORQ_VOZ_USD_SEG") or "0.000208"))
 			voces, inf_v = voces_ia.generar(biblia, salida / "voces", cli_voz)
 			informe["voces_ia"] = inf_v
 			## Frases de la historia (heroe, rival y jefe con su tono).

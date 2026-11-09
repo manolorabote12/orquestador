@@ -65,7 +65,7 @@ def runpod(texto: str, destino: Path, emocion: float = 0.5, idioma: str = "es") 
 	if not endpoint:
 		raise ErrorVoz("Falta RUNPOD_VOZ_ENDPOINT")
 	try:
-		cli = RunPodCliente(endpoint, timeout=600, usd_seg=float(os.environ.get("ORQ_VOZ_USD_SEG", "0.00019")))
+		cli = RunPodCliente(endpoint, timeout=600, usd_seg=float(os.environ.get("ORQ_VOZ_USD_SEG") or "0.000208"))
 		out = cli.trabajo({"texto": texto, "idioma": idioma, "emocion": emocion, "ritmo": 0.5})
 	except ComfyError as e:
 		raise ErrorVoz(str(e)) from e

@@ -83,6 +83,57 @@ class Supabase:
 		self._peticion("POST", destino, archivo.read_bytes(), tipo, {"x-upsert": "true"})
 		return ruta
 
+	def borrar(self, rutas: list[str], bucket: str = "juegos") -> None:
+		"""Borra archivos del almacen. Nunca para la fabrica: si falla, solo se avisa."""
+		rutas = [r for r in rutas if r]
+		if not rutas:
+			return
+		try:
+			self._peticion("DELETE", f"/storage/v1/object/{bucket}", json.dumps({"prefixes": rutas}).encode("utf-8"), "application/json")
+		except Exception as e:  # noqa: BLE001
+			print(f"[trabajador] no se pudieron borrar {len(rutas)} archivos viejos: {e}", flush=True)
+
+
+## Al guardar una version nueva, de la anterior sobra lo pesado: el proyecto nuevo ya lleva todo el
+## historial (volver atras sale de ahi) y la app solo ensena los archivos de la version actual.
+PESADOS = ("apk", "web", "clip", "ficha", "proyecto")
+
+
+def borrar_seguro(sb: "Supabase", rutas: list[str]) -> None:
+	"""Limpieza despues de cerrar un trabajo: jamas puede convertir un juego terminado en un fallo."""
+	try:
+		sb.borrar(rutas)
+	except Exception as e:  # noqa: BLE001
+		print(f"[trabajador] limpieza omitida: {e}", flush=True)
+
+
+def limpiar_version_anterior(sb: "Supabase", previos: dict, nuevos: dict) -> None:
+	borrar_seguro(sb, [previos.get(k) for k in PESADOS if previos.get(k) and previos.get(k) != nuevos.get(k)])
+
+
+## CPU de la fabrica en RunPod (4 vCPU serverless): se suma al coste real de cada trabajo.
+CPU_USD_SEG = float(os.environ.get("ORQ_CPU_USD_SEG") or "0.000061")
+
+
+def coste_real(gasto: "llm.Gasto", t0: float) -> float:
+	"""IA + GPU (todas las maquinas) + CPU de la fabrica. Lo que de verdad ha costado el trabajo."""
+	from arte import runpod as _runpod
+	return round(gasto.usd + _runpod.GASTO["usd"] + (time.time() - t0) * CPU_USD_SEG, 4)
+
+
+def oyente_progreso(sb: "Supabase", job: str, campos: tuple):
+	"""Manda el avance a la app. Si el servidor ya dio el trabajo por perdido (caducado), se avisa a la
+	fabrica para que no siga gastando GPU en algo que nadie va a recibir."""
+	from arte import runpod as _runpod
+
+	def avisar(ev: dict) -> None:
+		ligero = {k: v for k, v in ev.items() if k in campos}
+		sigue = sb.rpc("job_progress", p_job=job, p_event=ligero)
+		if sigue is False:
+			_runpod.GASTO["cancelado"] = True
+			print(f"[trabajador] {job}: el servidor lo dio por terminado; se deja de gastar", flush=True)
+	return avisar
+
 
 ## Supabase gratis no admite archivos de mas de 50 MB.
 LIMITE_SUBIDA = int(os.environ.get("ORQ_LIMITE_SUBIDA_MB") or "49") * 1024 * 1024
@@ -108,6 +159,8 @@ def _comprimir(proyecto: Path, destino: Path, con_versiones: bool) -> Path:
 		for f in proyecto.rglob("*"):
 			rel = f.relative_to(proyecto)
 			if f.is_dir() or rel.parts[0] in (".godot", "build", "android") or (rel.parts[0] == "fabrica" and len(rel.parts) > 1 and rel.parts[1] == "arte"):
+				continue
+			if rel.parts[:2] == ("fabrica", "ficha"):
 				continue
 			if rel.parts[:2] == ("fabrica", "versiones") and not con_versiones:
 				continue
@@ -142,15 +195,23 @@ def _subir_version(sb: Supabase, carpeta: str, inf: dict, proyecto: Path, tmp: P
 	"""Sube APK, capturas, icono, informe y proyecto de una version. Devuelve sus rutas."""
 	archivos: dict = {"capturas": [], "version": inf.get("version", 1)}
 	cadena.evento("subida", "inicio", "Guardando tu juego en la nube...")
+	def opcional(clave: str, destino: str, origen: Path) -> None:
+		try:
+			archivos[clave] = sb.subir(destino, origen)
+		except Exception as e:  # noqa: BLE001 - sin este archivo el juego funciona igual
+			mb = origen.stat().st_size / 1048576 if origen.exists() else 0
+			archivos.setdefault("avisos", []).append(f"{clave}: no se pudo guardar ({mb:.0f} MB): {str(e)[:120]}")
+			print(f"[trabajador] {clave} no subido ({mb:.0f} MB): {e}", flush=True)
+
 	if inf.get("apk"):
-		archivos["apk"] = sb.subir(f"{carpeta}/{Path(inf['apk']).name}", Path(inf["apk"]))
+		opcional("apk", f"{carpeta}/{Path(inf['apk']).name}", Path(inf["apk"]))
 	if inf.get("web"):
 		## 1 - Solo el paquete del juego: el motor web es comun y esta en el bucket "motor".
 		archivos["web"] = sb.subir(f"{carpeta}/web/index.pck", Path(inf["web"]))
 	if inf.get("clip"):
-		archivos["clip"] = sb.subir(f"{carpeta}/clip_vertical.mp4", Path(inf["clip"]))
+		opcional("clip", f"{carpeta}/clip_vertical.mp4", Path(inf["clip"]))
 	if inf.get("ficha"):
-		archivos["ficha"] = sb.subir(f"{carpeta}/ficha_google_play.zip", Path(inf["ficha"]))
+		opcional("ficha", f"{carpeta}/ficha_google_play.zip", Path(inf["ficha"]))
 	for c in inf.get("capturas", []):
 		archivos["capturas"].append(sb.subir(f"{carpeta}/capturas/{Path(c).name}", Path(c)))
 	archivos["icono"] = sb.subir(f"{carpeta}/icono.png", proyecto / "icon.png")
@@ -177,10 +238,8 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 	usuario = trabajo["user_id"]
 	detalle = trabajo.get("detail") or {}
 	print(f"[trabajador] {trabajo['kind']} {job}: {detalle.get('instruccion', detalle.get('version', ''))}", flush=True)
-
-	def avisar(ev: dict) -> None:
-		ligero = {k: v for k, v in ev.items() if k in ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "version")}
-		sb.rpc("job_progress", p_job=job, p_event=ligero)
+	t0 = time.time()
+	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "version"))
 
 	cadena.oyentes.append(avisar)
 	tmp = Path(tempfile.mkdtemp(prefix="orq_cambio_"))
@@ -213,13 +272,15 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 		carpeta = f"{usuario}/{trabajo['project_id']}/v{inf['version']}"
 		archivos = _subir_version(sb, carpeta, inf, proyecto, tmp)
 		diseno = json.loads((proyecto / "fabrica" / "diseno.json").read_text(encoding="utf-8"))
-		sb.rpc("complete_change_job", p_job=job, p_cost_usd=usd, p_units=0, p_title=diseno["titulo"],
+		sb.rpc("complete_change_job", p_job=job, p_cost_usd=max(usd, coste_real(llm.Gasto(), t0)), p_units=0, p_title=diseno["titulo"],
 			p_spec=diseno, p_files=archivos, p_version=inf["version"])
+		limpiar_version_anterior(sb, archivos_previos, archivos)
 		print(f"[trabajador] listo {job}: v{inf['version']}", flush=True)
 	except Exception as e:  # noqa: BLE001 - cualquier fallo se devuelve al usuario
 		traceback.print_exc()
 		try:
-			devuelto = sb.rpc("fail_job", p_job=job, p_error=str(e)[:400] or e.__class__.__name__, p_cost_usd=usd, p_refund=True)
+			devuelto = sb.rpc("fail_job", p_job=job, p_error=str(e)[:400] or e.__class__.__name__,
+				p_cost_usd=max(usd, coste_real(llm.Gasto(), t0)), p_refund=True)
 			print(f"[trabajador] fallo {job}; devuelto={devuelto}", flush=True)
 		except Exception as e2:  # noqa: BLE001
 			print(f"[trabajador] no se pudo cerrar el trabajo {job}: {e2}", flush=True)
@@ -443,11 +504,9 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 	idea = trabajo["idea"]
 	print(f"[trabajador] trabajo {job}: {idea[:80]}", flush=True)
 	gasto = llm.Gasto()
-
-	def avisar(ev: dict) -> None:
-		## Solo lo que Chispa necesita: paso, estado, mensaje y algun numero.
-		ligero = {k: v for k, v in ev.items() if k in ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "mb", "total_s", "boceto")}
-		sb.rpc("job_progress", p_job=job, p_event=ligero)
+	t0 = time.time()
+	## Solo lo que Chispa necesita: paso, estado, mensaje y algun numero.
+	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "mb", "total_s", "boceto"))
 
 	cadena.oyentes.append(avisar)
 	tmp = Path(tempfile.mkdtemp(prefix="orq_"))
@@ -462,14 +521,15 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 		proyecto = Path(inf["proyecto"])
 		archivos = _subir_version(sb, f"{usuario}/{job}/v1", inf, proyecto, tmp)
 		diseno = json.loads((proyecto / "fabrica" / "diseno.json").read_text(encoding="utf-8"))
-		sb.rpc("complete_game_job", p_job=job, p_cost_usd=inf["coste_usd"]["total"], p_units=inf["imagenes"],
+		sb.rpc("complete_game_job", p_job=job, p_cost_usd=max(inf["coste_usd"]["total"], coste_real(gasto, t0)), p_units=inf["imagenes"],
 			p_title=inf["titulo"], p_spec=diseno, p_files=archivos)
+		borrar_seguro(sb, [f"{usuario}/{job}/boceto/index.pck"])
 		print(f"[trabajador] listo {job}: {inf['titulo']} ({inf['total_s']} s, {inf['coste_usd']['total']} $)", flush=True)
 	except Exception as e:  # noqa: BLE001 - cualquier fallo se devuelve al usuario
 		traceback.print_exc()
 		motivo = str(e)[:400] or e.__class__.__name__
 		try:
-			devuelto = sb.rpc("fail_job", p_job=job, p_error=motivo, p_cost_usd=gasto.usd, p_refund=True)
+			devuelto = sb.rpc("fail_job", p_job=job, p_error=motivo, p_cost_usd=coste_real(gasto, t0), p_refund=True)
 			print(f"[trabajador] fallo {job}; devuelto={devuelto}", flush=True)
 		except Exception as e2:  # noqa: BLE001
 			print(f"[trabajador] no se pudo cerrar el trabajo {job}: {e2}", flush=True)

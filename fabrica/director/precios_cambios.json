@@ -1,6 +1,6 @@
 {
-	"_nota": "Tuercas por operacion de cambio. Lo leen la fabrica (Python) y el servidor (plan-change). Si hay 'estilo' o 'paleta', los 'redibujar' del mismo cambio no se cobran: se redibuja todo igualmente.",
-	"base": 3,
+	"_nota": "Tuercas por operacion de cambio. Lo leen la fabrica (Python) y el servidor (plan-change). Si hay 'estilo' o 'paleta', los 'redibujar' del mismo cambio no se cobran: se redibuja todo igualmente. La base (8) cubre la reconstruccion completa de cada version (bots, APK, web y capturas: unos 7 minutos de CPU).",
+	"base": 8,
 	"textos": 1,
 	"ajustes": 3,
 	"redibujar": 12,

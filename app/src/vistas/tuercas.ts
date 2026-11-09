@@ -80,7 +80,7 @@ export function vistaTuercas(app: App): VistaHecha {
   }
 
   function seccionAnuncio(t: EstadoTienda, saldo: HTMLElement): HTMLElement {
-    const b = h("button", { class: "btn btn-line", style: "width:100%" }, "Ver un anuncio (+5 tuercas)");
+    const b = h("button", { class: "btn btn-line", style: "width:100%" }, "Ver un anuncio (+3 tuercas)");
     if (!t.anuncios) {
       b.disabled = true;
       b.textContent = "Anuncios con premio: en la app de Android";
@@ -92,12 +92,12 @@ export function vistaTuercas(app: App): VistaHecha {
         const r = await app.api.verAnuncio();
         app.ponerTuercas(r.tuercas);
         saldo.textContent = String(r.tuercas);
-        aviso(r.visto ? "+5 tuercas" : "Para ganar las tuercas hay que ver el anuncio entero");
+        aviso(r.visto ? "+3 tuercas" : "Para ganar las tuercas hay que ver el anuncio entero");
       } catch (e) {
         aviso(mensajeError(e, "No hay anuncios disponibles ahora. Prueba en un rato."));
       } finally {
         b.disabled = false;
-        b.textContent = "Ver un anuncio (+5 tuercas)";
+        b.textContent = "Ver un anuncio (+3 tuercas)";
       }
     });
     return h("section", { class: "sheet" },

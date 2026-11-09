@@ -25,19 +25,20 @@ API = "https://api.runpod.ai/v2"
 ## Tope de GPU por juego (todas las maquinas juntas: imagenes, musica y voces). Al pasar el SUAVE
 ## la fabrica deja de repetir lo que el control de calidad rechaza; al pasar el DURO ya no pide mas
 ## (lo que falte sale procedural o el juego falla y se devuelven las tuercas). Nunca mas sustos.
-GASTO = {"usd": 0.0}
+GASTO = {"usd": 0.0, "cancelado": False}
 
 
 def tope_suave() -> float:
-	return float(os.environ.get("ORQ_TOPE_GPU_SUAVE") or "0.35")
+	return float(os.environ.get("ORQ_TOPE_GPU_SUAVE") or "0.25")
 
 
 def tope_duro() -> float:
-	return float(os.environ.get("ORQ_TOPE_GPU_DURO") or "0.90")
+	return float(os.environ.get("ORQ_TOPE_GPU_DURO") or "0.50")
 
 
 def reiniciar_gasto() -> None:
 	GASTO["usd"] = 0.0
+	GASTO["cancelado"] = False
 
 
 def en_ahorro() -> bool:
@@ -56,7 +57,7 @@ class RunPodCliente:
 		if not self.clave:
 			raise ComfyError("Falta RUNPOD_API_KEY para usar ComfyUI en RunPod")
 		self.timeout = timeout
-		self.usd_seg = usd_seg if usd_seg is not None else float(os.environ.get("ORQ_RUNPOD_USD_SEG") or "0.00031")
+		self.usd_seg = usd_seg if usd_seg is not None else float(os.environ.get("ORQ_RUNPOD_USD_SEG") or "0.000372")
 		self.imagenes: dict[str, bytes] = {}
 		self.usd = 0.0
 		self.segundos_gpu = 0.0
@@ -109,6 +110,8 @@ class RunPodCliente:
 
 	def trabajo(self, entrada: dict) -> dict:
 		"""Lanza un trabajo en el endpoint, espera (arranque en frio incluido) y apunta el coste real."""
+		if GASTO["cancelado"]:
+			raise ComfyError("El servidor dio este trabajo por terminado: no se piden mas imagenes")
 		if GASTO["usd"] >= tope_duro():
 			raise ComfyError(f"Tope de gasto de GPU de este juego alcanzado ({GASTO['usd']:.2f} $)")
 		r = self._pedir("POST", "/run", {"input": entrada})

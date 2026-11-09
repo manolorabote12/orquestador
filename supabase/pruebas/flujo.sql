@@ -14,7 +14,7 @@ begin
   -- marketing
   select * into r from public.queue_marketing(u, p);
   select credits into c from public.profiles where id = u;
-  assert c = 200 - (select credits from public.pricing where kind='game') - 20, 'cobro marketing';
+  assert c = 200 - (select credits from public.pricing where kind='game') - (select credits from public.pricing where kind='game_marketing'), 'cobro marketing';
   begin
     perform public.queue_marketing(u, p);
     raise exception 'debia fallar project_busy';

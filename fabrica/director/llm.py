@@ -14,11 +14,12 @@ from dataclasses import dataclass, field
 
 API_URL = os.environ.get("ANTHROPIC_API_URL", "https://api.anthropic.com/v1/messages")
 MODELOS = [
-	os.environ.get("ORQ_MODELO_BARATO", "claude-haiku-4-5-20251001"),
+	os.environ.get("ORQ_MODELO_BARATO", "claude-haiku-5-5"),
 	os.environ.get("ORQ_MODELO_SUPERIOR", "claude-sonnet-5-5"),
 ]
 ## USD por millon de tokens (entrada, salida). Revisar en https://docs.claude.com (precios).
 PRECIOS = {
+	"claude-haiku-5-5": (0.10, 0.50),        ## hasta 100K tokens de entrada (los prompts de la fabrica no llegan)
 	"claude-haiku-4-5-20251001": (1.0, 5.0),
 	"claude-sonnet-5-5": (2.0, 10.0),
 }

@@ -1,11 +1,12 @@
 // Llamada a la IA de texto con coste real calculado a partir del uso que devuelve la API.
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY") ?? "";
-export const LLM_MODEL = Deno.env.get("LLM_MODEL") ?? "claude-haiku-4-5-20251001";
+export const LLM_MODEL = Deno.env.get("LLM_MODEL") ?? "claude-haiku-5-5";
 
 // Precio en USD por millón de tokens (entrada, salida). Revísalo si cambias de modelo:
 // https://platform.claude.com/docs/en/about-claude/pricing
 const PRICES: Record<string, { in: number; out: number }> = {
+  "claude-haiku-5-5": { in: 0.1, out: 0.5 },
   "claude-haiku-4-5-20251001": { in: 1, out: 5 },
   "claude-sonnet-5-5": { in: 2, out: 10 },
 };

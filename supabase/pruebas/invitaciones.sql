@@ -29,10 +29,13 @@ begin
   exception when others then assert sqlerrm like '%own_code%', sqlerrm; end;
   select credits into ca from public.profiles where id = a;
   select credits into cb from public.profiles where id = b;
-  -- Primer juego de B: los dos cobran 30. El segundo no paga otra vez.
+  -- Un juego (el de bienvenida) ya no paga: crear cuentas en cadena no sale gratis.
   insert into public.projects (user_id, title, spec, files) values (b, 'Uno', '{}'::jsonb, '{"web":"b/u/v1/web/index.pck"}'::jsonb) returning id into p;
-  assert (select credits from public.profiles where id = a) = ca + 30 and (select credits from public.profiles where id = b) = cb + 30;
-  insert into public.projects (user_id, title, spec, files) values (b, 'Dos', '{}'::jsonb, '{}'::jsonb);
+  assert (select credits from public.profiles where id = a) = ca and (select credits from public.profiles where id = b) = cb;
+  -- La primera compra de B: los dos cobran 30. La segunda no paga otra vez.
+  perform public.grant_purchase(b, 'tuercas_300', 'tok-inv-1', 'GPA.inv-1');
+  assert (select credits from public.profiles where id = a) = ca + 30 and (select credits from public.profiles where id = b) = cb + 300 + 30;
+  perform public.grant_purchase(b, 'tuercas_300', 'tok-inv-2', 'GPA.inv-2');
   assert (select credits from public.profiles where id = a) = ca + 30;
   perform set_config('request.jwt.claim.sub', a::text, false);
   r := public.mi_invitacion();
@@ -42,8 +45,8 @@ begin
   perform set_config('request.jwt.claim.sub', c::text, false);
   perform public.usar_invitacion(cod);
   select credits into cb from public.profiles where id = c;
-  insert into public.projects (user_id, title, spec, files) values (c, 'Tres', '{}'::jsonb, '{}'::jsonb);
-  assert (select credits from public.profiles where id = c) = cb and (select credits from public.profiles where id = a) = ca + 30;
+  perform public.grant_purchase(c, 'tuercas_300', 'tok-inv-3', 'GPA.inv-3');
+  assert (select credits from public.profiles where id = c) = cb + 300 and (select credits from public.profiles where id = a) = ca + 30;
   update public.settings set value = 20 where key = 'invitaciones_mes';
   assert not has_function_privilege('anon', 'public.usar_invitacion(text)', 'execute');
   -- Ranking semanal: solo lo que se ha movido esta semana; los me gusta pesan mas.

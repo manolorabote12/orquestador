@@ -493,8 +493,17 @@ def generar(proyecto: Path) -> dict:
 	zipf = carpeta / "ficha.zip"
 	with zipfile.ZipFile(zipf, "w", zipfile.ZIP_DEFLATED) as z:
 		for f in sorted(carpeta.rglob("*")):
-			if f.is_file() and f != zipf:
-				z.write(f, f.relative_to(carpeta).as_posix())
+			if not f.is_file() or f == zipf:
+				continue
+			rel = f.relative_to(carpeta)
+			if f.suffix == ".png" and any(p.startswith("capturas") for p in rel.parts[:-1]):
+				from io import BytesIO
+				from PIL import Image
+				buf = BytesIO()
+				Image.open(f).convert("RGB").save(buf, "JPEG", quality=90, optimize=True)
+				z.writestr(rel.with_suffix(".jpg").as_posix(), buf.getvalue())
+			else:
+				z.write(f, rel.as_posix())
 	problemas = recursos.validar(carpeta)
 	return {"carpeta": str(carpeta), "zip": str(zipf), "capturas": len(caps), "textos": tx, "appstore": tx_ios,
 		"problemas": problemas}

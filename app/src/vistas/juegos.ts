@@ -1631,7 +1631,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
     const entrada = h("textarea", { rows: "2", maxlength: "400", placeholder: "¿Qué cambiamos? Ej.: haz al gato negro", "aria-label": "Instrucción para Chispa" });
     const enviar = h("button", { class: "btn btn-brass btn-small" }, "Enviar");
     const chips = h("div", { class: "chips desliza", role: "list", "aria-label": "Ideas de cambios" }, ...SUGERENCIAS.map((s) => h("button", { class: "chip", type: "button", onclick: () => { entrada.value = s; entrada.focus(); } }, s)));
-    const nota = h("p", { class: "muted small" }, "Chispa te dice qué hará y cuánto cuesta antes de cobrar nada. Volver atrás es gratis.");
+    const nota = h("p", { class: "muted small" }, "Chispa te dice qué hará y cuánto cuesta antes de cobrar nada. Volver atrás cuesta 3 tuercas.");
     // 1 - Editor manual: dibujar los niveles casilla a casilla (los bots los prueban al guardar).
     const aMano = h("button", { class: "btn btn-line btn-small", type: "button" }, "✎ Editar niveles a mano");
     aMano.addEventListener("click", () => void abrirEditor(app, p, (prop) => {

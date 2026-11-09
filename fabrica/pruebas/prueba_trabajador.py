@@ -40,6 +40,12 @@ class SupabaseFalso:
 		self.archivos[f"{bucket}/{ruta}"] = archivo.read_bytes()
 		return ruta
 
+	def borrar(self, rutas: list, bucket: str = "juegos") -> None:
+		self.borrados = getattr(self, "borrados", []) + list(rutas)
+		for r in rutas:
+			self.archivos.pop(f"{bucket}/{r}", None)
+			self.archivos.pop(r, None)
+
 	def ultimo(self, funcion: str) -> dict:
 		return [p for f, p in self.rpcs if f == funcion][-1]
 
@@ -125,8 +131,10 @@ def main() -> int:
 	check("juego nuevo terminado", [f for f, _ in sb.rpcs if f in ("complete_game_job", "fail_job")][-1:] == ["complete_game_job"],
 		str([p for f, p in sb.rpcs if f == "fail_job"])[-300:])
 	bocetos = [p["p_event"] for f, p in sb.rpcs if f == "job_progress" and p["p_event"].get("boceto")]
-	check("boceto subido y avisado antes del arte", bool(bocetos) and f"juegos/{bocetos[0]['boceto']}" in sb.archivos
-		and bocetos[0]["boceto"].startswith("u2/0000bb00"), str(bocetos)[:200])
+	## El boceto se sube y avisa antes del arte; con el juego ya guardado se borra (ocupa sitio y no sirve).
+	check("boceto subido y avisado antes del arte", bool(bocetos) and bocetos[0]["boceto"].startswith("u2/0000bb00"), str(bocetos)[:200])
+	check("boceto borrado al terminar", bool(bocetos) and bocetos[0]["boceto"] in getattr(sb, "borrados", [])
+		and f"juegos/{bocetos[0]['boceto']}" not in sb.archivos, str(getattr(sb, "borrados", []))[:200])
 	pasos = [p["p_event"]["paso"] for f, p in sb.rpcs if f == "job_progress" and p.get("p_job") == t0["job_id"]]
 	check("el boceto llega antes que el arte", "boceto" in pasos and pasos.index("boceto") < pasos.index("arte"))
 
