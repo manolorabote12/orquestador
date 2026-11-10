@@ -147,7 +147,8 @@ def main() -> int:
 	rp = next((p for f, p in sb.rpcs if f == "complete_preview_job" and p["p_job"] == tp["job_id"]), None)
 	check("vista previa: solo el diseno, terminada", rp is not None and rp["p_spec"].get("titulo") and rp["p_spec"].get("heroe"),
 		str([p for f, p in sb.rpcs if f == "fail_job"])[-300:])
-	check("la vista previa no sube nada ni hace niveles", not any(f == "job_progress" and p.get("p_job") == tp["job_id"] for f, p in sb.rpcs))
+	check("la vista previa trae su boceto jugable", bool(rp and rp.get("p_boceto")) and any("0000cc01" in k and k.endswith("boceto/index.pck") for k in sb.archivos),
+		str(rp and rp.get("p_boceto")))
 	if rp:
 		previa = dict(rp["p_spec"], titulo="Torre Orca de Prueba")
 		tg = {"job_id": "0000cc02-0000-0000-0000-000000000000", "user_id": "u2", "kind": "game", "idea": tp["idea"],

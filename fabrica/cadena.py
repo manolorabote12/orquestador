@@ -689,6 +689,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 
 	## 3b - Boceto jugable: con el arte provisional del kit, para jugar mientras se dibuja el de verdad.
 	subir_boceto = getattr(args, "boceto", None)
+	ruta_boceto = None
 	if getattr(args, "web", False) and callable(subir_boceto):
 		t = time.time()
 		try:
@@ -696,11 +697,15 @@ def fabricar(args: argparse.Namespace) -> dict:
 			pck.parent.mkdir(parents=True, exist_ok=True)
 			godot(proyecto, "--export-pack", "Web", str(pck), timeout=300)
 			if pck.exists():
-				ruta = subir_boceto(pck)
+				ruta = ruta_boceto = subir_boceto(pck)
 				evento("boceto", "ok", "¡Ya puedes jugar un boceto mientras dibujo el arte!", boceto=ruta)
 		except Exception as e:  # noqa: BLE001 - el boceto es un extra: si falla, se sigue sin el
 			evento("boceto", "aviso", f"Sin boceto esta vez ({str(e)[:80]})")
 		cronometro("boceto", t)
+	## Vista previa jugable (gratis): hasta aqui. Diseno + niveles + boceto, sin tarjeta grafica.
+	if getattr(args, "solo_boceto", False):
+		return {"solo_boceto": True, "diseno": diseno, "boceto": ruta_boceto, "titulo": diseno.get("titulo"),
+			"coste_usd": round(gasto.usd, 4), "tiempos": tiempos}
 
 	## 3c - Fallar barato: los bots juegan YA, con el arte provisional del kit. Si el juego no se puede
 	## superar se arregla (o se para) ANTES de pagar la tarjeta grafica, que es lo caro.

@@ -558,16 +558,33 @@ def atender_previa(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 	gasto = llm.Gasto()
 	t0 = time.time()
 	print(f"[trabajador] vista previa {job}: {trabajo['idea'][:80]}", flush=True)
+	usuario = trabajo["user_id"]
+	tmp = Path(tempfile.mkdtemp(prefix="orq_previa_"))
 	try:
-		diseno, _ = cadena.disenar_previa(trabajo["idea"], opciones.simulado, gasto)
-		sb.rpc("complete_preview_job", p_job=job, p_spec=diseno, p_cost_usd=coste_real(gasto, t0))
-		print(f"[trabajador] vista previa lista {job}: {diseno.get('titulo')}", flush=True)
+		## Diseno + niveles + boceto jugable con los dibujos provisionales (sin tarjeta grafica).
+		diseno, boceto = None, None
+		try:
+			inf = cadena.fabricar(argparse.Namespace(
+				idea=trabajo["idea"], salida=str(tmp), simulado=opciones.simulado, arte_simulado=True,
+				comfy=opciones.comfy, crear=opciones.crear, editar=opciones.editar, lado=opciones.lado,
+				semilla=int(job.replace("-", "")[:6], 16) % 100000, apk=False, capturas=False, web=opciones.web,
+				ficha=False, clip=False, gasto=gasto, solo_boceto=True,
+				boceto=lambda pck: sb.subir(f"{usuario}/{job}/boceto/index.pck", pck)))
+			diseno, boceto = inf["diseno"], inf.get("boceto")
+		except Exception as e:  # noqa: BLE001 - sin boceto, al menos el diseno
+			print(f"[trabajador] vista previa sin boceto ({str(e)[:160]}): solo el diseno", flush=True)
+		if diseno is None:
+			diseno, _ = cadena.disenar_previa(trabajo["idea"], opciones.simulado, gasto)
+		sb.rpc("complete_preview_job", p_job=job, p_spec=diseno, p_cost_usd=coste_real(gasto, t0), p_boceto=boceto)
+		print(f"[trabajador] vista previa lista {job}: {diseno.get('titulo')} (boceto: {'si' if boceto else 'no'})", flush=True)
 	except Exception as e:  # noqa: BLE001 - se cierra como fallida; no habia cobro
 		traceback.print_exc()
 		try:
 			sb.rpc("fail_job", p_job=job, p_error=str(e)[:400] or e.__class__.__name__, p_cost_usd=coste_real(gasto, t0), p_refund=False)
 		except Exception as e2:  # noqa: BLE001
 			print(f"[trabajador] no se pudo cerrar la vista previa {job}: {e2}", flush=True)
+	finally:
+		shutil.rmtree(tmp, ignore_errors=True)
 
 
 def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
@@ -660,6 +677,13 @@ def mantenimiento(sb: Supabase, aprender: bool) -> None:
 		sb.rpc("nube_limpiar")
 	except RuntimeError as e:
 		print(f"[trabajador] nube: {e}", flush=True)
+	try:
+		viejos = sb.rpc("limpiar_previas") or []
+		borrar_seguro(sb, list(viejos))
+		if viejos:
+			print(f"[trabajador] {len(viejos)} bocetos de vistas previas viejas borrados", flush=True)
+	except Exception as e:  # noqa: BLE001
+		print(f"[trabajador] bocetos de vistas previas: {e}", flush=True)
 	try:
 		n = limpiar_cache_arte(sb)
 		if n:

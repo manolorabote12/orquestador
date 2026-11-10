@@ -368,7 +368,7 @@ export function vistaTaller(app: App): VistaHecha {
   const precio = h("span", { class: "price" }, svg(ICONOS.tuerca), String(app.precio));
   const fabricar = h("button", { class: "btn btn-brass" }, "Fabricar juego", precio);
   // Vista previa gratis: Chispa piensa el diseño (un minuto) y lo enseña ANTES de cobrar nada.
-  const verPrevia = h("button", { class: "btn btn-line", type: "button" }, "Ver el diseño gratis") as HTMLButtonElement;
+  const verPrevia = h("button", { class: "btn btn-line", type: "button" }, "Probar gratis") as HTMLButtonElement;
   const previaCaja = h("div", { class: "plantilla previa", hidden: true, role: "region", "aria-live": "polite" });
   let previa: { id: string; texto: string } | null = null;
   let dejarPrevia: (() => void) | null = null;
@@ -426,7 +426,7 @@ export function vistaTaller(app: App): VistaHecha {
     estilo?: { descripcion?: string };
   }
 
-  function pintarPrevia(id: string, texto: string, d: DisenoPrevia) {
+  function pintarPrevia(id: string, texto: string, d: DisenoPrevia, boceto?: string) {
     previa = { id, texto };
     const genero = d.genero ? (GENERO_NOMBRE[d.genero] ?? d.genero) : "";
     const enemigos = (d.enemigos ?? []).map((e) => e.nombre).filter(Boolean).join(", ");
@@ -436,6 +436,17 @@ export function vistaTaller(app: App): VistaHecha {
     hacer.addEventListener("click", () => void encargarJuego(id));
     const otra = h("button", { class: "btn btn-line btn-small", type: "button" }, "Cambiar la idea");
     otra.addEventListener("click", () => { quitarPrevia(); actualizar(); idea.focus(); });
+    // Boceto jugable: los niveles de verdad con dibujos provisionales. Se juega antes de pagar nada.
+    const probar = h("button", { class: "btn btn-brass", type: "button" }, svg(ICONOS.jugar), " Jugar el boceto") as HTMLButtonElement;
+    probar.addEventListener("click", async () => {
+      const motor = app.api.motor();
+      try {
+        const pck = motor && boceto ? await app.api.url(boceto) : null;
+        abrirJugador({ motor, pck, titulo: d.titulo ?? "Boceto", portada: undefined });
+      } catch (e) {
+        aviso(mensajeError(e, "No se pudo abrir el boceto."));
+      }
+    });
     previaCaja.replaceChildren(
       h("div", { class: "plantilla-cab" }, h("strong", {}, d.titulo ?? "Tu juego"), genero ? h("span", { class: "tag" }, genero) : ""),
       d.resumen ? h("p", {}, d.resumen) : "",
@@ -443,7 +454,10 @@ export function vistaTaller(app: App): VistaHecha {
       enemigos ? h("p", { class: "small" }, h("strong", {}, "Rivales: "), enemigos + (d.jefe?.nombre ? ` y el jefe final ${d.jefe.nombre}` : "")) : "",
       d.niveles?.length ? h("p", { class: "small" }, h("strong", {}, "Niveles: "), String(d.niveles.length)) : "",
       d.estilo?.descripcion ? h("p", { class: "muted small" }, "Estilo: " + d.estilo.descripcion) : "",
-      h("p", { class: "muted small" }, "Esto es lo que voy a fabricar. Si te gusta, adelante; si no, cambia la idea y pide otro (gratis)."),
+      boceto ? h("div", { style: "margin:10px 0" }, probar) : "",
+      h("p", { class: "muted small" }, boceto
+        ? "Juega el boceto: son los niveles de verdad con dibujos provisionales. Al fabricarlo le pongo su arte, su música y su APK."
+        : "Esto es lo que voy a fabricar. Si te gusta, adelante; si no, cambia la idea y pide otro (gratis)."),
       h("div", { class: "btn-row" }, hacer, otra));
     previaCaja.hidden = false;
     previaCaja.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -454,18 +468,19 @@ export function vistaTaller(app: App): VistaHecha {
     quitarPrevia();
     verPrevia.disabled = true;
     estado.className = "status";
-    estado.textContent = "Chispa está pensando tu juego (tarda un minuto y es gratis)...";
+    estado.textContent = "Chispa está pensando tu juego y montando un boceto jugable (un minuto, gratis)...";
     chispa.decir("Déjame pensarlo: te enseño el diseño antes de gastar nada.", "thinking");
     try {
       const r = await app.api.vistaPrevia(texto);
       dejarPrevia = app.api.seguir(r.job_id, (t) => {
         if (t.status === "done") {
           dejarPrevia = null;
-          const d = (t.result as unknown as { diseno?: DisenoPrevia } | null)?.diseno;
+          const res = t.result as unknown as { diseno?: DisenoPrevia; boceto?: string } | null;
+          const d = res?.diseno;
           if (d) {
             estado.textContent = "";
-            chispa.decir(`Mira: «${d.titulo ?? "tu juego"}». ¿Lo fabrico?`, "happy");
-            pintarPrevia(t.id, texto, d);
+            chispa.decir(res?.boceto ? `Mira: «${d.titulo ?? "tu juego"}». ¡Ya puedes jugar un boceto!` : `Mira: «${d.titulo ?? "tu juego"}». ¿Lo fabrico?`, "happy");
+            pintarPrevia(t.id, texto, d, res?.boceto);
           } else {
             estado.className = "status err";
             estado.textContent = "No he podido enseñarte el diseño. Prueba otra vez o fabrícalo directamente.";

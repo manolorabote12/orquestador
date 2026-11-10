@@ -41,7 +41,7 @@ begin
     raise exception 'debia fallar';
   exception when others then assert sqlerrm like '%daily_limit%', sqlerrm; end;
   assert not has_function_privilege('authenticated', 'public.queue_preview(uuid, text)', 'execute');
-  assert not has_function_privilege('authenticated', 'public.complete_preview_job(uuid, jsonb, numeric)', 'execute');
+  assert not has_function_privilege('authenticated', 'public.complete_preview_job(uuid, jsonb, numeric, text)', 'execute');
   raise notice 'vista_previa OK';
 end;
 $$;
@@ -62,5 +62,25 @@ begin
   assert (select detail -> 'diseno' ->> 'titulo' from public.jobs where id = r) = 'Caballero de Nubes', 'mismo diseno';
   assert not has_function_privilege('authenticated', 'public.guardar_diseno(uuid, jsonb)', 'execute');
   raise notice 'reintentar OK';
+end;
+$$;
+-- Vista previa jugable: el boceto queda en el resultado y los viejos se limpian.
+do $$
+declare
+  u uuid; p uuid; rutas text[];
+begin
+  insert into auth.users (email, email_confirmed_at) values ('boceto@example.com', now()) returning id into u;
+  select r.job_id into p from public.queue_preview(u, 'un pulpo cocinero que reparte sushi en patines') r;
+  update public.jobs set status = 'running', started_at = now() where id = p;
+  perform public.complete_preview_job(p, '{"titulo":"Pulpo Sushi"}'::jsonb, 0.01, u::text || '/' || p::text || '/boceto/index.pck');
+  assert (select result ->> 'boceto' from public.jobs where id = p) like '%/boceto/index.pck';
+  assert public.limpiar_previas(2) = '{}', 'reciente: no se borra';
+  update public.jobs set created_at = now() - interval '3 days' where id = p;
+  rutas := public.limpiar_previas(2);
+  assert array_length(rutas, 1) = 1 and rutas[1] like '%/boceto/index.pck', rutas::text;
+  assert not (select result ? 'boceto' from public.jobs where id = p), 'ya no lo ofrece';
+  assert (select result -> 'diseno' ->> 'titulo' from public.jobs where id = p) = 'Pulpo Sushi', 'el diseno sigue';
+  assert public.limpiar_previas(2) = '{}';
+  raise notice 'boceto previa OK';
 end;
 $$;
