@@ -26,7 +26,10 @@ from .comfy import ComfyError
 from . import runpod
 from .runpod import cliente as cliente_comfy
 
-MAX_INTENTOS = 3
+## Intentos por animacion o suelo: el primero y UNA repeticion de lo que el control de calidad rechaza.
+## Con 3, un juego de prueba repetia el 41 % de las imagenes y la segunda repeticion casi nunca arreglaba
+## lo que la primera no habia arreglado.
+MAX_INTENTOS = 2
 ## Orden de dibujo: lo imprescindible primero (el validador exige heroe, enemigo y suelo), asi que
 ## si un juego llega al tope de GPU lo que se queda sin dibujar es lo secundario.
 ORDEN_ROL = {"jugador": 0, "enemigo": 1}
@@ -122,6 +125,8 @@ def fabricar(args: argparse.Namespace) -> dict:
 		tiles[esc["id"]] = tile
 		informe["tiles"][esc["id"]] = {"costura": round(cost, 1), "deriva": round(der, 1), "qa_ok": rev["ok"]}
 
+	## Pasada 1: las fichas de todos los personajes y objetos (el modelo de crear).
+	fichas: dict = {}
 	for s in sprites:
 		sid = s["id"]
 		celda = tuple(s["tamano"])
@@ -136,7 +141,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 		ref_autor = (getattr(args, "referencias", None) or {}).get(sid)
 		## El heroe y el primer enemigo son imprescindibles: sin ellos el juego no se puede entregar.
 		esencial = s.get("rol") == "jugador" or (s.get("rol") == "enemigo" and not any(
-			x.get("rol") == "enemigo" and x["id"] in hojas for x in sprites))
+			x.get("rol") == "enemigo" and x["id"] in fichas for x in sprites))
 		imprescindible(esencial)
 		try:
 			if ref_autor:
@@ -173,7 +178,12 @@ def fabricar(args: argparse.Namespace) -> dict:
 		ref_nombre = cliente.subir_imagen(f"{sid}_ficha.png", _bytes_png(ficha))
 		ficha_proc, _ = post.procesar_animacion([ficha], ficha, celda, estilo, paleta, chroma)
 		ficha_proc[0].save(salida / f"{sid}_ficha_{celda[0]}x{celda[1]}.png")
+		fichas[sid] = (s, celda, ficha, ficha_proc, ref_nombre)
 
+	## Pasada 2: los frames de todos (editando cada ficha). Primero todas las fichas y despues todos
+	## los frames: asi la GPU no cambia de modelo (crear <-> editar) en cada personaje. Cada cambio
+	## recarga varios GB del disco de modelos y se pagaba como tiempo de GPU (medido: 18,7 s por imagen).
+	for sid, (s, celda, ficha, ficha_proc, ref_nombre) in fichas.items():
 		hojas[sid] = {}
 		informe["sprites"][sid] = {}
 		for anim, cfg in s["animaciones"].items():

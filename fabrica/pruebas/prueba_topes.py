@@ -97,7 +97,9 @@ def main() -> int:
 		check("el juego se termina igual", inf.get("tope_gpu") is True, str(inf["avisos"][:3]))
 		check("heroe dibujado con todas sus animaciones", sorted(inf["sprites"].get("heroe", {})) == ["fall", "idle", "jump", "run"], str(inf["sprites"].keys()))
 		check("el primer enemigo tambien (imprescindible)", "chatarrilla" in inf["sprites"], str(inf["sprites"].keys()))
-		check("lo secundario se queda con el provisional", "moneda" not in inf["sprites"], str(inf["sprites"].keys()))
+		## Primero se dibujan todas las fichas y luego los frames: lo que no cabe sale quieto (o provisional).
+		check("lo que no cabe sale sin GPU (quieto o provisional)", "moneda" not in inf["sprites"]
+			or any("quietos" in x or "moneda" in x for x in inf["avisos"]), str(inf["avisos"][:4]))
 		check("suelo dibujado", "suelo" in inf["tiles"] or bool(inf["tiles"]), str(inf["tiles"]))
 		check("no pasa del margen de lo imprescindible", runpod.GASTO["usd"] <= 0.012 * 1.5 + 0.0024, f"{runpod.GASTO['usd']:.4f} $")
 		check("informe con segundos por imagen", inf.get("seg_por_imagen", 0) > 0 and "segundos_arranque" in inf, str(inf.get("seg_por_imagen")))

@@ -84,12 +84,31 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      # Huella de lo que entra en la imagen (su Dockerfile y lo que copia). Si ya hay una imagen con esa
+      # huella, se le pone la etiqueta de este commit y no se construye: las de GPU tardan 30 minutos
+      # y gastan minutos de GitHub (2.000 al mes en un repositorio privado).
+      - id: huella
+        run: |
+          h=$(python3 nube/huella_imagen.py "${{ matrix.archivo }}")
+          base="${{ steps.nombre.outputs.tag }}"
+          base="${base%:*}"
+          echo "imagen=$base:h-$h" >> "$GITHUB_OUTPUT"
+          if docker buildx imagetools inspect "$base:h-$h" > /dev/null 2>&1; then
+            echo "existe=1" >> "$GITHUB_OUTPUT"
+            echo "::notice::${{ matrix.nombre }} sin cambios (huella $h): se reutiliza sin construir"
+          fi
+      - name: Reutilizar la imagen sin cambios
+        if: steps.huella.outputs.existe == '1'
+        run: docker buildx imagetools create -t "${{ steps.nombre.outputs.tag }}" "${{ steps.huella.outputs.imagen }}"
       - uses: docker/build-push-action@v6
+        if: steps.huella.outputs.existe != '1'
         with:
           context: .
           file: ${{ matrix.archivo }}
           push: true
-          tags: ${{ steps.nombre.outputs.tag }}
+          tags: |
+            ${{ steps.nombre.outputs.tag }}
+            ${{ steps.huella.outputs.imagen }}
           cache-from: type=gha,scope=${{ matrix.nombre }}
           cache-to: type=gha,mode=min,scope=${{ matrix.nombre }}
 
@@ -133,9 +152,16 @@ jobs:
           if [ "${{ inputs.primera_vez }}" = "true" ]; then extra="--modelos --motor"; fi
           base="ghcr.io/$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')"
           v="${{ inputs.etiqueta }}"
-          if [ -z "$v" ]; then v="${GITHUB_SHA::12}"; fi
-          python nube/desplegar.py --imagen-fabrica "$base/orq-fabrica:$v" --imagen-gpu "$base/orq-imagenes:$v" \
-            --imagen-voces "$base/orq-voces:$v" $extra
+          if [ -n "$v" ]; then
+            fab="$base/orq-fabrica:$v"; gpu="$base/orq-imagenes:$v"; voz="$base/orq-voces:$v"
+          else
+            ## Por huella: si una imagen no cambio, RunPod sigue con la misma y no hay arranque en frio nuevo.
+            fab="$base/orq-fabrica:h-$(python3 nube/huella_imagen.py nube/fabrica/Dockerfile)"
+            gpu="$base/orq-imagenes:h-$(python3 nube/huella_imagen.py nube/imagenes/Dockerfile)"
+            voz="$base/orq-voces:h-$(python3 nube/huella_imagen.py nube/voces/Dockerfile)"
+          fi
+          echo "::notice::Imagenes: $fab | $gpu | $voz"
+          python nube/desplegar.py --imagen-fabrica "$fab" --imagen-gpu "$gpu" --imagen-voces "$voz" $extra
 
   muestras:
     # «Probar» en el catálogo del taller: una partida de muestra por género (fabrica/muestras.py).
