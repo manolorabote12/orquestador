@@ -27,6 +27,9 @@ from . import runpod
 from .runpod import cliente as cliente_comfy
 
 MAX_INTENTOS = 3
+## Orden de dibujo: lo imprescindible primero (el validador exige heroe, enemigo y suelo), asi que
+## si un juego llega al tope de GPU lo que se queda sin dibujar es lo secundario.
+ORDEN_ROL = {"jugador": 0, "enemigo": 1}
 
 
 def _imagen(datos: bytes) -> Image.Image:
@@ -68,27 +71,84 @@ def fabricar(args: argparse.Namespace) -> dict:
 	informe: dict = {"juego": biblia["juego"]["titulo"], "generaciones": 0, "regeneradas": 0, "sprites": {}, "tiles": {}, "avisos": []}
 	hojas: dict = {}
 	tiles: dict = {}
-	sprites = biblia["personajes"] + biblia.get("objetos", [])
+	sprites = sorted(biblia["personajes"] + biblia.get("objetos", []), key=lambda s: ORDEN_ROL.get(s.get("rol", ""), 2))
 	## 7 - Arte parcial (taller por instrucciones): solo los ids pedidos; el resto se conserva.
 	solo = getattr(args, "solo", None)
 	if solo is not None:
 		sprites = [s for s in sprites if s["id"] in solo]
+
+	def imprescindible(si: bool) -> None:
+		runpod.GASTO["imprescindible"] = si
+
+	def tope_alcanzado(que: str, e: Exception) -> None:
+		if not informe.get("tope_gpu"):
+			print(f"[arte] {e}: {que} y lo que falte se hace sin GPU", flush=True)
+		informe["tope_gpu"] = True
+		informe["avisos"].append(f"tope de GPU: {que}")
+
+	## 6 - Suelo antes que los personajes: sin el, el juego no pasa la validacion.
+	for esc in biblia.get("escenarios", []):
+		if solo is not None and esc["id"] not in solo:
+			continue
+		enc = next(e for e in encargos if e["tipo"] == "tile" and e["id"] == esc["id"])
+		tile = None
+		for intento in range(MAX_INTENTOS):
+			imprescindible(tile is None and not tiles)
+			try:
+				crudo = _imagen(cliente.generar(wf_crear, _valores(enc, intento, args.lado))[0])
+			except runpod.TopeGPU as e:
+				if tile is None and not tiles:
+					raise
+				tope_alcanzado(f"suelo {esc['id']} sin repetir", e)
+				break
+			finally:
+				imprescindible(False)
+			informe["generaciones"] += 1
+			tile, cost, der = post.procesar_tile(crudo, int(esc["tile"]), estilo, paleta)
+			rev = qa_arte.revisar_tile(cost, der)
+			if rev["ok"] or runpod.en_ahorro():
+				break
+			informe["regeneradas"] += 1
+		if tile is None:
+			## Sin GPU para este suelo: se usa el primero que salio (el juego se ve igual de bien).
+			tiles[esc["id"]] = next(iter(tiles.values()))
+			informe["tiles"][esc["id"]] = {"qa_ok": None, "copia": True}
+			continue
+		tiles[esc["id"]] = tile
+		informe["tiles"][esc["id"]] = {"costura": round(cost, 1), "deriva": round(der, 1), "qa_ok": rev["ok"]}
 
 	for s in sprites:
 		sid = s["id"]
 		celda = tuple(s["tamano"])
 		print(f"[arte] {sid}: ficha de referencia")
 		enc_ficha = next(e for e in encargos if e["tipo"] == "ficha" and e["id"] == sid)
+		if informe.get("tope_gpu") and s.get("rol") not in ORDEN_ROL:
+			## Sin GPU: este objeto se queda con el dibujo provisional del kit (el juego funciona igual).
+			informe["avisos"].append(f"{sid}: sin dibujar por el tope de GPU (dibujo provisional)")
+			continue
 		## 13 - Dibujo del autor (revisado en el servidor): la ficha sale de editar SU imagen al
 		## estilo del juego en vez de inventarla; los frames siguen como siempre desde la ficha.
 		ref_autor = (getattr(args, "referencias", None) or {}).get(sid)
-		if ref_autor:
-			subida = cliente.subir_imagen(f"{sid}_autor.png", Path(ref_autor).read_bytes())
-			enc_dibujo = dict(enc_ficha, prompt=prompts.desde_dibujo(enc_ficha["prompt"]))
-			ficha = _imagen(cliente.generar(wf_editar, _valores(enc_dibujo, 0, args.lado, subida))[0])
-			informe.setdefault("referencias", []).append(sid)
-		else:
-			ficha = _imagen(cliente.generar(wf_crear, _valores(enc_ficha, 0, args.lado))[0])
+		## El heroe y el primer enemigo son imprescindibles: sin ellos el juego no se puede entregar.
+		esencial = s.get("rol") == "jugador" or (s.get("rol") == "enemigo" and not any(
+			x.get("rol") == "enemigo" and x["id"] in hojas for x in sprites))
+		imprescindible(esencial)
+		try:
+			if ref_autor:
+				subida = cliente.subir_imagen(f"{sid}_autor.png", Path(ref_autor).read_bytes())
+				enc_dibujo = dict(enc_ficha, prompt=prompts.desde_dibujo(enc_ficha["prompt"]))
+				ficha = _imagen(cliente.generar(wf_editar, _valores(enc_dibujo, 0, args.lado, subida))[0])
+				informe.setdefault("referencias", []).append(sid)
+			else:
+				ficha = _imagen(cliente.generar(wf_crear, _valores(enc_ficha, 0, args.lado))[0])
+		except runpod.TopeGPU as e:
+			## Los demas se quedan con el dibujo provisional del kit.
+			if esencial:
+				raise
+			tope_alcanzado(f"{sid} sin dibujar (dibujo provisional)", e)
+			continue
+		finally:
+			imprescindible(False)
 		informe["generaciones"] += 1
 		## 12 - Revision visual con IA (Claude) de los personajes; si no pasa, otra semilla (una vez).
 		gasto_rev = getattr(args, "revision", None)
@@ -113,13 +173,28 @@ def fabricar(args: argparse.Namespace) -> dict:
 		informe["sprites"][sid] = {}
 		for anim, cfg in s["animaciones"].items():
 			encs = [e for e in encargos if e["tipo"] == "frame" and e["id"] == sid and e["anim"] == anim]
-			crudos = [_imagen(cliente.generar(wf_editar, _valores(e, 0, args.lado, ref_nombre))[0]) for e in encs]
-			informe["generaciones"] += len(encs)
+			## Frames sin GPU (animacion desde_ficha o tope alcanzado): la propia ficha, quieta.
+			copias = cfg.get("desde_ficha") or not encs
+			crudos = []
+			for e in encs:
+				if informe.get("tope_gpu"):
+					crudos.append(ficha.copy())
+					copias = True
+					continue
+				try:
+					crudos.append(_imagen(cliente.generar(wf_editar, _valores(e, 0, args.lado, ref_nombre))[0]))
+					informe["generaciones"] += 1
+				except runpod.TopeGPU as err:
+					tope_alcanzado(f"{sid}/{anim} con frames quietos", err)
+					crudos.append(ficha.copy())
+					copias = True
+			if not encs:
+				crudos = [ficha.copy() for _ in range(int(cfg["frames"]))]
 			giratorio = anim == "spin"
 			for intento in range(MAX_INTENTOS):
 				frames, derivas = post.procesar_animacion(crudos, ficha, celda, estilo, paleta, chroma)
 				rev = qa_arte.revisar_animacion(frames, ficha_proc[0], celda, derivas, paleta, chroma, pixel_art, giratorio)
-				if rev["ok"]:
+				if rev["ok"] or copias:
 					break
 				print(f"[arte] {sid}/{anim}: QA rechaza frames {sorted(rev['malos'])} -> {rev['malos']}")
 				if runpod.en_ahorro():
@@ -128,27 +203,17 @@ def fabricar(args: argparse.Namespace) -> dict:
 				if intento == MAX_INTENTOS - 1:
 					informe["avisos"].append(f"{sid}/{anim}: tras {MAX_INTENTOS} intentos quedan frames con problemas {rev['malos']}")
 					break
-				for i in rev["malos"]:
-					crudos[i] = _imagen(cliente.generar(wf_editar, _valores(encs[i], intento + 1, args.lado, ref_nombre))[0])
-					informe["generaciones"] += 1
-					informe["regeneradas"] += 1
+				try:
+					for i in rev["malos"]:
+						crudos[i] = _imagen(cliente.generar(wf_editar, _valores(encs[i], intento + 1, args.lado, ref_nombre))[0])
+						informe["generaciones"] += 1
+						informe["regeneradas"] += 1
+				except runpod.TopeGPU as err:
+					tope_alcanzado(f"{sid}/{anim} sin repetir frames", err)
+					frames, derivas = post.procesar_animacion(crudos, ficha, celda, estilo, paleta, chroma)
+					break
 			hojas[sid][anim] = post.hoja(frames)
 			informe["sprites"][sid][anim] = {"frames": len(frames), "qa_ok": rev["ok"], "deriva_media": round(sum(derivas) / len(derivas), 1)}
-
-	for esc in biblia.get("escenarios", []):
-		if solo is not None and esc["id"] not in solo:
-			continue
-		enc = next(e for e in encargos if e["tipo"] == "tile" and e["id"] == esc["id"])
-		for intento in range(MAX_INTENTOS):
-			crudo = _imagen(cliente.generar(wf_crear, _valores(enc, intento, args.lado))[0])
-			informe["generaciones"] += 1
-			tile, cost, der = post.procesar_tile(crudo, int(esc["tile"]), estilo, paleta)
-			rev = qa_arte.revisar_tile(cost, der)
-			if rev["ok"] or runpod.en_ahorro():
-				break
-			informe["regeneradas"] += 1
-		tiles[esc["id"]] = tile
-		informe["tiles"][esc["id"]] = {"costura": round(cost, 1), "deriva": round(der, 1), "qa_ok": rev["ok"]}
 
 	efectos: dict = {}
 	if solo is None:
@@ -234,6 +299,12 @@ def fabricar(args: argparse.Namespace) -> dict:
 	informe["motor"] = "runpod" if str(args.comfy).startswith("runpod://") else "comfyui"
 	informe["usd"] = round(float(getattr(cliente, "usd", 0.0)) + float(getattr(cli_voz, "usd", 0.0)), 5)
 	informe["segundos_gpu"] = round(float(getattr(cliente, "segundos_gpu", 0.0)), 1)
+	## Para medir el coste real de un juego: arranques en frio y segundos de GPU por imagen.
+	informe["segundos_arranque"] = round(float(getattr(cliente, "segundos_arranque", 0.0)) + float(getattr(cli_voz, "segundos_arranque", 0.0)), 1)
+	informe["arranques"] = int(getattr(cliente, "arranques", 0)) + int(getattr(cli_voz, "arranques", 0))
+	informe["segundos_gpu_voces"] = round(float(getattr(cli_voz, "segundos_gpu", 0.0)), 1)
+	if informe["generaciones"]:
+		informe["seg_por_imagen"] = round(informe["segundos_gpu"] / informe["generaciones"], 1)
 	(salida / "informe.json").write_text(json.dumps(informe, indent=1, ensure_ascii=False), encoding="utf-8")
 	return informe
 

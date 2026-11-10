@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from . import post
+from . import post, runpod
 
 QUE = {
 	"heart": "a single plump glossy heart symbol",
@@ -80,6 +80,8 @@ def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, int
 	for i, icono in enumerate(QUE):
 		ultimo: list[str] = []
 		for intento in range(intentos):
+			if intento and runpod.en_ahorro():
+				break  # tope suave de GPU: lo que no salga a la primera se queda sin repetir
 			try:
 				datos = cliente.generar(flujo, {"PROMPT": prompt(biblia, icono), "SEED": semilla + 211 * i + 7919 * intento,
 					"ANCHO": TAMANO[0], "ALTO": TAMANO[1]})[0]

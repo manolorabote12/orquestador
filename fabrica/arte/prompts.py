@@ -109,6 +109,9 @@ def encargos_imagen(biblia: dict) -> list[dict]:
 			"semilla": semilla(titulo, sprite["id"], "ficha"),
 		})
 		for anim, cfg in sprite["animaciones"].items():
+			## desde_ficha: la animacion sale de la propia ficha (sin GPU), p. ej. el golpe de un enemigo.
+			if cfg.get("desde_ficha"):
+				continue
 			for i in range(int(cfg["frames"])):
 				lista.append({
 					"tipo": "frame", "id": sprite["id"], "anim": anim, "frame": i,

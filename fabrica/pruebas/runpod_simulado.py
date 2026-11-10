@@ -17,7 +17,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pruebas import comfy_simulado
 
 ESTADO = {"trabajos": {}, "peticiones": 0, "consultas": 0, "errores": [], "clave": "rp-clave-prueba",
-	"fallar": 0, "colgar": 0, "canceladas": 0, "refs": 0}
+	"fallar": 0, "colgar": 0, "canceladas": 0, "refs": 0, "retraso_ms": 800}
 BLOQUEO = threading.Lock()
 
 
@@ -107,7 +107,7 @@ class Manejador(BaseHTTPRequestHandler):
 		img = comfy_simulado.dibujar(texto, semilla, lado)
 		buf = io.BytesIO()
 		img.save(buf, format="PNG")
-		self._json({"id": tid, "status": "COMPLETED", "executionTime": 2300, "delayTime": 800,
+		self._json({"id": tid, "status": "COMPLETED", "executionTime": 2300, "delayTime": ESTADO["retraso_ms"],
 			"output": {"images": [{"filename": "orq_00001_.png", "type": "base64", "data": base64.b64encode(buf.getvalue()).decode()}]}})
 
 

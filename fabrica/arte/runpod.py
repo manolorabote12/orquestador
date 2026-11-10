@@ -8,7 +8,9 @@ Mismo uso que ComfyCliente (subir_imagen + generar), asi la cadena de arte no ca
 	--comfy runpod://<id_del_endpoint>      (la clave va en RUNPOD_API_KEY, nunca en la app)
 
 Coste: RunPod devuelve executionTime (ms de GPU); con ORQ_RUNPOD_USD_SEG (precio por segundo de la
-GPU elegida) se apunta el coste real de cada imagen en self.usd.
+GPU elegida) se apunta el coste real de cada imagen en self.usd. RunPod tambien cobra el arranque en
+frio (cargar el modelo) y los segundos de espera antes de apagarse: si el trabajo espero mas de
+ARRANQUE_MIN segundos (delayTime) se cuenta como arranque y se suma, con el apagado, al coste.
 """
 
 import base64
@@ -25,7 +27,10 @@ API = "https://api.runpod.ai/v2"
 ## Tope de GPU por juego (todas las maquinas juntas: imagenes, musica y voces). Al pasar el SUAVE
 ## la fabrica deja de repetir lo que el control de calidad rechaza; al pasar el DURO ya no pide mas
 ## (lo que falte sale procedural o el juego falla y se devuelven las tuercas). Nunca mas sustos.
-GASTO = {"usd": 0.0, "cancelado": False}
+GASTO = {"usd": 0.0, "cancelado": False, "imprescindible": False}
+## Lo imprescindible (ficha del heroe, del primer enemigo y el suelo: sin ellos el juego no pasa la
+## validacion) puede pasarse del tope duro hasta este multiplo; es una imagen o dos, no un susto.
+MARGEN_IMPRESCINDIBLE = 1.5
 
 
 def tope_suave() -> float:
@@ -36,9 +41,31 @@ def tope_duro() -> float:
 	return float(os.environ.get("ORQ_TOPE_GPU_DURO") or "0.50")
 
 
+class TopeGPU(ComfyError):
+	"""Este juego ya gasto su tope duro de GPU: lo que falte se hace sin GPU (o se deja como estaba)."""
+
+
+class TrabajoCancelado(ComfyError):
+	"""El servidor dio el trabajo por terminado (caducado): no se gasta nada mas en el."""
+
+
+## Arranque en frio: lo que espera un trabajo por encima de esto se cobra (cargar el modelo).
+ARRANQUE_MIN = 5.0
+
+
+def arranque_max() -> float:
+	return float(os.environ.get("ORQ_RUNPOD_ARRANQUE_MAX") or "240")
+
+
+def apagado_seg() -> float:
+	"""Segundos que la maquina sigue encendida (y cobrando) tras el ultimo trabajo (idleTimeout)."""
+	return float(os.environ.get("ORQ_RUNPOD_APAGADO") or "10")
+
+
 def reiniciar_gasto() -> None:
 	GASTO["usd"] = 0.0
 	GASTO["cancelado"] = False
+	GASTO["imprescindible"] = False
 
 
 def en_ahorro() -> bool:
@@ -61,6 +88,8 @@ class RunPodCliente:
 		self.imagenes: dict[str, bytes] = {}
 		self.usd = 0.0
 		self.segundos_gpu = 0.0
+		self.segundos_arranque = 0.0
+		self.arranques = 0
 		self.trabajos = 0
 
 	def _pedir(self, metodo: str, ruta: str, cuerpo: dict | None = None) -> dict:
@@ -111,9 +140,11 @@ class RunPodCliente:
 	def trabajo(self, entrada: dict) -> dict:
 		"""Lanza un trabajo en el endpoint, espera (arranque en frio incluido) y apunta el coste real."""
 		if GASTO["cancelado"]:
-			raise ComfyError("El servidor dio este trabajo por terminado: no se piden mas imagenes")
-		if GASTO["usd"] >= tope_duro():
-			raise ComfyError(f"Tope de gasto de GPU de este juego alcanzado ({GASTO['usd']:.2f} $)")
+			raise TrabajoCancelado("El servidor dio este trabajo por terminado: no se piden mas imagenes")
+		limite = tope_duro() * (MARGEN_IMPRESCINDIBLE if GASTO.get("imprescindible") else 1.0)
+		if GASTO["usd"] >= limite:
+			raise TopeGPU(f"Tope de gasto de GPU de este juego alcanzado ({GASTO['usd']:.2f} $)")
+		inicio = time.time()
 		r = self._pedir("POST", "/run", {"input": entrada})
 		tid = r.get("id")
 		if not tid:
@@ -130,21 +161,39 @@ class RunPodCliente:
 				self._pedir("POST", f"/cancel/{tid}")
 			except ComfyError:
 				pass
+			## Sin saber cuanto llego a correr, se apunta todo el tiempo esperado (mejor de mas).
+			self._apuntar({}, seg=min(time.time() - inicio, self.timeout))
 			raise
+
+	def _apuntar(self, e: dict, seg: float | None = None) -> None:
+		"""Suma al coste los segundos de GPU de un trabajo y, si arranco en frio, el arranque."""
+		if seg is None:
+			seg = float(e.get("executionTime", 0) or 0) / 1000.0
+		self.segundos_gpu += seg
+		## Arranque en frio: la maquina estaba apagada y cobra lo que tarda en cargar el modelo
+		## (y el apagado de la tanda anterior). En cola detras de otro juego tambien cuenta: mejor
+		## pasarse que quedarse corto con los topes.
+		retraso = float(e.get("delayTime", 0) or 0) / 1000.0
+		if retraso > ARRANQUE_MIN:
+			extra = min(retraso, arranque_max()) + apagado_seg()
+			self.segundos_arranque += extra
+			self.arranques += 1
+			seg += extra
+		self.usd += seg * self.usd_seg
+		GASTO["usd"] += seg * self.usd_seg
 
 	def _esperar(self, tid: str, limite: float, espera: float) -> dict:
 		while time.time() < limite:
 			e = self._pedir("GET", f"/status/{tid}")
 			estado = e.get("status")
 			if estado == "COMPLETED":
-				seg = float(e.get("executionTime", 0)) / 1000.0
-				self.segundos_gpu += seg
-				self.usd += seg * self.usd_seg
-				GASTO["usd"] += seg * self.usd_seg
+				self._apuntar(e)
 				self.trabajos += 1
 				salida = e.get("output") or {}
 				return salida if isinstance(salida, dict) else {"resultado": salida}
 			if estado in ("FAILED", "CANCELLED", "TIMED_OUT"):
+				## Un trabajo que falla tambien se cobra lo que estuvo en marcha.
+				self._apuntar(e)
 				err = ComfyError(f"RunPod {estado}: {str(e.get('error') or e.get('output'))[:400]}")
 				err.terminado = True
 				raise err

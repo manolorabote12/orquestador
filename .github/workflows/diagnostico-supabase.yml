@@ -46,17 +46,19 @@ jobs:
           junto("MOTOR", "select name, round((metadata->>'size')::bigint/1048576.0,2) mb from storage.objects where bucket_id='motor' order by 2 desc limit 20")
           junto("COSTES", "select kind, status, count(*), round(sum(coalesce(provider_cost_usd,0)),3) usd, round(avg(extract(epoch from finished_at-started_at))) seg from public.jobs group by 1,2 order by 1")
           junto("LEDGER", "select reason, count(*), sum(amount) from public.credit_ledger group by 1 order by 1")
-          lento = sql("select progress from public.jobs where status='failed' and finished_at - created_at > interval '10 minutes' order by created_at desc limit 1")
+          lento = sql("select progress from public.jobs where finished_at - created_at > interval '10 minutes' order by created_at desc limit 1")
           if isinstance(lento, list) and lento:
               pasos = lento[0].get("progress") or []
               if isinstance(pasos, str):
                   pasos = json.loads(pasos)
               t0 = pasos[0].get("t", 0) if pasos else 0
-              linea = " | ".join("%ds %s %s %s" % (int(p.get("t", 0) - t0), p.get("paso"), p.get("estado"), str(p.get("mensaje", ""))[:50]) for p in pasos)
+              extra = lambda p: " ".join("%s=%s" % (k, p[k]) for k in ("gpu_s", "arranque_s", "seg_img", "tope", "imagenes") if p.get(k) not in (None, ""))
+              linea = " | ".join("%ds %s %s %s %s" % (int(p.get("t", 0) - t0), p.get("paso"), p.get("estado"), str(p.get("mensaje", ""))[:50], extra(p)) for p in pasos)
               for i in range(0, len(linea), 900):
                   print("::notice::PASOS " + linea[i:i + 900])
-          for f in (r if isinstance(r, list) else [r])[:6]:
-              print("::notice::JOB " + json.dumps(f, ensure_ascii=False, default=str)[:900])
+          ## Los 6 ultimos trabajos en un solo aviso (GitHub ensena 10 por paso).
+          filas = [{k: (str(v)[:160] if k == "error" else v) for k, v in f.items()} for f in (r if isinstance(r, list) else [r])[:6]]
+          print("::notice::JOBS " + json.dumps(filas, ensure_ascii=False, default=str)[:3800])
           fin = datetime.datetime.utcnow()
           ini = fin - datetime.timedelta(hours=3)
           sql = ("SELECT timestamp, event_message FROM logs ORDER BY timestamp DESC LIMIT 400")

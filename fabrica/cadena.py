@@ -91,6 +91,9 @@ class ErrorCadena(Exception):
 
 ## Quien quiera enterarse del progreso (el trabajador lo manda a la base de datos).
 oyentes: list = []
+## Imagenes de los fondos ilustrados, la interfaz dibujada y sus iconos (portada + piel + iconos).
+from arte import iconos as _iconos, portada as _portada, skin as _skin  # noqa: E402
+EXTRAS_FONDOS = len(_portada.TAMANOS) + len(_skin.TAMANOS) + len(_iconos.QUE)
 
 
 def evento(paso: str, estado: str, mensaje: str, **extra: object) -> None:
@@ -103,6 +106,10 @@ def evento(paso: str, estado: str, mensaje: str, **extra: object) -> None:
 			o(d)
 		except Exception as e:  # noqa: BLE001 - un oyente roto no para la fabrica
 			print(f"[cadena] oyente fallo: {e}", flush=True)
+	## El servidor dio el trabajo por terminado (caducado): ni GPU ni CPU para algo que nadie recibe.
+	from arte import runpod as _runpod
+	if _runpod.GASTO["cancelado"]:
+		raise ErrorCadena("El servidor dio este trabajo por terminado: la fabrica para aqui")
 
 
 def godot_bin() -> str:
@@ -577,6 +584,11 @@ def fabricar(args: argparse.Namespace) -> dict:
 		(proyecto / "fabrica").mkdir(exist_ok=True)
 		(proyecto / "fabrica" / "muestra.json").write_text(json.dumps({"nombre": args.muestra}, ensure_ascii=False), encoding="utf-8")
 	biblia = director.a_biblia(diseno)
+	## Limite de imagenes por juego (la GPU se paga por imagen): ORQ_MAX_IMAGENES, 36 por defecto.
+	fondos = str(args.comfy).startswith("runpod://") or os.environ.get("ORQ_FONDOS") == "1"
+	ahorradas = bib.recortar(biblia, int(os.environ.get("ORQ_MAX_IMAGENES") or "36"), EXTRAS_FONDOS if fondos else 0)
+	if ahorradas:
+		print(f"[cadena] {ahorradas} imagenes menos para no pasar del limite ({bib.imagenes(biblia, EXTRAS_FONDOS if fondos else 0)})", flush=True)
 	bib.validar(biblia)
 	(proyecto / "fabrica").mkdir(exist_ok=True)
 	(proyecto / "fabrica" / "diseno.json").write_text(json.dumps(diseno, indent=1, ensure_ascii=False), encoding="utf-8")
@@ -634,6 +646,23 @@ def fabricar(args: argparse.Namespace) -> dict:
 			evento("boceto", "aviso", f"Sin boceto esta vez ({str(e)[:80]})")
 		cronometro("boceto", t)
 
+	## 3c - Fallar barato: los bots juegan YA, con el arte provisional del kit. Si el juego no se puede
+	## superar se arregla (o se para) ANTES de pagar la tarjeta grafica, que es lo caro.
+	if os.environ.get("ORQ_BOTS_ANTES", "1") == "1":
+		t = time.time()
+		evento("prueba_bots", "inicio", "Comprobando que se puede jugar antes de dibujar...")
+		val0, mapas = validar_con_bots(proyecto, diseno, mapas, args.semilla, intentos)
+		malos0 = [n for n in val0.get("niveles", []) if not nivel_ok(n, True)]
+		if malos0 and (diseno.get("giros") or diseno.get("contenido")):
+			mapas = _rescatar(proyecto, diseno, args.semilla, intentos, "los bots no lo superan: " + json.dumps(malos0, ensure_ascii=False)[:200])
+			val0, mapas = validar_con_bots(proyecto, diseno, mapas, args.semilla, intentos)
+			malos0 = [n for n in val0.get("niveles", []) if not nivel_ok(n, True)]
+		cronometro("bots_antes", t)
+		if malos0:
+			raise ErrorCadena("Los bots no pueden superar el juego ni rehaciendo niveles (parado antes de dibujar: sin gasto de arte): "
+				+ json.dumps(malos0, ensure_ascii=False)[:600])
+		evento("prueba_bots", "ok", "Se puede jugar de principio a fin")
+
 	## 4 - Arte y sonido
 	t = time.time()
 	evento("arte", "inicio", "Dibujando personajes, objetos y escenario...")
@@ -652,7 +681,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 		inf_arte = arte_cli.fabricar(argparse.Namespace(
 			biblia=str(ruta_biblia), comfy=comfy, crear=crear, editar=editar,
 			salida=str(arte_dir), godot=str(proyecto), lado=args.lado, musica=flujo_musica(comfy), sfx=flujo_sfx(comfy), voces=destino_voces(comfy),
-			fondos=str(comfy).startswith("runpod://") or os.environ.get("ORQ_FONDOS") == "1",
+			fondos=fondos,
 			revision=gasto if (not args.simulado and not args.arte_simulado and llm.clave()) else None))
 	finally:
 		if srv is not None:
@@ -668,7 +697,10 @@ def fabricar(args: argparse.Namespace) -> dict:
 	if inf_arte.get("sfx_ia", {}).get("efectos"):
 		musica_txt += ", efectos de sonido con IA"
 	evento("arte", "ok", f"Arte listo: {inf_arte['generaciones']} imagenes ({inf_arte['regeneradas']} rehechas por el control de calidad){musica_txt}",
-		imagenes=inf_arte["generaciones"], avisos=inf_arte["avisos"], usd=usd_arte)
+		imagenes=inf_arte["generaciones"], avisos=inf_arte["avisos"], usd=usd_arte,
+		## Para medir el coste real (el diagnostico los ensena): GPU, arranques en frio y s por imagen.
+		gpu_s=inf_arte.get("segundos_gpu"), arranque_s=inf_arte.get("segundos_arranque"), seg_img=inf_arte.get("seg_por_imagen"),
+		tope=bool(inf_arte.get("tope_gpu")))
 
 	## 5 - Icono
 	crear_icono(proyecto, arte_dir, game)

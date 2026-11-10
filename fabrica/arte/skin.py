@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from . import interfaz, post
+from . import interfaz, post, runpod
 
 TAMANOS = {"panel": (1024, 1024), "boton": (1024, 512)}
 SALIDA = {"panel": (384, 384), "boton": (384, 192)}
@@ -83,6 +83,8 @@ def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, int
 	for i, (pieza, (w, h)) in enumerate(TAMANOS.items()):
 		ultimo: list[str] = []
 		for intento in range(intentos):
+			if intento and runpod.en_ahorro():
+				break  # tope suave de GPU: lo que no salga a la primera se queda sin repetir
 			try:
 				datos = cliente.generar(flujo, {"PROMPT": prompt(biblia, pieza), "SEED": semilla + 131 * i + 7919 * intento,
 					"ANCHO": w, "ALTO": h})[0]

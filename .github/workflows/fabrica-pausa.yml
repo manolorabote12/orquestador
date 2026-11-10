@@ -1,0 +1,59 @@
+name: "Fabrica: pausar o reanudar"
+# Boton de parada. Desde el movil: app de GitHub -> Actions -> este workflow -> Run workflow.
+#  - pausar:   no se aceptan juegos nuevos (al jugador no se le cobra), no se coge nada de la cola,
+#              lo que este en marcha para en su siguiente paso (y se devuelve) y se vacian las colas de RunPod.
+#  - reanudar: todo vuelve a funcionar.
+on:
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "pausar o reanudar"
+        type: choice
+        options: [pausar, reanudar]
+        default: pausar
+      motivo:
+        description: "Por que (se guarda en los ajustes)"
+        required: false
+        default: "a mano"
+
+jobs:
+  pausa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      ACCION: ${{ inputs.accion }}
+      MOTIVO: ${{ inputs.motivo }}
+    steps:
+      - name: Cambiar el estado de la fabrica
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          pausa = os.environ["ACCION"] == "pausar"
+          url = os.environ["SUPABASE_URL"].rstrip("/") + "/rest/v1/rpc/pausar_fabrica"
+          k = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+          req = urllib.request.Request(url, data=json.dumps({"p_pausa": pausa, "p_motivo": os.environ.get("MOTIVO") or "a mano"}).encode(),
+              method="POST", headers={"apikey": k, "Authorization": "Bearer " + k, "Content-Type": "application/json", "User-Agent": "Orquestador/1.0"})
+          urllib.request.urlopen(req, timeout=30).read()
+          print("::notice::Fabrica " + ("PARADA" if pausa else "en marcha otra vez"))
+          PY
+      - name: Vaciar las colas de RunPod (solo al pausar)
+        if: inputs.accion == 'pausar'
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.request
+          h = {"Authorization": "Bearer " + os.environ["RUNPOD_API_KEY"], "Content-Type": "application/json", "User-Agent": "Orquestador/1.0 (+https://github.com)"}
+          r = urllib.request.urlopen(urllib.request.Request("https://rest.runpod.io/v1/endpoints", headers=h), timeout=60).read()
+          d = json.loads(r or b"[]") or []
+          d = d if isinstance(d, list) else d.get("data", [])
+          for e in d:
+              if not str(e.get("name", "")).startswith("orq-"):
+                  continue
+              try:
+                  urllib.request.urlopen(urllib.request.Request(f"https://api.runpod.ai/v2/{e['id']}/purge-queue", method="POST", data=b"{}", headers=h), timeout=60).read()
+                  print(f"::notice::Cola vaciada: {e['name']}")
+              except Exception as x:
+                  print(f"::warning::{e['name']}: {str(x)[:120]}")
+          PY

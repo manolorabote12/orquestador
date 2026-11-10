@@ -506,7 +506,8 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 	gasto = llm.Gasto()
 	t0 = time.time()
 	## Solo lo que Chispa necesita: paso, estado, mensaje y algun numero.
-	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "mb", "total_s", "boceto"))
+	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "mb", "total_s", "boceto",
+		"gpu_s", "arranque_s", "seg_img", "tope"))
 
 	cadena.oyentes.append(avisar)
 	tmp = Path(tempfile.mkdtemp(prefix="orq_"))

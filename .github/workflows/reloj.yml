@@ -1,7 +1,9 @@
 # Red de seguridad y aprendizaje, gratis en GitHub Actions:
 #  - cada 15 minutos: si queda algo en la cola (un aviso se perdio), despierta la fabrica de RunPod;
 #  - cada 6 horas: la fabrica recalibra la dificultad con las partidas de los jugadores;
-#  - cada 15 minutos: la Lanzadera marca abandonos y campanas listas para produccion.
+#  - cada 15 minutos: la Lanzadera marca abandonos y campanas listas para produccion;
+#  - cada 15 minutos: el vigilante del gasto (nube/vigilante.py) avisa por correo y PARA la fabrica si
+#    el gasto se dispara. Umbrales en Settings -> Variables (ORQ_ALARMA_HORA_USD, ORQ_ALARMA_RUNPOD_HORA...).
 name: Reloj
 
 on:
@@ -58,3 +60,17 @@ jobs:
             curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
               -d '{"input": {"despertar": "reloj"}}' "https://api.runpod.ai/v2/${{ steps.ep.outputs.id }}/run"
           fi
+      ## Siempre al final: si da alarma el paso falla y GitHub manda un correo (los demas ya han corrido).
+      - uses: actions/checkout@v4
+        if: always()
+        with:
+          sparse-checkout: nube
+      - name: Vigilante del gasto
+        if: always()
+        env:
+          ORQ_ALARMA_HORA_USD: ${{ vars.ORQ_ALARMA_HORA_USD }}
+          ORQ_ALARMA_RUNPOD_HORA: ${{ vars.ORQ_ALARMA_RUNPOD_HORA }}
+          ORQ_ALARMA_JUEGO_USD: ${{ vars.ORQ_ALARMA_JUEGO_USD }}
+          ORQ_ALARMA_FUGA_HORA: ${{ vars.ORQ_ALARMA_FUGA_HORA }}
+          ORQ_ALARMA_SALDO: ${{ vars.ORQ_ALARMA_SALDO }}
+        run: python3 nube/vigilante.py

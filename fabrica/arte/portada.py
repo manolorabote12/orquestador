@@ -14,6 +14,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
+from . import runpod
+
 TAMANOS = {"vertical": (864, 1536), "horizontal": (1536, 768), "nivel": (864, 1536)}
 
 
@@ -58,6 +60,8 @@ def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, int
 		texto = prompt_nivel(biblia) if nombre == "nivel" else prompt(biblia)
 		ultimo: list[str] = []
 		for intento in range(intentos):
+			if intento and runpod.en_ahorro():
+				break  # tope suave de GPU: lo que no salga a la primera se queda sin repetir
 			try:
 				datos = cliente.generar(flujo, {"PROMPT": texto, "SEED": semilla + 101 * i + 7919 * intento, "ANCHO": w, "ALTO": h})[0]
 			except Exception as e:  # noqa: BLE001 - sin fondo el juego funciona igual

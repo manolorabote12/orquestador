@@ -467,6 +467,11 @@
 								"type": "boolean",
 								"default": true
 							},
+							"desde_ficha": {
+								"type": "boolean",
+								"default": false,
+								"description": "Sin GPU: la animacion sale de la propia ficha (la fabrica la pone para no pasar del limite de imagenes)."
+							},
 							"pose": {
 								"type": "string",
 								"maxLength": 200,
