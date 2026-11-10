@@ -42,7 +42,7 @@ jobs:
               f = sql(q)
               print("::notice::" + nombre + " " + json.dumps(f, default=str, ensure_ascii=False)[:3800])
           junto("ALMACEN", "select bucket_id, count(*) n, round(sum((metadata->>'size')::bigint)/1048576.0,1) mb from storage.objects group by 1 order by 3 desc")
-          junto("TAMANOS", "select regexp_replace(name, '^[^/]+/[^/]+/', '') f, round((metadata->>'size')::bigint/1048576.0,2) mb from storage.objects where bucket_id='juegos' order by created_at desc limit 25")
+          junto("GUARDIAN", "select jobname, schedule, active from cron.job")
           junto("COSTES", "select kind, status, count(*), round(sum(coalesce(provider_cost_usd,0)),3) usd, round(avg(extract(epoch from finished_at-started_at))) seg from public.jobs group by 1,2 order by 1")
           junto("EMBUDO", "select public.embudo(30) as e")
           junto("LEDGER", "select reason, count(*), sum(amount) from public.credit_ledger group by 1 order by 1")
