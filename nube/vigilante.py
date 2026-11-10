@@ -111,7 +111,14 @@ def main() -> int:
 	except (urllib.error.URLError, OSError, ValueError) as e:
 		print(f"::warning::Vigilante: Supabase no responde ({str(e)[:160]})")
 		return 0
-	d = decidir(v or {}, runpod(), u)
+	rp = runpod()
+	d = decidir(v or {}, rp, u)
+	## «Gasta sin trabajos» puede ser la propia fabrica despertada por el Reloj (limpieza, aprendizaje):
+	## se vuelve a mirar al cabo de un rato y solo se avisa si sigue gastando (alarma falsa del 10 nov).
+	if any("sin ningun trabajo" in a for a in d["alarmas"]) and not d["pausar"]:
+		import time
+		time.sleep(float(os.environ.get("ORQ_ALARMA_ESPERA") or "150"))
+		d = decidir(rpc("vigilancia", {"p_caro_usd": u["juego_usd"], "p_minutos": VENTANA_MIN}) or {}, runpod(), u)
 	if d["pausar"]:
 		try:
 			rpc("pausar_fabrica", {"p_pausa": True, "p_motivo": "vigilante: " + d["pausar"]})

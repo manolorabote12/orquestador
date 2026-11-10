@@ -58,3 +58,21 @@ begin
   raise notice 'embudo OK';
 end;
 $$;
+-- Guardian: para la fabrica si la ultima hora se dispara.
+do $$
+declare
+  u uuid;
+begin
+  delete from public.jobs where created_at > now() - interval '2 hours';
+  assert not public.guardian(), 'tranquilo: no para';
+  insert into auth.users (email, email_confirmed_at) values ('gasto@example.com', now()) returning id into u;
+  insert into public.jobs (user_id, kind, cost, status, finished_at, provider_cost_usd) values (u, 'game', 80, 'done', now(), 3.5);
+  assert public.guardian(), 'hora cara: para';
+  assert public.fabrica_pausada();
+  assert (select note from public.settings where key = 'fabrica_pausada') like '%guardian%';
+  assert not public.guardian(), 'ya parada: nada';
+  perform public.pausar_fabrica(false);
+  delete from public.jobs where user_id = u;
+  raise notice 'guardian OK';
+end;
+$$;
