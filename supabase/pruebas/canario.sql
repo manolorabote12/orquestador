@@ -32,3 +32,21 @@ begin
   raise notice 'canario OK';
 end;
 $$;
+-- Regalar un juego completo a una cuenta.
+do $$
+declare
+  u uuid; j uuid;
+begin
+  insert into auth.users (email, email_confirmed_at) values ('Dueno.Real@gmail.com', now()) returning id into u;
+  j := public.regalar_juego('duenoreal@gmail.com', 'un duelo de cartas entre orcos y humanos con torres');
+  assert (select user_id from public.jobs where id = j) = u and (select cost from public.jobs where id = j) = 0;
+  assert (select status from public.jobs where id = j) = 'queued';
+  delete from public.jobs where id = j;  -- que no lo coja la fabrica de otras pruebas
+  begin
+    perform public.regalar_juego('nadie@example.com', 'un duelo de cartas entre orcos y humanos con torres');
+    raise exception 'debia fallar';
+  exception when others then assert sqlerrm like '%sin_cuenta%', sqlerrm; end;
+  assert not has_function_privilege('authenticated', 'public.regalar_juego(text, text)', 'execute');
+  raise notice 'regalar OK';
+end;
+$$;

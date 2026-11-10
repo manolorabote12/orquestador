@@ -10,10 +10,16 @@ on:
   workflow_dispatch:
     inputs:
       accion:
-        description: "encargar o revisar"
+        description: "encargar o revisar (canario), o regalar un juego completo a tu cuenta"
         type: choice
-        options: [encargar, revisar]
+        options: [encargar, revisar, regalar]
         default: encargar
+      correo:
+        description: "regalar: correo de la cuenta que lo recibe"
+        required: false
+      idea:
+        description: "regalar: la idea del juego"
+        required: false
 
 jobs:
   canario:
@@ -25,6 +31,8 @@ jobs:
       RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
       ACCION: ${{ github.event_name == 'workflow_dispatch' && inputs.accion || (github.event.schedule == '7 4 * * 1' && 'encargar' || 'revisar') }}
       ORQ_CANARIO_MAX_USD: ${{ vars.ORQ_CANARIO_MAX_USD }}
+      CORREO: ${{ inputs.correo }}
+      IDEA: ${{ inputs.idea }}
     steps:
       - name: Canario
         run: |
@@ -41,17 +49,20 @@ jobs:
                   return json.loads(t) if t.strip() else None
           def rpc(nombre, args=None):
               return pedir("POST", "/rest/v1/rpc/" + nombre, args or {})
-          if os.environ["ACCION"] == "encargar":
+          if os.environ["ACCION"] in ("encargar", "regalar"):
               idea = "Un pequeno robot que salta entre plataformas en una fabrica y esquiva tuercas rodantes"
               try:
-                  job = rpc("canario_encargar", {"p_idea": idea})
+                  if os.environ["ACCION"] == "regalar":
+                      job = rpc("regalar_juego", {"p_correo": os.environ.get("CORREO", ""), "p_idea": os.environ.get("IDEA", "")})
+                  else:
+                      job = rpc("canario_encargar", {"p_idea": idea})
               except urllib.error.HTTPError as e:
                   txt = e.read().decode()
-                  if "sin_canario" not in txt:
-                      print("::error::No se pudo encargar el canario: " + txt[:300]); sys.exit(1)
+                  if "sin_canario" not in txt or os.environ["ACCION"] == "regalar":
+                      print("::error::No se pudo encargar: " + txt[:300]); sys.exit(1)
                   pedir("POST", "/auth/v1/admin/users", {"email": "canario@orquestador.invalid", "password": secrets.token_urlsafe(24), "email_confirm": True})
                   job = rpc("canario_encargar", {"p_idea": idea})
-              print(f"::notice::Canario encargado: {job}")
+              print(f"::notice::{'Juego regalado' if os.environ['ACCION'] == 'regalar' else 'Canario encargado'}: {job}")
               ## Despertar la fabrica (como el Reloj).
               hr = {"Authorization": "Bearer " + os.environ["RUNPOD_API_KEY"], "Content-Type": "application/json", "User-Agent": "Orquestador/1.0 (+https://github.com)"}
               eps = json.loads(urllib.request.urlopen(urllib.request.Request("https://rest.runpod.io/v1/endpoints", headers=hr), timeout=60).read() or b"[]") or []
