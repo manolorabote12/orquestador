@@ -148,9 +148,84 @@ def textos_extra(diseno: dict, n_niveles: int) -> dict:
 		if idioma in CRONO_LINEA:
 			lineas.append(CRONO_LINEA[idioma])
 		lineas += p["fin"] + ["", p["cierre"].format(t=diseno["titulo"])]
+		if idioma in CREDITO:
+			lineas += ["", CREDITO[idioma]]
 		out[idioma] = {"titulo": _corta(diseno["titulo"], LIMITES["titulo"]), "corta": _corta_mejor([f"{frase}.", frase.split(":")[0] + "."], LIMITES["corta"]),
 			"larga": _corta("\n".join(lineas), LIMITES["larga"])}
 	return out
+
+
+## Una linea al final de la descripcion de cada juego publicado: cada juego hecho con la app es un
+## anuncio gratis de Orquestador (como el «Made with Unity»). Corta y al final, sin molestar.
+CREDITO = {
+	"es": "Creado con Orquestador, el creador de juegos con IA.",
+	"en": "Made with Orquestador, the AI game maker.",
+	"pt": "Criado com o Orquestador, o criador de jogos com IA.",
+	"fr": "Créé avec Orquestador, le créateur de jeux par IA.",
+	"de": "Erstellt mit Orquestador, dem KI-Spielebaukasten.",
+	"it": "Creato con Orquestador, il creatore di giochi con l'IA.",
+}
+
+
+def titulo_aso(titulo: str, corto: str) -> str:
+	"""Titulo de la tienda con el tipo de juego si cabe en 30 («Torre Orca: Duelo de cartas»): asi el
+	juego sale cuando la gente busca ese tipo de juego. Sin palabras de relleno (lo prohibe Google)."""
+	t = " ".join(titulo.split())
+	c = (corto or "").strip()
+	if not c or c.lower() in t.lower() or ":" in t:
+		return _corta(t, LIMITES["titulo"])
+	con = f"{t}: {c[0].upper()}{c[1:]}"
+	return con if len(con) <= LIMITES["titulo"] else _corta(t, LIMITES["titulo"])
+
+
+def plan_lanzamiento(diseno: dict, idioma: str = "es") -> str:
+	"""Plan de los primeros 30 dias de un juego en Google Play, con lo que la app ya da hecho."""
+	t = diseno["titulo"]
+	if idioma == "en":
+		return "\n".join([
+			f"LAUNCH PLAN FOR {t.upper()}", "",
+			"BEFORE PUBLISHING (2 weeks)",
+			"• New Google Play accounts need 12 testers for 14 days in a row: sign the game up in the Launchpad and test other people's games in return.",
+			"• Write down what testers say: Play Console asks for it when you request production access.",
+			"• Upload the store listing from this zip: icon, feature graphic, screenshots and texts (already within Google's limits).",
+			"",
+			"LAUNCH WEEK",
+			"• Day 1: publish. Post the 'challenge' clip on TikTok, YouTube Shorts and Reels (texts in redes_en.txt of the marketing pack).",
+			"• Day 2: 'curiosity' clip. Day 3: 'humor' clip. Same time each day (18:00-21:00 local is usually best).",
+			"• Ask 5-10 people who liked it to leave an honest review: the first reviews weigh the most.",
+			"• Reply to every review, good or bad, within 24 hours.",
+			"",
+			"WEEKS 2-4",
+			"• Week 2: add levels or a twist from the workshop and publish it as an update ('New levels!' in the release notes).",
+			"• Week 3: enter the weekly challenge and share your game's web link (play without installing).",
+			"• Week 4: look at Play Console > Statistics: if many people leave at level 1-2, ask Chispa to make the start easier.",
+			"",
+			"WHAT NOT TO DO",
+			"• Don't buy reviews or installs: Google removes them and can suspend the account.",
+			"• Don't put words like 'best', 'free' or '#1' in the title: Google rejects it.",
+		])
+	return "\n".join([
+		f"PLAN DE LANZAMIENTO DE {t.upper()}", "",
+		"ANTES DE PUBLICAR (2 semanas)",
+		"• Las cuentas nuevas de Google Play necesitan 12 probadores durante 14 días seguidos: apunta el juego en la Lanzadera y prueba los de los demás a cambio.",
+		"• Apunta lo que te digan los probadores: Play Console lo pregunta al pedir el acceso a producción.",
+		"• Sube la ficha de este zip: icono, gráfico destacado, capturas y textos (ya dentro de los límites de Google).",
+		"",
+		"SEMANA DEL LANZAMIENTO",
+		"• Día 1: publica. Sube el clip «reto» a TikTok, YouTube Shorts y Reels (textos en redes_es.txt del paquete de marketing).",
+		"• Día 2: clip «curiosidad». Día 3: clip «humor». A la misma hora cada día (de 18:00 a 21:00 suele ir mejor).",
+		"• Pide a 5-10 personas a las que les haya gustado que dejen una reseña sincera: las primeras son las que más pesan.",
+		"• Contesta todas las reseñas, buenas y malas, en menos de 24 horas.",
+		"",
+		"SEMANAS 2 A 4",
+		"• Semana 2: añade niveles o un giro desde el taller y publícalo como actualización («¡Niveles nuevos!» en las novedades).",
+		"• Semana 3: apúntate al reto de la semana y comparte el enlace web de tu juego (se juega sin instalar).",
+		"• Semana 4: mira Play Console > Estadísticas: si mucha gente lo deja en el nivel 1-2, pide a Chispa que haga el principio más fácil.",
+		"",
+		"LO QUE NO HAY QUE HACER",
+		"• No compres reseñas ni descargas: Google las borra y puede suspender la cuenta.",
+		"• No pongas «mejor», «gratis» o «nº 1» en el título: Google lo rechaza.",
+	])
 
 
 def textos(diseno: dict, n_niveles: int) -> dict:
@@ -202,6 +277,8 @@ def textos(diseno: dict, n_niveles: int) -> dict:
 		"• Se juega sin conexión.",
 		"",
 		f"¿Llegarás a las 3 estrellas en todos los niveles de {diseno['titulo']}?",
+		"",
+		CREDITO["es"],
 	]
 	en_lineas += [
 		"• Daily reward streak and a skin shop for your hero.",
@@ -209,11 +286,14 @@ def textos(diseno: dict, n_niveles: int) -> dict:
 		"• Play offline.",
 		"",
 		f"Can you get 3 stars on every level of {diseno['titulo']}?",
+		"",
+		CREDITO["en"],
 	]
+	corto = generos.de(g).get("corto") or ("", "")
 	return {
-		"es": {"titulo": _corta(diseno["titulo"], LIMITES["titulo"]), "corta": _corta_mejor([f"{frase_es}. {diseno['lema']}.", f"{frase_es}.", frase_es.split(":")[0] + "."], LIMITES["corta"]),
+		"es": {"titulo": titulo_aso(diseno["titulo"], corto[0]), "corta": _corta_mejor([f"{frase_es}. {diseno['lema']}.", f"{frase_es}.", frase_es.split(":")[0] + "."], LIMITES["corta"]),
 			"larga": _corta("\n".join(es_lineas), LIMITES["larga"])},
-		"en": {"titulo": _corta(diseno["titulo"], LIMITES["titulo"]), "corta": _corta_mejor([f"{frase_en}.", frase_en.split(":")[0] + "."], LIMITES["corta"]),
+		"en": {"titulo": titulo_aso(diseno["titulo"], corto[1]), "corta": _corta_mejor([f"{frase_en}.", frase_en.split(":")[0] + "."], LIMITES["corta"]),
 			"larga": _corta("\n".join(en_lineas), LIMITES["larga"])},
 		**textos_extra(diseno, n_niveles),
 	}
@@ -482,6 +562,9 @@ def generar(proyecto: Path) -> dict:
 		(carpeta / f"textos_{idioma}.txt").write_text(
 			f"TITULO ({len(t['titulo'])}/30)\n{t['titulo']}\n\nDESCRIPCION BREVE ({len(t['corta'])}/80)\n{t['corta']}\n\n"
 			f"DESCRIPCION COMPLETA ({len(t['larga'])}/4000)\n{t['larga']}\n", encoding="utf-8")
+	## Plan de los primeros 30 dias (que hacer y que no), en espanol e ingles.
+	for idioma in ("es", "en"):
+		(carpeta / f"plan_lanzamiento_{idioma}.txt").write_text(plan_lanzamiento(diseno, idioma) + "\n", encoding="utf-8")
 	## App Store: icono 1024 sin alfa y capturas del iPhone de 6,9" (1290x2796).
 	ios = carpeta / "appstore"
 	ios.mkdir(exist_ok=True)

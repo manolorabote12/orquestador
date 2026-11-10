@@ -96,7 +96,7 @@ minutos.
 Sigue `salida\SIGUIENTES-PASOS.txt`. Ya lleva tus datos: la URL de privacidad y el correo y el
 código del revisor. Es esto:
 
-1. **Crear app.** Nombre: «Orquestador: crea tu juego». Gratis.
+1. **Crear app.** Nombre: «Orquestador: creador de juegos». Gratis.
 2. **Prueba interna.** Sube el `.aab` y acepta la firma de apps de Google Play.
 3. **Ficha de la tienda.** Textos de `app\tienda\ficha.json` e imágenes de `app\assets\play\` y
    `app\tienda\capturas\`.

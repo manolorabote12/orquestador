@@ -17,7 +17,7 @@ FUENTE = base64.b64encode((APP / "marca" / "big-shoulders-800.woff2").read_bytes
 CHROMIUM = "/opt/pw-browsers/chromium" if Path("/opt/pw-browsers/chromium").exists() else None
 
 TITULARES = [
-	("Describe tu juego", "Chispa lo diseña, lo dibuja y le pone música"),
+	("Crea juegos con IA", "Descríbelo con palabras: Chispa lo diseña, lo dibuja y le pone música"),
 	("Mira cómo se fabrica", "Bots prueban cada nivel antes de dártelo"),
 	("Tu juego, listo", "Juégalo al instante y descárgalo"),
 	("Cámbialo hablando", "Cada cambio es una versión nueva"),
@@ -46,7 +46,8 @@ async def main() -> int:
 	pantallas: list[bytes] = []
 	async with async_playwright() as p:
 		b = await p.chromium.launch(executable_path=CHROMIUM)
-		pg = await b.new_page(viewport={"width": 390, "height": 760}, device_scale_factor=2)
+		## En espanol siempre (la app se traduce sola si el navegador esta en otro idioma).
+		pg = await b.new_page(viewport={"width": 390, "height": 760}, device_scale_factor=2, locale="es-ES")
 		errores: list[str] = []
 		pg.on("pageerror", lambda e: errores.append(str(e)))
 		await pg.goto((APP / "dist-demo" / "index.html").as_uri())

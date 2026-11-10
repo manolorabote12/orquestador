@@ -252,7 +252,7 @@ function cargar(): Guardado {
   } catch {
     /* sin almacenamiento: empezamos de cero */
   }
-  return { email: null, tuercas: 90, trabajos: [], proyectos: [], planes: {} };
+  return { email: null, tuercas: 120, trabajos: [], proyectos: [], planes: {} };
 }
 
 export class Demo implements Backend {
@@ -389,14 +389,14 @@ export class Demo implements Backend {
     }
     const premium = !!this.s.premium;
     try { localStorage.removeItem(CLAVE); } catch { /* sin almacenamiento */ }
-    this.s = { email: null, tuercas: 90, trabajos: [], proyectos: [], planes: {} };
+    this.s = { email: null, tuercas: 120, trabajos: [], proyectos: [], planes: {} };
     return { premium_activo: premium };
   }
   async tuercas() {
     return this.s.tuercas;
   }
   async precioJuego() {
-    return 60;
+    return 80;
   }
 
   async vistaPrevia(idea: string) {
@@ -406,10 +406,10 @@ export class Demo implements Backend {
       id: "demo-previa-" + Date.now(), kind: "game_preview", project_id: null, status: "done", created_at: new Date().toISOString(), idea: limpia,
       progress: [], error: null, refunded: false, titulo: null,
       result: { capturas: [], diseno: {
-        titulo: "Tuercas al Viento", genero: "plataformas", resumen: `Un juego hecho a partir de tu idea: ${limpia.slice(0, 120)}`,
-        heroe: { nombre: "Remache", descripcion: "un robot pequeño y valiente" },
-        enemigos: [{ nombre: "Chatarrilla" }, { nombre: "Tornillón" }], jefe: { nombre: "Gran Grúa" }, niveles: new Array(6).fill(0),
-        estilo: { descripcion: "pixel art de colores cálidos" },
+        titulo: "Bigotes Veloces", genero: "plataformas", resumen: `Un juego hecho a partir de tu idea: ${limpia.slice(0, 120)}`,
+        heroe: { nombre: "Mishi", descripcion: "una gata ninja rápida y valiente" },
+        enemigos: [{ nombre: "Rata Robot" }, { nombre: "Tejarón" }, { nombre: "Chispazo" }], jefe: null, niveles: new Array(3).fill(0),
+        estilo: { descripcion: "pixel art nocturno de colores cálidos" },
       } } as unknown as Trabajo["result"],
     };
     this.s.trabajos.unshift(t);
@@ -419,8 +419,8 @@ export class Demo implements Backend {
 
   async encargar(idea: string) {
     if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
-    if (this.s.tuercas < 60) throw new ErrorApp("No tienes tuercas suficientes para un juego completo.");
-    this.s.tuercas -= 60;
+    if (this.s.tuercas < 80) throw new ErrorApp("No tienes tuercas suficientes para un juego completo.");
+    this.s.tuercas -= 80;
     const t: Trabajo = {
       id: "demo-" + Date.now(), kind: "game", project_id: null, status: "queued", created_at: new Date().toISOString(), idea: idea.trim().replace(/^\[(plantilla|gancho):[a-z0-9_:,]*\]\s*/, ""),
       progress: [], result: null, error: null, refunded: false, titulo: null,

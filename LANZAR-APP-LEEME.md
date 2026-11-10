@@ -50,11 +50,11 @@ Activa GitHub Pages: Settings → Pages → Source: **GitHub Actions**, y lanza 
 > ser `ORQ_WEB/privacidad.html?j=<id>` y se ve como página.
 
 ## 2. Play Console → Crear app
-- Nombre: **Orquestador: crea tu juego** · Idioma: español (España) · App · Gratis.
+- Nombre: **Orquestador: creador de juegos** · Idioma: español (España) · App · Gratis.
 - Paquete: `com.orquestador.app`.
 
 ## 3. Ficha de Play Store
-Copia de `ficha.json`. Categoría: **Entretenimiento**. Icono, gráfico y capturas de `assets/play/` y `tienda/capturas/`.
+Copia de `ficha.json`: es-ES (principal), en-US, es-419 (Latinoamérica) y pt-BR, cada una como traducción de la ficha. Categoría: **Entretenimiento**. Icono, gráfico y capturas de `assets/play/` y `tienda/capturas/`.
 Correo, web (`ORQ_WEB`) y política de privacidad (`ORQ_WEB/privacidad.html`).
 
 ## 4. Contenido de la aplicación

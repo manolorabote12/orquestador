@@ -707,7 +707,7 @@ def siguientes_pasos(d: dict[str, str], aab: Path | None) -> str:
 	t = f"""PASOS QUE SOLO PUEDES HACER TU (Google no deja automatizarlos)
 
 1. Play Console (play.google.com/console, pago unico de 25 $) -> Crear app
-   Nombre: Orquestador: crea tu juego   Idioma: espanol (Espana)   App   Gratis
+   Nombre: Orquestador: creador de juegos   Idioma: espanol (Espana)   App   Gratis
 2. Prueba interna -> Crear version -> sube {aab or 'salida/...aab (Actions -> App Android -> Artifacts)'}
    Acepta "Firma de apps de Google Play" (Google guarda la llave final; la tuya es la de subida).
 3. Ficha de la tienda: textos de app/tienda/ficha.json, icono y grafico de app/assets/play/,
