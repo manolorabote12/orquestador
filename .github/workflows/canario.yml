@@ -1,0 +1,86 @@
+name: Canario
+# Juego de prueba automatico cada semana: si algo se rompe (Godot, RunPod, Supabase, Claude) te llega
+# un correo de GitHub antes de que le pase a un cliente. Cuesta unos 0,10 $ a la semana.
+#  - lunes 04:07 UTC: encarga un juego pequeno con la cuenta canario@orquestador.invalid (sin correo real);
+#  - lunes 05:37 UTC: mira como salio y cuanto costo, avisa si mal y borra todo lo que creo.
+on:
+  schedule:
+    - cron: "7 4 * * 1"
+    - cron: "37 5 * * 1"
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "encargar o revisar"
+        type: choice
+        options: [encargar, revisar]
+        default: encargar
+
+jobs:
+  canario:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      ACCION: ${{ github.event_name == 'workflow_dispatch' && inputs.accion || (github.event.schedule == '7 4 * * 1' && 'encargar' || 'revisar') }}
+      ORQ_CANARIO_MAX_USD: ${{ vars.ORQ_CANARIO_MAX_USD }}
+    steps:
+      - name: Canario
+        run: |
+          python3 - <<'PY'
+          import json, os, secrets, sys, urllib.error, urllib.request
+          URL = os.environ["SUPABASE_URL"].rstrip("/")
+          K = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+          H = {"apikey": K, "Authorization": "Bearer " + K, "Content-Type": "application/json", "User-Agent": "Orquestador/1.0"}
+          def pedir(metodo, ruta, cuerpo=None, cab=None):
+              req = urllib.request.Request(URL + ruta, method=metodo, headers=cab or H,
+                  data=json.dumps(cuerpo).encode() if cuerpo is not None else None)
+              with urllib.request.urlopen(req, timeout=60) as r:
+                  t = r.read().decode()
+                  return json.loads(t) if t.strip() else None
+          def rpc(nombre, args=None):
+              return pedir("POST", "/rest/v1/rpc/" + nombre, args or {})
+          if os.environ["ACCION"] == "encargar":
+              idea = "Un pequeno robot que salta entre plataformas en una fabrica y esquiva tuercas rodantes"
+              try:
+                  job = rpc("canario_encargar", {"p_idea": idea})
+              except urllib.error.HTTPError as e:
+                  txt = e.read().decode()
+                  if "sin_canario" not in txt:
+                      print("::error::No se pudo encargar el canario: " + txt[:300]); sys.exit(1)
+                  pedir("POST", "/auth/v1/admin/users", {"email": "canario@orquestador.invalid", "password": secrets.token_urlsafe(24), "email_confirm": True})
+                  job = rpc("canario_encargar", {"p_idea": idea})
+              print(f"::notice::Canario encargado: {job}")
+              ## Despertar la fabrica (como el Reloj).
+              hr = {"Authorization": "Bearer " + os.environ["RUNPOD_API_KEY"], "Content-Type": "application/json", "User-Agent": "Orquestador/1.0 (+https://github.com)"}
+              eps = json.loads(urllib.request.urlopen(urllib.request.Request("https://rest.runpod.io/v1/endpoints", headers=hr), timeout=60).read() or b"[]") or []
+              eps = eps if isinstance(eps, list) else eps.get("data", [])
+              fab = next((e["id"] for e in eps if e.get("name") == "orq-fabrica"), "")
+              if fab:
+                  urllib.request.urlopen(urllib.request.Request(f"https://api.runpod.ai/v2/{fab}/run", method="POST",
+                      data=json.dumps({"input": {"despertar": "canario"}}).encode(), headers=hr), timeout=60).read()
+              sys.exit(0)
+          e = rpc("canario_estado")
+          if not e:
+              print("::warning::El canario no tiene ningun juego todavia"); sys.exit(0)
+          maximo = float(os.environ.get("ORQ_CANARIO_MAX_USD") or "0.4")
+          usd = float(e.get("provider_cost_usd") or 0)
+          pasos = " | ".join(f"{p.get('paso')}: {str(p.get('mensaje'))[:70]}" for p in (e.get("pasos") or []))
+          print(f"::notice::Canario {e['status']} en {e.get('segundos') or '?'} s, {usd:.3f} $ :: {pasos[:700]}")
+          mal = []
+          if e["status"] in ("queued", "running"):
+              mal.append(f"sigue {e['status']} hora y media despues de encargarlo (cola atascada o fabrica caida)")
+          elif e["status"] == "failed":
+              mal.append("ha fallado: " + str(e.get("error"))[:400])
+          if usd > maximo:
+              mal.append(f"ha costado {usd:.2f} $ (limite {maximo:.2f} $): algo gasta de mas")
+          if e["status"] in ("done", "failed"):
+              rutas = rpc("canario_limpiar") or []
+              for i in range(0, len(rutas), 100):
+                  pedir("DELETE", "/storage/v1/object/juegos", {"prefixes": rutas[i:i + 100]})
+              print(f"::notice::Limpieza: {len(rutas)} archivos del canario borrados")
+          for m in mal:
+              print("::error::Canario: " + m)
+          sys.exit(1 if mal else 0)
+          PY

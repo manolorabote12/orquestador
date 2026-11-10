@@ -24,7 +24,7 @@ const ERRORS: Record<string, { status: number; message: string }> = {
   budget_exceeded:      { status: 503, message: "La fábrica está a tope ahora mismo. Inténtalo más tarde; no se te ha cobrado nada." },
   kind_disabled:        { status: 503, message: "La fábrica de juegos todavía no está abierta." },
   unknown_user:         { status: 401, message: "Vuelve a iniciar sesión." },
-  bad_preview:          { status: 400, message: "Esa vista previa ya no vale. Pide otra (es gratis)." },
+  bad_preview:          { status: 400, message: "Ese diseño ya no está disponible (dura 2 días). Pide uno nuevo: es gratis." },
 };
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;

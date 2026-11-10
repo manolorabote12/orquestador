@@ -83,6 +83,12 @@ class Supabase:
 		self._peticion("POST", destino, archivo.read_bytes(), tipo, {"x-upsert": "true"})
 		return ruta
 
+	def listar(self, prefijo: str, bucket: str = "juegos", limite: int = 200) -> list[dict]:
+		"""Archivos de una carpeta del almacen (nombre y fecha)."""
+		r = self._peticion("POST", f"/storage/v1/object/list/{bucket}",
+			json.dumps({"prefix": prefijo, "limit": limite, "sortBy": {"column": "created_at", "order": "asc"}}).encode("utf-8"), "application/json")
+		return json.loads(r.decode("utf-8")) if r else []
+
 	def borrar(self, rutas: list[str], bucket: str = "juegos") -> None:
 		"""Borra archivos del almacen. Nunca para la fabrica: si falla, solo se avisa."""
 		rutas = [r for r in rutas if r]
@@ -109,6 +115,60 @@ def borrar_seguro(sb: "Supabase", rutas: list[str]) -> None:
 
 def limpiar_version_anterior(sb: "Supabase", previos: dict, nuevos: dict) -> None:
 	borrar_seguro(sb, [previos.get(k) for k in PESADOS if previos.get(k) and previos.get(k) != nuevos.get(k)])
+
+
+## Cache del arte (cadena.clave_arte): si un juego falla despues de dibujar, el reintento con el mismo
+## diseno recupera el arte en vez de volver a pagar la GPU. Se borra al terminar bien y a los 3 dias.
+CARPETA_CACHE = "cache_arte"
+DIAS_CACHE = 3
+
+
+class CacheArte:
+	def __init__(self, sb: "Supabase"):
+		self.sb = sb
+
+	@staticmethod
+	def ruta(clave: str) -> str:
+		return f"{CARPETA_CACHE}/{clave}.zip"
+
+	def bajar(self, clave: str, destino: Path) -> bool:
+		try:
+			self.sb.bajar(self.ruta(clave), destino)
+			return destino.exists() and destino.stat().st_size > 0
+		except Exception:  # noqa: BLE001 - no esta (lo normal): se dibuja
+			return False
+
+	def subir(self, clave: str, archivo: Path) -> None:
+		if archivo.stat().st_size > LIMITE_SUBIDA:
+			print(f"[trabajador] cache de arte demasiado grande ({archivo.stat().st_size // 1048576} MB): no se guarda", flush=True)
+			return
+		self.sb.subir(self.ruta(clave), archivo)
+
+
+def limpiar_cache_arte(sb: "Supabase", dias: int = DIAS_CACHE) -> int:
+	"""Borra la cache de arte de mas de N dias (de juegos que fallaron y nadie reintento)."""
+	import datetime as _dt
+	limite = _dt.datetime.now(_dt.timezone.utc) - _dt.timedelta(days=dias)
+	viejos = []
+	for f in sb.listar(CARPETA_CACHE + "/") or []:
+		try:
+			fecha = _dt.datetime.fromisoformat(str(f.get("created_at", "")).replace("Z", "+00:00"))
+		except ValueError:
+			continue
+		if f.get("name") and fecha < limite:
+			viejos.append(f"{CARPETA_CACHE}/{f['name']}")
+	borrar_seguro(sb, viejos)
+	return len(viejos)
+
+
+def guardar_diseno_fallido(sb: "Supabase", job: str, tmp: Path) -> None:
+	"""Si el juego falla, su diseno queda en el trabajo: «Reintentar» lo fabrica igual (y recupera el arte)."""
+	try:
+		disenos = sorted(tmp.glob("*/fabrica/diseno.json"))
+		if disenos:
+			sb.rpc("guardar_diseno", p_job=job, p_spec=json.loads(disenos[0].read_text(encoding="utf-8")))
+	except Exception as e:  # noqa: BLE001
+		print(f"[trabajador] no se pudo guardar el diseno para reintentar: {e}", flush=True)
 
 
 ## CPU de la fabrica en RunPod (4 vCPU serverless): se suma al coste real de cada trabajo.
@@ -522,7 +582,8 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 	job = trabajo["job_id"]
 	usuario = trabajo["user_id"]
 	idea = trabajo["idea"]
-	print(f"[trabajador] trabajo {job}: {idea[:80]}", flush=True)
+	canario = bool((trabajo.get("detail") or {}).get("canario"))
+	print(f"[trabajador] trabajo {job}{' (canario)' if canario else ''}: {idea[:80]}", flush=True)
 	gasto = llm.Gasto()
 	t0 = time.time()
 	## Solo lo que Chispa necesita: paso, estado, mensaje y algun numero.
@@ -535,10 +596,13 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 		args = argparse.Namespace(
 			idea=idea, salida=str(tmp), simulado=opciones.simulado, arte_simulado=opciones.arte_simulado,
 			comfy=opciones.comfy, crear=opciones.crear, editar=opciones.editar, lado=opciones.lado,
-			semilla=int(job.replace("-", "")[:6], 16) % 100000, apk=opciones.apk, capturas=opciones.capturas, web=opciones.web, ficha=opciones.ficha, clip=opciones.clip, gasto=gasto,
+			semilla=int(job.replace("-", "")[:6], 16) % 100000, apk=opciones.apk, capturas=opciones.capturas, web=opciones.web,
+			## Canario semanal (prueba automatica): juego pequeno, sin ficha ni clip, para gastar lo minimo.
+			ficha=opciones.ficha and not canario, clip=opciones.clip and not canario, ligero=canario, gasto=gasto,
 			telemetria_id=job, boceto=lambda pck: sb.subir(f"{usuario}/{job}/boceto/index.pck", pck),
 			## Vista previa aprobada: se fabrica con ese diseno (lo puso el servidor, no el jugador).
 			diseno=(trabajo.get("detail") or {}).get("diseno") or None,
+			cache_arte=CacheArte(sb),
 			cruzada=cruzada(sb, usuario, job))
 		inf = cadena.fabricar(args)
 		proyecto = Path(inf["proyecto"])
@@ -546,11 +610,12 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 		diseno = json.loads((proyecto / "fabrica" / "diseno.json").read_text(encoding="utf-8"))
 		sb.rpc("complete_game_job", p_job=job, p_cost_usd=max(inf["coste_usd"]["total"], coste_real(gasto, t0)), p_units=inf["imagenes"],
 			p_title=inf["titulo"], p_spec=diseno, p_files=archivos)
-		borrar_seguro(sb, [f"{usuario}/{job}/boceto/index.pck"])
+		borrar_seguro(sb, [f"{usuario}/{job}/boceto/index.pck"] + ([CacheArte.ruta(inf["clave_arte"])] if inf.get("clave_arte") else []))
 		print(f"[trabajador] listo {job}: {inf['titulo']} ({inf['total_s']} s, {inf['coste_usd']['total']} $)", flush=True)
 	except Exception as e:  # noqa: BLE001 - cualquier fallo se devuelve al usuario
 		traceback.print_exc()
 		motivo = str(e)[:400] or e.__class__.__name__
+		guardar_diseno_fallido(sb, job, tmp)
 		try:
 			devuelto = sb.rpc("fail_job", p_job=job, p_error=motivo, p_cost_usd=coste_real(gasto, t0), p_refund=True)
 			print(f"[trabajador] fallo {job}; devuelto={devuelto}", flush=True)
@@ -595,6 +660,12 @@ def mantenimiento(sb: Supabase, aprender: bool) -> None:
 		sb.rpc("nube_limpiar")
 	except RuntimeError as e:
 		print(f"[trabajador] nube: {e}", flush=True)
+	try:
+		n = limpiar_cache_arte(sb)
+		if n:
+			print(f"[trabajador] {n} caches de arte viejas borradas", flush=True)
+	except Exception as e:  # noqa: BLE001
+		print(f"[trabajador] cache de arte: {e}", flush=True)
 	try:
 		n = sb.rpc("expire_stuck_jobs")
 		if n:

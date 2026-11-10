@@ -37,6 +37,9 @@ class SupabaseFalso:
 		return destino
 
 	def subir(self, ruta: str, archivo: Path, bucket: str = "juegos") -> str:
+		## Para probar reintentos: la subida de la version de un trabajo concreto falla.
+		if getattr(self, "romper", "") and self.romper in ruta and "/v1/" in ruta:
+			raise RuntimeError(f"Supabase POST {ruta}: HTTP 500 roto a proposito")
 		self.archivos[f"{bucket}/{ruta}"] = archivo.read_bytes()
 		return ruta
 
@@ -155,6 +158,27 @@ def main() -> int:
 			str(rg and rg.get("p_title")) + str([p for f, p in sb.rpcs if f == "fail_job"])[-300:])
 		ev = [p["p_event"]["mensaje"] for f, p in sb.rpcs if f == "job_progress" and p.get("p_job") == tg["job_id"] and p["p_event"]["paso"] == "diseno"]
 		check("y lo dice (no lo vuelve a pensar)", any("aprobaste" in m for m in ev), str(ev))
+
+	print("== Falla despues de dibujar: reintentar sin volver a pagar el arte ==")
+	check("un juego terminado no deja cache de arte", not any(k.startswith("juegos/cache_arte/") for k in sb.archivos))
+	tf = {"job_id": "0000dd01-0000-0000-0000-000000000000", "user_id": "u3", "kind": "game", "idea": "una ardilla que salta entre arboles gigantes"}
+	sb.romper = "0000dd01"
+	trabajador.atender(sb, tf, opc0)
+	sb.romper = ""
+	ff = next((p for f, p in sb.rpcs if f == "fail_job" and p["p_job"] == tf["job_id"]), None)
+	gd = next((p for f, p in sb.rpcs if f == "guardar_diseno" and p["p_job"] == tf["job_id"]), None)
+	check("falla al guardar y devuelve", ff is not None and ff["p_refund"] is True)
+	check("deja su diseno para reintentar", gd is not None and gd["p_spec"].get("titulo"))
+	check("y el arte queda en la cache", any(k.startswith("juegos/cache_arte/") for k in sb.archivos))
+	if gd:
+		tr = {"job_id": "0000dd02-0000-0000-0000-000000000000", "user_id": "u3", "kind": "game", "idea": tf["idea"],
+			"detail": {"idea": tf["idea"], "diseno": gd["p_spec"], "preview": tf["job_id"]}}
+		trabajador.atender(sb, tr, opc0)
+		rr = next((p for f, p in sb.rpcs if f == "complete_game_job" and p["p_job"] == tr["job_id"]), None)
+		ev = [p["p_event"]["mensaje"] for f, p in sb.rpcs if f == "job_progress" and p.get("p_job") == tr["job_id"] and p["p_event"]["paso"] == "arte"]
+		check("el reintento termina", rr is not None, str([p for f, p in sb.rpcs if f == "fail_job"])[-300:])
+		check("recupera el arte en vez de dibujarlo", any("Recupero el arte" in m for m in ev), str(ev))
+		check("y borra la cache al terminar", not any(k.startswith("juegos/cache_arte/") for k in sb.archivos))
 
 	print("== Agente programador (game_mod) ==")
 	t4 = {"job_id": "0000aa04-0000-0000-0000-000000000000", "user_id": "u1", "kind": "game_mod", "project_id": "p1",

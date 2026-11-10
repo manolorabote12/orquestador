@@ -629,9 +629,27 @@ export function vistaTaller(app: App): VistaHecha {
     chispa.decir(t.refunded ? "Algo se ha roto en la fábrica. Te he devuelto las tuercas; prueba otra vez." :
       "Algo se ha roto en la fábrica, lo siento. Prueba otra vez en un rato.", "error");
     void app.refrescarTuercas();
-    const otro = h("button", { class: "btn btn-brass" }, "Intentarlo de nuevo");
+    // Con su diseño guardado, el reintento fabrica el mismo juego y recupera el arte ya dibujado.
+    const conDiseno = !!(t.result as unknown as { diseno?: unknown } | null)?.diseno && t.idea.trim().length >= 15;
+    const reintentar = h("button", { class: "btn btn-brass" }, "Reintentar este mismo juego", h("span", { class: "price" }, svg(ICONOS.tuerca), String(app.precio))) as HTMLButtonElement;
+    reintentar.disabled = app.precio > app.tuercas;
+    reintentar.addEventListener("click", async () => {
+      reintentar.disabled = true;
+      chispa.decir("Lo intento otra vez con el mismo diseño. Lo que ya estaba dibujado no se vuelve a pagar.", "thinking");
+      try {
+        const r = await app.api.encargar(t.idea, t.id);
+        app.ponerTuercas(r.credits);
+        void programarAvisoEspera(r.job_id);
+        seguir(r.job_id);
+      } catch (e) {
+        aviso(mensajeError(e, "No se pudo reintentar."));
+        reintentar.disabled = false;
+      }
+    });
+    const otro = h("button", { class: conDiseno ? "btn btn-line" : "btn btn-brass" }, conDiseno ? "Probar otra idea" : "Intentarlo de nuevo");
     otro.addEventListener("click", reiniciar);
-    resultado.replaceChildren(h("h2", {}, "No ha salido"), h("p", { class: "muted", style: "margin:8px 0 14px" }, t.idea), otro);
+    resultado.replaceChildren(h("h2", {}, "No ha salido"), h("p", { class: "muted", style: "margin:8px 0 14px" }, t.idea),
+      ...(conDiseno ? [reintentar, h("div", { style: "height:10px" })] : []), otro);
     resultado.hidden = false;
   }
 

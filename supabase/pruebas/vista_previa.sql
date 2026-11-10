@@ -45,3 +45,22 @@ begin
   raise notice 'vista_previa OK';
 end;
 $$;
+-- Reintentar un juego fallido con su mismo diseno.
+do $$
+declare
+  u uuid; j uuid; r uuid;
+begin
+  insert into auth.users (email, email_confirmed_at) values ('reintento@example.com', now()) returning id into u;
+  update public.profiles set credits = 200 where id = u;
+  select q.job_id into j from public.queue_game(u, 'un caballero que salta castillos de nubes') q;
+  update public.jobs set status = 'running', started_at = now() where id = j;
+  perform public.guardar_diseno(j, '{"titulo":"Caballero de Nubes"}'::jsonb);
+  perform public.fail_job(j, 'fallo despues del arte', 0.2, true);
+  assert (select credits from public.profiles where id = u) = 200, 'devuelto';
+  update public.jobs set created_at = now() - interval '2 minutes' where user_id = u;
+  select q.job_id into r from public.queue_game(u, 'un caballero que salta castillos de nubes', j) q;
+  assert (select detail -> 'diseno' ->> 'titulo' from public.jobs where id = r) = 'Caballero de Nubes', 'mismo diseno';
+  assert not has_function_privilege('authenticated', 'public.guardar_diseno(uuid, jsonb)', 'execute');
+  raise notice 'reintentar OK';
+end;
+$$;

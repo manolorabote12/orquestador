@@ -546,6 +546,38 @@ def poner_reto(proyecto: Path) -> None:
 	gp.write_text(json.dumps(game, indent=1, ensure_ascii=False), encoding="utf-8")
 
 
+## Cache del arte: el arte (lo caro: GPU) se guarda con una clave que sale de la biblia. Si el juego
+## falla despues de dibujar y se reintenta con el mismo diseno, se recupera en vez de volver a pagarlo.
+ARTE_VERSION = "1"
+
+
+def clave_arte(biblia: dict, lado: int, fondos: bool) -> str:
+	import hashlib
+	base = json.dumps(biblia, sort_keys=True, ensure_ascii=False) + f"|{lado}|{int(bool(fondos))}|{ARTE_VERSION}"
+	return hashlib.sha256(base.encode("utf-8")).hexdigest()[:32]
+
+
+def empaquetar_arte(proyecto: Path, destino: Path) -> Path:
+	"""assets/ (lo que lee Godot) + fabrica/arte/ (fichas, informe, musica, voces, fondos)."""
+	import zipfile
+	with zipfile.ZipFile(destino, "w", zipfile.ZIP_DEFLATED) as z:
+		for carpeta in (proyecto / "assets", proyecto / "fabrica" / "arte"):
+			for f in sorted(carpeta.rglob("*")):
+				if f.is_file() and not f.name.endswith(".import"):
+					z.write(f, f.relative_to(proyecto).as_posix())
+	return destino
+
+
+def restaurar_arte(zipf: Path, proyecto: Path) -> dict:
+	import zipfile
+	with zipfile.ZipFile(zipf) as z:
+		for n in z.namelist():
+			if not (n.startswith("assets/") or n.startswith("fabrica/arte/")) or ".." in n:
+				raise ErrorCadena(f"Cache de arte rara: {n}")
+		z.extractall(proyecto)
+	return json.loads((proyecto / "fabrica" / "arte" / "informe.json").read_text(encoding="utf-8"))
+
+
 def disenar_previa(idea: str, simulado: bool, gasto: "llm.Gasto") -> tuple[dict, str]:
 	"""Vista previa gratis: solo el diseno (con su toque de originalidad), sin niveles ni arte.
 	Luego fabricar() lo usa tal cual si el jugador lo aprueba (args.diseno)."""
@@ -602,8 +634,11 @@ def fabricar(args: argparse.Namespace) -> dict:
 		(proyecto / "fabrica" / "muestra.json").write_text(json.dumps({"nombre": args.muestra}, ensure_ascii=False), encoding="utf-8")
 	biblia = director.a_biblia(diseno)
 	## Limite de imagenes por juego (la GPU se paga por imagen): ORQ_MAX_IMAGENES, 36 por defecto.
-	fondos = str(args.comfy).startswith("runpod://") or os.environ.get("ORQ_FONDOS") == "1"
-	ahorradas = bib.recortar(biblia, int(os.environ.get("ORQ_MAX_IMAGENES") or "36"), EXTRAS_FONDOS if fondos else 0)
+	## Juego ligero (canario de prueba): los menos dibujos posibles y sin fondos ilustrados.
+	ligero = bool(getattr(args, "ligero", False))
+	fondos = not ligero and (str(args.comfy).startswith("runpod://") or os.environ.get("ORQ_FONDOS") == "1")
+	maximo = 10 if ligero else int(os.environ.get("ORQ_MAX_IMAGENES") or "36")
+	ahorradas = bib.recortar(biblia, maximo, EXTRAS_FONDOS if fondos else 0)
 	if ahorradas:
 		print(f"[cadena] {ahorradas} imagenes menos para no pasar del limite ({bib.imagenes(biblia, EXTRAS_FONDOS if fondos else 0)})", flush=True)
 	bib.validar(biblia)
@@ -693,18 +728,40 @@ def fabricar(args: argparse.Namespace) -> dict:
 		comfy = f"http://127.0.0.1:{puerto}"
 		crear = str(RAIZ / "plantillas" / "simulado_crear.json")
 		editar = str(RAIZ / "plantillas" / "simulado_editar.json")
+	arte_dir = proyecto / "fabrica" / "arte"
+	cache = getattr(args, "cache_arte", None)
+	clave = clave_arte(biblia, args.lado, fondos)
+	informe["clave_arte"] = clave
+	inf_arte = None
+	if cache is not None:
+		try:
+			zc = Path(args.salida).resolve() / f"arte_{clave}.zip"
+			if cache.bajar(clave, zc):
+				inf_arte = restaurar_arte(zc, proyecto)
+				## Ya estaba pagado: este juego no vuelve a gastar GPU en el arte.
+				inf_arte.update({"usd": 0.0, "desde_cache": True, "avisos": list(inf_arte.get("avisos") or [])})
+				evento("arte", "aviso", "Recupero el arte que ya estaba dibujado para este diseño (no se vuelve a pagar)")
+		except Exception as e:  # noqa: BLE001 - sin cache se dibuja como siempre
+			print(f"[cadena] cache de arte no disponible: {e}", flush=True)
+			inf_arte = None
 	try:
-		arte_dir = proyecto / "fabrica" / "arte"
-		inf_arte = arte_cli.fabricar(argparse.Namespace(
-			biblia=str(ruta_biblia), comfy=comfy, crear=crear, editar=editar,
-			salida=str(arte_dir), godot=str(proyecto), lado=args.lado, musica=flujo_musica(comfy), sfx=flujo_sfx(comfy), voces=destino_voces(comfy),
-			fondos=fondos,
-			revision=gasto if (not args.simulado and not args.arte_simulado and llm.clave()) else None))
+		if inf_arte is None:
+			inf_arte = arte_cli.fabricar(argparse.Namespace(
+				biblia=str(ruta_biblia), comfy=comfy, crear=crear, editar=editar,
+				salida=str(arte_dir), godot=str(proyecto), lado=args.lado, musica=flujo_musica(comfy), sfx=flujo_sfx(comfy), voces=destino_voces(comfy),
+				fondos=fondos,
+				revision=gasto if (not args.simulado and not args.arte_simulado and llm.clave()) else None))
+			if cache is not None:
+				## Guardado por si algo falla despues: un reintento con este diseno no vuelve a pagar el arte.
+				try:
+					cache.subir(clave, empaquetar_arte(proyecto, Path(args.salida).resolve() / f"arte_{clave}.zip"))
+				except Exception as e:  # noqa: BLE001
+					print(f"[cadena] no se pudo guardar la cache de arte: {e}", flush=True)
 	finally:
 		if srv is not None:
 			srv.shutdown()
 	cronometro("arte", t)
-	if args.arte_simulado:
+	if args.arte_simulado or inf_arte.get("desde_cache"):
 		usd_arte = 0.0
 	elif inf_arte.get("motor") == "runpod":
 		usd_arte = round(float(inf_arte.get("usd", 0.0)), 4)
