@@ -54,6 +54,10 @@ jobs:
               t0 = pasos[0].get("t", 0) if pasos else 0
               extra = lambda p: " ".join("%s=%s" % (k, p[k]) for k in ("gpu_s", "arranque_s", "seg_img", "tope", "imagenes") if p.get(k) not in (None, ""))
               linea = " | ".join("%ds %s %s %s %s" % (int(p.get("t", 0) - t0), p.get("paso"), p.get("estado"), str(p.get("mensaje", ""))[:50], extra(p)) for p in pasos)
+              ## Los avisos enteros (por que no salio un paso opcional).
+              for p in pasos:
+                  if p.get("estado") == "aviso":
+                      print("::notice::AVISO " + str(p.get("paso")) + ": " + str(p.get("mensaje", "")).replace("\n", " / ")[:900])
               for i in range(0, len(linea), 900):
                   print("::notice::PASOS " + linea[i:i + 900])
           ## Los 6 ultimos trabajos en un solo aviso (GitHub ensena 10 por paso).
