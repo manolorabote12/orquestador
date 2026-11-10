@@ -46,7 +46,7 @@ jobs:
           junto("COSTES", "select kind, status, count(*), round(sum(coalesce(provider_cost_usd,0)),3) usd, round(avg(extract(epoch from finished_at-started_at))) seg from public.jobs group by 1,2 order by 1")
           junto("EMBUDO", "select public.embudo(30) as e")
           junto("LEDGER", "select reason, count(*), sum(amount) from public.credit_ledger group by 1 order by 1")
-          lento = sql("select progress from public.jobs where finished_at - created_at > interval '10 minutes' order by created_at desc limit 1")
+          lento = sql("select progress from public.jobs where status = 'running' or finished_at - created_at > interval '10 minutes' order by created_at desc limit 1")
           if isinstance(lento, list) and lento:
               pasos = lento[0].get("progress") or []
               if isinstance(pasos, str):
