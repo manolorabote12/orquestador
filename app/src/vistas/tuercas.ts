@@ -33,7 +33,7 @@ export function vistaTuercas(app: App): VistaHecha {
         "Los pagos los gestiona Google Play. Las tuercas no caducan. ¿Una compra no te llegó? Cierra y abre la app: se recupera sola."));
   }
 
-  // Invita a un amigo: los dos ganan tuercas cuando el amigo fabrica su primer juego (lo da el
+  // Invita a un amigo: los dos ganan tuercas cuando el amigo hace su primera compra (lo da el
   // servidor; aquí solo se enseña el código y se apunta el de quien te invitó).
   function seccionInvitar(): HTMLElement {
     const cuerpo = h("div", { "aria-live": "polite" }, h("p", { class: "muted small" }, "Cargando tu código..."));
@@ -50,7 +50,7 @@ export function vistaTuercas(app: App): VistaHecha {
         }
       });
       const partes: (HTMLElement | string)[] = [
-        h("p", { class: "muted small" }, `Cuando tu amigo fabrique su primer juego, los dos ganáis ${inv.por_amigo} tuercas.`),
+        h("p", { class: "muted small" }, `Cuando tu amigo haga su primera compra, los dos ganáis ${inv.por_amigo} tuercas.`),
         h("div", { class: "codigo-invita", "aria-label": "Tu código" }, inv.codigo),
         h("div", { class: "fila-botones" }, compartirB),
         h("p", { class: "muted small" }, inv.invitados
@@ -65,7 +65,7 @@ export function vistaTuercas(app: App): VistaHecha {
           usar.disabled = true;
           try {
             await app.api.usarInvitacion(campo.value);
-            aviso(`¡Listo! Cuando fabriques tu primer juego, ganaréis ${inv.por_amigo} tuercas cada uno`);
+            aviso(`¡Listo! Con tu primera compra, ganaréis ${inv.por_amigo} tuercas cada uno`);
             campo.closest(".invitado")?.remove();
           } catch (e) {
             aviso(mensajeError(e, "No se pudo usar el código."));

@@ -56,6 +56,22 @@ export async function compartir(url: string, nombre: string, texto: string): Pro
 }
 
 /** Compartir un enlace (el de jugar a un juego). Móvil: menú del sistema; si no, se copia. */
+/** La página propia de un juego del escaparate (web/juegos/<id>.html) lleva su imagen y su título
+ *  para la vista previa de WhatsApp, Instagram o X. Se genera unos minutos después de publicarlo:
+ *  si aún no está, vale el enlace directo. */
+export async function enlaceConTarjeta(web: string, proyectoId: string, directo: string): Promise<string> {
+  const bonita = `${web.replace(/\/$/, "")}/juegos/${proyectoId}.html`;
+  try {
+    const corte = new AbortController();
+    const reloj = setTimeout(() => corte.abort(), 2500);
+    const r = await fetch(bonita, { method: "HEAD", signal: corte.signal, cache: "no-store" });
+    clearTimeout(reloj);
+    return r.ok ? bonita : directo;
+  } catch {
+    return directo;
+  }
+}
+
 export async function compartirEnlace(url: string, titulo: string): Promise<"compartido" | "copiado"> {
   const texto = `¡Juega a «${titulo}»! Lo he creado con Orquestador:`;
   try {

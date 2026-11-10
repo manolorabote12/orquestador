@@ -6,7 +6,7 @@ import { abrirEditor } from "./editor";
 import { botonDenuncia } from "../denuncia";
 import type { App } from "../main";
 import { type Funcion, type CuentaPlay, type ModoYoutube, type Entrada, type Marketing, type PasoGuia, type Propuesta, type Proyecto, type Resena, type Trabajo } from "../api";
-import { compartir, compartirEnlace } from "../compartir";
+import { compartir, compartirEnlace, enlaceConTarjeta } from "../compartir";
 import { diagnosticar, MIN_INTENTOS } from "../aprendizaje";
 import { aconsejar, type Accion } from "../asesor";
 import { veredictoAb } from "../ab";
@@ -1314,7 +1314,9 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       const otraVez = h("button", { class: "btn btn-line btn-small" }, "Compartir enlace");
       otraVez.disabled = !url;
       otraVez.addEventListener("click", async () => {
-        if (url) aviso((await compartirEnlace(url, p.titulo)) === "copiado" ? "Enlace copiado" : "¡Compartido!");
+        // Si ya existe la página propia del juego (con su imagen y su título para WhatsApp,
+        // Instagram o X), se comparte esa; si aún no se ha generado, el enlace directo de siempre.
+        if (url) aviso((await compartirEnlace(await enlaceConTarjeta(enlace!, p.id, url), p.titulo)) === "copiado" ? "Enlace copiado" : "¡Compartido!");
       });
       const quitar = h("button", { class: "btn btn-line btn-small" }, "Quitar");
       quitar.addEventListener("click", async () => {

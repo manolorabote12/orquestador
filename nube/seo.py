@@ -165,9 +165,10 @@ def generar(salida: Path, supabase: str = "", anon: str = "", web: str = "", jue
 		cuerpo = (f'<p><img src="{e(img)}" width="128" height="128" alt="" style="border-radius:24px"></p><h1>{e(j["titulo"])}</h1>'
 			+ f'<p class="dim">{e(desc)}</p><p class="dim">{e(TXT["es"]["de"])} {e(j.get("autor") or "Orquestador")} · {int(j.get("jugadas", 0))} {e(TXT["es"]["jugadas"])}</p>'
 			+ f'<p><a class="btn" href="../jugar.html?j={e(pid)}">{e(TXT["es"]["jugar"])}</a> '
-			+ f'<a class="btn" style="background:transparent;color:var(--brass-hi);border:1px solid var(--brass)" href="../crear/{e(j.get("genero", "index"))}.html">{e(TXT["es"]["crea_tuyo"])}</a></p>')
+			+ f'<a class="btn" style="background:transparent;color:var(--brass-hi);border:1px solid var(--brass)" href="../app/?remix={e(pid)}">Haz tu versión</a></p>'
+			+ f'<p class="dim"><a href="../crear/{e(j.get("genero", "index"))}.html">{e(TXT["es"]["crea_tuyo"])}</a></p>')
 		(salida / ruta).write_text(pagina("es", str(j["titulo"]), desc or str(j["titulo"]), cuerpo, ruta, web,
-			f'<meta property="og:image" content="{e(img)}"><script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'), encoding="utf-8")
+			f'<meta property="og:image" content="{e(img)}"><meta property="og:type" content="website"><meta name="twitter:card" content="summary"><meta name="twitter:image" content="{e(img)}"><script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script>'), encoding="utf-8")
 		urls.append(ruta)
 	## sitemap y robots
 	base = web.rstrip("/") if web else ""

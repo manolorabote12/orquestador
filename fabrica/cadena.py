@@ -120,6 +120,10 @@ def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False
 	cmd = [godot_bin(), "--path", str(proyecto)]
 	if not display:
 		cmd.insert(1, "--headless")
+	if display and sys.platform.startswith("linux"):
+		## Con pantalla (capturas y clip) siempre X11: Godot probaba antes Wayland y, en el servidor
+		## (xvfb, sin Wayland), fallaba al instante: juegos sin capturas, sin ficha y sin clip.
+		cmd += ["--display-driver", "x11"]
 	cmd += list(args)
 	if display and not os.environ.get("DISPLAY") and shutil.which("xvfb-run"):
 		cmd = ["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd

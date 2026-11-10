@@ -16,6 +16,9 @@ jobs:
   despertar:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: write
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -59,6 +62,20 @@ jobs:
           if [ "$n" != "0" ]; then
             curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
               -d '{"input": {"despertar": "reloj"}}' "https://api.runpod.ai/v2/${{ steps.ep.outputs.id }}/run"
+          fi
+      ## Juego recien publicado (o actualizado) en el escaparate: se regenera la web para que su pagina
+      ## propia (imagen y titulo al compartir el enlace) exista en minutos y no al dia siguiente.
+      - name: Web al dia con el escaparate
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          desde=$(date -u -d '16 minutes ago' +%Y-%m-%dT%H:%M:%SZ)
+          n=$(curl -sf "$SUPABASE_URL/rest/v1/escaparate?updated_at=gte.$desde&select=project_id&limit=1" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            | python3 -c "import json,sys; print(len(json.load(sys.stdin)))" || echo 0)
+          if [ "$n" != "0" ]; then
+            gh workflow run web.yml -R "$GITHUB_REPOSITORY" && echo "::notice::Escaparate con novedades: web en marcha"
           fi
       ## Siempre al final: si da alarma el paso falla y GitHub manda un correo (los demas ya han corrido).
       - uses: actions/checkout@v4

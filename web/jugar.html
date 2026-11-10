@@ -41,7 +41,7 @@
   <button class="btn" id="jugar" disabled>▶ Jugar</button>
   <div id="barra"><i></i></div>
   <p id="msg" class="msg" role="status"></p>
-  <p class="crea dim">Hecho con <b>Orquestador</b>: describe un juego y juégalo en minutos.<br><a href="./">Crea el tuyo gratis</a></p>
+  <p class="crea dim">Hecho con <b>Orquestador</b>: describe un juego y juégalo en minutos.<br><a id="version" href="./">Crea el tuyo gratis</a></p>
 </div>
 <a id="hecho" href="./" target="_blank" rel="noopener">⚙ Hecho con Orquestador</a>
 <script>
@@ -86,6 +86,11 @@
       document.title = f.titulo + " · Juega gratis";
       $("titulo").textContent = f.titulo;
       $("sub").textContent = (f.autor ? "de " + f.autor + " · " : "") + f.jugadas + " partidas · " + f.megusta + " me gusta";
+      // «Haz tu versión»: abre la app con este juego copiado en Mis juegos, listo para cambiarlo.
+      var v = $("version"), h2 = $("hecho");
+      v.href = h2.href = "app/?remix=" + j;
+      v.textContent = "Haz tu propia versión de este juego";
+      h2.textContent = "⚙ Haz tu versión con Orquestador";
     }
     var base = pub + "escaparate/" + j + "/";
     var icono = $("icono");
@@ -103,10 +108,23 @@
     $("jugar").style.display = "none";
     $("barra").style.display = "block";
     msg("Cargando el motor...");
-    var motor = pub + "motor/" + c.motor;
+    // El motor (36 MB) se sirve desde esta misma web (gratis); si no esta, desde Supabase como antes.
+    var propio = new URL("motor/" + c.motor, location.href).href.replace(/\/$/, "");
+    var motor = propio;
     var s = document.createElement("script");
     s.src = motor + "/index.js";
-    s.onerror = function () { msg("No se pudo descargar el juego. Revisa tu conexión.", true); };
+    s.onerror = function () {
+      if (motor === propio) {
+        motor = pub + "motor/" + c.motor;
+        var s2 = document.createElement("script");
+        s2.src = motor + "/index.js";
+        s2.onerror = function () { msg("No se pudo descargar el juego. Revisa tu conexión.", true); };
+        s2.onload = s.onload;
+        document.head.appendChild(s2);
+        return;
+      }
+      msg("No se pudo descargar el juego. Revisa tu conexión.", true);
+    };
     s.onload = function () {
       if (typeof Engine === "undefined" || !Engine.isWebGLAvailable(2)) { msg("Tu navegador no puede mostrar este juego (falta WebGL 2).", true); return; }
       var e = new Engine({ executable: motor + "/index", mainPack: pck, canvasResizePolicy: 2, args: [],

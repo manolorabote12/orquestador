@@ -12,7 +12,7 @@ import { crearBackend, type Backend } from "./api";
 import { ICONOS, aviso, bloqueError, h, svg, type VistaHecha } from "./ui";
 import { vistaEntrar } from "./vistas/entrar";
 import { activarVibracion, engancharAtras, recordarVista, ultimaVista, vigilarConexion } from "./comodidad";
-import { vigilarErrores } from "./errores";
+import { mensajeError, vigilarErrores } from "./errores";
 import { iniciarIdioma } from "./idioma";
 
 export type Vista = "taller" | "juegos" | "lanzadera" | "tuercas" | "cuenta";
@@ -66,6 +66,14 @@ try {
   const c = new URLSearchParams(location.search).get("invita");
   if (c && /^[A-Za-z2-9]{7}$/.test(c)) localStorage.setItem(CLAVE_INVITA, c.toUpperCase());
 } catch { /* sin almacenamiento: se puede escribir a mano en Tuercas */ }
+
+// «Haz tu versión» desde la web de un juego (?remix=<id>): se guarda y, al entrar, el juego se copia
+// a Mis juegos para cambiarlo en el taller.
+const CLAVE_REMIX = "orq-remix";
+try {
+  const r = new URLSearchParams(location.search).get("remix");
+  if (r && /^[0-9a-f-]{36}$/i.test(r)) localStorage.setItem(CLAVE_REMIX, r.toLowerCase());
+} catch { /* sin almacenamiento: se hace desde el escaparate */ }
 
 async function arrancar(): Promise<void> {
   // Ningun fallo se pierde en silencio: lo no previsto se avisa con un texto claro.
@@ -158,8 +166,16 @@ async function arrancar(): Promise<void> {
       let invita: string | null = null;
       try { invita = localStorage.getItem(CLAVE_INVITA); localStorage.removeItem(CLAVE_INVITA); } catch { /* nada */ }
       if (invita) {
-        void api.usarInvitacion(invita).then(() => aviso("Código de invitación apuntado: al fabricar tu primer juego, ganáis tuercas los dos"))
+        void api.usarInvitacion(invita).then(() => aviso("Código de invitación apuntado: con tu primera compra, ganáis tuercas los dos"))
           .catch(() => undefined);
+      }
+      let remix: string | null = null;
+      try { remix = localStorage.getItem(CLAVE_REMIX); localStorage.removeItem(CLAVE_REMIX); } catch { /* nada */ }
+      if (remix) {
+        void api.remix(remix).then((r) => {
+          aviso("Ya tienes tu copia en Mis juegos: cámbiala a tu manera en su taller");
+          app.ir("juegos", r.project_id);
+        }).catch((e) => aviso(mensajeError(e, "No se pudo copiar ese juego. Búscalo en el escaparate.")));
       }
       // Compras pagadas que quedaron a medias (sin red, app cerrada): se cierran solas.
       void api.recuperarCompras().then((n) => {
