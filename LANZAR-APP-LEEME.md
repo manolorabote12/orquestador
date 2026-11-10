@@ -104,3 +104,18 @@ Da a la cuenta de servicio `ORQ_PLAY_TIENDA_CUENTA` el permiso "Ver datos financ
 - [ ] Cuenta → Privacidad abre las páginas; en el EEE aparece "Consentimiento de anuncios".
 - [ ] Comprar `tuercas_300` con una cuenta de prueba de licencias suma tuercas y se consume.
 - [ ] Borrar una cuenta de prueba la deja fuera y sus archivos desaparecen del almacén.
+
+## 8. Cuando crezcas: el correo de los códigos
+
+Los códigos para entrar salen de Gmail, que deja enviar unos **500 correos al día**. El vigilante del
+Reloj avisa en amarillo a partir de 350 en 24 horas y manda un correo de alarma a partir de 450.
+
+Qué hacer antes de llegar ahí (en este orden):
+1. **Activar «Entrar con Google»**: quien entra con Google no gasta correo.
+2. **Pasar a un servicio de envíos** (Brevo, Resend, Amazon SES...). Ojo: sus planes gratis suelen
+   dejar menos correos al día que Gmail, así que el cambio solo merece la pena con su plan de pago.
+   Al darte de alta te darán un servidor SMTP, un usuario y una clave, y tendrás que verificar una
+   dirección de remitente. Ponlos en GitHub y lanza el workflow «Ajustes de Supabase»:
+   - Secrets: `ORQ_SMTP_USUARIO` y `ORQ_SMTP_CLAVE`.
+   - Variables: `ORQ_SMTP_HOST` (p. ej. `smtp-relay.brevo.com`), `ORQ_SMTP_PUERTO` (normalmente `587`)
+     y `ORQ_SMTP_REMITENTE` (la dirección verificada).

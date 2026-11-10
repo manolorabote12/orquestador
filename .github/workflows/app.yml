@@ -23,8 +23,10 @@ jobs:
     env:
       VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-      VITE_MOTOR_URL: ${{ secrets.SUPABASE_URL }}/storage/v1/object/public/motor/godot/4.6.3
-      # AdMob de la propia app Orquestador (anuncio con premio = +5 tuercas). Sin ellos, sin anuncios.
+      # Motor de Godot desde la web (GitHub Pages, trafico gratis; lo copia el workflow "web").
+      VITE_MOTOR_URL: ${{ vars.ORQ_WEB != '' && format('{0}/motor/godot/4.6.3', vars.ORQ_WEB) || format('{0}/storage/v1/object/public/motor/godot/4.6.3', secrets.SUPABASE_URL) }}
+      VITE_MUESTRAS_URL: ${{ secrets.SUPABASE_URL }}/storage/v1/object/public/motor/muestras
+      # AdMob de la propia app Orquestador (anuncio con premio = +3 tuercas). Sin ellos, sin anuncios.
       VITE_ADMOB_REWARDED: ${{ vars.ORQ_APP_ADMOB_PREMIO }}
       VITE_WEB: ${{ vars.ORQ_WEB }}
       # Entrar con Google en el movil: el ID del cliente web (publico; el secreto solo esta en Supabase).

@@ -480,7 +480,9 @@ def configurar_supabase(d: dict[str, str]) -> bool:
 			"smtp_host": d.get("ORQ_SMTP_HOST") or ("smtp.gmail.com" if gmail else "smtp." + usuario.split("@")[1]),
 			"smtp_port": d.get("ORQ_SMTP_PUERTO") or "587",
 			"smtp_user": usuario, "smtp_pass": d["ORQ_SMTP_CLAVE"],
-			"smtp_admin_email": usuario, "smtp_sender_name": "Orquestador",
+			## Con un servicio de envios (Brevo, Resend, SES...) el usuario SMTP no es un correo: el remitente
+			## va aparte (ORQ_SMTP_REMITENTE, una direccion verificada en ese servicio).
+			"smtp_admin_email": d.get("ORQ_SMTP_REMITENTE") or usuario, "smtp_sender_name": "Orquestador",
 			## Con correo propio Supabase deja subir el limite (por defecto 2 correos por hora para TODOS).
 			"rate_limit_email_sent": int(d.get("ORQ_CORREOS_HORA") or "60"),
 		})

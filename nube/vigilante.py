@@ -7,6 +7,7 @@ Mira en una sola llamada (vigilancia() en Supabase) y en RunPod:
 	4 - Dos juegos o mas fallidos en los ultimos minutos -> avisa.
 	5 - RunPod gastando sin ningun trabajo en marcha (tarjetas encendidas de mas) -> avisa.
 	6 - Saldo de RunPod bajo -> aviso amarillo (sin correo).
+	7 - Correos de acceso cerca del limite de Gmail (~500 al dia): aviso amarillo desde 350 y correo desde 450.
 
 "Avisa" = el paso termina en error y GitHub te manda un correo. Volver a arrancar la fabrica:
 Actions -> "Fabrica: pausar o reanudar" -> reanudar.
@@ -34,6 +35,8 @@ def umbrales() -> dict:
 		"fuga_hora": f("ORQ_ALARMA_FUGA_HORA", "0.4"),
 		"saldo_min": f("ORQ_ALARMA_SALDO", "3"),
 		"fallos": f("ORQ_ALARMA_FALLOS", "2"),
+		"correos_aviso": f("ORQ_ALARMA_CORREOS", "350"),
+		"correos_alarma": f("ORQ_ALARMA_CORREOS_MAX", "450"),
 	}
 
 
@@ -61,11 +64,16 @@ def decidir(v: dict, rp: dict | None, u: dict) -> dict:
 		alarmas.append(f"RunPod gasta {gasto_rp:.2f} $/h sin ningun trabajo en marcha: mira Serverless -> Workers y apaga lo que siga encendido")
 	if saldo is not None and float(saldo) < u["saldo_min"]:
 		avisos.append(f"Saldo de RunPod bajo: {float(saldo):.2f} $ (los juegos fallaran sin saldo)")
+	correos = int(v.get("correos_24h") or 0)
+	if correos >= u["correos_alarma"]:
+		alarmas.append(f"{correos} correos de acceso en 24 h: Gmail corta hacia 500 y nadie podra entrar. Pasa el correo a un servicio de envios (ver LANZAR-APP-LEEME)")
+	elif correos >= u["correos_aviso"]:
+		avisos.append(f"{correos} correos de acceso en 24 h (Gmail corta hacia 500)")
 	if v.get("pausada"):
 		avisos.append("La fabrica esta PARADA: " + str(v.get("nota_pausa") or ""))
 	resumen = (f"hora {float(v.get('hora_usd') or 0):.2f} $ | hoy {float(v.get('dia_usd') or 0):.2f} $ de {float(v.get('presupuesto_dia_usd') or 0):.0f} $"
 		f" | juegos hoy {v.get('juegos_dia', 0)} (fallidos {v.get('fallidos_dia', 0)}) | en marcha {v.get('en_marcha', 0)}, en cola {v.get('en_cola', 0)}"
-		f" | RunPod {gasto_rp:.2f} $/h" + (f", saldo {float(saldo):.2f} $" if saldo is not None else ""))
+		f" | correos 24 h {correos} | RunPod {gasto_rp:.2f} $/h" + (f", saldo {float(saldo):.2f} $" if saldo is not None else ""))
 	return {"alarmas": alarmas, "avisos": avisos, "pausar": pausar, "resumen": resumen}
 
 

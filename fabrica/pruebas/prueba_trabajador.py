@@ -138,6 +138,24 @@ def main() -> int:
 	pasos = [p["p_event"]["paso"] for f, p in sb.rpcs if f == "job_progress" and p.get("p_job") == t0["job_id"]]
 	check("el boceto llega antes que el arte", "boceto" in pasos and pasos.index("boceto") < pasos.index("arte"))
 
+	print("== Vista previa gratis y juego con ese diseno ==")
+	tp = {"job_id": "0000cc01-0000-0000-0000-000000000000", "user_id": "u2", "kind": "game_preview", "idea": "un orco que defiende su torre con cartas"}
+	trabajador.atender(sb, tp, opc0)
+	rp = next((p for f, p in sb.rpcs if f == "complete_preview_job" and p["p_job"] == tp["job_id"]), None)
+	check("vista previa: solo el diseno, terminada", rp is not None and rp["p_spec"].get("titulo") and rp["p_spec"].get("heroe"),
+		str([p for f, p in sb.rpcs if f == "fail_job"])[-300:])
+	check("la vista previa no sube nada ni hace niveles", not any(f == "job_progress" and p.get("p_job") == tp["job_id"] for f, p in sb.rpcs))
+	if rp:
+		previa = dict(rp["p_spec"], titulo="Torre Orca de Prueba")
+		tg = {"job_id": "0000cc02-0000-0000-0000-000000000000", "user_id": "u2", "kind": "game", "idea": tp["idea"],
+			"detail": {"idea": tp["idea"], "diseno": previa, "preview": tp["job_id"]}}
+		trabajador.atender(sb, tg, opc0)
+		rg = next((p for f, p in sb.rpcs if f == "complete_game_job" and p["p_job"] == tg["job_id"]), None)
+		check("el juego se fabrica con el diseno aprobado", rg is not None and rg["p_title"] == "Torre Orca de Prueba",
+			str(rg and rg.get("p_title")) + str([p for f, p in sb.rpcs if f == "fail_job"])[-300:])
+		ev = [p["p_event"]["mensaje"] for f, p in sb.rpcs if f == "job_progress" and p.get("p_job") == tg["job_id"] and p["p_event"]["paso"] == "diseno"]
+		check("y lo dice (no lo vuelve a pensar)", any("aprobaste" in m for m in ev), str(ev))
+
 	print("== Agente programador (game_mod) ==")
 	t4 = {"job_id": "0000aa04-0000-0000-0000-000000000000", "user_id": "u1", "kind": "game_mod", "project_id": "p1",
 		"project_files": files, "project_version": 1, "detail": {"instruccion": "que salgan chispas doradas al empezar"}}

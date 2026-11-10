@@ -64,12 +64,39 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: app/package-lock.json
+      # El motor de Godot (36 MB) se sirve desde esta web y no desde Supabase: cada partida lo descarga
+      # y en Supabase gratis solo hay 5 GB de trafico al mes (unas 140 partidas). Aqui es gratis.
+      # Si no se puede copiar, la app sigue usando el de Supabase.
+      - name: Motor del juego en la web
+        id: motor
+        run: |
+          V=4.6.3
+          B="${{ vars.SUPABASE_URL }}/storage/v1/object/public/motor/godot/$V"
+          D="web/motor/godot/$V"
+          mkdir -p "$D"
+          ok=1
+          for f in index.js index.wasm index.audio.worklet.js index.audio.position.worklet.js; do
+            if ! curl -sfL --retry 3 "$B/$f" -o "$D/$f"; then
+              rm -f "$D/$f"
+              case $f in index.js|index.wasm) ok=0;; esac
+            fi
+          done
+          W="${{ vars.ORQ_WEB }}"
+          if [ "$ok" = 1 ] && [ -n "$W" ]; then
+            echo "url=${W%/}/motor/godot/$V" >> "$GITHUB_OUTPUT"
+            echo "::notice::Motor servido desde la web: ${W%/}/motor/godot/$V ($(du -sh "$D" | cut -f1))"
+          else
+            rm -rf web/motor
+            echo "url=$B" >> "$GITHUB_OUTPUT"
+            echo "::warning::No se pudo copiar el motor: la app sigue usando el de Supabase"
+          fi
       - name: App web
         working-directory: app
         env:
           VITE_SUPABASE_URL: ${{ vars.SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
-          VITE_MOTOR_URL: ${{ vars.SUPABASE_URL }}/storage/v1/object/public/motor/godot/4.6.3
+          VITE_MOTOR_URL: ${{ steps.motor.outputs.url }}
+          VITE_MUESTRAS_URL: ${{ vars.SUPABASE_URL }}/storage/v1/object/public/motor/muestras
           VITE_WEB: ${{ vars.ORQ_WEB }}
           VITE_GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
         run: |

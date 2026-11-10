@@ -92,6 +92,39 @@ export async function avisarJuegoListo(titulo: string): Promise<void> {
   }
 }
 
+/** Aviso de respaldo: si el sistema cierra la app mientras se fabrica, el móvil avisa igual a los
+ *  ~35 minutos (lo que tarda un juego). Se cancela en cuanto la app ve el juego terminado. */
+function idEspera(jobId: string): number {
+  let n = 0;
+  for (const c of jobId) n = (n * 31 + c.charCodeAt(0)) % 1000000;
+  return 8000000 + n;
+}
+
+export async function programarAvisoEspera(jobId: string, minutos = 35): Promise<void> {
+  if (!esNativo()) return;
+  try {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    await LocalNotifications.schedule({ notifications: [{
+      id: idEspera(jobId),
+      title: "Tu juego ya debería estar listo",
+      body: "Entra a verlo: si algo hubiera fallado, ya tienes tus tuercas de vuelta.",
+      schedule: { at: new Date(Date.now() + minutos * 60000), allowWhileIdle: true },
+    }] });
+  } catch {
+    /* sin permiso: la app avisa al volver */
+  }
+}
+
+export async function cancelarAvisoEspera(jobId: string): Promise<void> {
+  if (!esNativo()) return;
+  try {
+    const { LocalNotifications } = await import("@capacitor/local-notifications");
+    await LocalNotifications.cancel({ notifications: [{ id: idEspera(jobId) }] });
+  } catch {
+    /* nada que cancelar */
+  }
+}
+
 // ---------------------------------------------------------------- 4b - recordatorio de la Lanzadera
 
 const ID_LANZADERA = 7101;

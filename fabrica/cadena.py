@@ -546,6 +546,15 @@ def poner_reto(proyecto: Path) -> None:
 	gp.write_text(json.dumps(game, indent=1, ensure_ascii=False), encoding="utf-8")
 
 
+def disenar_previa(idea: str, simulado: bool, gasto: "llm.Gasto") -> tuple[dict, str]:
+	"""Vista previa gratis: solo el diseno (con su toque de originalidad), sin niveles ni arte.
+	Luego fabricar() lo usa tal cual si el jugador lo aprueba (args.diseno)."""
+	diseno, modelo = director.disenar(idea, simulado, gasto)
+	if not simulado or os.environ.get("ORQ_ORIGINALIDAD") == "1":
+		originalidad.diferenciar(diseno, fijo="[gancho:" in idea)
+	return diseno, modelo
+
+
 def fabricar(args: argparse.Namespace) -> dict:
 	t0 = time.time()
 	tiempos: dict[str, float] = {}
@@ -557,8 +566,14 @@ def fabricar(args: argparse.Namespace) -> dict:
 
 	## 1 - Diseno
 	t = time.time()
-	evento("diseno", "inicio", "Pensando tu juego...")
-	diseno, modelo = director.disenar(args.idea, args.simulado, gasto)
+	previa = getattr(args, "diseno", None)
+	if previa:
+		## Vista previa ya aprobada por el jugador: se fabrica ESE diseno, sin volver a pensarlo.
+		evento("diseno", "inicio", "Usando el diseño que aprobaste...")
+		diseno, modelo = copy.deepcopy(previa), "vista_previa"
+	else:
+		evento("diseno", "inicio", "Pensando tu juego...")
+		diseno, modelo = director.disenar(args.idea, args.simulado, gasto)
 	slug = director.slug(diseno)
 	cronometro("diseno", t)
 	genero = generos.de(diseno)["etiqueta"]
@@ -568,7 +583,9 @@ def fabricar(args: argparse.Namespace) -> dict:
 	## Que no sea un copia y pega de otro juego de la fabrica (con la directora simulada, la de las
 	## pruebas, solo si se pide: asi las pruebas no dependen de lo fabricado antes).
 	activa = not args.simulado or os.environ.get("ORQ_ORIGINALIDAD") == "1"
-	dif = originalidad.diferenciar(diseno, fijo="[gancho:" in args.idea) if activa else {"mensaje": ""}
+	## La vista previa ya paso por aqui (diseno["originalidad"]): no se le cambia nada a lo aprobado.
+	ya = previa and "originalidad" in diseno
+	dif = originalidad.diferenciar(diseno, fijo="[gancho:" in args.idea) if activa and not ya else {"mensaje": ""}
 	if dif["mensaje"]:
 		evento("originalidad", "ok", dif["mensaje"], indice=dif["indice"])
 

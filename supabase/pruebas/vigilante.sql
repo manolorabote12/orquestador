@@ -40,3 +40,21 @@ begin
   raise notice 'vigilante OK';
 end;
 $$;
+-- Embudo y correos.
+do $$
+declare
+  a uuid; b uuid; e jsonb; v jsonb;
+begin
+  insert into auth.users (email, email_confirmed_at) values ('embudo.a@example.com', now()) returning id into a;
+  insert into auth.users (email, email_confirmed_at) values ('embudo.b@example.com', null) returning id into b;
+  insert into public.jobs (user_id, kind, cost, status, finished_at) values (a, 'game', 80, 'done', now());
+  insert into public.credit_ledger (user_id, amount, reason) values (a, 300, 'purchase');
+  e := public.embudo(30);
+  assert (e ->> 'registros')::int >= 2 and (e ->> 'compradores')::int >= 1 and (e ->> 'juego_terminado')::int >= 1, e::text;
+  assert (e ->> 'pct_compran')::numeric > 0, e::text;
+  v := public.vigilancia(0.8, 20);
+  assert (v ->> 'correos_24h')::int >= 2, v::text;
+  assert not has_function_privilege('authenticated', 'public.embudo(integer)', 'execute');
+  raise notice 'embudo OK';
+end;
+$$;

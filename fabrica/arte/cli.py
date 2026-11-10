@@ -61,6 +61,11 @@ def fabricar(args: argparse.Namespace) -> dict:
 	cliente = cliente_comfy(args.comfy)
 	wf_crear = json.loads(Path(args.crear).read_text(encoding="utf-8"))
 	wf_editar = json.loads(Path(args.editar).read_text(encoding="utf-8"))
+	## Las ediciones (los frames, la mayoria de las imagenes) reescalan la referencia a N megapixeles:
+	## se ajusta al lado pedido para que bajar la resolucion abarate tambien los frames.
+	for nodo in wf_editar.values():
+		if isinstance(nodo, dict) and nodo.get("class_type") == "ImageScaleToTotalPixels":
+			nodo["inputs"]["megapixels"] = round((int(args.lado) / 1024) ** 2, 3)
 	salida = Path(args.salida)
 	salida.mkdir(parents=True, exist_ok=True)
 

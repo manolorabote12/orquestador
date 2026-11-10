@@ -7,6 +7,10 @@
 //
 // Petición (POST, con la sesión del usuario en Authorization):  { "idea": "texto" }
 // Respuesta 200: { job_id, credits, cost }
+//
+// Vista previa gratis (ver el diseño antes de pagar):
+//   { "idea": "texto", "preview": true }        -> encola solo el diseño (0 tuercas)
+//   { "idea": "texto", "preview_id": "<uuid>" } -> cobra y fabrica con el diseño de esa vista previa
 
 import { GENEROS_ETIQUETA, PLANTILLAS } from "../_shared/cambios-datos.ts";
 import { adminClient, CORS, reply, sessionUser } from "../_shared/http.ts";
@@ -20,7 +24,10 @@ const ERRORS: Record<string, { status: number; message: string }> = {
   budget_exceeded:      { status: 503, message: "La fábrica está a tope ahora mismo. Inténtalo más tarde; no se te ha cobrado nada." },
   kind_disabled:        { status: 503, message: "La fábrica de juegos todavía no está abierta." },
   unknown_user:         { status: 401, message: "Vuelve a iniciar sesión." },
+  bad_preview:          { status: 400, message: "Esa vista previa ya no vale. Pide otra (es gratis)." },
 };
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: CORS });
@@ -40,7 +47,12 @@ Deno.serve(async (req) => {
   const gancho = /^\[gancho:([a-z]{2,20}):([a-z_,]{0,60})\]/.exec(idea);
   if (gancho && !(gancho[1] in GENEROS_ETIQUETA)) return reply(400, { error: "bad_idea", message: "Ese tipo de juego no existe." });
 
-  const { data, error } = await adminClient().rpc("queue_game", { p_user: user.id, p_idea: idea });
+  const previa = body.preview === true;
+  const previaId = typeof body.preview_id === "string" ? body.preview_id : "";
+  if (previaId && !UUID.test(previaId)) return reply(400, { error: "bad_preview", message: ERRORS.bad_preview.message });
+  const { data, error } = previa
+    ? await adminClient().rpc("queue_preview", { p_user: user.id, p_idea: idea })
+    : await adminClient().rpc("queue_game", { p_user: user.id, p_idea: idea, ...(previaId ? { p_preview: previaId } : {}) });
   if (error) {
     const code = Object.keys(ERRORS).find((k) => error.message.includes(k));
     if (code) return reply(ERRORS[code].status, { error: code, message: ERRORS[code].message });
@@ -48,6 +60,6 @@ Deno.serve(async (req) => {
     return reply(500, { error: "queue_failed", message: "No se pudo encargar el juego." });
   }
   const row = Array.isArray(data) ? data[0] : data;
-  await despertarFabrica("juego");
+  await despertarFabrica(previa ? "vista previa" : "juego");
   return reply(200, { job_id: row.job_id, credits: row.credits_left, cost: row.cost });
 });

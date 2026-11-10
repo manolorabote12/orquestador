@@ -144,7 +144,10 @@ function aTrabajo(f: FilaTrabajo): Trabajo {
 
 /** Lo que la app puede pedir en esta area (servidor real o demostracion). */
 export interface ApiJuegos {
-  encargar(idea: string): Promise<{ job_id: string; credits: number }>;
+  /** Encarga el juego; con previaId se fabrica el diseño de esa vista previa (el que el jugador aprobó). */
+  encargar(idea: string, previaId?: string): Promise<{ job_id: string; credits: number }>;
+  /** Vista previa gratis: la fábrica piensa solo el diseño (un minuto). Se sigue con seguir(job_id). */
+  vistaPrevia(idea: string): Promise<{ job_id: string }>;
   trabajos(): Promise<Trabajo[]>;
   /** Avisa de cada cambio del trabajo hasta que termina. Devuelve la función para dejar de seguirlo. */
   seguir(id: string, cb: (t: Trabajo) => void): () => void;
@@ -175,8 +178,8 @@ export interface ApiJuegos {
 /** Servidor real (Supabase). */
 export function supaJuegos(con: Conexion): ApiJuegos {
   const api: ApiJuegos = {
-    async encargar(idea: string) {
-      const { data, error } = await con.sb.functions.invoke("create-game", { body: { idea } });
+    async encargar(idea: string, previaId?: string) {
+      const { data, error } = await con.sb.functions.invoke("create-game", { body: previaId ? { idea, preview_id: previaId } : { idea } });
       if (error) {
         let msg = "No se pudo encargar el juego.";
         if (error instanceof FunctionsHttpError) {
@@ -189,6 +192,22 @@ export function supaJuegos(con: Conexion): ApiJuegos {
         throw new ErrorApp(msg);
       }
       return data as { job_id: string; credits: number };
+    },
+
+    async vistaPrevia(idea: string) {
+      const { data, error } = await con.sb.functions.invoke("create-game", { body: { idea, preview: true } });
+      if (error) {
+        let msg = "No se pudo pedir la vista previa.";
+        if (error instanceof FunctionsHttpError) {
+          try {
+            msg = ((await error.context.json()) as { message?: string }).message ?? msg;
+          } catch {
+            /* respuesta sin JSON */
+          }
+        }
+        throw new ErrorApp(msg);
+      }
+      return data as { job_id: string };
     },
 
     async trabajos() {

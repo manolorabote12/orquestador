@@ -399,6 +399,24 @@ export class Demo implements Backend {
     return 60;
   }
 
+  async vistaPrevia(idea: string) {
+    if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
+    const limpia = idea.trim().replace(/^\[[^\]]*\]\s*/, "");
+    const t: Trabajo = {
+      id: "demo-previa-" + Date.now(), kind: "game_preview", project_id: null, status: "done", created_at: new Date().toISOString(), idea: limpia,
+      progress: [], error: null, refunded: false, titulo: null,
+      result: { capturas: [], diseno: {
+        titulo: "Tuercas al Viento", genero: "plataformas", resumen: `Un juego hecho a partir de tu idea: ${limpia.slice(0, 120)}`,
+        heroe: { nombre: "Remache", descripcion: "un robot pequeño y valiente" },
+        enemigos: [{ nombre: "Chatarrilla" }, { nombre: "Tornillón" }], jefe: { nombre: "Gran Grúa" }, niveles: new Array(6).fill(0),
+        estilo: { descripcion: "pixel art de colores cálidos" },
+      } } as unknown as Trabajo["result"],
+    };
+    this.s.trabajos.unshift(t);
+    this.guardar();
+    return { job_id: t.id };
+  }
+
   async encargar(idea: string) {
     if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
     if (this.s.tuercas < 60) throw new ErrorApp("No tienes tuercas suficientes para un juego completo.");
@@ -1295,7 +1313,7 @@ export class Demo implements Backend {
   }
 
   async trabajos() {
-    return structuredClone(this.s.trabajos);
+    return structuredClone(this.s.trabajos.filter((t) => t.kind !== "game_preview"));
   }
 
   seguir(id: string, cb: (t: Trabajo) => void) {

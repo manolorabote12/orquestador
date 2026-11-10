@@ -1,6 +1,6 @@
 // Taller: escribes la idea, la fábrica la convierte en juego y Chispa cuenta cada paso en vivo.
 
-import { avisarJuegoListo, pedirValoracion, prepararAvisos, vibrar } from "../comodidad";
+import { avisarJuegoListo, cancelarAvisoEspera, pedirValoracion, prepararAvisos, programarAvisoEspera, vibrar } from "../comodidad";
 import type { App } from "../main";
 import { type Trabajo } from "../api";
 import { seccionEscaparate, tarjetaBienvenida } from "./escaparate";
@@ -270,6 +270,9 @@ export function vistaTaller(app: App): VistaHecha {
     for (const [id, b] of botonesProbar) b.hidden = !muestras[id];
   }
   function baseMuestras(): string | null {
+    // Las muestras pueden vivir en otro sitio que el motor (el motor va en GitHub Pages; las muestras, en Supabase).
+    const propia = import.meta.env.VITE_MUESTRAS_URL as string | undefined;
+    if (propia && !propia.includes("TU_REF")) return propia.replace(/\/+$/, "");
     const motor = app.api.motor();
     return motor ? motor.replace(/\/godot\/[^/]+\/?$/, "") + "/muestras" : null;
   }
@@ -364,6 +367,11 @@ export function vistaTaller(app: App): VistaHecha {
   const ganchos = h("div", { class: "ganchos" }, pedirGanchos, ganchosLista);
   const precio = h("span", { class: "price" }, svg(ICONOS.tuerca), String(app.precio));
   const fabricar = h("button", { class: "btn btn-brass" }, "Fabricar juego", precio);
+  // Vista previa gratis: Chispa piensa el diseño (un minuto) y lo enseña ANTES de cobrar nada.
+  const verPrevia = h("button", { class: "btn btn-line", type: "button" }, "Ver el diseño gratis") as HTMLButtonElement;
+  const previaCaja = h("div", { class: "plantilla previa", hidden: true, role: "region", "aria-live": "polite" });
+  let previa: { id: string; texto: string } | null = null;
+  let dejarPrevia: (() => void) | null = null;
   const estado = h("p", { class: "status", role: "status" });
   const nota = h("p", { class: "muted small" }, "Se cobra al empezar. Si la fábrica falla, te devolvemos las tuercas.");
   // Capa 3: si la idea no encaja en ningún género, Chispa programa uno nuevo solo para este juego.
@@ -372,13 +380,15 @@ export function vistaTaller(app: App): VistaHecha {
     h("span", {}, "Inventar un género nuevo solo para este juego (beta: tarda más)"));
   const form = h("section", { class: "sheet" },
     h("div", { class: "sheet-head" }, h("h2", {}, "Tu idea"), cuenta),
-    usos, idea, marca, ganchos, chips, plantillas, tipos, aMedidaFila, h("div", { style: "height:16px" }), fabricar, h("div", { style: "height:8px" }), estado, nota);
+    usos, idea, marca, ganchos, chips, plantillas, tipos, aMedidaFila, h("div", { style: "height:16px" }),
+    h("div", { class: "btn-row" }, verPrevia, fabricar), h("div", { style: "height:8px" }), previaCaja, estado, nota);
 
   function actualizar() {
     const n = idea.value.trim().length;
     cuenta.textContent = `${idea.value.length}/600`;
     const falta = app.precio - app.tuercas;
     fabricar.disabled = n < 15 || falta > 0;
+    verPrevia.disabled = n < 15 || dejarPrevia !== null;
     estado.className = "status";
     if (falta > 0) {
       estado.className = "status err";
@@ -389,22 +399,113 @@ export function vistaTaller(app: App): VistaHecha {
       estado.textContent = "";
     }
   }
-  idea.addEventListener("input", actualizar);
+  idea.addEventListener("input", () => {
+    // La vista previa vale para la idea que se pensó: si la cambias, se pide otra.
+    if (previa && ideaMarcada() !== previa.texto) quitarPrevia();
+    actualizar();
+  });
 
-  fabricar.addEventListener("click", async () => {
+  /** La idea tal cual va a la fábrica: con su plantilla, gancho o género a medida delante. */
+  function ideaMarcada(): string {
+    const texto = idea.value.trim();
+    return aMedida.checked ? `[a_medida] ${texto}` : elegida ? `[plantilla:${elegida.id}] ${texto}` : gancho ? `${gancho} ${texto}` : texto;
+  }
+
+  function quitarPrevia() {
+    dejarPrevia?.();
+    dejarPrevia = null;
+    previa = null;
+    previaCaja.hidden = true;
+    previaCaja.replaceChildren();
+  }
+
+  interface DisenoPrevia {
+    titulo?: string; genero?: string; resumen?: string;
+    heroe?: { nombre?: string; descripcion?: string };
+    enemigos?: { nombre?: string }[]; jefe?: { nombre?: string } | null; niveles?: unknown[];
+    estilo?: { descripcion?: string };
+  }
+
+  function pintarPrevia(id: string, texto: string, d: DisenoPrevia) {
+    previa = { id, texto };
+    const genero = d.genero ? (GENERO_NOMBRE[d.genero] ?? d.genero) : "";
+    const enemigos = (d.enemigos ?? []).map((e) => e.nombre).filter(Boolean).join(", ");
+    const precioPrevia = h("span", { class: "price" }, svg(ICONOS.tuerca), String(app.precio));
+    const hacer = h("button", { class: "btn btn-brass", type: "button" }, "Fabricar este juego", precioPrevia) as HTMLButtonElement;
+    hacer.disabled = app.precio > app.tuercas;
+    hacer.addEventListener("click", () => void encargarJuego(id));
+    const otra = h("button", { class: "btn btn-line btn-small", type: "button" }, "Cambiar la idea");
+    otra.addEventListener("click", () => { quitarPrevia(); actualizar(); idea.focus(); });
+    previaCaja.replaceChildren(
+      h("div", { class: "plantilla-cab" }, h("strong", {}, d.titulo ?? "Tu juego"), genero ? h("span", { class: "tag" }, genero) : ""),
+      d.resumen ? h("p", {}, d.resumen) : "",
+      d.heroe?.nombre ? h("p", { class: "small" }, h("strong", {}, "Protagonista: "), d.heroe.nombre + (d.heroe.descripcion ? ` (${d.heroe.descripcion})` : "")) : "",
+      enemigos ? h("p", { class: "small" }, h("strong", {}, "Rivales: "), enemigos + (d.jefe?.nombre ? ` y el jefe final ${d.jefe.nombre}` : "")) : "",
+      d.niveles?.length ? h("p", { class: "small" }, h("strong", {}, "Niveles: "), String(d.niveles.length)) : "",
+      d.estilo?.descripcion ? h("p", { class: "muted small" }, "Estilo: " + d.estilo.descripcion) : "",
+      h("p", { class: "muted small" }, "Esto es lo que voy a fabricar. Si te gusta, adelante; si no, cambia la idea y pide otro (gratis)."),
+      h("div", { class: "btn-row" }, hacer, otra));
+    previaCaja.hidden = false;
+    previaCaja.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  verPrevia.addEventListener("click", async () => {
+    const texto = ideaMarcada();
+    quitarPrevia();
+    verPrevia.disabled = true;
+    estado.className = "status";
+    estado.textContent = "Chispa está pensando tu juego (tarda un minuto y es gratis)...";
+    chispa.decir("Déjame pensarlo: te enseño el diseño antes de gastar nada.", "thinking");
+    try {
+      const r = await app.api.vistaPrevia(texto);
+      dejarPrevia = app.api.seguir(r.job_id, (t) => {
+        if (t.status === "done") {
+          dejarPrevia = null;
+          const d = (t.result as unknown as { diseno?: DisenoPrevia } | null)?.diseno;
+          if (d) {
+            estado.textContent = "";
+            chispa.decir(`Mira: «${d.titulo ?? "tu juego"}». ¿Lo fabrico?`, "happy");
+            pintarPrevia(t.id, texto, d);
+          } else {
+            estado.className = "status err";
+            estado.textContent = "No he podido enseñarte el diseño. Prueba otra vez o fabrícalo directamente.";
+          }
+          actualizar();
+        } else if (t.status === "failed") {
+          dejarPrevia = null;
+          estado.className = "status err";
+          estado.textContent = "No he podido pensar el diseño. Prueba otra vez o fabrícalo directamente.";
+          chispa.decir("Uy, se me ha atascado la idea.", "error");
+          actualizar();
+        } else if (t.status === "queued") {
+          estado.textContent = "En la cola de la fábrica: enseguida lo pienso...";
+        }
+      });
+    } catch (e) {
+      estado.className = "status err";
+      estado.textContent = mensajeError(e, "No se pudo pedir la vista previa.");
+      actualizar();
+    }
+  });
+
+  fabricar.addEventListener("click", () => void encargarJuego(previa && previa.texto === ideaMarcada() ? previa.id : undefined));
+
+  async function encargarJuego(previaId?: string) {
     fabricar.disabled = true;
     estado.className = "status";
     estado.textContent = "Encargando a la fábrica...";
     chispa.decir("¡Allá vamos! Llevo tu idea a la fábrica.", "thinking");
     try {
-      const texto = idea.value.trim();
       void prepararAvisos();
-      const r = await app.api.encargar(aMedida.checked ? `[a_medida] ${texto}` : elegida ? `[plantilla:${elegida.id}] ${texto}` : gancho ? `${gancho} ${texto}` : texto);
+      const r = await app.api.encargar(previa && previaId ? previa.texto : ideaMarcada(), previaId);
+      quitarPrevia();
       aMedida.checked = false;
       app.ponerTuercas(r.credits);
       idea.value = "";
       soltarPlantilla();
       try { localStorage.setItem(`orq_uso_${r.job_id}`, uso); } catch { /* sin almacenamiento: vale el de ahora */ }
+      // Aviso de respaldo en el móvil por si el sistema cierra la app mientras se fabrica.
+      void programarAvisoEspera(r.job_id);
       seguir(r.job_id);
     } catch (e) {
       estado.className = "status err";
@@ -412,7 +513,7 @@ export function vistaTaller(app: App): VistaHecha {
       chispa.decir("Uy, no he podido llevarlo a la fábrica.", "error");
       actualizar();
     }
-  });
+  }
 
   // ------------------------------------------------------------ banco de pruebas
   const pasos = h("ul", { class: "steps" });
@@ -475,6 +576,7 @@ export function vistaTaller(app: App): VistaHecha {
 
   function terminado(t: Trabajo) {
     pararReloj();
+    void cancelarAvisoEspera(t.id);
     vibrar("exito");
     void avisarJuegoListo(t.titulo ?? "Tu juego");
     // Despues de ver el juego un momento, la ventanita de valorar en Google Play (una sola vez).
@@ -522,9 +624,10 @@ export function vistaTaller(app: App): VistaHecha {
 
   function fallido(t: Trabajo) {
     pararReloj();
+    void cancelarAvisoEspera(t.id);
     vibrar("error");
     chispa.decir(t.refunded ? "Algo se ha roto en la fábrica. Te he devuelto las tuercas; prueba otra vez." :
-      "Algo se ha roto en la fábrica. Hoy ya no puedo devolverte más tuercas, lo siento.", "error");
+      "Algo se ha roto en la fábrica, lo siento. Prueba otra vez en un rato.", "error");
     void app.refrescarTuercas();
     const otro = h("button", { class: "btn btn-brass" }, "Intentarlo de nuevo");
     otro.addEventListener("click", reiniciar);
@@ -591,6 +694,7 @@ export function vistaTaller(app: App): VistaHecha {
     el: raiz,
     limpiar() {
       dejarDeSeguir?.();
+      dejarPrevia?.();
       pararReloj();
     },
   };

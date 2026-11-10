@@ -140,7 +140,9 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		"gpuTypeIds": gpus, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_GPU_MAX") or "1")),
 		## Una sola GPU: la fabrica pide las imagenes de una en una, y con mas maquinas RunPod arrancaba
 		## (y cobraba) varias a la vez mientras la primera aun cargaba los modelos.
-		"idleTimeout": 10, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
+		## idleTimeout 30 s (ORQ_GPU_IDLE): entre dos imagenes pasan segundos (revision con Claude, post-proceso);
+		## con 10 s la maquina se apagaba entre medias y cada arranque en frio cobraba otra vez la carga de modelos.
+		"idleTimeout": int(os.environ.get("ORQ_GPU_IDLE") or "30"), "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
 		"executionTimeoutMs": 600000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
 	informe["imagenes"] = {"id": ep_gpu["id"], "estado": estado_ep, "gpus": gpus}
 
@@ -150,7 +152,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 			"containerDiskInGb": 25, "category": "NVIDIA", "env": entorno(["HF_TOKEN"])})
 		ep_voz, estado_ep = asegurar("/endpoints", "orq-voces", {"templateId": tpl_voz["id"], "computeType": "GPU",
 			"gpuTypeIds": GPUS_VOZ, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_VOZ_MAX") or "1")),
-			"idleTimeout": 10, "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
+			"idleTimeout": int(os.environ.get("ORQ_GPU_IDLE") or "30"), "flashboot": True, "scalerType": "QUEUE_DELAY", "scalerValue": 4,
 			"executionTimeoutMs": 600000, "networkVolumeId": vol["id"], "dataCenterIds": [dc]})
 		informe["voces"] = {"id": ep_voz["id"], "estado": estado_ep}
 

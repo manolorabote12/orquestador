@@ -492,6 +492,24 @@ def cruzada(sb: "Supabase", usuario: str, sin: str = "") -> list[dict]:
 	return out[:6]
 
 
+def atender_previa(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
+	"""Vista previa gratis: solo el diseno (un minuto, ~0,01 $). Si falla no hay nada que devolver."""
+	job = trabajo["job_id"]
+	gasto = llm.Gasto()
+	t0 = time.time()
+	print(f"[trabajador] vista previa {job}: {trabajo['idea'][:80]}", flush=True)
+	try:
+		diseno, _ = cadena.disenar_previa(trabajo["idea"], opciones.simulado, gasto)
+		sb.rpc("complete_preview_job", p_job=job, p_spec=diseno, p_cost_usd=coste_real(gasto, t0))
+		print(f"[trabajador] vista previa lista {job}: {diseno.get('titulo')}", flush=True)
+	except Exception as e:  # noqa: BLE001 - se cierra como fallida; no habia cobro
+		traceback.print_exc()
+		try:
+			sb.rpc("fail_job", p_job=job, p_error=str(e)[:400] or e.__class__.__name__, p_cost_usd=coste_real(gasto, t0), p_refund=False)
+		except Exception as e2:  # noqa: BLE001
+			print(f"[trabajador] no se pudo cerrar la vista previa {job}: {e2}", flush=True)
+
+
 def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 	if trabajo.get("kind") in ("game_change", "game_restore", "game_mod"):
 		return atender_cambio(sb, trabajo, opciones)
@@ -499,6 +517,8 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 		return atender_marketing(sb, trabajo, opciones)
 	if trabajo.get("kind") == "game_publish":
 		return atender_publicar(sb, trabajo, opciones)
+	if trabajo.get("kind") == "game_preview":
+		return atender_previa(sb, trabajo, opciones)
 	job = trabajo["job_id"]
 	usuario = trabajo["user_id"]
 	idea = trabajo["idea"]
@@ -517,6 +537,8 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 			comfy=opciones.comfy, crear=opciones.crear, editar=opciones.editar, lado=opciones.lado,
 			semilla=int(job.replace("-", "")[:6], 16) % 100000, apk=opciones.apk, capturas=opciones.capturas, web=opciones.web, ficha=opciones.ficha, clip=opciones.clip, gasto=gasto,
 			telemetria_id=job, boceto=lambda pck: sb.subir(f"{usuario}/{job}/boceto/index.pck", pck),
+			## Vista previa aprobada: se fabrica con ese diseno (lo puso el servidor, no el jugador).
+			diseno=(trabajo.get("detail") or {}).get("diseno") or None,
 			cruzada=cruzada(sb, usuario, job))
 		inf = cadena.fabricar(args)
 		proyecto = Path(inf["proyecto"])
@@ -621,7 +643,9 @@ def argumentos() -> argparse.ArgumentParser:
 		help="runpod://<endpoint> (GPU alquilada por segundos) o http://... (ComfyUI propio)")
 	p.add_argument("--crear", default=cadena.flujo_arte("crear"))
 	p.add_argument("--editar", default=cadena.flujo_arte("editar"))
-	p.add_argument("--lado", type=int, default=1024)
+	## Resolucion de los dibujos: acaban en celdas de 32-64 px, asi que 768 (0,56 MP) basta y la GPU
+	## tarda casi la mitad que a 1024. ORQ_LADO para cambiarla sin tocar codigo.
+	p.add_argument("--lado", type=int, default=int(os.environ.get("ORQ_LADO") or "768"))
 	p.add_argument("--apk", action="store_true")
 	p.add_argument("--capturas", action="store_true")
 	p.add_argument("--web", action="store_true", help="Sube tambien la version para jugar en la app")
