@@ -65,8 +65,12 @@ IDEAS = [
 def _req(metodo: str, url: str, cuerpo: bytes | None = None, cabeceras: dict | None = None) -> bytes:
 	k = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
 	h = {"apikey": k, "Authorization": "Bearer " + k, "User-Agent": AGENTE, **(cabeceras or {})}
-	with urllib.request.urlopen(urllib.request.Request(url, data=cuerpo, method=metodo, headers=h), timeout=60) as r:
-		return r.read()
+	try:
+		with urllib.request.urlopen(urllib.request.Request(url, data=cuerpo, method=metodo, headers=h), timeout=60) as r:
+			return r.read()
+	except urllib.error.HTTPError as e:
+		ruta = url.split("?")[0].replace(os.environ.get("SUPABASE_URL", ""), "")
+		raise ValueError(f"{e.code} en {metodo} {ruta}: {e.read()[:200].decode('utf-8', 'replace')}") from None
 
 
 def base() -> str:
