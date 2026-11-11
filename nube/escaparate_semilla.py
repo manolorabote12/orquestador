@@ -265,6 +265,9 @@ def estado() -> int:
 	en_marcha = rest("GET", "jobs?select=kind,user_id,started_at&status=eq.running") or []
 	print(f"::notice::Escaparate de muestra: objetivo {objetivo()} | {cuenta_estados} | publicados {len(pub)} | fabrica: {pausa[0]} | en marcha: {en_marcha}")
 	for j in js:
+		if j["status"] == "running":
+			pasos = [p for p in (j.get("progress") or []) if isinstance(p, dict)]
+			print("::notice::En marcha: " + " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:60]}" for p in pasos[-8:])[:900])
 		if j["status"] == "failed" and j.get("error") != "cancelado":
 			pasos = j.get("progress") or []
 			ultimos = " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:70]}" for p in pasos[-6:] if isinstance(p, dict))
