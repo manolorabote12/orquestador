@@ -188,10 +188,13 @@ def encargar(n: int) -> int:
 
 
 def seguir() -> int:
+	meta = objetivo()
+	## Objetivo 0 (cancelado): ni se encarga ni se publica nada.
+	if meta <= 0:
+		return 0
 	publicar()
 	u = cuenta()
-	meta = objetivo()
-	if not u or meta <= 0 or rest("POST", "rpc/fabrica_pausada", {}):
+	if not u or rest("POST", "rpc/fabrica_pausada", {}):
 		return 0
 	idea = siguiente(trabajos(u), meta)
 	if not idea:
@@ -277,6 +280,22 @@ def capturas(carpeta: str = "capturas_muestra") -> int:
 	return 0
 
 
+def retirar() -> int:
+	"""Quita del Escaparate todos los juegos de muestra (siguen en la cuenta, no se borran)."""
+	u = cuenta()
+	if not u:
+		return 0
+	for e in rest("GET", f"escaparate?select=project_id,titulo&user_id=eq.{u}") or []:
+		rest("POST", "rpc/escaparate_retirar", {"p_user": u, "p_project": e["project_id"]})
+		rutas = [f"{e['project_id']}/{n}" for n in ("index.pck", "icono.png", "portada.png", "ficha.json")]
+		try:
+			_req("DELETE", f"{base()}/storage/v1/object/escaparate", json.dumps({"prefixes": rutas}).encode(), {"Content-Type": "application/json"})
+		except ValueError as err:
+			print(f"::warning::{e['titulo']}: {err}")
+		print(f"::notice::Retirado del Escaparate: {e['titulo']}")
+	return 0
+
+
 def estado() -> int:
 	u = cuenta()
 	if not u:
@@ -314,6 +333,9 @@ def main(args: list[str]) -> int:
 		return cancelar()
 	if accion == "capturas":
 		return capturas()
+	if accion == "retirar":
+		cancelar()
+		return retirar()
 	return estado()
 
 
