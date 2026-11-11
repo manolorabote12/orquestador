@@ -86,6 +86,15 @@ def _herramienta(src: dict) -> dict:
 
 def comprobar(src: dict, tr: dict) -> list[str]:
 	err = []
+	## La IA a veces devuelve un texto (o nada) donde se pide una lista: esa traduccion no vale, pero
+	## no puede tumbar el juego (11 nov: «can only concatenate list (not "str") to list»).
+	if not isinstance(tr, dict):
+		return ["la traduccion no es un objeto"]
+	for k in ("niveles", "frases", "preguntas", "escenas", "palabras"):
+		if k in tr and not isinstance(tr[k], list):
+			return [f"{k} no es una lista"]
+	if any(not isinstance(b, dict) for b in tr.get("preguntas", [])):
+		return ["una pregunta no es un objeto"]
 	for k in ("niveles", "frases", "preguntas", "escenas", "palabras"):
 		if k not in src:
 			continue
@@ -118,7 +127,10 @@ def traducir_ia(src: dict, lang: str, gasto) -> dict | None:
 			gasto, f"traduccion_{lang}", max_tokens=6000)
 	except llm.ErrorIA:
 		return None
-	return tr if not comprobar(src, tr) else None
+	try:
+		return tr if not comprobar(src, tr) else None
+	except Exception:  # noqa: BLE001 - una traduccion rara nunca para la fabrica: ese idioma se queda sin ella
+		return None
 
 
 def aplicar(game: dict, tr: dict) -> dict:
@@ -262,8 +274,13 @@ def i18n(game: dict, cache: Path | None, gasto) -> dict:
 			tabla["_name"] = _idiomas.LENGUAS[lang]["nativo"]
 		tr = guardado.get(lang) or traducir_ia(src, lang, gasto)
 		if tr:
-			nuevo[lang] = tr
-			tabla.update(aplicar(game, tr))
+			try:
+				propio = aplicar(game, tr)
+			except Exception:  # noqa: BLE001 - traduccion mal formada: ese idioma se queda con la interfaz
+				propio = None
+			if propio is not None:
+				nuevo[lang] = tr
+				tabla.update(propio)
 		out[lang] = tabla
 	if cache is not None and nuevo:
 		cache.parent.mkdir(parents=True, exist_ok=True)

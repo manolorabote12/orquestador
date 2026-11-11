@@ -39,5 +39,12 @@ check("dos fallos de una idea: se salta", s.siguiente([J("failed", 0, "x"), J("f
 check("cancelados no cuentan como fallo", s.siguiente([J("failed", 0, "cancelado")] * 5, 10) == I[0])
 check("muchos fallos seguidos: para de gastar", s.siguiente([J("failed", 0, "x"), J("failed", 0, "x"), J("failed", 1, "y")], 4) is None)
 
+F = lambda i, arte, cuando="2026-12-01T00:00:00Z": {"status": "failed", "detail": {"idea": I[i]}, "error": "x", "created_at": cuando,  # noqa: E731
+	"result": {"diseno": {"titulo": "T%d" % i}}, "progress": [{"paso": "arte", "estado": "ok"}] if arte else []}
+check("reintento: recupera el diseno con el arte ya pagado", (s.diseno_con_arte([F(1, True), F(1, False)], I[1]) or {}).get("titulo") == "T1")
+check("sin arte dibujado: diseno nuevo", s.diseno_con_arte([F(1, False)], I[1]) is None)
+check("arte de antes del arreglo: no se reusa", s.diseno_con_arte([F(1, True, "2026-11-11T10:00:00Z")], I[1]) is None)
+check("el de otra idea no vale", s.diseno_con_arte([F(2, True)], I[1]) is None)
+
 print("== %d fallos ==" % len(fallos))
 sys.exit(1 if fallos else 0)

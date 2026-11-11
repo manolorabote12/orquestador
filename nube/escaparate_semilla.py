@@ -117,7 +117,7 @@ def saldo_runpod() -> float | None:
 
 
 def trabajos(u: str) -> list[dict]:
-	return rest("GET", f"jobs?select=id,status,detail,project_id,error,progress&user_id=eq.{u}&kind=eq.game&order=created_at") or []
+	return rest("GET", f"jobs?select=id,status,detail,project_id,error,progress,result,created_at&user_id=eq.{u}&kind=eq.game&order=created_at") or []
 
 
 def cuantos_caben(pedidos: int, saldo: float | None, reserva: float) -> int:
@@ -163,9 +163,23 @@ def poner_objetivo(n: int) -> None:
 		{"Prefer": "resolution=merge-duplicates,return=minimal"})
 
 
-def encolar(u: str, idea: str) -> None:
+def diseno_con_arte(js: list[dict], idea: str) -> dict | None:
+	"""Pura: el diseno de un intento fallido de esta idea que ya tenia el arte dibujado (y pagado). Fabricar
+	con ese mismo diseno recupera el arte de la cache en vez de dibujarlo otra vez."""
+	for j in reversed(js):
+		if j["status"] != "failed" or str((j.get("detail") or {}).get("idea") or "") != idea or str(j.get("created_at") or "") < PUBLICAR_DESDE:
+			continue
+		diseno = (j.get("result") or {}).get("diseno")
+		arte = any(isinstance(p, dict) and p.get("paso") == "arte" and p.get("estado") == "ok" for p in j.get("progress") or [])
+		if arte and isinstance(diseno, dict):
+			return diseno
+	return None
+
+
+def encolar(u: str, idea: str, diseno: dict | None = None) -> None:
+	detalle = {"idea": idea, "semilla": True, **({"diseno": diseno} if diseno else {})}
 	rest("POST", "jobs", [{"user_id": u, "kind": "game", "cost": 0, "est_cost_usd": COSTE_JUEGO, "status": "queued",
-		"detail": {"idea": idea, "semilla": True}}], {"Prefer": "return=minimal"})
+		"detail": detalle}], {"Prefer": "return=minimal"})
 
 
 def encargar(n: int) -> int:
@@ -198,15 +212,17 @@ def seguir() -> int:
 	u = cuenta()
 	if not u or rest("POST", "rpc/fabrica_pausada", {}):
 		return 0
-	idea = siguiente(trabajos(u), meta)
+	js = trabajos(u)
+	idea = siguiente(js, meta)
 	if not idea:
 		return 0
 	## Cada juego vuelve a mirar el saldo: si RunPod baja de la reserva, se para aqui.
 	if cuantos_caben(1, saldo_runpod(), float(os.environ.get("ORQ_SEMILLA_RESERVA") or "3")) < 1:
 		print("::warning::Escaparate de muestra en pausa: el saldo de RunPod esta en la reserva")
 		return 0
-	encolar(u, idea)
-	print(f"::notice::Juego de muestra en la cola: {idea}")
+	previo = diseno_con_arte(js, idea)
+	encolar(u, idea, previo)
+	print(f"::notice::Juego de muestra en la cola: {idea}" + (" (con el arte ya dibujado)" if previo else ""))
 	return 0
 
 
