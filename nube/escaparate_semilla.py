@@ -30,6 +30,8 @@ AUTOR = "Equipo Orquestador"
 COSTE_JUEGO = 0.35
 MAXIMO = 25
 CLAVE_OBJETIVO = "semilla_objetivo"
+## Los juegos de antes del arreglo del arte (11 nov, sprites con escenario dentro) no se publican.
+PUBLICAR_DESDE = "2026-11-11T17:00:00Z"
 INTENTOS_IDEA = 2
 
 # Ideas variadas (genero, estilo y publico) en el orden en que se encargan: con pocas ya hay de todo.
@@ -232,7 +234,7 @@ def publicar() -> int:
 	if not u:
 		return 0
 	ya = {e["project_id"] for e in (rest("GET", f"escaparate?select=project_id&user_id=eq.{u}") or [])}
-	proyectos = rest("GET", f"projects?select=id,title,spec,version,files&user_id=eq.{u}") or []
+	proyectos = rest("GET", f"projects?select=id,title,spec,version,files&user_id=eq.{u}&created_at=gte.{PUBLICAR_DESDE}") or []
 	n = 0
 	for p in proyectos:
 		f = p.get("files") or {}
@@ -280,12 +282,15 @@ def capturas(carpeta: str = "capturas_muestra") -> int:
 	return 0
 
 
-def retirar() -> int:
-	"""Quita del Escaparate todos los juegos de muestra (siguen en la cuenta, no se borran)."""
+def retirar(todos: bool = True) -> int:
+	"""Quita del Escaparate los juegos de muestra (todos o solo los de antes del arreglo del arte)."""
 	u = cuenta()
 	if not u:
 		return 0
+	viejos = {p["id"] for p in rest("GET", f"projects?select=id&user_id=eq.{u}&created_at=lt.{PUBLICAR_DESDE}") or []}
 	for e in rest("GET", f"escaparate?select=project_id,titulo&user_id=eq.{u}") or []:
+		if not todos and e["project_id"] not in viejos:
+			continue
 		rest("POST", "rpc/escaparate_retirar", {"p_user": u, "p_project": e["project_id"]})
 		rutas = [f"{e['project_id']}/{n}" for n in ("index.pck", "icono.png", "portada.png", "ficha.json")]
 		try:
@@ -336,6 +341,8 @@ def main(args: list[str]) -> int:
 	if accion == "retirar":
 		cancelar()
 		return retirar()
+	if accion == "retirar_viejos":
+		return retirar(todos=False)
 	return estado()
 
 

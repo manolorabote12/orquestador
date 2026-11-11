@@ -7,6 +7,7 @@ name: "Escaparate: juegos de muestra"
 #  - seguir:   lo mismo que hace el Reloj, sin esperar.
 #  - cancelar: quita los que aun no han empezado y pone el objetivo a 0.
 #  - retirar:  cancela y quita del Escaparate los juegos de muestra ya publicados.
+#  - retirar_viejos: quita solo los de antes del arreglo del arte (11 nov).
 #  - capturas: baja capturas, icono, clip e informe de los terminados (rama «revision»).
 # Para cortar a medias: workflow "Fabrica: pausar o reanudar" -> pausar.
 on:
@@ -15,7 +16,7 @@ on:
       accion:
         description: "estado, encargar, seguir o cancelar"
         type: choice
-        options: [estado, encargar, seguir, cancelar, capturas, retirar]
+        options: [estado, encargar, seguir, cancelar, capturas, retirar, retirar_viejos]
         default: estado
       cantidad:
         description: "Cuantos juegos encargar (maximo 25)"
