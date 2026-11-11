@@ -2,16 +2,21 @@
 
 Quien entra por primera vez ve juegos de verdad para jugar y remezclar, en vez de una galeria vacia.
 
-	python3 nube/escaparate_semilla.py encargar 10   -> pone 10 ideas en la cola (sin cobrar tuercas a nadie)
-	python3 nube/escaparate_semilla.py publicar      -> los terminados pasan al Escaparate (lo hace el Reloj solo)
+	python3 nube/escaparate_semilla.py encargar 10   -> objetivo: 10 juegos de muestra (sin cobrar tuercas a nadie)
+	python3 nube/escaparate_semilla.py seguir        -> publica los terminados y pone el siguiente en la cola (Reloj)
 	python3 nube/escaparate_semilla.py estado        -> cuantos van en cola, hechos, fallidos y publicados
+	python3 nube/escaparate_semilla.py cancelar      -> quita de la cola los que aun no han empezado y pone el objetivo a 0
 
 Gasto: cada juego cuesta lo mismo que el de un usuario (~0,30 $ de RunPod y Claude). «encargar» mira el saldo
 de RunPod y nunca encarga mas de lo que deja ORQ_SEMILLA_RESERVA $ (3 por defecto) para los usuarios.
-Los juegos van de uno en uno por la misma cola: el vigilante, el guardian y el boton de parada valen igual.
+Van de UNO EN UNO: solo se pone el siguiente en la cola cuando el anterior ha terminado (el Reloj lo mira cada
+15 minutos). Asi el gasto por hora queda muy por debajo del guardian (3 $/h), que para la fabrica si se dispara
+(el 11 nov, 10 encargados de golpe sumaban 3,50 $ estimados y el guardian la paro). El vigilante, el guardian y
+el boton de parada valen igual que para cualquier juego.
 Necesita SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY y (para encargar) RUNPOD_API_KEY.
 """
 
+import datetime
 import json
 import os
 import sys
@@ -24,6 +29,8 @@ CORREO = os.environ.get("ORQ_CUENTA_ESCAPARATE") or "equipo.orquestador@example.
 AUTOR = "Equipo Orquestador"
 COSTE_JUEGO = 0.35
 MAXIMO = 25
+CLAVE_OBJETIVO = "semilla_objetivo"
+INTENTOS_IDEA = 2
 
 # Ideas variadas (genero, estilo y publico) en el orden en que se encargan: con pocas ya hay de todo.
 IDEAS = [
@@ -115,9 +122,44 @@ def cuantos_caben(pedidos: int, saldo: float | None, reserva: float) -> int:
 	return max(0, min(pedidos, int((saldo - reserva) // COSTE_JUEGO)))
 
 
-def elegir(pedidos: int, hechas: set[str]) -> list[str]:
-	"""Pura: las siguientes ideas que aun no se han encargado."""
-	return [i for i in IDEAS if i not in hechas][:pedidos]
+def elegir(pedidos: int, hechas: set[str], fallos: dict[str, int] | None = None) -> list[str]:
+	"""Pura: las siguientes ideas que aun no se han hecho (ni han fallado INTENTOS_IDEA veces)."""
+	fallos = fallos or {}
+	return [i for i in IDEAS if i not in hechas and fallos.get(i, 0) < INTENTOS_IDEA][:pedidos]
+
+
+def siguiente(js: list[dict], objetivo: int) -> str | None:
+	"""Pura: la idea que toca poner en la cola ahora, o None (hay uno en marcha, ya se llego al objetivo...)."""
+	if any(j["status"] in ("queued", "running") for j in js):
+		return None
+	hechas = {str((j.get("detail") or {}).get("idea") or "") for j in js if j["status"] == "done"}
+	if len(hechas) >= objetivo:
+		return None
+	fallos: dict[str, int] = {}
+	for j in js:
+		if j["status"] == "failed" and (j.get("error") or "") != "cancelado":
+			i = str((j.get("detail") or {}).get("idea") or "")
+			fallos[i] = fallos.get(i, 0) + 1
+	## Demasiados fallos seguidos: algo va mal en la fabrica, no se sigue gastando.
+	if sum(fallos.values()) >= max(3, objetivo // 2):
+		return None
+	ideas = elegir(1, hechas, fallos)
+	return ideas[0] if ideas else None
+
+
+def objetivo() -> int:
+	f = rest("GET", f"settings?select=value&key=eq.{CLAVE_OBJETIVO}") or []
+	return int(float(f[0]["value"])) if f else 0
+
+
+def poner_objetivo(n: int) -> None:
+	rest("POST", "settings", [{"key": CLAVE_OBJETIVO, "value": n, "note": "Juegos de muestra del Escaparate (nube/escaparate_semilla.py)"}],
+		{"Prefer": "resolution=merge-duplicates,return=minimal"})
+
+
+def encolar(u: str, idea: str) -> None:
+	rest("POST", "jobs", [{"user_id": u, "kind": "game", "cost": 0, "est_cost_usd": COSTE_JUEGO, "status": "queued",
+		"detail": {"idea": idea, "semilla": True}}], {"Prefer": "return=minimal"})
 
 
 def encargar(n: int) -> int:
@@ -126,24 +168,47 @@ def encargar(n: int) -> int:
 		return 1
 	reserva = float(os.environ.get("ORQ_SEMILLA_RESERVA") or "3")
 	saldo = saldo_runpod()
-	caben = cuantos_caben(n, saldo, reserva)
 	if saldo is None:
 		print("::error::No se pudo leer el saldo de RunPod: no se encarga nada (por seguridad)")
 		return 1
+	u = crear_cuenta()
+	js = trabajos(u)
+	hechos = len({str((j.get("detail") or {}).get("idea") or "") for j in js if j["status"] == "done"})
+	caben = cuantos_caben(n, saldo, reserva)
 	if caben < n:
 		print(f"::warning::Saldo de RunPod {saldo:.2f} $: solo caben {caben} de {n} sin bajar de {reserva:.2f} $")
-	u = crear_cuenta()
-	hechas = {str((j.get("detail") or {}).get("idea") or "") for j in trabajos(u) if j["status"] != "failed"}
-	ideas = elegir(caben, hechas)
-	if not ideas:
-		print("::notice::Nada que encargar")
+	meta = min(len(IDEAS), hechos + caben)
+	poner_objetivo(meta)
+	print(f"::notice::Objetivo: {meta} juegos de muestra ({hechos} ya hechos, ~{caben * COSTE_JUEGO:.2f} $ mas). Van de uno en uno; el Reloj pone el siguiente y publica los terminados.")
+	return seguir()
+
+
+def seguir() -> int:
+	publicar()
+	u = cuenta()
+	meta = objetivo()
+	if not u or meta <= 0 or rest("POST", "rpc/fabrica_pausada", {}):
 		return 0
-	filas = [{"user_id": u, "kind": "game", "cost": 0, "est_cost_usd": COSTE_JUEGO, "status": "queued",
-		"detail": {"idea": i, "semilla": True}} for i in ideas]
-	rest("POST", "jobs", filas, {"Prefer": "return=minimal"})
-	print(f"::notice::{len(ideas)} juegos de muestra en la cola (~{len(ideas) * COSTE_JUEGO:.2f} $). Salen de uno en uno; el Reloj los publica al terminar.")
-	for i in ideas:
-		print("  -", i)
+	idea = siguiente(trabajos(u), meta)
+	if not idea:
+		return 0
+	## Cada juego vuelve a mirar el saldo: si RunPod baja de la reserva, se para aqui.
+	if cuantos_caben(1, saldo_runpod(), float(os.environ.get("ORQ_SEMILLA_RESERVA") or "3")) < 1:
+		print("::warning::Escaparate de muestra en pausa: el saldo de RunPod esta en la reserva")
+		return 0
+	encolar(u, idea)
+	print(f"::notice::Juego de muestra en la cola: {idea}")
+	return 0
+
+
+def cancelar() -> int:
+	poner_objetivo(0)
+	u = cuenta()
+	if not u:
+		return 0
+	rest("PATCH", f"jobs?user_id=eq.{u}&status=eq.queued", {"status": "failed", "error": "cancelado", "provider_cost_usd": 0,
+		"refunded": True, "finished_at": datetime.datetime.now(datetime.timezone.utc).isoformat()}, {"Prefer": "return=minimal"})
+	print("::notice::Juegos de muestra en cola cancelados (no costaron nada) y objetivo a 0")
 	return 0
 
 
@@ -198,7 +263,7 @@ def estado() -> int:
 		cuenta_estados[j["status"]] = cuenta_estados.get(j["status"], 0) + 1
 	pausa = rest("GET", "settings?select=value,note&key=eq.fabrica_pausada") or [{}]
 	en_marcha = rest("GET", "jobs?select=kind,user_id,started_at&status=eq.running") or []
-	print(f"::notice::Escaparate de muestra: {cuenta_estados} | publicados {len(pub)} | fabrica: {pausa[0]} | en marcha: {en_marcha}")
+	print(f"::notice::Escaparate de muestra: objetivo {objetivo()} | {cuenta_estados} | publicados {len(pub)} | fabrica: {pausa[0]} | en marcha: {en_marcha}")
 	for j in js:
 		if j["status"] == "failed":
 			pasos = j.get("progress") or []
@@ -214,6 +279,10 @@ def main(args: list[str]) -> int:
 		return encargar(int(n) if n.isdigit() else 10)
 	if accion == "publicar":
 		return publicar()
+	if accion == "seguir":
+		return seguir()
+	if accion == "cancelar":
+		return cancelar()
 	return estado()
 
 

@@ -27,5 +27,17 @@ check("ideas validas para la fabrica (15-700 letras)", all(15 <= len(i) <= 700 f
 check("no repite ideas ya encargadas", s.elegir(3, {s.IDEAS[0], s.IDEAS[2]}) == [s.IDEAS[1], s.IDEAS[3], s.IDEAS[4]])
 check("elige en orden", s.elegir(2, set()) == s.IDEAS[:2])
 
+I = s.IDEAS
+J = lambda st, i, err="": {"status": st, "detail": {"idea": I[i]}, "error": err}  # noqa: E731
+check("nada en marcha: la primera idea", s.siguiente([], 10) == I[0])
+check("uno en cola: espera", s.siguiente([J("queued", 0)], 10) is None)
+check("uno en marcha: espera", s.siguiente([J("done", 0), J("running", 1)], 10) is None)
+check("terminado: el siguiente", s.siguiente([J("done", 0)], 10) == I[1])
+check("objetivo cumplido: nada", s.siguiente([J("done", 0), J("done", 1)], 2) is None)
+check("un fallo: se reintenta la misma", s.siguiente([J("failed", 0, "x")], 10) == I[0])
+check("dos fallos de una idea: se salta", s.siguiente([J("failed", 0, "x"), J("failed", 0, "x")], 10) == I[1])
+check("cancelados no cuentan como fallo", s.siguiente([J("failed", 0, "cancelado")] * 5, 10) == I[0])
+check("muchos fallos seguidos: para de gastar", s.siguiente([J("failed", 0, "x"), J("failed", 0, "x"), J("failed", 1, "y")], 4) is None)
+
 print("== %d fallos ==" % len(fallos))
 sys.exit(1 if fallos else 0)

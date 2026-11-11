@@ -1,17 +1,19 @@
 name: "Escaparate: juegos de muestra"
 # Llena el Escaparate con juegos hechos por la propia fabrica (cuenta «Equipo Orquestador»).
 # Desde el movil: app de GitHub -> Actions -> este workflow -> Run workflow.
-#  - encargar: pone N ideas en la cola. Cada juego ~0,35 $; nunca baja el saldo de RunPod de 3 $.
-#  - estado:   cuantos van en cola, hechos, fallidos y publicados.
-#  - publicar: pasa al Escaparate los terminados (el Reloj ya lo hace solo cada 15 minutos).
+#  - encargar: objetivo de N juegos. Van de uno en uno (el Reloj pone el siguiente cada 15 minutos y publica
+#              los terminados). Cada juego ~0,35 $; nunca baja el saldo de RunPod de 3 $.
+#  - estado:   cuantos van en cola, hechos, fallidos y publicados (y si la fabrica esta parada).
+#  - seguir:   lo mismo que hace el Reloj, sin esperar.
+#  - cancelar: quita los que aun no han empezado y pone el objetivo a 0.
 # Para cortar a medias: workflow "Fabrica: pausar o reanudar" -> pausar.
 on:
   workflow_dispatch:
     inputs:
       accion:
-        description: "encargar, estado o publicar"
+        description: "estado, encargar, seguir o cancelar"
         type: choice
-        options: [estado, encargar, publicar]
+        options: [estado, encargar, seguir, cancelar]
         default: estado
       cantidad:
         description: "Cuantos juegos encargar (maximo 25)"

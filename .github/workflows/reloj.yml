@@ -82,10 +82,10 @@ jobs:
         if: always()
         with:
           sparse-checkout: nube
-      ## Juegos de muestra (workflow "Escaparate: juegos de muestra"): los terminados pasan al Escaparate.
+      ## Juegos de muestra (workflow "Escaparate: juegos de muestra"): los terminados pasan al Escaparate y se pone el siguiente.
       - name: Escaparate de muestra
         if: always()
-        run: python3 nube/escaparate_semilla.py publicar || true
+        run: python3 nube/escaparate_semilla.py seguir || true
       - name: Vigilante del gasto
         if: always()
         env:
