@@ -31,7 +31,7 @@ def prompt(biblia: dict, pieza: str) -> str:
 	escenario = (biblia.get("escenarios") or [{}])[0].get("descripcion", "")
 	que = ("an empty rectangular dialog window panel with a thick decorative border frame and a plain flat center"
 		if pieza == "panel" else
-		"a single wide rounded rectangular game button, thick border, glossy bevel, plain flat center")
+		"a single wide rounded rectangular game button, simple clean shape with very little detail, thick border, glossy bevel, plain flat empty center, nothing drawn inside")
 	return (f"{prompts.estilo_dibujo(est)}. Mobile game user interface asset: {que}, made of materials that match "
 		f"{escenario}, perfectly symmetric, front view, centered, fills most of the image, "
 		f"plain solid flat {nombre} background ({chroma}), no text, no letters, no icons, no characters, no shadow")
@@ -93,6 +93,11 @@ def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, int
 				break
 			informe["generaciones"] += 1
 			img = post.quitar_fondo(Image.open(io.BytesIO(datos)).convert("RGBA"), chroma)
+			## Fondo que no salio del color pedido: se quita por el color del borde.
+			img = post.quitar_fondo_borde(img)
+			if float((np.asarray(img)[..., 3] < 16).mean()) < 0.04:
+				ultimo = ["no se pudo quitar el fondo"]
+				continue
 			bb = post.caja(img)
 			if bb is None:
 				ultimo = ["vacia"]

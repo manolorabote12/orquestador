@@ -36,6 +36,35 @@ def quitar_fondo(img: Image.Image, chroma: tuple[int, int, int], tol: float = 90
 	return Image.fromarray(out, "RGBA")
 
 
+def quitar_fondo_borde(img: Image.Image, tol: float = 46.0) -> Image.Image:
+	"""Quita el fondo liso aunque NO sea del color pedido: toma el color del borde de la imagen y borra lo
+	que se le parece y toca el borde (relleno desde las esquinas). Para piezas de interfaz: la IA a veces
+	pinta el fondo granate o rosa palido en vez de magenta puro y el recorte por color no quitaba nada
+	(11 nov: botones y paneles con un rectangulo granate alrededor)."""
+	from PIL import ImageDraw
+	arr = a_rgba(img)
+	h, w = arr.shape[:2]
+	g = max(2, min(h, w) // 40)
+	borde = np.concatenate([arr[:g].reshape(-1, 4), arr[-g:].reshape(-1, 4), arr[:, :g].reshape(-1, 4), arr[:, -g:].reshape(-1, 4)])
+	opacos = borde[borde[:, 3] > 200][:, :3]
+	if len(opacos) < 0.5 * len(borde):
+		return img  # el borde ya es transparente: no hay fondo que quitar
+	color = np.median(opacos, axis=0)
+	if float(np.sqrt(((opacos - color) ** 2).sum(-1)).mean()) > 30.0:
+		return img  # el borde no es liso: no es un fondo, es dibujo
+	cerca = (np.sqrt(((arr[..., :3] - color) ** 2).sum(-1)) < tol) & (arr[..., 3] > 0)
+	mascara = Image.fromarray(np.where(cerca, 255, 0).astype(np.uint8), "L").copy()  # copia: fromarray puede ser de solo lectura
+	paso = max(1, min(h, w) // 24)
+	semillas = [(x, y) for x in range(0, w, paso) for y in (0, h - 1)] + [(x, y) for y in range(0, h, paso) for x in (0, w - 1)]
+	for sx, sy in semillas:
+		if mascara.getpixel((sx, sy)) == 255:
+			ImageDraw.floodfill(mascara, (sx, sy), 128)
+	fuera = np.asarray(mascara) == 128
+	out = arr.copy()
+	out[..., 3] = np.where(fuera, 0, out[..., 3])
+	return Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGBA")
+
+
 def caja(img: Image.Image) -> tuple[int, int, int, int] | None:
 	a = np.asarray(img)[..., 3]
 	ys, xs = np.nonzero(a > 16)

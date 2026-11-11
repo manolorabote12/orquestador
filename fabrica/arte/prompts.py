@@ -129,6 +129,8 @@ def prompt_tile(biblia: dict, esc: dict) -> str:
 	est = biblia["estilo"]
 	return (
 		f"{estilo_dibujo(est)}. Seamless tileable square texture of {esc['descripcion']}, "
+		"simple large shapes with very little detail, calm even surface, soft low contrast so it never distracts "
+		"from the characters, still readable when shrunk to 64 pixels, "
 		"fills the whole image edge to edge, flat front view, no objects, no characters, no text."
 	)
 

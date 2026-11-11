@@ -337,10 +337,15 @@ def estado() -> int:
 	pausa = rest("GET", "settings?select=value,note&key=eq.fabrica_pausada") or [{}]
 	en_marcha = rest("GET", "jobs?select=kind,user_id,started_at&status=eq.running") or []
 	print(f"::notice::Escaparate de muestra: objetivo {objetivo()} | {cuenta_estados} | publicados {len(pub)} | fabrica: {pausa[0]} | en marcha: {en_marcha}")
+	hechos_ult = next((j for j in reversed(js) if j["status"] == "done"), None)
 	for j in js:
 		if j["status"] == "running":
 			pasos = [p for p in (j.get("progress") or []) if isinstance(p, dict)]
 			print("::notice::En marcha: " + " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:60]}" for p in pasos[-8:])[:900])
+		if j["status"] == "done" and j is hechos_ult:
+			avisos = [p for p in (j.get("progress") or []) if isinstance(p, dict) and p.get("estado") == "aviso"]
+			for p in avisos[-4:]:
+				print(f"::notice::Aviso del ultimo terminado: {p.get('paso')}: {str(p.get('mensaje') or '')[:800]}")
 		if j["status"] == "failed" and j.get("error") != "cancelado":
 			pasos = j.get("progress") or []
 			ultimos = " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:70]}" for p in pasos[-6:] if isinstance(p, dict))

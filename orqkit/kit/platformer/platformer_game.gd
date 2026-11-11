@@ -183,6 +183,10 @@ func _build_camera() -> void:
 	camera.limit_right = int(size.x)
 	camera.limit_bottom = int(size.y + tile * 4.0)
 	camera.position = player.global_position
+	## 4b - Un poco mas cerca: a tamano real el heroe se veia diminuto en el movil (48 px de 720).
+	## El volador y el corredor no: necesitan ver todo el hueco y lo que viene.
+	if not flyer_mode and not runner:
+		camera.zoom = Vector2(1.25, 1.25)
 	add_child(camera)
 	camera.make_current()
 	Juice.register_camera(camera)
