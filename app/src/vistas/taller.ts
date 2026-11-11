@@ -578,7 +578,7 @@ export function vistaTaller(app: App): VistaHecha {
   const registro = h("div", { class: "log", "aria-live": "off" });
   const titulo = h("h2", {}, "Fabricando");
   // 1 - Boceto jugable: aparece en cuanto hay niveles, mientras el arte se dibuja.
-  const jugarBoceto = h("button", { class: "btn btn-brass", hidden: true }, svg(ICONOS.jugar), " Jugar el boceto mientras tanto");
+  const jugarBoceto = h("button", { class: "btn btn-brass", hidden: true }, svg(ICONOS.jugar), " Jugar el boceto");
   let rutaBoceto = "";
   jugarBoceto.addEventListener("click", async () => {
     const motor = app.api.motor();

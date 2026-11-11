@@ -145,7 +145,6 @@ export const EN: Record<string, string> = {
   "Clip para redes": "Social clip",
   "Guardar en la nube": "Save to the cloud",
   "Fabricando": "Making",
-  "Jugar el boceto mientras tanto": "Play the sketch meanwhile",
   "Descargar APK": "Download APK",
   "Cambiarlo con Chispa": "Change it with Chispa",
   "Fabricar otro": "Make another",
