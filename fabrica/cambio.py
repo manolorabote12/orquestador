@@ -74,16 +74,24 @@ def _cerrar_version(args: argparse.Namespace, proyecto: Path, slug: str, diseno:
 		evento("reto", "aviso", f"Sin reto del día esta vez ({str(e)[:80]})")
 		(proyecto / "fabrica" / "reto.json").unlink(missing_ok=True)
 	cadena.poner_reto(proyecto)
-	apk = None
-	if args.apk:
-		evento("apk", "inicio", "Empaquetando la nueva versión...")
-		apk = str(cadena.exportar_apk(proyecto, slug))
-		evento("apk", "ok", "APK lista")
+	## Primero la version para jugar (segundos): se adelanta a la app para que el cambio se pueda
+	## jugar ya, mientras se empaqueta el APK y se hacen las capturas y la ficha.
 	web = None
 	if getattr(args, "web", False):
 		evento("web", "inicio", "Preparando la versión para jugar al instante...")
 		web = str(cadena.exportar_web(proyecto))
 		evento("web", "ok", "Lista para jugar en la app")
+		adelantar = getattr(args, "adelanto", None)
+		if callable(adelantar):
+			try:
+				evento("adelanto", "ok", "¡Ya puedes jugar el cambio! Termino el APK y la ficha mientras tanto", adelanto=adelantar(Path(web)))
+			except Exception as e:  # noqa: BLE001 - es un extra: sin adelanto se espera al final como antes
+				print(f"[cambio] sin adelanto: {str(e)[:120]}", flush=True)
+	apk = None
+	if args.apk:
+		evento("apk", "inicio", "Empaquetando la nueva versión...")
+		apk = str(cadena.exportar_apk(proyecto, slug))
+		evento("apk", "ok", "APK lista")
 	capturas: list[str] = []
 	if args.capturas:
 		out = proyecto / "fabrica" / "capturas"

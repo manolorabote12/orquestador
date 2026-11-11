@@ -1888,9 +1888,27 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       chat.append(progreso);
       bajar();
       parar();
+      let botonAdelanto: HTMLElement | null = null;
       dejarDeSeguir = app.api.seguir(jobId, (t) => {
         const ultimo = t.progress[t.progress.length - 1];
         if (t.status === "running" && ultimo) progreso.textContent = ultimo.mensaje;
+        // El cambio ya se puede jugar (los bots lo han probado) aunque el APK y la ficha sigan en marcha.
+        const adelanto = t.progress.find((e) => e.adelanto)?.adelanto;
+        if (t.status === "running" && adelanto && !botonAdelanto) {
+          const jugarYa = h("button", { class: "btn btn-brass btn-small", type: "button" }, svg(ICONOS.jugar), " Jugar el cambio ya");
+          jugarYa.addEventListener("click", async () => {
+            const motor = app.api.motor();
+            try {
+              abrirJugador({ motor, pck: motor ? await app.api.url(adelanto) : null, titulo: p.titulo, portada: undefined });
+            } catch (e) {
+              aviso(mensajeError(e, "No se pudo abrir el cambio. Espera a que termine."));
+            }
+          });
+          botonAdelanto = h("div", { class: "msg chispa" }, jugarYa);
+          chat.append(botonAdelanto);
+          bajar();
+        }
+        if (t.status !== "running") botonAdelanto?.remove();
         if (t.status === "done") {
           parar();
           aviso(listo);

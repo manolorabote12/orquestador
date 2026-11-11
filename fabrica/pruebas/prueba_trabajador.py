@@ -214,6 +214,13 @@ def main() -> int:
 		r5 = sb.ultimo("complete_change_job")
 		check("nivel a mano: version nueva con el mapa tal cual", r5["p_version"] == 3
 			and json.loads(sb.archivos[f"juegos/{r5['p_files']['niveles']}"])["mapas"][0] == mapa)
+		ad = [p["p_event"] for f, p in sb.rpcs if f == "job_progress" and p.get("p_job") == t5["job_id"] and p["p_event"].get("adelanto")]
+		pasos5 = [p["p_event"]["paso"] for f, p in sb.rpcs if f == "job_progress" and p.get("p_job") == t5["job_id"]]
+		## El adelanto solo existe cuando se exporta la version web (aqui depende de las opciones de la prueba).
+		check("cambio: se puede jugar antes de que termine (adelanto)", ("web" not in pasos5 and not ad)
+			or (len(ad) == 1 and ad[0]["adelanto"].endswith("/adelanto/index.pck")), str(pasos5))
+		check("el adelanto llega antes que el APK", "apk" not in pasos5 or pasos5.index("adelanto") < pasos5.index("apk"), str(pasos5))
+		check("y se borra al terminar", not any("/adelanto/" in k for k in sb.archivos))
 		malo = ["." * len(mapa[0])] * (len(mapa) - 1) + ["#" * len(mapa[0])]
 		malo[2] = "G" + malo[2][1:]
 		malo[len(malo) - 2] = malo[len(malo) - 2][:-1] + "P"

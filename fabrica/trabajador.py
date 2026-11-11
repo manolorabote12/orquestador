@@ -299,7 +299,7 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 	detalle = trabajo.get("detail") or {}
 	print(f"[trabajador] {trabajo['kind']} {job}: {detalle.get('instruccion', detalle.get('version', ''))}", flush=True)
 	t0 = time.time()
-	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "version"))
+	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "version", "adelanto"))
 
 	cadena.oyentes.append(avisar)
 	tmp = Path(tempfile.mkdtemp(prefix="orq_cambio_"))
@@ -315,12 +315,16 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 		mem = versiones.memoria(proyecto)
 		if int(mem["version"]) != int(trabajo.get("project_version") or 0):
 			raise RuntimeError(f"Versiones desalineadas: proyecto v{mem['version']}, servidor v{trabajo.get('project_version')}")
+		ruta_adelanto = f"{usuario}/{trabajo['project_id']}/adelanto/index.pck"
 		comunes = dict(proyecto=str(proyecto), simulado=opciones.simulado, arte_simulado=opciones.arte_simulado,
 			comfy=opciones.comfy, crear=opciones.crear, editar=opciones.editar, lado=opciones.lado,
 			semilla=int(job.replace("-", "")[:6], 16) % 100000, slug="", apk=opciones.apk, capturas=opciones.capturas, web=opciones.web, ficha=opciones.ficha,
 			## Un cambio no vuelve a grabar el clip de redes (40 s de espera en cada cambio): la version
 			## nueva hereda el que ya tenia. Los videos nuevos se piden aparte (estudio de marketing).
-			clip=False)
+			clip=False,
+			## Jugar el cambio cuanto antes: en cuanto los bots lo dan por bueno se sube la version para
+			## jugar y la app la ofrece; el APK, las capturas y la ficha siguen mientras tanto.
+			adelanto=lambda pck: sb.subir(ruta_adelanto, pck))
 		if trabajo["kind"] == "game_restore":
 			inf = cambio.volver(argparse.Namespace(volver=int(detalle["version"]), **comunes))
 		elif trabajo["kind"] == "game_mod":
@@ -352,6 +356,8 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 	finally:
 		cadena.oyentes.remove(avisar)
 		shutil.rmtree(tmp, ignore_errors=True)
+		## El adelanto solo vale mientras dura el trabajo (la version buena ya esta en su carpeta).
+		borrar_seguro(sb, [f"{usuario}/{trabajo['project_id']}/adelanto/index.pck"])
 
 
 def _bajar_referencia(sb: Supabase, usuario: str, proyecto_id: str, proyecto: Path, tmp: Path) -> None:
