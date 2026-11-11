@@ -116,7 +116,7 @@ def godot_bin() -> str:
 	return os.environ.get("GODOT", shutil.which("godot") or "godot")
 
 
-def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False) -> subprocess.CompletedProcess:
+def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False, xvfb: bool = False) -> subprocess.CompletedProcess:
 	cmd = [godot_bin(), "--path", str(proyecto)]
 	if not display:
 		cmd.insert(1, "--headless")
@@ -125,7 +125,8 @@ def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False
 		## (xvfb, sin Wayland), fallaba al instante: juegos sin capturas, sin ficha y sin clip.
 		cmd += ["--display-driver", "x11"]
 	cmd += list(args)
-	if display and not os.environ.get("DISPLAY") and shutil.which("xvfb-run"):
+	## xvfb=True: pantalla virtual propia aunque haya DISPLAY (en el servidor puede apuntar a una que no existe).
+	if display and (xvfb or not os.environ.get("DISPLAY")) and shutil.which("xvfb-run"):
 		cmd = ["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd
 	return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
 
@@ -853,14 +854,22 @@ def fabricar(args: argparse.Namespace) -> dict:
 		out = proyecto / "fabrica" / "capturas"
 		## Las capturas son para la galeria: si tardan demasiado (3D sin tarjeta grafica) se usan las
 		## que hayan salido y el juego se entrega igual.
-		try:
-			godot(proyecto, "--resolution", "720x1280", "--rendering-driver", "opengl3", "--fixed-fps", "60",
-				"res://qa/capturas.tscn", "--", f"--out={out}", timeout=540, display=True)
-		except subprocess.TimeoutExpired:
-			evento("capturas", "aviso", "Las capturas tardan demasiado: me quedo con las que han salido")
+		salida = ""
+		## Si no sale ninguna, otra vez con pantalla virtual propia (el 11 nov salian 0 en 0,6 s en el servidor).
+		for intento in (False, True):
+			try:
+				r = godot(proyecto, "--resolution", "720x1280", "--rendering-driver", "opengl3", "--fixed-fps", "60",
+					"res://qa/capturas.tscn", "--", f"--out={out}", timeout=540, display=True, xvfb=intento)
+				salida = (r.stdout + r.stderr)[-700:]
+			except subprocess.TimeoutExpired:
+				evento("capturas", "aviso", "Las capturas tardan demasiado: me quedo con las que han salido")
+			except OSError as e:
+				salida = str(e)
+			if any(out.glob("*.png")):
+				break
 		capturas = sorted(str(p) for p in out.glob("*.png"))
 		cronometro("capturas", t)
-		evento("capturas", "ok" if capturas else "aviso", f"{len(capturas)} capturas", rutas=capturas)
+		evento("capturas", "ok" if capturas else "aviso", f"{len(capturas)} capturas" + ("" if capturas else ": " + salida.replace("\n", " / ")), rutas=capturas)
 	ficha_zip = hacer_ficha(args, proyecto, capturas)
 	clip_mp4 = hacer_clip(args, proyecto)
 	marketing = None

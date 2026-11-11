@@ -267,7 +267,7 @@ def capturas(carpeta: str = "capturas_muestra") -> int:
 		f = p.get("files") or {}
 		d = Path(carpeta) / "".join(c if c.isalnum() else "_" for c in p["title"])[:40]
 		d.mkdir(parents=True, exist_ok=True)
-		rutas = [c for c in (f.get("capturas") or []) if isinstance(c, str)] + [f[k] for k in ("icono", "clip", "informe") if f.get(k)]
+		rutas = [c for c in (f.get("capturas") or []) if isinstance(c, str)] + [f[k] for k in ("icono", "clip", "informe", "proyecto") if f.get(k)]
 		for r in rutas:
 			try:
 				(d / r.split("/")[-1]).write_bytes(_bajar(r))

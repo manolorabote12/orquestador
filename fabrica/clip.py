@@ -40,8 +40,13 @@ def generar(proyecto: Path, segundos: float = 15.0) -> Path:
 	for f in (avi, mp4):
 		if f.exists():
 			f.unlink()
-	r = cadena.godot(proyecto, "--resolution", "720x1280", "--rendering-driver", "opengl3", "--write-movie", str(avi),
-		"--fixed-fps", "30", "--quit-after", str(int((saltar + segundos + 8.0) * 30)), "res://qa/clip.tscn", "--", f"--skip={saltar}", f"--seconds={segundos}", timeout=300, display=True)
+	## Si no graba nada, otra vez con pantalla virtual propia (en el servidor DISPLAY puede no valer).
+	for xvfb in (False, True):
+		r = cadena.godot(proyecto, "--resolution", "720x1280", "--rendering-driver", "opengl3", "--write-movie", str(avi),
+			"--fixed-fps", "30", "--quit-after", str(int((saltar + segundos + 8.0) * 30)), "res://qa/clip.tscn", "--", f"--skip={saltar}", f"--seconds={segundos}",
+			timeout=300, display=True, xvfb=xvfb)
+		if avi.exists() and avi.stat().st_size >= 10000:
+			break
 	if not avi.exists() or avi.stat().st_size < 10000 or "SCRIPT ERROR" in r.stdout + r.stderr:
 		raise ErrorClip("Godot no grabo el clip: " + (r.stdout + r.stderr)[-800:])
 	cmd = ["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{saltar:.2f}", "-i", str(avi), "-t", f"{segundos:.2f}",
