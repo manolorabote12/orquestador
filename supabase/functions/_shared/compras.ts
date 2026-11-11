@@ -1,7 +1,7 @@
 // Verificacion de compras de Google Play (Android Publisher v3). Logica pura: recibe fetch y el
 // token de acceso, asi se prueba sin Google. La usa la funcion play-purchase.
 
-export type Tipo = "tuercas" | "premium";
+export type Tipo = "tuercas" | "premium" | "plan";
 
 export interface Verificada {
   ok: boolean;

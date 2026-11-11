@@ -172,6 +172,7 @@ interface Guardado {
   cuentaPlay?: CuentaPlay;
   lz?: LzDemo;
   premium?: boolean;
+  plan?: "taller" | "pro";
   youtube?: string;
   apple?: CuentaApple;
   escaparate?: Record<string, { autor: string; jugadas: number; desde: string }>;
@@ -1360,14 +1361,19 @@ export class Demo implements Backend {
   }
 
   async tienda(): Promise<EstadoTienda> {
+    const hasta = this.s.plan ? new Date(Date.now() + 30 * 86400e3).toISOString() : null;
     return {
       productos: [
         { id: "tuercas_300", tipo: "tuercas", tuercas: 300, precio: "2,99 €" },
         { id: "tuercas_1100", tipo: "tuercas", tuercas: 1100, precio: "9,99 €" },
         { id: "tuercas_3600", tipo: "tuercas", tuercas: 3600, precio: "29,99 €" },
-        { id: "premium_mensual", tipo: "premium", tuercas: 0, precio: "4,99 €/mes" },
+        { id: "plan_taller", tipo: "plan", tuercas: 0, precio: "4,99 €", plan: "taller", tuercasMes: 250,
+          precios: { mensual: "4,99 €", anual: "49,99 €" } },
+        { id: "plan_pro", tipo: "plan", tuercas: 0, precio: "12,99 €", plan: "pro", tuercasMes: 800,
+          precios: { mensual: "12,99 €", anual: "129,99 €" } },
       ],
-      premium: !!this.s.premium, premiumHasta: this.s.premium ? new Date(Date.now() + 30 * 86400e3).toISOString() : null,
+      premium: !!this.s.premium || !!this.s.plan, premiumHasta: hasta,
+      plan: this.s.plan ?? null, planHasta: hasta, planEntrega: hasta, topeMeses: 2, bonusPro: 20,
       aviso: "Demostración: las compras son simuladas y no se cobra nada.", anuncios: true,
     };
   }
@@ -1376,10 +1382,22 @@ export class Demo implements Backend {
     await espera(900);
     const p = (await this.tienda()).productos.find((x) => x.id === productoId);
     if (!p) throw new ErrorApp("Ese producto no existe.");
-    if (p.tipo === "premium") this.s.premium = true;
-    else this.s.tuercas += p.tuercas;
+    if (p.tipo === "plan") {
+      const antes = this.s.plan === "pro" ? 2 : this.s.plan === "taller" ? 1 : 0;
+      if ((p.plan === "pro" ? 2 : 1) > antes) this.s.tuercas += Math.max(0, Math.min(p.tuercasMes ?? 0, (p.tuercasMes ?? 0) * 2 - this.s.tuercas));
+      this.s.plan = p.plan;
+    } else if (p.tipo === "premium") this.s.premium = true;
+    else this.s.tuercas += p.tuercas + (this.s.plan === "pro" ? Math.round(p.tuercas * 0.2) : 0);
     this.guardar();
-    return { tuercas: this.s.tuercas, premium: !!this.s.premium };
+    return { tuercas: this.s.tuercas, premium: !!this.s.premium || !!this.s.plan };
+  }
+
+  async gestionarPlan() {
+    await espera(400);
+    if (this.s.plan) {
+      delete this.s.plan;
+      this.guardar();
+    }
   }
 
   async recuperarCompras() {

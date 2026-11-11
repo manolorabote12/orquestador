@@ -39,7 +39,8 @@ Después del primer despliegue, GitHub fabrica solo las **partidas de muestra** 
 ## 3. Google Play Console (30 min)
 Sigue `salida\SIGUIENTES-PASOS.txt`: ya lleva tus datos. Los pasos son crear la app, prueba interna con el `.aab`,
 ficha de la tienda, contenido de la aplicación (tabla de seguridad de datos en `LANZAR-APP-LEEME.md`),
-productos de tuercas y la suscripción premium.
+productos de tuercas y los dos planes (`plan_taller` y `plan_pro`, con planes base `mensual` y `anual`;
+detalles en `LANZAR-APP-LEEME.md`, punto 5).
 
 En **Configuración → Perfil de pagos** pon tus datos fiscales; sin ellos no se cobra nada.
 

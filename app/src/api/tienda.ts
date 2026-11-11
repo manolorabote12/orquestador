@@ -1,21 +1,34 @@
 // Tuercas: saldo, precio, tienda de Google Play, compras y anuncios con premio.
 
 import { ErrorApp } from "../errores";
-import { anunciosDisponibles, comprarNativo, comprasPendientes, esNativo, productos as productosNativos, verAnuncioConPremio } from "../nativo";
+import { anunciosDisponibles, comprarNativo, comprasPendientes, esNativo, gestionarSuscripcion, productos as productosNativos, verAnuncioConPremio } from "../nativo";
 import type { Conexion } from "./conexion";
+
+export type Periodo = "mensual" | "anual";
 
 export interface ProductoTienda {
   id: string;
-  tipo: "tuercas" | "premium";
+  tipo: "tuercas" | "premium" | "plan";
   tuercas: number;
   /** Precio de Google Play en la moneda del usuario ("" si aún no se puede comprar). */
   precio: string;
+  /** Planes: "taller" o "pro", tuercas que da cada mes y precio de cada plan base de Google Play. */
+  plan?: "taller" | "pro";
+  tuercasMes?: number;
+  precios?: Partial<Record<Periodo, string>>;
 }
 
 export interface EstadoTienda {
   productos: ProductoTienda[];
   premium: boolean;
   premiumHasta: string | null;
+  /** Plan mensual activo (o null), hasta cuándo y cuándo llegan las próximas tuercas. */
+  plan: "taller" | "pro" | null;
+  planHasta: string | null;
+  planEntrega: string | null;
+  /** Las tuercas del plan se acumulan como mucho N meses; Pro suma este % en cada pack. */
+  topeMeses: number;
+  bonusPro: number;
   /** Por qué no se puede comprar aquí (navegador, demo...), o null. */
   aviso: string | null;
   anuncios: boolean;
@@ -28,7 +41,9 @@ export interface ApiTienda {
   /** Tienda: packs de tuercas y premium, con precios de Google Play. */
   tienda(): Promise<EstadoTienda>;
   /** Compra y espera a que el servidor la verifique con Google. Devuelve el saldo nuevo. */
-  comprar(productoId: string): Promise<{ tuercas: number; premium: boolean }>;
+  comprar(productoId: string, periodo?: Periodo): Promise<{ tuercas: number; premium: boolean }>;
+  /** Abre la gestión de suscripciones de Google Play (cambiar o cancelar el plan). */
+  gestionarPlan(): Promise<void>;
   /** Cierra compras pagadas que quedaron a medias (sin red, app cerrada). Devuelve cuántas. */
   recuperarCompras(): Promise<number>;
   /** Anuncio con premio: true si el servidor ya ha sumado las tuercas (devuelve el saldo). */
@@ -56,30 +71,35 @@ export function supaTienda(con: Conexion): ApiTienda {
 
     async tienda(): Promise<EstadoTienda> {
       const [{ data: ps }, { data: t }] = await Promise.all([
-        con.sb.from("store_products").select("product_id,kind,credits").order("credits"),
+        con.sb.from("store_products").select("product_id,kind,credits,plan,tuercas_mes").order("credits"),
         con.sb.rpc("mi_tienda"),
       ]);
-      const lista = ((ps ?? []) as { product_id: string; kind: "tuercas" | "premium"; credits: number }[]);
+      const lista = ((ps ?? []) as { product_id: string; kind: ProductoTienda["tipo"]; credits: number; plan: "taller" | "pro" | null; tuercas_mes: number }[]);
       const precios = await productosNativos(lista.map((p) => ({ id: p.product_id, tipo: p.kind })));
-      const estado = (t ?? {}) as { premium?: boolean; premium_hasta?: string | null };
+      const estado = (t ?? {}) as { premium?: boolean; premium_hasta?: string | null; plan?: "taller" | "pro" | null; plan_hasta?: string | null;
+        plan_entrega?: string | null; tope_meses?: number; bonus_pro?: number };
+      const precioDe = (id: string, base?: string) => precios.find((x) => x.id === id && (!base || x.base === base))?.precio ?? "";
       return {
-        productos: lista.map((p) => ({ id: p.product_id, tipo: p.kind, tuercas: p.credits,
-          precio: precios.find((x) => x.id === p.product_id)?.precio ?? "" })),
+        productos: lista.map((p) => ({ id: p.product_id, tipo: p.kind, tuercas: p.credits, precio: precioDe(p.product_id),
+          ...(p.kind === "plan" ? { plan: p.plan ?? "taller", tuercasMes: p.tuercas_mes,
+            precios: { mensual: precioDe(p.product_id, "mensual"), anual: precioDe(p.product_id, "anual") } } : {}) })),
         premium: !!estado.premium, premiumHasta: estado.premium_hasta ?? null,
+        plan: estado.plan ?? null, planHasta: estado.plan_hasta ?? null, planEntrega: estado.plan_entrega ?? null,
+        topeMeses: Number(estado.tope_meses ?? 2), bonusPro: Number(estado.bonus_pro ?? 20),
         aviso: esNativo() ? (precios.length ? null : "Google Play no responde ahora mismo. Inténtalo en un rato.")
           : "Las compras se hacen desde la app de Android.",
         anuncios: anunciosDisponibles(),
       };
     },
 
-    async comprar(productoId: string) {
+    async comprar(productoId: string, periodo: Periodo = "mensual") {
       if (!esNativo()) throw new ErrorApp("Las compras se hacen desde la app de Android.");
       const yo = await con.miId();
       const { data: p } = await con.sb.from("store_products").select("kind").eq("product_id", productoId).maybeSingle();
       if (!p) throw new ErrorApp("Ese producto no existe.");
       let t;
       try {
-        t = await comprarNativo(productoId, p.kind === "premium", yo);
+        t = await comprarNativo(productoId, p.kind !== "tuercas", yo, p.kind === "plan" ? periodo : undefined);
       } catch (e) {
         const msg = String((e as Error)?.message ?? e);
         throw new ErrorApp(/cancel/i.test(msg) ? "Compra cancelada." : "Google Play no pudo completar la compra.");
@@ -88,6 +108,11 @@ export function supaTienda(con: Conexion): ApiTienda {
       await verificarCompra(productoId, t.purchaseToken);
       const estado = await api.tienda();
       return { tuercas: await api.tuercas(), premium: estado.premium };
+    },
+
+    async gestionarPlan() {
+      if (!esNativo()) throw new ErrorApp("Los planes se gestionan desde la app de Android.");
+      await gestionarSuscripcion();
     },
 
     async recuperarCompras() {

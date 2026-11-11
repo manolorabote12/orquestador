@@ -892,3 +892,27 @@ a.btn { text-decoration: none; }
   .empty-plano .trazo { animation: hormigas 1.4s linear infinite; }
   @keyframes hormigas { to { stroke-dashoffset: -22; } }
 }
+
+/* ---------------------------------------------------------------- Planes mensuales (nov 2026) */
+.segmento { display: flex; gap: 4px; padding: 4px; margin: 10px 0 12px; border: 1px solid var(--grid-strong);
+  border-radius: 999px; background: var(--paper-deep); }
+.segmento button { flex: 1; min-height: 40px; border: 0; border-radius: 999px; background: transparent; color: var(--ink-dim);
+  font: 600 0.88rem var(--body); cursor: pointer; }
+.segmento button.activo { background: var(--paper-hi); color: var(--ink); box-shadow: inset 0 0 0 1px var(--brass-deep); }
+.segmento button:focus-visible { outline: 2px solid var(--brass-hi); outline-offset: 2px; }
+.planes-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 10px; }
+.plan-card { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 16px 14px 14px;
+  border: 1px solid var(--grid-strong); border-radius: var(--radius); background: var(--paper-lift); }
+.plan-card h3 { margin: 0; font: 800 1.5rem/1 var(--display); letter-spacing: 0.02em; color: var(--ink); }
+.plan-card.destacado { border-color: var(--brass); background:
+  linear-gradient(180deg, rgba(232, 176, 75, 0.12), rgba(232, 176, 75, 0) 60%), var(--paper-lift); }
+.plan-card.destacado h3 { color: var(--brass-hi); }
+.plan-card.mio { box-shadow: 0 0 0 2px var(--ok) inset; }
+.plan-precio { margin: 0; }
+.plan-precio strong { font: 800 1.9rem/1 var(--display); color: var(--ink); }
+.plan-lista { margin: 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 0.9rem; color: var(--ink-dim); }
+.plan-lista li { position: relative; padding-left: 18px; }
+.plan-lista li::before { content: ""; position: absolute; left: 2px; top: 0.45em; width: 8px; height: 8px; border-radius: 2px;
+  background: var(--brass); transform: rotate(45deg); }
+.plan-pie { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 6px; }
+.plan-pie .btn-brass { width: 100%; }

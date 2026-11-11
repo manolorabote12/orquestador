@@ -62,19 +62,25 @@ export async function verAnuncioConPremio(usuarioId: string): Promise<boolean> {
 
 export interface ProductoNativo {
   id: string;
+  /** Suscripciones: plan base de Google Play ("mensual", "anual"...). */
+  base?: string;
   precio: string;
   titulo: string;
 }
 
-export async function productos(ids: { id: string; tipo: "tuercas" | "premium" }[]): Promise<ProductoNativo[]> {
+export async function productos(ids: { id: string; tipo: "tuercas" | "premium" | "plan" }[]): Promise<ProductoNativo[]> {
   if (!esNativo() || !ids.length) return [];
   const out: ProductoNativo[] = [];
   for (const tipo of [PURCHASE_TYPE.INAPP, PURCHASE_TYPE.SUBS]) {
-    const grupo = ids.filter((p) => (p.tipo === "premium") === (tipo === PURCHASE_TYPE.SUBS)).map((p) => p.id);
+    const grupo = ids.filter((p) => (p.tipo !== "tuercas") === (tipo === PURCHASE_TYPE.SUBS)).map((p) => p.id);
     if (!grupo.length) continue;
     try {
       const { products } = await NativePurchases.getProducts({ productIdentifiers: grupo, productType: tipo });
-      for (const p of products) out.push({ id: p.identifier, precio: p.priceString, titulo: p.title });
+      for (const p of products) {
+        // Android, suscripciones: identifier = plan base y planIdentifier = id de la suscripción.
+        if (tipo === PURCHASE_TYPE.SUBS && p.planIdentifier) out.push({ id: p.planIdentifier, base: p.identifier, precio: p.priceString, titulo: p.title });
+        else out.push({ id: p.identifier, precio: p.priceString, titulo: p.title });
+      }
     } catch {
       /* sin Google Play (o producto aún no creado en Play Console) */
     }
@@ -83,10 +89,12 @@ export async function productos(ids: { id: string; tipo: "tuercas" | "premium" }
 }
 
 /** 3 - Compra en Google Play SIN reconocerla: la reconoce el servidor tras verificarla. */
-export async function comprarNativo(id: string, premium: boolean, usuarioId: string): Promise<Transaction> {
+export async function comprarNativo(id: string, suscripcion: boolean, usuarioId: string, planBase?: string): Promise<Transaction> {
   return NativePurchases.purchaseProduct({
     productIdentifier: id,
-    productType: premium ? PURCHASE_TYPE.SUBS : PURCHASE_TYPE.INAPP,
+    // Android: las suscripciones necesitan el plan base ("mensual" o "anual").
+    ...(suscripcion && planBase ? { planIdentifier: planBase } : {}),
+    productType: suscripcion ? PURCHASE_TYPE.SUBS : PURCHASE_TYPE.INAPP,
     appAccountToken: usuarioId,
     isConsumable: false,
     autoAcknowledgePurchases: false,

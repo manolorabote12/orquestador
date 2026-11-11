@@ -13,5 +13,8 @@ check("regla con número", traducirTexto("Al superar el nivel 3") === "After bea
 check("regla que traduce dentro", traducirTexto("Recomendado: Arcade y acción") === "Recommended: Arcade and action");
 check("lo que no conoce se queda igual", traducirTexto("Bigotes Veloces") === "Bigotes Veloces");
 check("monetización", traducirTexto("Anuncios con premio: Continuar tras perder, Premio doble al acabar.") === "Rewarded ads: Continue after losing, Double reward at the end.");
+check("plan: botón", traducirTexto("Elegir · 4,99 €/mes") === "Choose · 4,99 €/month");
+check("plan: tuercas al mes", traducirTexto("250 tuercas cada mes (≈ 3 juegos)") === "250 bolts every month (≈ 3 games)");
+check("plan: activo", traducirTexto("Tienes el plan Taller Pro. Tus próximas tuercas llegan el 11 de diciembre.") === "You have the Workshop Pro plan. Your next bolts arrive on 11 de diciembre.");
 console.log(fallos ? `== ${fallos} fallos ==` : "== 0 fallos ==");
 if (fallos) process.exit(1);

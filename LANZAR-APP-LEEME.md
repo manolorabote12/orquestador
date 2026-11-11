@@ -72,7 +72,7 @@ Correo, web (`ORQ_WEB`) y política de privacidad (`ORQ_WEB/privacidad.html`).
 |---|---|---|---|---|
 | Correo electrónico (y nombre si entras con Google) | Sí | No | Gestión de cuenta | No |
 | ID de usuario | Sí | No | Gestión de cuenta, funcionalidad | No |
-| Historial de compras | Sí | No | Funcionalidad (tuercas, premium) | Sí |
+| Historial de compras | Sí | No | Funcionalidad (tuercas, planes) | Sí |
 | Otro contenido generado por el usuario (ideas, juegos) | Sí | No* | Funcionalidad | No |
 | ID de publicidad / interacciones con anuncios | Sí (SDK de AdMob) | Sí (Google) | Publicidad | Sí (solo si ve anuncios) |
 | Registros de fallos / diagnóstico | Sí (SDK de AdMob) | No | Análisis | — |
@@ -85,7 +85,15 @@ Cifrado en tránsito: **sí**. Se puede pedir el borrado: **sí** → URL `ORQ_W
 
 ## 5. Productos (Monetizar → Productos)
 Productos integrados (consumibles): `tuercas_300`, `tuercas_1100`, `tuercas_3600`.
-Suscripción: `premium_mensual` (plan base mensual, renovación automática).
+Suscripciones (planes mensuales), cada una con **dos planes base**, `mensual` y `anual`, renovación automática:
+
+| Suscripción | Plan base `mensual` | Plan base `anual` | Qué da (lo pone el servidor) |
+|---|---|---|---|
+| `plan_taller` | 4,99 € | 49,99 € | 250 tuercas al mes, cola rápida, primero en la Lanzadera |
+| `plan_pro` | 12,99 € | 129,99 € | 800 tuercas al mes, lo mismo y +20 % en packs |
+
+Pon los dos en el mismo **grupo** (para que Google deje pasar de Taller a Pro prorrateando).
+La antigua `premium_mensual` ya no se ofrece: no hace falta crearla.
 Los ids deben coincidir con `store_products`; los precios los pones aquí.
 Da a la cuenta de servicio `ORQ_PLAY_TIENDA_CUENTA` el permiso "Ver datos financieros" y
 "Gestionar pedidos y suscripciones".
