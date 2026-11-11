@@ -196,7 +196,9 @@ def estado() -> int:
 	cuenta_estados: dict[str, int] = {}
 	for j in js:
 		cuenta_estados[j["status"]] = cuenta_estados.get(j["status"], 0) + 1
-	print(f"::notice::Escaparate de muestra: {cuenta_estados} | publicados {len(pub)}")
+	pausa = rest("GET", "settings?select=value,note&key=eq.fabrica_pausada") or [{}]
+	en_marcha = rest("GET", "jobs?select=kind,user_id,started_at&status=eq.running") or []
+	print(f"::notice::Escaparate de muestra: {cuenta_estados} | publicados {len(pub)} | fabrica: {pausa[0]} | en marcha: {en_marcha}")
 	for j in js:
 		if j["status"] == "failed":
 			pasos = j.get("progress") or []
