@@ -1,0 +1,217 @@
+"""Llenar el Escaparate con juegos de muestra hechos por la propia fabrica (cuenta «Equipo Orquestador").
+
+Quien entra por primera vez ve juegos de verdad para jugar y remezclar, en vez de una galeria vacia.
+
+	python3 nube/escaparate_semilla.py encargar 10   -> pone 10 ideas en la cola (sin cobrar tuercas a nadie)
+	python3 nube/escaparate_semilla.py publicar      -> los terminados pasan al Escaparate (lo hace el Reloj solo)
+	python3 nube/escaparate_semilla.py estado        -> cuantos van en cola, hechos, fallidos y publicados
+
+Gasto: cada juego cuesta lo mismo que el de un usuario (~0,30 $ de RunPod y Claude). «encargar» mira el saldo
+de RunPod y nunca encarga mas de lo que deja ORQ_SEMILLA_RESERVA $ (3 por defecto) para los usuarios.
+Los juegos van de uno en uno por la misma cola: el vigilante, el guardian y el boton de parada valen igual.
+Necesita SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY y (para encargar) RUNPOD_API_KEY.
+"""
+
+import json
+import os
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+AGENTE = "Orquestador/1.0 (+https://github.com)"
+CORREO = os.environ.get("ORQ_CUENTA_ESCAPARATE") or "equipo.orquestador@example.com"
+AUTOR = "Equipo Orquestador"
+COSTE_JUEGO = 0.35
+MAXIMO = 25
+
+# Ideas variadas (genero, estilo y publico) en el orden en que se encargan: con pocas ya hay de todo.
+IDEAS = [
+	"una gata ninja muy rapida que salta por los tejados de noche y esquiva ratas robot",
+	"un pulpo cocinero que reparte sushi en patines por un mercado lleno de gaviotas ladronas",
+	"defiende tu castillo de caramelo de un ejercito de hormigas golosas colocando torres de chicle",
+	"una nave hecha con piezas de chatarra que esquiva asteroides y rescata astronautas perdidos",
+	"un puzle de tuberias en un submarino que hace agua: conecta las valvulas antes de hundirte",
+	"un caballero diminuto que salta entre castillos de nubes recogiendo estrellas fugaces",
+	"un granjero robot que cultiva verduras gigantes y las vende para ampliar su granja en Marte",
+	"carreras de caracoles con turbo por un jardin lleno de charcos, hojas y babosas tramposas",
+	"un mago aprendiz que combina hechizos de colores para limpiar una torre llena de slimes",
+	"un pinguino repartidor que baja una montana nevada en trineo esquivando focas dormidas",
+	"una mazmorra por turnos donde un esqueleto bueno escapa de la cripta con sus amigos zombis",
+	"un faro abandonado en una isla: explora, encuentra las piezas y vuelve a encender la luz",
+	"un dragon bebe que aprende a volar atravesando aros de fuego sobre un volcan",
+	"una pizzeria a contrarreloj donde montas pizzas raras para clientes extraterrestres",
+	"un detective perro que resuelve el misterio del hueso robado buscando pistas en el barrio",
+	"un buceador que baja a lo mas hondo del oceano recogiendo tesoros antes de quedarse sin aire",
+	"un tanque de juguete que defiende la habitacion de un nino de los soldaditos de plastico",
+	"un bosque encantado donde plantas semillas magicas que crecen en puentes y escaleras",
+	"un parque de atracciones que construyes poco a poco para hacer feliz a una ciudad de gatos",
+	"un ninja de papel que corta frutas voladoras en un dojo japones al atardecer",
+	"una carrera de karts entre verduras en una cocina gigante con obstaculos de cubiertos",
+	"un robot limpiador que ordena un laboratorio empujando cajas a su sitio sin quedarse atascado",
+	"un vikingo pescador que pesca monstruos marinos simpaticos en un fiordo helado",
+	"una bruja cartera que reparte pociones en escoba por un pueblo colgado de un acantilado",
+	"un juego de cartas donde un ejercito de setas defiende el bosque de los leñadores",
+]
+
+
+def _req(metodo: str, url: str, cuerpo: bytes | None = None, cabeceras: dict | None = None) -> bytes:
+	k = os.environ["SUPABASE_SERVICE_ROLE_KEY"]
+	h = {"apikey": k, "Authorization": "Bearer " + k, "User-Agent": AGENTE, **(cabeceras or {})}
+	with urllib.request.urlopen(urllib.request.Request(url, data=cuerpo, method=metodo, headers=h), timeout=60) as r:
+		return r.read()
+
+
+def base() -> str:
+	return os.environ["SUPABASE_URL"].rstrip("/")
+
+
+def rest(metodo: str, ruta: str, cuerpo: object = None, extra: dict | None = None) -> object:
+	datos = None if cuerpo is None else json.dumps(cuerpo).encode()
+	txt = _req(metodo, base() + "/rest/v1/" + ruta, datos, {"Content-Type": "application/json", **(extra or {})}).decode()
+	return json.loads(txt) if txt.strip() else None
+
+
+def cuenta() -> str | None:
+	"""Id de la cuenta del Escaparate (o None si aun no existe)."""
+	q = urllib.parse.urlencode({"page": 1, "per_page": 1000})
+	usuarios = json.loads(_req("GET", f"{base()}/auth/v1/admin/users?{q}").decode()).get("users", [])
+	return next((u["id"] for u in usuarios if (u.get("email") or "").lower() == CORREO.lower()), None)
+
+
+def crear_cuenta() -> str:
+	u = cuenta()
+	if u:
+		return u
+	cuerpo = json.dumps({"email": CORREO, "email_confirm": True, "user_metadata": {"nombre": AUTOR}}).encode()
+	r = json.loads(_req("POST", f"{base()}/auth/v1/admin/users", cuerpo, {"Content-Type": "application/json"}).decode())
+	print(f"::notice::Cuenta del Escaparate creada ({CORREO})")
+	return r["id"]
+
+
+def saldo_runpod() -> float | None:
+	clave = os.environ.get("RUNPOD_API_KEY", "")
+	if not clave:
+		return None
+	req = urllib.request.Request("https://api.runpod.io/graphql", method="POST",
+		data=json.dumps({"query": "query { myself { clientBalance } }"}).encode(),
+		headers={"Content-Type": "application/json", "Authorization": "Bearer " + clave, "User-Agent": AGENTE})
+	try:
+		with urllib.request.urlopen(req, timeout=30) as r:
+			return float(json.loads(r.read())["data"]["myself"]["clientBalance"])
+	except (urllib.error.URLError, OSError, ValueError, KeyError, TypeError):
+		return None
+
+
+def trabajos(u: str) -> list[dict]:
+	return rest("GET", f"jobs?select=id,status,detail,project_id,error&user_id=eq.{u}&kind=eq.game&order=created_at") or []
+
+
+def cuantos_caben(pedidos: int, saldo: float | None, reserva: float) -> int:
+	"""Pura: cuantos juegos se pueden encargar sin bajar el saldo de RunPod de la reserva."""
+	pedidos = max(0, min(int(pedidos), MAXIMO))
+	if saldo is None:
+		return 0
+	return max(0, min(pedidos, int((saldo - reserva) // COSTE_JUEGO)))
+
+
+def elegir(pedidos: int, hechas: set[str]) -> list[str]:
+	"""Pura: las siguientes ideas que aun no se han encargado."""
+	return [i for i in IDEAS if i not in hechas][:pedidos]
+
+
+def encargar(n: int) -> int:
+	if rest("POST", "rpc/fabrica_pausada", {}):
+		print("::error::La fabrica esta PARADA: reanudala antes de encargar juegos")
+		return 1
+	reserva = float(os.environ.get("ORQ_SEMILLA_RESERVA") or "3")
+	saldo = saldo_runpod()
+	caben = cuantos_caben(n, saldo, reserva)
+	if saldo is None:
+		print("::error::No se pudo leer el saldo de RunPod: no se encarga nada (por seguridad)")
+		return 1
+	if caben < n:
+		print(f"::warning::Saldo de RunPod {saldo:.2f} $: solo caben {caben} de {n} sin bajar de {reserva:.2f} $")
+	u = crear_cuenta()
+	hechas = {str((j.get("detail") or {}).get("idea") or "") for j in trabajos(u) if j["status"] != "failed"}
+	ideas = elegir(caben, hechas)
+	if not ideas:
+		print("::notice::Nada que encargar")
+		return 0
+	filas = [{"user_id": u, "kind": "game", "cost": 0, "est_cost_usd": COSTE_JUEGO, "status": "queued",
+		"detail": {"idea": i, "semilla": True}} for i in ideas]
+	rest("POST", "jobs", filas, {"Prefer": "return=minimal"})
+	print(f"::notice::{len(ideas)} juegos de muestra en la cola (~{len(ideas) * COSTE_JUEGO:.2f} $). Salen de uno en uno; el Reloj los publica al terminar.")
+	for i in ideas:
+		print("  -", i)
+	return 0
+
+
+def _subir(ruta: str, datos: bytes, tipo: str) -> None:
+	_req("POST", f"{base()}/storage/v1/object/escaparate/{ruta}", datos, {"Content-Type": tipo, "x-upsert": "true"})
+
+
+def _bajar(ruta: str) -> bytes:
+	return _req("GET", f"{base()}/storage/v1/object/juegos/{urllib.parse.quote(ruta)}")
+
+
+def publicar() -> int:
+	u = cuenta()
+	if not u:
+		return 0
+	ya = {e["project_id"] for e in (rest("GET", f"escaparate?select=project_id&user_id=eq.{u}") or [])}
+	proyectos = rest("GET", f"projects?select=id,title,spec,version,files&user_id=eq.{u}") or []
+	n = 0
+	for p in proyectos:
+		f = p.get("files") or {}
+		if p["id"] in ya or not f.get("web"):
+			continue
+		try:
+			## Lo mismo que hace la funcion «escaparate» al compartir desde la app (supabase/functions/_shared/escaparate.ts).
+			_subir(f"{p['id']}/index.pck", _bajar(f["web"]), "application/octet-stream")
+			if f.get("icono"):
+				_subir(f"{p['id']}/icono.png", _bajar(f["icono"]), "image/png")
+			capturas = [c for c in (f.get("capturas") or []) if isinstance(c, str)]
+			if capturas:
+				_subir(f"{p['id']}/portada.png", _bajar(capturas[0]), "image/png")
+			spec = p.get("spec") or {}
+			ficha = {"titulo": p["title"], "resumen": str(spec.get("resumen") or ""), "genero": str(spec.get("genero") or ""),
+				"autor": AUTOR, "version": p["version"], "portada": bool(capturas), "icono": bool(f.get("icono"))}
+			_subir(f"{p['id']}/ficha.json", json.dumps(ficha, ensure_ascii=False).encode(), "application/json")
+			rest("POST", "rpc/escaparate_publicar", {"p_user": u, "p_project": p["id"], "p_autor": AUTOR})
+			n += 1
+			print(f"::notice::Al Escaparate: {p['title']}")
+		except (urllib.error.URLError, OSError, ValueError) as e:
+			print(f"::warning::No se pudo publicar {p['title']}: {str(e)[:150]}")
+	return 0
+
+
+def estado() -> int:
+	u = cuenta()
+	if not u:
+		print("::notice::Escaparate de muestra: aun no se ha encargado nada")
+		return 0
+	js = trabajos(u)
+	pub = rest("GET", f"escaparate?select=project_id&user_id=eq.{u}") or []
+	cuenta_estados: dict[str, int] = {}
+	for j in js:
+		cuenta_estados[j["status"]] = cuenta_estados.get(j["status"], 0) + 1
+	print(f"::notice::Escaparate de muestra: {cuenta_estados} | publicados {len(pub)}")
+	for j in js:
+		if j["status"] == "failed":
+			print(f"::warning::Fallo «{str((j.get('detail') or {}).get('idea'))[:60]}»: {str(j.get('error'))[:120]}")
+	return 0
+
+
+def main(args: list[str]) -> int:
+	accion = args[0] if args else "estado"
+	if accion == "encargar":
+		n = args[1].strip() if len(args) > 1 else "10"
+		return encargar(int(n) if n.isdigit() else 10)
+	if accion == "publicar":
+		return publicar()
+	return estado()
+
+
+if __name__ == "__main__":
+	sys.exit(main(sys.argv[1:]))

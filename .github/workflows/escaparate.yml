@@ -1,0 +1,49 @@
+name: "Escaparate: juegos de muestra"
+# Llena el Escaparate con juegos hechos por la propia fabrica (cuenta «Equipo Orquestador»).
+# Desde el movil: app de GitHub -> Actions -> este workflow -> Run workflow.
+#  - encargar: pone N ideas en la cola. Cada juego ~0,35 $; nunca baja el saldo de RunPod de 3 $.
+#  - estado:   cuantos van en cola, hechos, fallidos y publicados.
+#  - publicar: pasa al Escaparate los terminados (el Reloj ya lo hace solo cada 15 minutos).
+# Para cortar a medias: workflow "Fabrica: pausar o reanudar" -> pausar.
+on:
+  workflow_dispatch:
+    inputs:
+      accion:
+        description: "encargar, estado o publicar"
+        type: choice
+        options: [estado, encargar, publicar]
+        default: estado
+      cantidad:
+        description: "Cuantos juegos encargar (maximo 25)"
+        required: false
+        default: "10"
+
+jobs:
+  escaparate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      ORQ_SEMILLA_RESERVA: ${{ vars.ORQ_SEMILLA_RESERVA }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: nube
+      - name: Escaparate de muestra
+        env:
+          ACCION: ${{ inputs.accion }}
+          CANTIDAD: ${{ inputs.cantidad }}
+        run: python3 nube/escaparate_semilla.py "$ACCION" "$CANTIDAD"
+      - name: Despertar la fabrica
+        if: inputs.accion == 'encargar'
+        run: |
+          id=$(curl -sf -H "Authorization: Bearer $RUNPOD_API_KEY" https://rest.runpod.io/v1/endpoints \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get('data',[]); print(next((e['id'] for e in d if e.get('name')=='orq-fabrica'),''))")
+          if [ -n "$id" ]; then
+            curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
+              -d '{"input": {"despertar": "escaparate"}}' "https://api.runpod.ai/v2/$id/run" && echo "::notice::Fabrica despierta"
+          fi
