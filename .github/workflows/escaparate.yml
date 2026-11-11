@@ -6,7 +6,7 @@ name: "Escaparate: juegos de muestra"
 #  - estado:   cuantos van en cola, hechos, fallidos y publicados (y si la fabrica esta parada).
 #  - seguir:   lo mismo que hace el Reloj, sin esperar.
 #  - cancelar: quita los que aun no han empezado y pone el objetivo a 0.
-#  - capturas: baja capturas, icono, clip e informe de los terminados (artefacto «capturas-muestra»).
+#  - capturas: baja capturas, icono, clip e informe de los terminados (rama «revision»).
 # Para cortar a medias: workflow "Fabrica: pausar o reanudar" -> pausar.
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
-      contents: read
+      contents: write
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -50,10 +50,12 @@ jobs:
             curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
               -d '{"input": {"despertar": "escaparate"}}' "https://api.runpod.ai/v2/$id/run" && echo "::notice::Fabrica despierta"
           fi
-      - name: Subir capturas
+      ## Las capturas van a la rama «revision» (solo esa carpeta, se reescribe cada vez): se ven en GitHub desde el movil.
+      - name: Subir capturas a la rama revision
         if: inputs.accion == 'capturas'
-        uses: actions/upload-artifact@v4
-        with:
-          name: capturas-muestra
-          path: capturas_muestra
-          retention-days: 7
+        run: |
+          cd capturas_muestra
+          git init -q -b revision && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "Capturas de los juegos de muestra"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" revision
+          echo "::notice::Capturas en la rama revision"
