@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from . import interfaz, post, runpod
+from . import interfaz, post, prompts, runpod
 
 TAMANOS = {"panel": (1024, 1024), "boton": (1024, 512)}
 SALIDA = {"panel": (384, 384), "boton": (384, 192)}
@@ -32,7 +32,7 @@ def prompt(biblia: dict, pieza: str) -> str:
 	que = ("an empty rectangular dialog window panel with a thick decorative border frame and a plain flat center"
 		if pieza == "panel" else
 		"a single wide rounded rectangular game button, thick border, glossy bevel, plain flat center")
-	return (f"{est['descripcion']}. Mobile game user interface asset: {que}, made of materials that match "
+	return (f"{prompts.estilo_dibujo(est)}. Mobile game user interface asset: {que}, made of materials that match "
 		f"{escenario}, perfectly symmetric, front view, centered, fills most of the image, "
 		f"plain solid flat {nombre} background ({chroma}), no text, no letters, no icons, no characters, no shadow")
 

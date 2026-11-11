@@ -90,6 +90,17 @@ def revisar_animacion(frames: list[Image.Image], ficha_procesada: Image.Image, c
 	return {"ok": not malos, "malos": malos, "frames": len(frames)}
 
 
+def fondo_libre(img: Image.Image, chroma: tuple[int, int, int]) -> float:
+	"""Parte de la imagen en bruto que es fondo liso (color chroma). Un personaje bien pedido deja
+	mucho fondo; si casi no hay, la IA ha dibujado un escenario dentro del sprite."""
+	rgb = np.asarray(img.convert("RGB")).astype(np.int32)
+	cerca = np.sqrt(((rgb - np.array(chroma)) ** 2).sum(-1)) < 90
+	return float(cerca.mean())
+
+
+UMBRAL_FONDO_LIBRE = 0.30
+
+
 def revisar_tile(costura: float, deriva: float) -> dict:
 	problemas = []
 	if costura > 18.0:

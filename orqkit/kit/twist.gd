@@ -116,10 +116,10 @@ func _attach(g: Node) -> void:
 			"void fragment() { COLOR = texture(screen_tex, vec2(1.0 - SCREEN_UV.x, SCREEN_UV.y)); }"))
 	if has("oscuridad") and _focus() != Vector2.INF:
 		_dark = _full_rect(_layer, _shader(
-			"shader_type canvas_item;\nuniform vec2 center = vec2(360.0, 640.0);\nuniform float radius = 220.0;\n" +
+			"shader_type canvas_item;\nuniform vec2 center = vec2(360.0, 640.0);\nuniform float radius = 290.0;\n" +
 			"uniform vec2 screen = vec2(720.0, 1280.0);\n" +
 			"void fragment() {\n\tvec2 p = SCREEN_UV * screen;\n\tfloat d = distance(p, center);\n" +
-			"\tCOLOR = vec4(0.0, 0.0, 0.03, smoothstep(radius * 0.7, radius, d) * 0.96);\n}"))
+			"\tCOLOR = vec4(0.0, 0.0, 0.03, smoothstep(radius * 0.55, radius, d) * 0.86);\n}"))
 	if has("fantasma"):
 		_ghost_attach()
 	if has("contrarreloj") and _limit() > 0.0:
@@ -199,7 +199,7 @@ func _process(delta: float) -> void:
 			var mat: ShaderMaterial = _dark.material as ShaderMaterial
 			mat.set_shader_parameter("center", f)
 			mat.set_shader_parameter("screen", vp)
-			mat.set_shader_parameter("radius", minf(vp.x, vp.y) * 0.3)
+			mat.set_shader_parameter("radius", minf(vp.x, vp.y) * 0.42)
 	if _clock != null:
 		_tick_clock(delta)
 

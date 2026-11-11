@@ -6,6 +6,7 @@ mismo diseno, otra pose"), nunca desde cero.
 """
 
 import hashlib
+import re
 
 # 1 - Biblioteca de poses por animacion (ciclos clasicos de animacion 2D).
 POSES: dict[str, list[str]] = {
@@ -59,18 +60,53 @@ def pose_frame(anim: str, cfg: dict, i: int) -> str:
 	return lista[idx]
 
 
+# 1b - Estilo SOLO de dibujo para personajes y objetos. La directora a veces describe una ESCENA en
+# estilo.descripcion ("Cartoon night rooftop scene with glowing moon, lit windows, chimneys...") y, puesta
+# delante de cada sprite, la IA dibujaba la escena entera dentro de cada personaje (11 nov: la gata, la
+# rata y hasta la moneda salian con luna y tejados, imposibles de recortar). Aqui solo pasa como se
+# dibuja (trazo, sombreado, acabado), nunca que hay alrededor.
+BASE_FAMILIA = {
+	"pixel_art": "pixel art game sprite, crisp pixels, limited palette",
+	"cartoon": "cartoon mobile game art, clean shapes, bold outlines, cel shading",
+	"low_poly": "low poly 3D game asset render, flat shaded facets",
+	"realista": "detailed semi-realistic game art, soft lighting",
+	"pintado": "hand painted game art, painterly brush strokes",
+}
+_RASGOS = [
+	"pixel art", "8-bit", "16-bit", "32-bit", "retro", "cartoon", "chibi", "kawaii", "cute", "flat", "vector",
+	"cel shad\\w*", "bold (?:dark |black |thick )?outlines?", "thick outlines?", "thin outlines?", "clean lines?", "outlined",
+	"soft shading", "hard shading", "soft gradients?", "gradients?", "painterly", "hand[- ]painted", "hand[- ]drawn",
+	"watercolou?r", "ink", "sketch\\w*", "low poly", "3d render", "isometric", "minimalist", "geometric shapes?",
+	"rounded shapes?", "chunky", "glossy", "matte", "neon", "pastel", "vibrant", "saturated", "muted", "high contrast",
+	"comic", "anime", "storybook", "claymation", "voxel", "dithering", "rim light\\w*",
+]
+_PATRON_RASGOS = re.compile(r"\b(" + "|".join(_RASGOS) + r")\b", re.IGNORECASE)
+
+
+def estilo_dibujo(est: dict) -> str:
+	"""Pura: estilo de dibujo sin escenario (para fichas y frames de personajes y objetos)."""
+	base = BASE_FAMILIA.get(str(est.get("familia") or ""), "mobile game art")
+	vistos: list[str] = []
+	for m in _PATRON_RASGOS.finditer(str(est.get("descripcion") or "")):
+		r = m.group(0).lower()
+		if r not in vistos and r not in base:
+			vistos.append(r)
+	return base + (", " + ", ".join(vistos[:6]) if vistos else "")
+
+
 def _encuadre(sprite: dict, chroma: str) -> str:
 	mira = "side view facing right" if sprite.get("mira_a", "derecha") == "derecha" else "front view"
 	nombre_chroma = CHROMA_NOMBRES.get(chroma.upper(), chroma)
 	return (
 		f"single {'character' if sprite.get('rol') != 'objeto' else 'object'}, full body, centered, {mira}, "
-		f"plain solid flat {nombre_chroma} background ({chroma.upper()}), no shadow, no ground, no text"
+		f"isolated game sprite alone on a plain solid flat {nombre_chroma} background ({chroma.upper()}), "
+		"nothing else in the image: no scenery, no sky, no moon, no buildings, no floor, no frame, no shadow, no text"
 	)
 
 
 def prompt_ficha(biblia: dict, sprite: dict) -> str:
 	est = biblia["estilo"]
-	return f"{est['descripcion']}. {sprite['descripcion']}. Reference pose: standing neutral. {_encuadre(sprite, est['fondo_chroma'])}."
+	return f"{sprite['descripcion']}. Reference pose: standing neutral. Style: {estilo_dibujo(est)}. {_encuadre(sprite, est['fondo_chroma'])}."
 
 
 def desde_dibujo(prompt_ficha_txt: str) -> str:
@@ -85,14 +121,14 @@ def prompt_frame(biblia: dict, sprite: dict, anim: str, cfg: dict, i: int) -> st
 	return (
 		f"The exact same {'character' if sprite.get('rol') != 'objeto' else 'object'} as in the reference image: "
 		f"identical design, proportions and colors ({sprite['descripcion']}). "
-		f"Pose: {pose_frame(anim, cfg, i)}. {est['descripcion']}. {_encuadre(sprite, est['fondo_chroma'])}."
+		f"Pose: {pose_frame(anim, cfg, i)}. Style: {estilo_dibujo(est)}. {_encuadre(sprite, est['fondo_chroma'])}."
 	)
 
 
 def prompt_tile(biblia: dict, esc: dict) -> str:
 	est = biblia["estilo"]
 	return (
-		f"{est['descripcion']}. Seamless tileable square texture of {esc['descripcion']}, "
+		f"{estilo_dibujo(est)}. Seamless tileable square texture of {esc['descripcion']}, "
 		"fills the whole image edge to edge, flat front view, no objects, no characters, no text."
 	)
 

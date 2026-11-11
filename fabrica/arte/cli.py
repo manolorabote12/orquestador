@@ -160,11 +160,23 @@ def fabricar(args: argparse.Namespace) -> dict:
 		finally:
 			imprescindible(False)
 		informe["generaciones"] += 1
+		## 11b - Escenario dentro del sprite (casi sin fondo liso): otra semilla, una vez. Es gratis de
+		## comprobar y evita personajes imposibles de recortar (11 nov: todos con luna y tejados).
+		libre = qa_arte.fondo_libre(ficha, chroma)
+		if libre < qa_arte.UMBRAL_FONDO_LIBRE and not ref_autor and not runpod.en_ahorro():
+			print(f"[arte] {sid}: ficha con escenario dentro (fondo libre {libre:.0%}) -> otra semilla")
+			try:
+				ficha = _imagen(cliente.generar(wf_crear, _valores(enc_ficha, 2, args.lado))[0])
+				informe["generaciones"] += 1
+				informe["regeneradas"] += 1
+			except runpod.TopeGPU:
+				pass
+			informe.setdefault("fondo_libre", {})[sid] = round(qa_arte.fondo_libre(ficha, chroma), 2)
 		## 12 - Revision visual con IA (Claude) de los personajes; si no pasa, otra semilla (una vez).
 		gasto_rev = getattr(args, "revision", None)
 		if gasto_rev is not None and s.get("rol") != "objeto":
 			try:
-				rev_ia = revision_ia.revisar(_bytes_png(ficha), s["descripcion"], estilo["descripcion"], gasto_rev)
+				rev_ia = revision_ia.revisar(_bytes_png(ficha), s["descripcion"], prompts.estilo_dibujo(estilo), gasto_rev)
 				informe.setdefault("revision_ia", {})[sid] = rev_ia
 				if not rev_ia["ok"] and not runpod.en_ahorro():
 					print(f"[arte] {sid}: la revision visual pide repetir -> {rev_ia['problemas'] or rev_ia['parecido']}")

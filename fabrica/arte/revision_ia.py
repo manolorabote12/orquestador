@@ -28,6 +28,7 @@ HERRAMIENTA = {
 
 SISTEMA = ("Eres director de arte de videojuegos moviles. Revisas la ficha (imagen de referencia) de un personaje "
 	"sobre fondo magenta. Rechaza SOLO por problemas reales: no es lo descrito; hay varios personajes; esta cortado; "
+	"hay escenario o fondo dibujado (cielo, luna, edificios, suelo, paisaje) en vez del fondo magenta liso; "
 	"tiene texto, letras o marca de agua; es ilegible a tamano pequeno; o se parece claramente a un personaje o marca "
 	"protegida. El estilo artistico y pequenas diferencias de detalle NO son motivo de rechazo.")
 

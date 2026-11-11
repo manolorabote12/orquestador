@@ -17,7 +17,7 @@ from pathlib import Path
 import numpy as np
 from PIL import Image
 
-from . import post, runpod
+from . import post, prompts, runpod
 
 QUE = {
 	"heart": "a single plump glossy heart symbol",
@@ -32,7 +32,7 @@ def prompt(biblia: dict, icono: str) -> str:
 	est = biblia["estilo"]
 	chroma = est["fondo_chroma"].upper()
 	nombre = {"#FF00FF": "pure magenta", "#00FF00": "pure green"}.get(chroma, chroma)
-	return (f"{est['descripcion']}. Mobile game user interface icon: {QUE[icono]}, bold readable silhouette, "
+	return (f"{prompts.estilo_dibujo(est)}. Mobile game user interface icon: {QUE[icono]}, bold readable silhouette, "
 		f"thick dark outline, perfectly symmetric, front view, centered, fills most of the image, "
 		f"plain solid flat {nombre} background ({chroma}), no text, no letters, no numbers, no characters, no shadow")
 

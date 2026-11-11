@@ -81,7 +81,7 @@ def main() -> int:
 	biblia = {"juego": {"titulo": "Prueba"}, "estilo": {"descripcion": "cute pixel art", "fondo_chroma": "#FF00FF", "familia": "pixel_art",
 		"paleta": ["#112233", "#FFCC00"]}, "personajes": [], "objetos": [], "escenarios": [{"descripcion": "a forest"}]}
 	p = iconos.prompt(biblia, "heart")
-	check("el prompt pide el icono, el estilo del juego y el fondo croma, sin texto", "heart" in p and "cute pixel art" in p and "#FF00FF" in p and "no text" in p, p)
+	check("el prompt pide el icono, el estilo del juego y el fondo croma, sin texto", "heart" in p and "pixel art" in p and "cute" in p and "#FF00FF" in p and "no text" in p, p)
 
 	def rev(img: Image.Image) -> list[str]:
 		from arte import post
