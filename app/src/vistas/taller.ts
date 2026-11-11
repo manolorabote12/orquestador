@@ -12,6 +12,29 @@ import { mensajeError } from "../errores";
 import { encaja, nuevos, type Tipo } from "../catalogo";
 import { USOS, infoUso, type Uso } from "../usos";
 import { abrirSeccion } from "./juegos";
+import { musica, sonar } from "../sonido";
+
+// Dos engranajes de latón engranados (el pequeño gira al revés y más deprisa).
+const DIENTES = (n: number, r: number) => Array.from({ length: n }, (_, i) =>
+  `<rect x="-3.2" y="${-r - 5}" width="6.4" height="8" rx="1.4" transform="rotate(${(360 / n) * i})"/>`).join("");
+const ENGRANAJES = `<svg viewBox="0 0 96 60" class="fab-gears"><g transform="translate(34 32)"><g class="gear g1" fill="#e8b04b" stroke="#9c6b1f" stroke-width="1.2">${DIENTES(10, 19)}<circle r="19"/><circle r="7" fill="#0a1e36"/></g></g><g transform="translate(70 19)"><g class="gear g2" fill="#f6cf7a" stroke="#9c6b1f" stroke-width="1.2">${DIENTES(7, 11)}<circle r="11"/><circle r="4.2" fill="#0a1e36"/></g></g></svg>`;
+
+/** Celebración: una lluvia breve de tuercas de latón cuando el juego sale de la fábrica. */
+function lluviaDeTuercas(): void {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const capa = h("div", { class: "lluvia", "aria-hidden": "true" });
+  for (let i = 0; i < 26; i++) {
+    const t = svg(ICONOS.tuerca);
+    t.style.setProperty("--x", `${Math.round(Math.random() * 100)}vw`);
+    t.style.setProperty("--giro", `${Math.round(Math.random() * 720 - 360)}deg`);
+    t.style.setProperty("--tam", `${14 + Math.round(Math.random() * 16)}px`);
+    t.style.animationDelay = `${Math.round(Math.random() * 500)}ms`;
+    t.style.animationDuration = `${1300 + Math.round(Math.random() * 900)}ms`;
+    capa.append(t);
+  }
+  document.body.append(capa);
+  window.setTimeout(() => capa.remove(), 2900);
+}
 
 const EJEMPLOS = [
   "Un gato ninja rápido que salta por tejados de noche",
@@ -566,8 +589,14 @@ export function vistaTaller(app: App): VistaHecha {
       aviso(mensajeError(e, "No se pudo abrir el boceto."));
     }
   });
+  // La fábrica en marcha: dos engranajes que giran y una barra que avanza con cada paso terminado.
+  const barra = h("div", { class: "fab-bar" }, h("i", {}));
+  const porcentaje = h("span", { class: "fab-pct" }, "0 %");
+  const maquina = h("div", { class: "fab", "aria-hidden": "true" },
+    svg(ENGRANAJES), h("div", { class: "fab-info" }, barra, porcentaje));
+  let hechosAntes = -1;
   const banco = h("section", { class: "sheet", hidden: true },
-    h("div", { class: "sheet-head" }, titulo, tiempo), pasos, jugarBoceto, registro);
+    h("div", { class: "sheet-head" }, titulo, tiempo), maquina, pasos, jugarBoceto, registro);
 
   // ------------------------------------------------------------ resultado
   const resultado = h("section", { class: "sheet", hidden: true });
@@ -590,6 +619,15 @@ export function vistaTaller(app: App): VistaHecha {
         activoPuesto = true;
       }
     }
+    // Avance: cada paso terminado empuja la barra y suena la carraca (solo los nuevos).
+    const nHechos = t.status === "done" ? PASOS.length : PASOS.filter(([id]) => hechos.has(id)).length;
+    const pct = Math.round((nHechos / PASOS.length) * 100);
+    (barra.firstElementChild as HTMLElement).style.width = `${pct}%`;
+    porcentaje.textContent = `${pct} %`;
+    maquina.classList.toggle("parada", t.status !== "running" && t.status !== "queued");
+    if (hechosAntes >= 0 && nHechos > hechosAntes && t.status === "running") sonar("paso");
+    hechosAntes = nHechos;
+    musica(t.status === "running" || t.status === "queued");
     const boceto = t.progress.find((e) => e.boceto)?.boceto;
     if (boceto) rutaBoceto = boceto;
     jugarBoceto.hidden = !boceto || t.status !== "running";
@@ -604,6 +642,9 @@ export function vistaTaller(app: App): VistaHecha {
 
   function terminado(t: Trabajo) {
     pararReloj();
+    musica(false);
+    sonar("exito");
+    lluviaDeTuercas();
     void cancelarAvisoEspera(t.id);
     vibrar("exito");
     void avisarJuegoListo(t.titulo ?? "Tu juego");
@@ -652,6 +693,8 @@ export function vistaTaller(app: App): VistaHecha {
 
   function fallido(t: Trabajo) {
     pararReloj();
+    musica(false);
+    sonar("error");
     void cancelarAvisoEspera(t.id);
     vibrar("error");
     chispa.decir(t.refunded ? "Algo se ha roto en la fábrica. Te he devuelto las tuercas; prueba otra vez." :
@@ -703,6 +746,8 @@ export function vistaTaller(app: App): VistaHecha {
   function reiniciar() {
     dejarDeSeguir?.();
     dejarDeSeguir = null;
+    hechosAntes = -1;
+    musica(false);
     resultado.hidden = true;
     banco.hidden = true;
     form.hidden = false;
@@ -742,6 +787,7 @@ export function vistaTaller(app: App): VistaHecha {
       dejarDeSeguir?.();
       dejarPrevia?.();
       pararReloj();
+      musica(false);
     },
   };
 }

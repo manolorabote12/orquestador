@@ -6,6 +6,17 @@ import { abrir, aviso, h, type VistaHecha } from "../ui";
 import { insignias, nivel } from "../creador";
 import { mensajeError } from "../errores";
 import { idioma, ponerIdioma } from "../idioma";
+import { efectosEncendidos, musicaEncendida, ponerEfectos, ponerMusicaActiva } from "../sonido";
+
+function interruptor(nombre: string, ayuda: string, encendido: boolean, cambiar: (v: boolean) => void): HTMLElement {
+  const b = h("button", { class: "interruptor", role: "switch", "aria-checked": String(encendido), "aria-label": nombre, "data-mudo": "" });
+  b.addEventListener("click", () => {
+    const v = b.getAttribute("aria-checked") !== "true";
+    b.setAttribute("aria-checked", String(v));
+    cambiar(v);
+  });
+  return h("div", { class: "fila-interruptor" }, h("div", {}, h("strong", {}, nombre), h("p", { class: "muted small", style: "margin:2px 0 0" }, ayuda)), b);
+}
 
 /** Web publica (GitHub Pages): privacidad, terminos y borrar la cuenta. */
 const WEB = ((import.meta.env.VITE_WEB as string | undefined) ?? "").replace(/\/$/, "");
@@ -84,6 +95,10 @@ export function vistaCuenta(app: App): VistaHecha {
   return {
     el: h("div", { class: "wrap-inner" },
       perfil,
+      h("section", { class: "sheet" },
+        h("div", { class: "sheet-head" }, h("h2", {}, "Sonido")),
+        interruptor("Efectos de sonido", "Toques, tuercas y la fanfarria al terminar un juego", efectosEncendidos(), ponerEfectos),
+        interruptor("Música del taller", "Suena mientras se fabrica un juego", musicaEncendida(), ponerMusicaActiva)),
       h("section", { class: "sheet" },
         h("div", { class: "sheet-head" }, h("h2", {}, "Cuenta")),
         h("p", { class: "muted small" }, "Correo"), correo, h("div", { style: "height:12px" }),

@@ -812,3 +812,83 @@ a.btn { text-decoration: none; }
 .lz-camino li.ahora { background: rgba(232, 176, 75, 0.45); outline: 2px solid var(--brass); outline-offset: 1px; }
 .lz-siguiente { display: grid; gap: 4px; justify-items: start; }
 .lz-siguiente p { margin: 0 0 6px; }
+
+/* ------------------------------------------------------------------ Vida del taller (nov 2026)
+   La fabrica en marcha, la celebracion al terminar y las respuestas al toque. Todo el movimiento
+   respeta «reducir movimiento» del sistema. */
+
+/* La fabrica en marcha: engranajes y barra de avance. */
+.fab { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 14px; margin: 2px 0 16px; }
+.fab-gears { width: 96px; height: 60px; overflow: visible; filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.25)); }
+.fab-info { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 10px; }
+.fab-bar { height: 14px; border-radius: 7px; background: var(--paper-deep); border: 1.5px solid var(--brass-deep); overflow: hidden; }
+.fab-bar i {
+  display: block; height: 100%; width: 0;
+  background: repeating-linear-gradient(-45deg, var(--brass) 0 8px, var(--brass-hi) 8px 16px);
+  background-size: 23px 100%;
+  transition: width 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.fab-pct { font-family: var(--mono); font-size: 13px; color: var(--brass-hi); min-width: 44px; text-align: right; font-variant-numeric: tabular-nums; }
+.step.done .dot { animation: none; }
+
+/* Lluvia de tuercas al terminar un juego. */
+.lluvia { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+.lluvia svg {
+  position: absolute; top: -40px; left: var(--x); width: var(--tam); height: var(--tam);
+  animation: cae 1.8s cubic-bezier(0.3, 0.1, 0.7, 1) forwards;
+}
+@keyframes cae {
+  0% { transform: translateY(0) rotate(0); opacity: 1; }
+  85% { opacity: 1; }
+  100% { transform: translateY(108vh) rotate(var(--giro)); opacity: 0; }
+}
+
+/* Pestana activa: una pletina de laton encima del icono. */
+.tab { position: relative; transition: color 0.15s; }
+.tab::before {
+  content: ""; position: absolute; top: -7px; left: 50%; width: 28px; height: 3px; border-radius: 0 0 3px 3px;
+  background: var(--brass); transform: translateX(-50%) scaleX(0); transform-origin: center;
+}
+.tab.on::before { transform: translateX(-50%) scaleX(1); }
+.tab:active svg { transform: scale(0.88); }
+
+/* Botones de linea y fichas: tambien se hunden al tocarlos. */
+.btn-line:active, .chip:active, .btn-small:active { transform: translateY(2px); }
+
+/* Pantalla vacia de Mis juegos: un plano por dibujar. */
+.empty-plano { width: 148px; height: 148px; margin: 0 auto 14px; display: block; }
+.empty-plano .trazo { stroke-dasharray: 5 6; }
+
+/* Interruptores de sonido. */
+.fila-interruptor { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; }
+.fila-interruptor + .fila-interruptor { border-top: 1px dashed var(--grid-strong); }
+.interruptor {
+  position: relative; width: 54px; height: 30px; flex: none; border-radius: 15px;
+  background: var(--paper-deep); border: 1.5px solid var(--ink-faint); transition: background 0.15s, border-color 0.15s;
+}
+.interruptor::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 21px; height: 21px; border-radius: 50%;
+  background: var(--ink-faint); transition: transform 0.15s, background 0.15s;
+}
+.interruptor[aria-checked="true"] { background: rgba(232, 176, 75, 0.25); border-color: var(--brass); }
+.interruptor[aria-checked="true"]::after { transform: translateX(24px); background: var(--brass-hi); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .fab .gear { transform-box: fill-box; transform-origin: center; animation: wind 3.4s linear infinite; }
+  .fab .g2 { animation-duration: 2.38s; animation-direction: reverse; }
+  .fab.parada .gear { animation-play-state: paused; }
+  .fab-bar i { animation: cinta 0.9s linear infinite; }
+  .fab.parada .fab-bar i { animation: none; }
+  @keyframes cinta { to { background-position: 23px 0; } }
+  .tab::before { transition: transform 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.3); }
+  .tab svg { transition: transform 0.12s; }
+  .step.done .dot { animation: sello 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.4); }
+  @keyframes sello { from { transform: scale(0.3); } }
+  /* Cada pantalla entra con un gesto corto, sus hojas una detras de otra. */
+  #contenido > * > .sheet, #contenido > .sheet { animation: aparece 0.24s ease-out backwards; }
+  #contenido > * > .sheet:nth-child(2), #contenido > .sheet:nth-child(2) { animation-delay: 0.05s; }
+  #contenido > * > .sheet:nth-child(3), #contenido > .sheet:nth-child(3) { animation-delay: 0.1s; }
+  #contenido > * > .sheet:nth-child(n + 4), #contenido > .sheet:nth-child(n + 4) { animation-delay: 0.14s; }
+  .empty-plano .trazo { animation: hormigas 1.4s linear infinite; }
+  @keyframes hormigas { to { stroke-dashoffset: -22; } }
+}

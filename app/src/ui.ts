@@ -3,6 +3,7 @@
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 import { mensajeError } from "./errores";
+import { sonar } from "./sonido";
 
 type Hijo = Node | string | null | undefined | false;
 
@@ -99,6 +100,7 @@ export function aviso(texto: string, accion?: { texto: string; hacer: () => void
   }
   document.body.append(t);
   avisoActual = t;
+  sonar(accion ? "error" : "aviso");
   setTimeout(() => t.remove(), accion ? 6500 : 3200);
 }
 

@@ -14,6 +14,7 @@ import { vistaEntrar } from "./vistas/entrar";
 import { activarVibracion, engancharAtras, recordarVista, ultimaVista, vigilarConexion } from "./comodidad";
 import { mensajeError, vigilarErrores } from "./errores";
 import { iniciarIdioma } from "./idioma";
+import { activarSonido, sonar } from "./sonido";
 
 export type Vista = "taller" | "juegos" | "lanzadera" | "tuercas" | "cuenta";
 
@@ -79,6 +80,7 @@ async function arrancar(): Promise<void> {
   // Ningun fallo se pierde en silencio: lo no previsto se avisa con un texto claro.
   vigilarErrores((texto) => aviso(texto));
   iniciarIdioma();
+  activarSonido();
   const raiz = document.getElementById("app")!;
   const api = await crearBackend();
   const contador = h("span", {}, "–");
@@ -102,14 +104,34 @@ async function arrancar(): Promise<void> {
   /** Pestanas visitadas (para el boton atras de Android). */
   const historia: Vista[] = [];
 
+  let ruedaTuercas = 0;
+  /** La primera cifra (al entrar) se pone sin animación ni sonido. */
+  let primeraCifra = false;
+
   const app: App = {
     api,
     precio: 60,
     tuercas: 0,
     ponerTuercas(n: number) {
-      const subio = n > app.tuercas;
+      const antes = app.tuercas;
+      const subio = n > antes;
       app.tuercas = n;
-      contador.textContent = String(n);
+      // El contador rueda hasta la cifra nueva (como un cuentakilómetros) y suena la tuerca.
+      window.clearInterval(ruedaTuercas);
+      const quieto = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (n === antes || !primeraCifra || quieto) {
+        contador.textContent = String(n);
+      } else {
+        const pasos = Math.min(18, Math.abs(n - antes));
+        let i = 0;
+        ruedaTuercas = window.setInterval(() => {
+          i++;
+          contador.textContent = String(Math.round(antes + ((n - antes) * i) / pasos));
+          if (i >= pasos) window.clearInterval(ruedaTuercas);
+        }, 28);
+        sonar(subio ? "moneda" : "gasto");
+      }
+      primeraCifra = true;
       if (subio) {
         tuercasEl.classList.remove("bump");
         void tuercasEl.offsetWidth;
