@@ -279,6 +279,11 @@ def capturas(carpeta: str = "capturas_muestra") -> int:
 			except (urllib.error.URLError, OSError, ValueError) as e:
 				print(f"::warning::{p['title']}: {r}: {str(e)[:120]}")
 		print(f"::notice::{p['title']}: {len(rutas)} archivos")
+	## Disenos de los fallidos (para reproducir el fallo fuera del servidor).
+	for j in rest("GET", f"jobs?select=id,error,detail&user_id=eq.{u}&kind=eq.game&status=eq.failed&error=neq.cancelado&order=created_at.desc&limit=3") or []:
+		d = Path(carpeta) / "_fallidos"
+		d.mkdir(parents=True, exist_ok=True)
+		(d / f"{j['id'][:8]}.json").write_text(json.dumps({"error": j.get("error"), "detail": j.get("detail")}, indent=1, ensure_ascii=False), encoding="utf-8")
 	return 0
 
 

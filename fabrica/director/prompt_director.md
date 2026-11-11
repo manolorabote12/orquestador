@@ -22,7 +22,7 @@ REGLAS
 7. enemigos: de 1 a 3, cada uno de un tipo distinto (walker anda y se pisa; spiky anda con pinchos
    encima y hay que saltarlo; flyer vuela). Si la idea es pacifica o para peques, 1 walker amable.
    El spiky debe tener pinchos o puas visibles ARRIBA; el flyer, alas o forma voladora.
-8. niveles: entre 3 y 6 nombres que cuenten un pequeno viaje (de facil a dificil).
+8. niveles: entre 6 y 8 nombres que cuenten un viaje (de facil a dificil): un juego con 3 o 4 niveles se acaba en dos minutos y parece una demo.
 9. sensacion: agil (rapido y saltarin), normal o pesada (lento y con peso), segun el heroe.
    dificultad: facil si es para peques o relajado; dificil si piden reto; si no, normal.
 10. sonido: retro (pixel, arcade), suave (cartoon, peques, relajado) o metalico (robots, ciencia ficcion).

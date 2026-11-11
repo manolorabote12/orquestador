@@ -643,6 +643,10 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 	except Exception as e:  # noqa: BLE001 - cualquier fallo se devuelve al usuario
 		traceback.print_exc()
 		motivo = str(e)[:400] or e.__class__.__name__
+		## Un fallo de programa (no de la cadena) lleva donde ocurrio: sin eso no se puede arreglar desde fuera.
+		if not isinstance(e, (cadena.ErrorCadena, RuntimeError)):
+			ult = traceback.extract_tb(e.__traceback__)[-3:]
+			motivo = (motivo + " @ " + " < ".join(f"{Path(f.filename).name}:{f.lineno} {f.name}" for f in reversed(ult)))[:600]
 		guardar_diseno_fallido(sb, job, tmp)
 		try:
 			devuelto = sb.rpc("fail_job", p_job=job, p_error=motivo, p_cost_usd=coste_real(gasto, t0), p_refund=True)
