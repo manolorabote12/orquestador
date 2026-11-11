@@ -875,7 +875,8 @@ def fabricar(args: argparse.Namespace) -> dict:
 			try:
 				r = godot(proyecto, "--resolution", "720x1280", "--rendering-driver", "opengl3", "--fixed-fps", "60",
 					"res://qa/capturas.tscn", "--", f"--out={out}", timeout=540, display=True, xvfb=intento)
-				salida = (r.stdout + r.stderr)[-700:]
+				todo = r.stdout + r.stderr
+				salida = todo if len(todo) <= 900 else todo[:450] + " [...] " + todo[-450:]
 			except subprocess.TimeoutExpired:
 				evento("capturas", "aviso", "Las capturas tardan demasiado: me quedo con las que han salido")
 			except OSError as e:

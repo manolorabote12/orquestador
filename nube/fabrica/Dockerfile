@@ -11,9 +11,13 @@ ENV DEBIAN_FRONTEND=noninteractive \
     ORQ_PIPER_VOZ=/opt/voces/es_ES-davefx-medium.onnx \
     ORQ_DATOS=/tmp/orq_datos
 
+# Las librerias de X11, xkb y Mesa (dibujo por software) son para las capturas y el clip: sin ellas Godot
+# no podia abrir ventana en la pantalla virtual y los juegos salian sin capturas, sin ficha y sin clip.
 RUN apt-get update && apt-get install -y --no-install-recommends \
       python3 python3-pip openjdk-17-jdk-headless ffmpeg xvfb xauth wget unzip ca-certificates \
       libfontconfig1 libgl1 libegl1 libxcursor1 libxinerama1 libxrandr2 libxi6 fonts-dejavu-core \
+      libx11-6 libxext6 libxrender1 libxfixes3 libxkbcommon0 libxkbcommon-x11-0 xkb-data x11-xkb-utils \
+      libgl1-mesa-dri libglx-mesa0 libegl-mesa0 libgles2 libasound2t64 libpulse0 libdbus-1-3 libudev1 \
     && rm -rf /var/lib/apt/lists/*
 
 # 1 - Godot 4.6.3 (el mismo que el kit) y sus plantillas de exportacion.
