@@ -32,6 +32,8 @@ MAXIMO = 25
 CLAVE_OBJETIVO = "semilla_objetivo"
 ## Los juegos de antes del arreglo del arte (11 nov, sprites con escenario dentro) no se publican.
 PUBLICAR_DESDE = "2026-11-11T16:11:00Z"
+## Los fallos de antes de este momento ya tienen su causa arreglada: no cuentan para dejar de intentarlo.
+FALLOS_DESDE = "2026-11-11T18:01:37Z"
 INTENTOS_IDEA = 2
 
 # Ideas variadas (genero, estilo y publico) en el orden en que se encargan: con pocas ya hay de todo.
@@ -143,7 +145,7 @@ def siguiente(js: list[dict], objetivo: int) -> str | None:
 		return None
 	fallos: dict[str, int] = {}
 	for j in js:
-		if j["status"] == "failed" and (j.get("error") or "") != "cancelado":
+		if j["status"] == "failed" and (j.get("error") or "") != "cancelado" and str(j.get("created_at") or "9") >= FALLOS_DESDE:
 			i = str((j.get("detail") or {}).get("idea") or "")
 			fallos[i] = fallos.get(i, 0) + 1
 	## Demasiados fallos seguidos: algo va mal en la fabrica, no se sigue gastando.
