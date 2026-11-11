@@ -66,10 +66,13 @@ static func build(parent: Node2D, map: Array, tile: float, palette: Dictionary, 
 		while x < w:
 			var ch: String = rows[y][x]
 			if ch == SOLID:
+				## Cada tramo es todo «con aire encima» o todo «tapado»: el borde de arriba y la sombra
+				## del relleno salen exactos casilla a casilla.
 				var start: int = x
-				while x < w and rows[y][x] == SOLID:
+				var open_top: bool = y == 0 or rows[y - 1][x] != SOLID
+				while x < w and rows[y][x] == SOLID and (y == 0 or rows[y - 1][x] != SOLID) == open_top:
 					x += 1
-				_add_solid_run(solids, start, x - start, y, tile, c_solid, c_top, y == 0 or rows[y - 1][start] != SOLID, tile_tex)
+				_add_solid_run(solids, start, x - start, y, tile, c_solid, c_top, open_top, tile_tex)
 				continue
 			if ch == MOVING:
 				var start_m: int = x
@@ -118,8 +121,12 @@ static func _add_solid_run(solids: StaticBody2D, x0: int, count: int, y: int, ti
 	## 4 - Con tile de la fabrica: textura repetida, un tile de la imagen por casilla.
 	if tex != null:
 		poly.texture = tex
-		poly.color = Color.WHITE
+		## El relleno (sin aire encima) va mas oscuro: el suelo deja de ser una losa plana y se lee
+		## donde se pisa.
+		poly.color = Color.WHITE if exposed else Color(0.62, 0.62, 0.68)
 		poly.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+		if float(tex.get_width()) > tile:
+			poly.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 		var k: float = float(tex.get_width()) / tile
 		var uv: PackedVector2Array = PackedVector2Array()
 		for v: Vector2 in poly.polygon:
@@ -128,9 +135,15 @@ static func _add_solid_run(solids: StaticBody2D, x0: int, count: int, y: int, ti
 	solids.add_child(poly)
 	if exposed:
 		var lip: Polygon2D = Polygon2D.new()
-		lip.color = top if tex == null else Color(1, 1, 1, 0.16)
-		lip.polygon = _rect(Vector2(x0 * tile, y * tile), Vector2(count * tile, tile * 0.14))
+		lip.color = top if tex == null else Color(top.r, top.g, top.b, 0.78)
+		lip.polygon = _rect(Vector2(x0 * tile, y * tile), Vector2(count * tile, tile * 0.16))
 		solids.add_child(lip)
+		if tex != null:
+			## Linea de sombra bajo el borde: separa «donde se pisa» del cuerpo del bloque.
+			var edge: Polygon2D = Polygon2D.new()
+			edge.color = Color(0.0, 0.0, 0.05, 0.3)
+			edge.polygon = _rect(Vector2(x0 * tile, (y + 0.16) * tile), Vector2(count * tile, tile * 0.05))
+			solids.add_child(edge)
 
 
 static func _add_coin(parent: Node2D, center: Vector2, tile: float, col: Color, art: Dictionary = {}) -> Area2D:

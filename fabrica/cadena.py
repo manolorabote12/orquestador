@@ -886,6 +886,14 @@ def fabricar(args: argparse.Namespace) -> dict:
 		capturas = sorted(str(p) for p in out.glob("*.png"))
 		cronometro("capturas", t)
 		evento("capturas", "ok" if capturas else "aviso", f"{len(capturas)} capturas" + ("" if capturas else ": " + salida.replace("\n", " / ")), rutas=capturas)
+	## 8b - Critica visual: la IA mira las capturas reales y pone nota. No frena la entrega; queda en el
+	## informe, en el progreso y en el aprendizaje (lo que se repite es lo siguiente que hay que arreglar).
+	critica_v = None
+	if capturas and not args.simulado and not args.arte_simulado:
+		from arte import critica
+		critica_v = critica.criticar(capturas, diseno["titulo"], str(diseno.get("genero", "")), gasto)
+		if critica_v:
+			evento("critica", "ok" if critica_v["nota"] >= 7 else "aviso", critica.resumen(critica_v), nota=critica_v["nota"])
 	ficha_zip = hacer_ficha(args, proyecto, capturas)
 	clip_mp4 = hacer_clip(args, proyecto)
 	marketing = None
@@ -904,6 +912,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 		"llamadas_ia": gasto.llamadas, "imagenes": inf_arte["generaciones"], "niveles_rehechos": sum(intentos.values()),
 		"tiempos_s": tiempos, "total_s": round(time.time() - t0, 1),
 		"validacion": {"niveles": val["niveles"], "interfaz": val["interfaz"], "arte": val["arte"]},
+		"critica_visual": critica_v,
 	})
 	(proyecto / "fabrica" / "informe.json").write_text(json.dumps(informe, indent=1, ensure_ascii=False), encoding="utf-8")
 	evento("fin", "ok", f"«{diseno['titulo']}» esta listo", total_s=informe["total_s"], usd=informe["coste_usd"]["total"])

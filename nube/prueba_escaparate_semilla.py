@@ -46,5 +46,8 @@ check("sin arte dibujado: diseno nuevo", s.diseno_con_arte([F(1, False)], I[1]) 
 check("arte de antes del arreglo: no se reusa", s.diseno_con_arte([F(1, True, "2026-11-11T10:00:00Z")], I[1]) is None)
 check("el de otra idea no vale", s.diseno_con_arte([F(2, True)], I[1]) is None)
 
+D = lambda pid, nota: {"status": "done", "project_id": pid, "progress": [{"paso": "critica", "estado": "aviso", "nota": nota}] if nota else []}  # noqa: E731
+check("nota visual por proyecto", s.notas_visuales([D("a", 4), D("b", 8), D("c", None)]) == {"a": 4, "b": 8})
+
 print("== %d fallos ==" % len(fallos))
 sys.exit(1 if fallos else 0)

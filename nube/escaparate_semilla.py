@@ -239,6 +239,21 @@ def cancelar() -> int:
 	return 0
 
 
+NOTA_MINIMA = 6
+
+
+def notas_visuales(js: list[dict]) -> dict[str, int]:
+	"""Pura: {project_id: nota de la critica visual} de los trabajos terminados que la tienen."""
+	notas: dict[str, int] = {}
+	for j in js:
+		if j["status"] != "done" or not j.get("project_id"):
+			continue
+		for p in j.get("progress") or []:
+			if isinstance(p, dict) and p.get("paso") == "critica" and isinstance(p.get("nota"), (int, float)):
+				notas[j["project_id"]] = int(p["nota"])
+	return notas
+
+
 def _subir(ruta: str, datos: bytes, tipo: str) -> None:
 	_req("POST", f"{base()}/storage/v1/object/escaparate/{ruta}", datos, {"Content-Type": tipo, "x-upsert": "true"})
 
@@ -254,9 +269,14 @@ def publicar() -> int:
 	ya = {e["project_id"] for e in (rest("GET", f"escaparate?select=project_id&user_id=eq.{u}") or [])}
 	proyectos = rest("GET", f"projects?select=id,title,spec,version,files&user_id=eq.{u}&created_at=gte.{PUBLICAR_DESDE}") or []
 	n = 0
+	notas = notas_visuales(trabajos(u))
 	for p in proyectos:
 		f = p.get("files") or {}
 		if p["id"] in ya or not f.get("web"):
+			continue
+		## Al Escaparate solo va lo que la critica visual aprueba (o lo que aun no tiene critica).
+		if notas.get(p["id"], 10) < NOTA_MINIMA:
+			print(f"::warning::{p['title']}: nota visual {notas[p['id']]}/10, no se publica en el Escaparate")
 			continue
 		try:
 			## Lo mismo que hace la funcion «escaparate» al compartir desde la app (supabase/functions/_shared/escaparate.ts).
@@ -343,7 +363,7 @@ def estado() -> int:
 			pasos = [p for p in (j.get("progress") or []) if isinstance(p, dict)]
 			print("::notice::En marcha: " + " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:60]}" for p in pasos[-8:])[:900])
 		if j["status"] == "done" and j is hechos_ult:
-			avisos = [p for p in (j.get("progress") or []) if isinstance(p, dict) and p.get("estado") == "aviso"]
+			avisos = [p for p in (j.get("progress") or []) if isinstance(p, dict) and (p.get("estado") == "aviso" or p.get("paso") == "critica")]
 			for p in avisos[-4:]:
 				print(f"::notice::Aviso del ultimo terminado: {p.get('paso')}: {str(p.get('mensaje') or '')[:800]}")
 		if j["status"] == "failed" and j.get("error") != "cancelado":

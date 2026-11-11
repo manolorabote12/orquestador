@@ -28,9 +28,13 @@ static func frames_de(entry: Dictionary) -> SpriteFrames:
 	return sf
 
 
-## 2 - Escala entera (pixel perfecto): la figura ocupa ~86% de su celda.
+## 2 - Escala entera (pixel perfecto): la figura ocupa ~86% de su celda. Si el arte es mas grande
+##     que su tamano en pantalla (celdas de 128 del arte no pixelado), se reduce con escala exacta.
 static func escala_entera(celda_alto: float, target_px: float) -> float:
-	return maxf(1.0, roundf(target_px / (celda_alto * 0.86)))
+	var k: float = target_px / (celda_alto * 0.86)
+	if k < 0.8:
+		return k
+	return maxf(1.0, roundf(k))
 
 
 ## 3 - Nodo animado listo para usar. Con pies=true el origen queda en los pies.
@@ -40,6 +44,9 @@ static func animado(entry: Dictionary, target_px: float, first: String, pies: bo
 	var celda: Array = entry.get("celda", [32, 32])
 	var k: float = escala_entera(float(celda[1]), target_px)
 	spr.scale = Vector2(k, k)
+	## Arte reducido: con suavizado (sin el, al encoger salen dientes de sierra).
+	if k < 1.0:
+		spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	spr.centered = true
 	if pies:
 		spr.position = Vector2(0.0, -float(celda[1]) * k * 0.5)

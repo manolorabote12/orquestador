@@ -361,7 +361,9 @@ def a_biblia(d: dict) -> dict:
 	"""6 - Diseno -> Biblia v1 (lo que necesita la cadena de arte)."""
 	fam = d["estilo"]["familia"]
 	pixel = fam == "pixel_art"
-	celda = 32 if pixel else 64
+	## Pixel art: celdas pequenas y pixel exacto. Todo lo demas (cartoon, pintado...) al doble de
+	## resolucion: a 64 px y sin suavizado los personajes salian borrosos y pixelados sin ser pixel art.
+	celda = 32 if pixel else 128
 	personajes = [{
 		"id": "heroe", "nombre": d["heroe"]["nombre"], "rol": "jugador",
 		"descripcion": d["heroe"]["descripcion"], "tamano": [celda, celda], "mira_a": "derecha",
