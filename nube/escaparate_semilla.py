@@ -237,7 +237,9 @@ def publicar() -> int:
 			continue
 		try:
 			## Lo mismo que hace la funcion «escaparate» al compartir desde la app (supabase/functions/_shared/escaparate.ts).
-			_subir(f"{p['id']}/index.pck", _bajar(f["web"]), "application/octet-stream")
+			pck = _bajar(f["web"])
+			print(f"  {p['title']}: paquete de {len(pck) / 1048576:.1f} MB")
+			_subir(f"{p['id']}/index.pck", pck, "application/octet-stream")
 			if f.get("icono"):
 				_subir(f"{p['id']}/icono.png", _bajar(f["icono"]), "image/png")
 			capturas = [c for c in (f.get("capturas") or []) if isinstance(c, str)]
