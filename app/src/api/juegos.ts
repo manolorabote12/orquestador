@@ -150,6 +150,10 @@ export interface ApiJuegos {
   encargar(idea: string, previaId?: string): Promise<{ job_id: string; credits: number }>;
   /** Vista previa gratis: la fábrica piensa solo el diseño (un minuto). Se sigue con seguir(job_id). */
   vistaPrevia(idea: string): Promise<{ job_id: string }>;
+  /** Guarda gratis el boceto de una vista previa en Mis juegos (borrador: se juega, sin APK). */
+  guardarBoceto(previaId: string): Promise<{ project_id: string }>;
+  /** Borra un boceto guardado (solo borradores). */
+  borrarBoceto(proyectoId: string): Promise<void>;
   trabajos(): Promise<Trabajo[]>;
   /** Avisa de cada cambio del trabajo hasta que termina. Devuelve la función para dejar de seguirlo. */
   seguir(id: string, cb: (t: Trabajo) => void): () => void;
@@ -194,6 +198,21 @@ export function supaJuegos(con: Conexion): ApiJuegos {
         throw new ErrorApp(msg);
       }
       return data as { job_id: string; credits: number };
+    },
+
+    async borrarBoceto(proyectoId: string) {
+      const { error } = await con.sb.rpc("borrar_boceto", { p_project: proyectoId });
+      if (error) throw new ErrorApp("No se pudo borrar el boceto.");
+    },
+
+    async guardarBoceto(previaId: string) {
+      const { data, error } = await con.sb.rpc("guardar_boceto", { p_preview: previaId });
+      if (error) {
+        throw new ErrorApp(error.message.includes("too_many_drafts")
+          ? "Ya tienes 3 bocetos guardados. Fabrica o borra uno para guardar otro."
+          : "No se pudo guardar el boceto. Pide otra vista previa (es gratis).");
+      }
+      return { project_id: data as string };
     },
 
     async vistaPrevia(idea: string) {

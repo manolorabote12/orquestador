@@ -399,6 +399,14 @@ export class Demo implements Backend {
     return 80;
   }
 
+  async borrarBoceto(_proyectoId: string): Promise<void> {
+    throw new ErrorApp("En la demostración no hay bocetos guardados.");
+  }
+
+  async guardarBoceto(_previaId: string): Promise<{ project_id: string }> {
+    throw new ErrorApp("En la demostración no se guardan bocetos.");
+  }
+
   async vistaPrevia(idea: string) {
     if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
     const limpia = idea.trim().replace(/^\[[^\]]*\]\s*/, "");

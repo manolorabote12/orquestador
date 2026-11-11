@@ -1599,6 +1599,51 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
     }
     if (!vivo) return;
     const volver = h("button", { class: "btn btn-line", onclick: () => void lista() }, svg(ICONOS.atras), "Mis juegos");
+    // Borrador (boceto guardado gratis): se juega con los dibujos provisionales y desde aquí se fabrica
+    // el juego completo. Sin taller, APK ni publicación hasta entonces.
+    const borrador = p.files as unknown as { borrador?: boolean; preview?: string; idea?: string } | null;
+    if (borrador?.borrador) {
+      const precio = await app.api.precioJuego().catch(() => 80);
+      const fabricarlo = h("button", { class: "btn btn-brass", style: "width:100%" }, "Fabricarlo con su arte, música y APK",
+        h("span", { class: "price" }, svg(ICONOS.tuerca), String(precio))) as HTMLButtonElement;
+      fabricarlo.disabled = !borrador.preview || !borrador.idea || precio > app.tuercas;
+      fabricarlo.addEventListener("click", async () => {
+        fabricarlo.disabled = true;
+        try {
+          const r = await app.api.encargar(borrador.idea!, borrador.preview);
+          app.ponerTuercas(r.credits);
+          aviso("¡En marcha! Sigue la fabricación en el taller");
+          app.ir("taller");
+        } catch (e) {
+          aviso(mensajeError(e, "No se pudo encargar el juego."));
+          fabricarlo.disabled = false;
+        }
+      });
+      const quitarBoceto = h("button", { class: "btn btn-line btn-small" }, "Borrar este boceto") as HTMLButtonElement;
+      let seguro = false;
+      quitarBoceto.addEventListener("click", async () => {
+        if (!seguro) { seguro = true; quitarBoceto.textContent = "Pulsa otra vez para borrarlo"; return; }
+        quitarBoceto.disabled = true;
+        try {
+          await app.api.borrarBoceto(p.id);
+          aviso("Boceto borrado");
+          void lista();
+        } catch (e) {
+          aviso(mensajeError(e, "No se pudo borrar el boceto."));
+          quitarBoceto.disabled = false;
+        }
+      });
+      raiz.replaceChildren(volver, h("section", { class: "sheet" },
+        h("div", { class: "detail-head" }, h("div", {}, h("h2", {}, p.titulo), h("span", { class: "pill" }, "boceto gratis"))),
+        h("div", { style: "height:14px" }),
+        h("button", { class: "btn btn-line", style: "width:100%", onclick: () => void jugar(p) }, svg(ICONOS.jugar), "Jugar el boceto"),
+        h("p", { class: "muted small", style: "margin:12px 0" },
+          "Es tu juego con los niveles de verdad y dibujos provisionales. Al fabricarlo, Chispa le dibuja sus personajes y fondos, le pone música y voz, y te deja el APK listo para Google Play."),
+        fabricarlo,
+        precio > app.tuercas ? h("p", { class: "muted small", style: "margin-top:8px" }, "Te faltan tuercas: consigue más en la pestaña Tuercas.") : "",
+        h("div", { style: "height:14px" }), quitarBoceto));
+      return;
+    }
     const galeria = h("div", { class: "gallery" });
     for (const c of p.files?.capturas ?? []) {
       const img = h("img", { alt: "Captura del juego", loading: "lazy" });

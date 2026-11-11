@@ -447,6 +447,19 @@ export function vistaTaller(app: App): VistaHecha {
         aviso(mensajeError(e, "No se pudo abrir el boceto."));
       }
     });
+    // Guardar gratis: el boceto pasa a Mis juegos como borrador (se juega; el arte y el APK, al fabricarlo).
+    const guardar = h("button", { class: "btn btn-line", type: "button" }, "Guardar gratis") as HTMLButtonElement;
+    guardar.addEventListener("click", async () => {
+      guardar.disabled = true;
+      try {
+        const r = await app.api.guardarBoceto(id);
+        aviso("Guardado en Mis juegos. Cuando quieras, lo fabricas con su arte");
+        app.ir("juegos", r.project_id);
+      } catch (e) {
+        aviso(mensajeError(e, "No se pudo guardar el boceto."));
+        guardar.disabled = false;
+      }
+    });
     previaCaja.replaceChildren(
       h("div", { class: "plantilla-cab" }, h("strong", {}, d.titulo ?? "Tu juego"), genero ? h("span", { class: "tag" }, genero) : ""),
       d.resumen ? h("p", {}, d.resumen) : "",
@@ -454,7 +467,7 @@ export function vistaTaller(app: App): VistaHecha {
       enemigos ? h("p", { class: "small" }, h("strong", {}, "Rivales: "), enemigos + (d.jefe?.nombre ? ` y el jefe final ${d.jefe.nombre}` : "")) : "",
       d.niveles?.length ? h("p", { class: "small" }, h("strong", {}, "Niveles: "), String(d.niveles.length)) : "",
       d.estilo?.descripcion ? h("p", { class: "muted small" }, "Estilo: " + d.estilo.descripcion) : "",
-      boceto ? h("div", { style: "margin:10px 0" }, probar) : "",
+      boceto ? h("div", { class: "btn-row", style: "margin:10px 0" }, probar, guardar) : "",
       h("p", { class: "muted small" }, boceto
         ? "Juega el boceto: son los niveles de verdad con dibujos provisionales. Al fabricarlo le pongo su arte, su música y su APK."
         : "Esto es lo que voy a fabricar. Si te gusta, adelante; si no, cambia la idea y pide otro (gratis)."),
