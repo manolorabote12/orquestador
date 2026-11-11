@@ -317,7 +317,10 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 			raise RuntimeError(f"Versiones desalineadas: proyecto v{mem['version']}, servidor v{trabajo.get('project_version')}")
 		comunes = dict(proyecto=str(proyecto), simulado=opciones.simulado, arte_simulado=opciones.arte_simulado,
 			comfy=opciones.comfy, crear=opciones.crear, editar=opciones.editar, lado=opciones.lado,
-			semilla=int(job.replace("-", "")[:6], 16) % 100000, slug="", apk=opciones.apk, capturas=opciones.capturas, web=opciones.web, ficha=opciones.ficha, clip=opciones.clip)
+			semilla=int(job.replace("-", "")[:6], 16) % 100000, slug="", apk=opciones.apk, capturas=opciones.capturas, web=opciones.web, ficha=opciones.ficha,
+			## Un cambio no vuelve a grabar el clip de redes (40 s de espera en cada cambio): la version
+			## nueva hereda el que ya tenia. Los videos nuevos se piden aparte (estudio de marketing).
+			clip=False)
 		if trabajo["kind"] == "game_restore":
 			inf = cambio.volver(argparse.Namespace(volver=int(detalle["version"]), **comunes))
 		elif trabajo["kind"] == "game_mod":
@@ -331,6 +334,8 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 			usd = float(inf.get("coste_usd", {}).get("total", 0.0))
 		carpeta = f"{usuario}/{trabajo['project_id']}/v{inf['version']}"
 		archivos = _subir_version(sb, carpeta, inf, proyecto, tmp)
+		if not archivos.get("clip") and archivos_previos.get("clip"):
+			archivos["clip"] = archivos_previos["clip"]
 		diseno = json.loads((proyecto / "fabrica" / "diseno.json").read_text(encoding="utf-8"))
 		sb.rpc("complete_change_job", p_job=job, p_cost_usd=max(usd, coste_real(llm.Gasto(), t0)), p_units=0, p_title=diseno["titulo"],
 			p_spec=diseno, p_files=archivos, p_version=inf["version"])
