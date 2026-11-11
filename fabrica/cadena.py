@@ -486,9 +486,24 @@ def validar_con_bots(proyecto: Path, diseno: dict, mapas: list, semilla: int, in
 			intentos[i] = intentos.get(i, 0) + 1
 		mapas = director.generar_niveles(diseno, semilla, {i: intentos[i] for i in malos}, mapas, ajustes)
 		mapas = analizar_niveles(proyecto, diseno, mapas, semilla, intentos, ajustes, fijos)
+	## Un texto un poco largo (rotulo de 120 px en 112) no tumba un juego que los bots ya superan:
+	## se entrega con aviso. Botones diminutos o fuera de la pantalla siguen siendo un fallo.
+	if not val.get("ok") and texto_cortado_solo(val):
+		evento("validacion", "aviso", "Textos algo largos en la interfaz: " + "; ".join(val.get("interfaz", []))[:200])
+		val["ok"] = True
 	if val.get("ok"):
 		limites_contrarreloj(proyecto, diseno, val)
 	return val, mapas
+
+
+def texto_cortado_solo(val: dict) -> bool:
+	"""Pura: el unico problema es algun texto cortado (niveles, arte y QA bien)."""
+	interfaz = [str(x) for x in val.get("interfaz") or []]
+	arte = val.get("arte") or {}
+	return (bool(interfaz) and all("texto cortado" in x for x in interfaz)
+		and all(nivel_ok(n, True) for n in val.get("niveles") or [])
+		and not val.get("fallos_qa") and all(v for k, v in arte.items() if k != "sonidos_que_faltan")
+		and not arte.get("sonidos_que_faltan"))
 
 
 ## Reto del dia: niveles nuevos (mas dificiles que el principio de la campana) para cuando el

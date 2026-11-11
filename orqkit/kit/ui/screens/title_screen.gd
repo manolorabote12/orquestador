@@ -480,9 +480,16 @@ func _side_button(parent: VBoxContainer, node_name: String, label: String, icon:
 	var l: Label = Label.new()
 	l.text = label
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	l.add_theme_font_size_override("font_size", 22)
+	## Textos largos (idiomas, nombres del juego): la letra baja hasta que cabe y, si aun asi no,
+	## puntos suspensivos. Antes un rotulo de 120 px en 112 tumbaba el juego entero en la validacion.
+	var fs: int = 22
+	var fnt: Font = l.get_theme_font("font")
+	while fs > 15 and fnt != null and fnt.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 108.0:
+		fs -= 1
+	l.add_theme_font_size_override("font_size", fs)
 	l.custom_minimum_size = Vector2(112, 0)
 	l.clip_text = true
+	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	box.add_child(l)
 	_side.append(box)
