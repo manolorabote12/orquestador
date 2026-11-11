@@ -257,6 +257,26 @@ def publicar() -> int:
 	return 0
 
 
+def capturas(carpeta: str = "capturas_muestra") -> int:
+	"""Baja capturas, icono y clip de los juegos de muestra terminados (para mirarlos sin instalar nada)."""
+	from pathlib import Path
+	u = cuenta()
+	if not u:
+		return 0
+	for p in rest("GET", f"projects?select=id,title,files&user_id=eq.{u}&order=created_at") or []:
+		f = p.get("files") or {}
+		d = Path(carpeta) / "".join(c if c.isalnum() else "_" for c in p["title"])[:40]
+		d.mkdir(parents=True, exist_ok=True)
+		rutas = [c for c in (f.get("capturas") or []) if isinstance(c, str)] + [f[k] for k in ("icono", "clip", "informe") if f.get(k)]
+		for r in rutas:
+			try:
+				(d / r.split("/")[-1]).write_bytes(_bajar(r))
+			except (urllib.error.URLError, OSError, ValueError) as e:
+				print(f"::warning::{p['title']}: {r}: {str(e)[:120]}")
+		print(f"::notice::{p['title']}: {len(rutas)} archivos")
+	return 0
+
+
 def estado() -> int:
 	u = cuenta()
 	if not u:
@@ -292,6 +312,8 @@ def main(args: list[str]) -> int:
 		return seguir()
 	if accion == "cancelar":
 		return cancelar()
+	if accion == "capturas":
+		return capturas()
 	return estado()
 
 
