@@ -104,7 +104,7 @@ def saldo_runpod() -> float | None:
 
 
 def trabajos(u: str) -> list[dict]:
-	return rest("GET", f"jobs?select=id,status,detail,project_id,error&user_id=eq.{u}&kind=eq.game&order=created_at") or []
+	return rest("GET", f"jobs?select=id,status,detail,project_id,error,progress&user_id=eq.{u}&kind=eq.game&order=created_at") or []
 
 
 def cuantos_caben(pedidos: int, saldo: float | None, reserva: float) -> int:
@@ -199,7 +199,9 @@ def estado() -> int:
 	print(f"::notice::Escaparate de muestra: {cuenta_estados} | publicados {len(pub)}")
 	for j in js:
 		if j["status"] == "failed":
-			print(f"::warning::Fallo «{str((j.get('detail') or {}).get('idea'))[:60]}»: {str(j.get('error'))[:120]}")
+			pasos = j.get("progress") or []
+			ultimos = " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:70]}" for p in pasos[-6:] if isinstance(p, dict))
+			print(f"::warning::Fallo «{str((j.get('detail') or {}).get('idea'))[:60]}»: {str(j.get('error'))[:120]} || {ultimos[:700]}")
 	return 0
 
 
