@@ -349,6 +349,35 @@ def publicar() -> int:
 	return 0
 
 
+def rescatar_capturas(carpeta: str = "rescate") -> int:
+	"""Juegos de muestra que salieron sin capturas (pantalla virtual rota en algunas maquinas, 12 nov):
+	las capturas hechas despues fuera de RunPod (rama «rescate», una carpeta por titulo) se suben a su
+	juego y se publica lo que toque. Sin GPU: no gasta RunPod."""
+	from pathlib import Path
+	u = cuenta()
+	if not u:
+		return 0
+	raiz = Path(carpeta)
+	for p in rest("GET", f"projects?select=id,title,files&user_id=eq.{u}") or []:
+		f = p.get("files") or {}
+		if [c for c in (f.get("capturas") or []) if isinstance(c, str)]:
+			continue
+		d = raiz / "".join(c if c.isalnum() else "_" for c in p["title"])[:40]
+		pngs = sorted(d.glob("*.png")) if d.is_dir() else []
+		base_ruta = str(f.get("icono") or f.get("web") or "").rsplit("/", 1)[0]
+		if not pngs or not base_ruta:
+			continue
+		rutas = []
+		for png in pngs:
+			ruta = f"{base_ruta}/capturas/{png.name}"
+			_req("POST", f"{base()}/storage/v1/object/juegos/{ruta}", png.read_bytes(), {"Content-Type": "image/png", "x-upsert": "true"})
+			rutas.append(ruta)
+		f["capturas"] = rutas
+		rest("PATCH", f"projects?id=eq.{p['id']}", {"files": f}, {"Prefer": "return=minimal"})
+		print(f"::notice::{p['title']}: {len(rutas)} capturas rescatadas")
+	return publicar()
+
+
 def capturas(carpeta: str = "capturas_muestra") -> int:
 	"""Baja capturas, icono y clip de los juegos de muestra terminados (para mirarlos sin instalar nada)."""
 	from pathlib import Path
@@ -441,6 +470,8 @@ def main(args: list[str]) -> int:
 		return cancelar()
 	if accion == "capturas":
 		return capturas()
+	if accion == "rescatar_capturas":
+		return rescatar_capturas()
 	if accion == "retirar":
 		cancelar()
 		return retirar()

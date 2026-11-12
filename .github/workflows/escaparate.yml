@@ -17,7 +17,7 @@ on:
       accion:
         description: "estado, encargar, seguir o cancelar"
         type: choice
-        options: [estado, encargar, encargar_idea, seguir, cancelar, capturas, retirar, retirar_viejos]
+        options: [estado, encargar, encargar_idea, seguir, rescatar_capturas, cancelar, capturas, retirar, retirar_viejos]
         default: estado
       cantidad:
         description: "Cuantos juegos encargar (maximo 25)"
@@ -43,6 +43,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           sparse-checkout: nube
+      - name: Capturas rescatadas (rama rescate)
+        if: inputs.accion == 'rescatar_capturas'
+        uses: actions/checkout@v4
+        with:
+          ref: rescate
+          path: rescate
       - name: Escaparate de muestra
         env:
           ACCION: ${{ inputs.accion }}
