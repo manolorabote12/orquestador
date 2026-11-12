@@ -146,6 +146,8 @@ jobs:
           GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           ORQ_RUNPOD_DC: ${{ vars.ORQ_RUNPOD_DC }}
+          ORQ_VOLUMEN_NOMBRE: ${{ vars.ORQ_VOLUMEN_NOMBRE }}
+          ORQ_VOLUMEN_GB: ${{ vars.ORQ_VOLUMEN_GB }}
           ORQ_WEB: ${{ vars.ORQ_WEB }}
           ORQ_GPU: ${{ vars.ORQ_GPU }}
           ORQ_GPU_USD_HORA: ${{ vars.ORQ_GPU_USD_HORA }}

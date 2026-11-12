@@ -108,6 +108,18 @@ def asegurar(ruta: str, nombre: str, datos: dict, actualizar: bool = True) -> tu
 	return {**ya, **cambios}, "actualizado"
 
 
+def borrar_volumenes_viejos(actual: str) -> list[str]:
+	borrados = []
+	for v in lista("/networkvolumes"):
+		if str(v.get("name", "")).startswith("orq-modelos") and v.get("id") != actual:
+			try:
+				pedir("DELETE", f"{REST}/networkvolumes/{v['id']}")
+				borrados.append(f"{v['name']} ({v.get('size')} GB)")
+			except ErrorRunPod as e:
+				borrados.append(f"{v['name']}: no se pudo borrar ({str(e)[:120]})")
+	return borrados
+
+
 def entorno(nombres: list[str]) -> dict:
 	return {k: os.environ[k] for k in nombres if os.environ.get(k)}
 
@@ -129,9 +141,16 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		auth_id = auth["id"]
 		informe["registro"] = estado
 
-	vol, estado = asegurar("/networkvolumes", "orq-modelos", {"size": int((os.environ.get("ORQ_VOLUMEN_GB") or "100")),
+	## Volumen de modelos: se paga por GB al mes. RunPod no deja encogerlo, asi que para cambiar de tamano
+	## se crea otro con otro nombre (variable ORQ_VOLUMEN_NOMBRE, p. ej. orq-modelos-65), se bajan los
+	## modelos y despues se borran los viejos (12 nov: de 100 GB a 65; los modelos ocupan unos 58).
+	nombre_vol = os.environ.get("ORQ_VOLUMEN_NOMBRE") or "orq-modelos"
+	vol, estado = asegurar("/networkvolumes", nombre_vol, {"size": int((os.environ.get("ORQ_VOLUMEN_GB") or "100")),
 		"dataCenterId": dc}, actualizar=False)
-	informe["volumen"] = {"id": vol["id"], "estado": estado}
+	informe["volumen"] = {"id": vol["id"], "nombre": nombre_vol, "estado": estado}
+	if estado == "creado":
+		## Volumen nuevo y vacio: hay que bajar los modelos si o si.
+		modelos = True
 
 	base_tpl = {"isServerless": True, "volumeInGb": 0, **({"containerRegistryAuthId": auth_id} if auth_id else {})}
 	tpl_gpu, estado = asegurar("/templates", "orq-imagenes", {**base_tpl, "imageName": imagen_gpu,
@@ -170,6 +189,9 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		informe["modelos"] = ejecutar(ep_gpu["id"], {"tarea": "descargar_modelos"}, espera_modelos_s)
 		if ep_voz:
 			informe["modelos_voz"] = ejecutar(ep_voz["id"], {"tarea": "descargar_modelos"}, espera_modelos_s)
+		## Con los modelos ya en el volumen actual y los endpoints apuntando a el: fuera los volumenes
+		## de modelos antiguos (cada GB se paga cada mes aunque no se use).
+		informe["volumenes_borrados"] = borrar_volumenes_viejos(vol["id"])
 	if motor:
 		try:
 			informe["motor"] = ejecutar(ep_cpu["id"], {"tarea": "motor"}, 1800)
