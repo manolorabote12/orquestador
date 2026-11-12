@@ -33,7 +33,7 @@ CLAVE_OBJETIVO = "semilla_objetivo"
 ## Los juegos de antes del arreglo del arte (11 nov, sprites con escenario dentro) no se publican.
 PUBLICAR_DESDE = "2026-11-11T16:11:00Z"
 ## Los fallos de antes de este momento ya tienen su causa arreglada: no cuentan para dejar de intentarlo.
-FALLOS_DESDE = "2026-11-11T18:01:37Z"
+FALLOS_DESDE = "2026-11-12T07:51:03Z"
 INTENTOS_IDEA = 2
 
 # Ideas variadas (genero, estilo y publico) en el orden en que se encargan: con pocas ya hay de todo.
