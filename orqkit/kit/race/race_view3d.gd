@@ -281,6 +281,41 @@ func _build_city(root: Node3D, rng: RandomNumberGenerator, row: float, half: flo
 # ------------------------------------------------------------------ coches y objetos
 
 ## Coche low-poly: carroceria, cabina de cristal, 4 ruedas y aleron.
+## Corredor dibujado: el sprite animado mirando siempre a la camara, con sombra en el suelo.
+static func rider3d(entry: Dictionary, height_m: float) -> Node3D:
+	var n: Node3D = Node3D.new()
+	var spr: AnimatedSprite3D = AnimatedSprite3D.new()
+	spr.name = "Rider"
+	spr.sprite_frames = SpriteKit.frames_de(entry)
+	var celda: Array = entry.get("celda", [32, 32])
+	spr.pixel_size = height_m / maxf(1.0, float(celda[1]))
+	spr.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
+	spr.alpha_cut = SpriteBase3D.ALPHA_CUT_OPAQUE_PREPASS
+	spr.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	spr.shaded = false
+	spr.position = Vector3(0, height_m * 0.5, 0)
+	for a: String in ["run", "walk", "idle"]:
+		if spr.sprite_frames.has_animation(a):
+			spr.play(a)
+			break
+	n.add_child(spr)
+	var sh: MeshInstance3D = MeshInstance3D.new()
+	var cm: CylinderMesh = CylinderMesh.new()
+	cm.top_radius = height_m * 0.38
+	cm.bottom_radius = height_m * 0.38
+	cm.height = 0.02
+	var sm: StandardMaterial3D = StandardMaterial3D.new()
+	sm.albedo_color = Color(0, 0, 0, 0.35)
+	sm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	sm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	cm.material = sm
+	sh.mesh = cm
+	sh.position = Vector3(0, 0.03, 0)
+	sh.scale = Vector3(1.0, 1.0, 0.6)
+	n.add_child(sh)
+	return n
+
+
 static func make_car3d(col: Color, player_car: bool) -> Node3D:
 	var n: Node3D = Node3D.new()
 	var body: MeshInstance3D = MeshInstance3D.new()
@@ -415,20 +450,36 @@ func rebuild() -> void:
 	var colors: Array = (game.get_script() as Script).get_script_constant_map()["RIVAL_COLORS"]
 	var names: Array = Kit.param("texts.rivals", ["Rojo", "Azul", "Verde"])
 	var rivals: Array = game.get("rivals")
+	## Corredores con el arte del juego (caracoles, ranas, naves...): sin arte, coches.
+	var rival_art: Array[Dictionary] = []
+	for role: String in ["walker", "flyer", "spiky"]:
+		var e: Dictionary = Kit.sprite_entry(str(Kit.param("art.enemies." + role, "")))
+		if not e.is_empty():
+			rival_art.append(e)
 	for k: int in rivals.size():
-		var car: Node3D = make_car3d(colors[k % colors.size()], false)
+		var car: Node3D
+		if not rival_art.is_empty():
+			car = rider3d(rival_art[k % rival_art.size()], 2.2)
+		elif not Kit.sprite_by_role("jugador").is_empty():
+			## Sin arte de rivales: el mismo corredor del jugador teñido de otro color (todos del mismo mundo).
+			car = rider3d(Kit.sprite_by_role("jugador"), 2.2)
+			(car.get_node("Rider") as AnimatedSprite3D).modulate = Color.WHITE.lerp(colors[k % colors.size()], 0.55)
+		else:
+			car = make_car3d(colors[k % colors.size()], false)
 		var tag: Label3D = Label3D.new()
 		tag.text = str(names[k % names.size()])
 		tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
-		tag.font_size = 56
-		tag.pixel_size = 0.007
-		tag.outline_size = 14
-		tag.position = Vector3(0, 1.9, 0)
+		## Nombre pequeño encima (antes tapaba media pantalla al pasar cerca).
+		tag.font_size = 40
+		tag.pixel_size = 0.006
+		tag.outline_size = 12
+		tag.position = Vector3(0, 2.7 if car.get_node_or_null("Rider") != null else 1.9, 0)
 		tag.no_depth_test = false
 		car.add_child(tag)
 		add_child(car)
 		_rivals.append(car)
-	_car = make_car3d(Skins.recolor(Kit.color("accent", Color.ORANGE)), true)
+	var hero: Dictionary = Kit.sprite_by_role("jugador")
+	_car = rider3d(hero, 2.3) if not hero.is_empty() else make_car3d(Skins.recolor(Kit.color("accent", Color.ORANGE)), true)
 	add_child(_car)
 	_last_crashes = int(game.get("crashes"))
 	_cam_x = pos(float(game.get("d")), float(game.get("lat"))).x

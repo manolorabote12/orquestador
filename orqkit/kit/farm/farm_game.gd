@@ -46,6 +46,10 @@ var _hud_t: float = 0.0
 var _sig: String = ""
 var _pops: Array[Dictionary] = []
 var _flies: Array[Vector2] = []
+## El granjero (dibujo del protagonista) camina hasta donde tocas: la granja deja de ser un tablero vacio.
+var _farmer: Node2D
+var _farmer_spr: Node2D
+var _farmer_to: Vector2 = Vector2.INF
 
 
 ## Icono de un producto dibujado con formas (lo usan el mundo y los botones).
@@ -156,8 +160,61 @@ func _ready() -> void:
 	_build_hud()
 	_reset()
 	_fit_camera()
+	_build_farmer()
 	Audio.play_track("nivel")
 	QA.log_event("level_start", {"level": Kit.level_index, "genre": "farm", "goal": st["goal"]})
+
+
+func _build_farmer() -> void:
+	var art: Dictionary = Kit.sprite_by_role("jugador")
+	if art.is_empty() or rows.is_empty():
+		return
+	_farmer = Node2D.new()
+	_farmer.name = "Farmer"
+	_farmer.z_index = 5
+	_farmer_spr = SpriteKit.animado(art, CELL * 1.25, "idle", false)
+	_farmer.add_child(_farmer_spr)
+	_world.add_child(_farmer)
+	## Empieza junto a la primera casa (o en el centro).
+	var start: Vector2 = Vector2(float(rows[0].length()), float(rows.size())) * CELL * 0.5
+	for y: int in rows.size():
+		var x: int = rows[y].find("h")
+		if x >= 0:
+			start = _center(Vector2i(x, y)) + Vector2(0, CELL * 0.4)
+			break
+	_farmer.position = start
+
+
+## Va hacia la casilla tocada y se queda a su lado.
+func _walk_to(c: Vector2i) -> void:
+	if _farmer == null:
+		return
+	_farmer_to = _center(c) + Vector2(-CELL * 0.45, CELL * 0.25)
+
+
+func _move_farmer(delta: float) -> void:
+	if _farmer == null:
+		return
+	if _farmer_to == Vector2.INF or fast:
+		_farmer_spr.position.y = 0.0
+		return
+	var d: Vector2 = _farmer_to - _farmer.position
+	if d.length() < 4.0:
+		_farmer_to = Vector2.INF
+		_farmer_spr.position.y = 0.0
+		_play_anim("idle")
+		return
+	_farmer.position += d.normalized() * minf(d.length(), 520.0 * delta)
+	if absf(d.x) > 2.0 and _farmer_spr is AnimatedSprite2D:
+		(_farmer_spr as AnimatedSprite2D).flip_h = d.x < 0.0
+	_farmer_spr.position.y = -absf(sin(time_in_level * 14.0)) * 6.0
+	_play_anim("run")
+
+
+func _play_anim(n: String) -> void:
+	var a: AnimatedSprite2D = _farmer_spr as AnimatedSprite2D
+	if a != null and a.sprite_frames != null and a.sprite_frames.has_animation(n) and a.animation != n:
+		a.play(n)
 
 
 func bot_script() -> String:
@@ -188,7 +245,7 @@ func _fit_camera() -> void:
 	var mw: float = float(rows[0].length()) * CELL if not rows.is_empty() else 600.0
 	var mh: float = float(rows.size()) * CELL
 	var room_h: float = vp.y - 560.0
-	var z: float = minf(vp.x * 0.96 / mw, room_h / mh)
+	var z: float = minf(vp.x * 0.9 / mw, room_h / mh)
 	_camera.zoom = Vector2.ONE * z
 	## El mapa queda entre la barra de arriba (~130 px) y el tablon de abajo (~430 px).
 	_camera.position = Vector2(mw * 0.5, mh * 0.5 + (430.0 - 130.0) * 0.5 / z)
@@ -501,6 +558,7 @@ func make(mi: int, item: String) -> void:
 func tap_cell(c: Vector2i) -> void:
 	if not can_act():
 		return
+	_walk_to(c)
 	for i: int in (st["plots"] as Array).size():
 		var p: Dictionary = st["plots"][i]
 		if p["cell"] != c:
@@ -511,10 +569,13 @@ func tap_cell(c: Vector2i) -> void:
 			_pops.append({"item": crop, "at": _center(c), "t": 1.0, "n": MapRules.HARVEST})
 			if not fast:
 				Audio.play("coin", 0.15, -8.0)
+				Juice.burst(_world, _center(c), Color("#8bc34a"), 12, 240.0)
+				Juice.sparkle(_world, _center(c), Color(1.0, 0.9, 0.45), 6)
 		elif str(p["crop"]) == "":
 			if MapRules.plant(st, i, seed_pick):
 				if not fast:
 					Audio.play("click", 0.1, -8.0)
+					Juice.dust(_world, _center(c) + Vector2(0, CELL * 0.3), Color("#a1785a"), 7)
 			else:
 				_toast_now(Kit.text("farm_no_coins", "No tienes monedas para esa semilla"))
 		else:
@@ -576,6 +637,7 @@ func _physics_process(delta: float) -> void:
 	for k: int in steps:
 		MapRules.step(st, dt)
 	time_in_level = float(st["time"])
+	_move_farmer(delta)
 	_check_win()
 	var keep: Array[Dictionary] = []
 	for p: Dictionary in _pops:
@@ -732,6 +794,25 @@ func _draw_world() -> void:
 		var pp: Vector2 = (p["at"] as Vector2) + Vector2(0, -40.0 - (1.0 - float(p["t"])) * 50.0)
 		ItemIcon.draw_item(_world, str(p["item"]), pp, 36.0)
 		_text(pp + Vector2(30, 8), "+%d" % int(p["n"]), 24, Color("#fff3c0"))
+	## Valla de madera alrededor de la granja: marca el terreno de juego.
+	var wood: Color = Color("#8d5a32")
+	var fr: Rect2 = Rect2(Vector2(-10, -10), Vector2(w, h) * CELL + Vector2(20, 20))
+	for k: int in 2:
+		var off: float = 8.0 + 14.0 * float(k)
+		_world.draw_rect(Rect2(fr.position + Vector2(0, off - 14.0), fr.size), wood.darkened(0.1 * float(k)), false, 5.0)
+	var step: float = CELL * 0.5
+	var n: int = int(fr.size.x / step)
+	for i: int in n + 1:
+		for yy: float in [fr.position.y, fr.end.y]:
+			var pp: Vector2 = Vector2(fr.position.x + float(i) * fr.size.x / float(n), yy)
+			_world.draw_rect(Rect2(pp + Vector2(-5, -18), Vector2(10, 26)), wood.darkened(0.25))
+			_world.draw_rect(Rect2(pp + Vector2(-5, -18), Vector2(10, 5)), wood.lightened(0.2))
+	var nv: int = int(fr.size.y / step)
+	for i: int in nv + 1:
+		for xx: float in [fr.position.x, fr.end.x]:
+			var pq: Vector2 = Vector2(xx, fr.position.y + float(i) * fr.size.y / float(nv))
+			_world.draw_rect(Rect2(pq + Vector2(-5, -18), Vector2(10, 26)), wood.darkened(0.25))
+			_world.draw_rect(Rect2(pq + Vector2(-5, -18), Vector2(10, 5)), wood.lightened(0.2))
 	## Luz de la tarde que va y viene (ambiente).
 	var warm: float = (sin(t * TAU / 240.0) + 1.0) * 0.5
 	_world.draw_rect(Rect2(Vector2(-CELL, -CELL), Vector2(w + 2, h + 2) * CELL), Color(1.0, 0.7, 0.4, 0.08 * warm))

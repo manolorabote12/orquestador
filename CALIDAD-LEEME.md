@@ -47,6 +47,8 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Naves: héroe de 25 px y fondo vacío (crítica 5/10) | Nave dibujada a 96 px y cielo con solo estrellas | Nave a 132 px, enemigos un 25 % más grandes, nebulosas suaves y un planeta lejano; chispas en cada impacto, «+puntos» flotantes, explosión grande del jefe, la nave se ladea al moverse |
 | Tuberías: tablero gris plano, sin protagonista ni pistas de qué falla | Tubos dibujados como rayas grises | Tubos de metal con brillo y bridas, agua que corre con burbujas, gotas en cada fuga, grifo que gira, marco con tornillos, el protagonista celebra cada tramo lleno, confeti al ganar |
 | Juegos del servidor sin capturas ni crítica («X11 Display is not available») | xvfb-run fallaba en silencio | La pantalla virtual se arranca a mano, se espera a que esté lista y, si no arranca, el aviso dice por qué |
+| Carreras de caracoles con coches en una ciudad | Las carreras 3D dibujaban siempre coches de cajas | El jugador y los rivales son el arte del juego (de pie, mirando a la cámara, con sombra); si no hay arte de rivales, el mismo corredor teñido de otro color. Nombres de rivales más pequeños |
+| Granja: tablero vacío sin granjero, cortado por los lados | Solo se dibujaban parcelas y casas | El granjero (arte del protagonista) camina hasta donde tocas; valla de madera alrededor; hojas y brillo al cosechar, polvo al plantar; margen a los lados |
 
 ## Reglas para no repetirlo
 
