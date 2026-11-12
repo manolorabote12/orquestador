@@ -179,7 +179,7 @@ func _build_player() -> void:
 	_world.add_child(player)
 	var art: Dictionary = Kit.sprite_by_role("jugador")
 	if not art.is_empty():
-		player_sprite = SpriteKit.animado(art, 72.0, "idle", false)
+		player_sprite = SpriteKit.animado(art, 96.0, "idle", false)  ## 12 nov: a 72 px y zoom 0.8 el heroe media 58 px en el movil
 		player.add_child(player_sprite)
 		Skins.apply(player_sprite)
 	else:
@@ -199,7 +199,7 @@ func _build_player() -> void:
 func _build_camera() -> void:
 	camera = Camera2D.new()
 	camera.name = "Camera"
-	camera.zoom = Vector2(0.8, 0.8)
+	camera.zoom = Vector2(0.95, 0.95)
 	camera.limit_left = int(-TILE)
 	camera.limit_top = int(-TILE * 3.0)
 	camera.limit_right = int(arena.x + TILE)

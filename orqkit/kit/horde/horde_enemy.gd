@@ -6,10 +6,10 @@ extends Node2D
 ## 2 - boss: grande, mucha vida y embiste cada pocos segundos (se para y avisa antes).
 
 const STATS: Dictionary = {
-	"walker": {"speed": 95.0, "hp": 2.0, "damage": 1, "radius": 26.0, "size": 64.0, "xp": 1},
-	"spiky": {"speed": 62.0, "hp": 7.0, "damage": 2, "radius": 30.0, "size": 72.0, "xp": 3},
-	"flyer": {"speed": 150.0, "hp": 1.5, "damage": 1, "radius": 22.0, "size": 56.0, "xp": 1},
-	"boss": {"speed": 82.0, "hp": 70.0, "damage": 2, "radius": 64.0, "size": 150.0, "xp": 30},
+	"walker": {"speed": 95.0, "hp": 2.0, "damage": 1, "radius": 26.0, "size": 80.0, "xp": 1},
+	"spiky": {"speed": 62.0, "hp": 7.0, "damage": 2, "radius": 30.0, "size": 90.0, "xp": 3},
+	"flyer": {"speed": 150.0, "hp": 1.5, "damage": 1, "radius": 22.0, "size": 70.0, "xp": 1},
+	"boss": {"speed": 82.0, "hp": 70.0, "damage": 2, "radius": 64.0, "size": 180.0, "xp": 30},
 }
 
 var kind: String = "walker"

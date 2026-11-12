@@ -53,6 +53,9 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Granja con menús flojos | Monedas, pedidos y máquinas sin estilo propio | Placas y paneles de madera, barra de progreso de pedidos, recetas ingredientes → producto |
 | Cada juego ocupaba ~100 MB en Supabase | Voces en WAV (6 MB), la carpeta fabrica/ (capturas, portada) dentro del .pck y del APK, capturas y clip repetidos dentro del zip | Voces en OGG mono, fabrica/ fuera de la exportación, el zip sin lo que ya se sube aparte (~20 MB menos por versión); caché de 30 días en el Escaparate y de 1 año en el motor (menos tráfico) |
 | GitHub Actions bloqueado por minutos agotados | Reloj cada 15 min (~2.900 min/mes) y un despliegue por cada cambio pequeño | Reloj cada 30 min; los cambios se juntan en un solo despliegue |
+| Héroe que crece y encoge en reposo («Caballerito de Nubes») | La IA dibuja cada frame a un tamaño distinto y se escalaban todos igual | Cada frame se ajusta al alto de la ficha del personaje |
+| Hordas y corredor con héroe diminuto | Cámara alejada (0,8 en hordas) y dibujos pequeños | Hordas: cámara a 0,95 y dibujos un 25-33 % más grandes; corredor: cámara a 1,2 y menos cielo |
+| Granjero robot sin capturas | Xvfb con +extension GLX se caía al arrancar (Segmentation fault) | Primero Xvfb sin extras, luego con ellas, al final xvfb-run |
 
 ## Reglas para no repetirlo
 

@@ -187,6 +187,10 @@ func _build_camera() -> void:
 	## El volador y el corredor no: necesitan ver todo el hueco y lo que viene.
 	if not flyer_mode and not runner:
 		camera.zoom = Vector2(1.5, 1.5)
+	elif runner:
+		## Corredor: algo mas cerca tambien (heroe diminuto y media pantalla de cielo, 12 nov); sigue
+		## viendo de sobra lo que viene porque la camara va adelantada.
+		camera.zoom = Vector2(1.2, 1.2)
 	add_child(camera)
 	camera.make_current()
 	Juice.register_camera(camera)
@@ -377,7 +381,7 @@ func _physics_process(delta: float) -> void:
 	var ahead: Vector2 = Vector2(player.facing * tile * 1.6 + player.velocity.x * 0.12, tile * 0.6)
 	if runner:
 		## 9 - Runner: la camara deja mucho sitio delante para ver lo que viene.
-		ahead = Vector2(tile * 3.2, -tile * 1.2)
+		ahead = Vector2(tile * 3.2, tile * 0.3)
 		_update_run(delta)
 	if flyer_mode:
 		## 11 - Volador: altura de camara fija (se ve todo el hueco) y techo invisible arriba.
