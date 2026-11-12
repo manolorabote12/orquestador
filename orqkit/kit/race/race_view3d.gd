@@ -481,6 +481,7 @@ func rebuild() -> void:
 		else:
 			car = make_car3d(colors[k % colors.size()], false)
 		var tag: Label3D = Label3D.new()
+		tag.name = "Tag"
 		tag.text = str(names[k % names.size()])
 		tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		## Nombre pequeño encima (antes tapaba media pantalla al pasar cerca).
@@ -520,11 +521,23 @@ func sync() -> void:
 	_car.rotate_object_local(Vector3.UP, -steer * 0.12)
 	_car.rotate_object_local(Vector3.FORWARD, steer * 0.05)
 	var rivals: Array = game.get("rivals")
+	## Solo el nombre del rival mas cercano (y si esta cerca): los nombres de tamano fijo de los que van
+	## lejos se montaban unos encima de otros («DrPinZumbador», 13 nov).
+	var best: int = -1
+	var best_gap: float = VIEW_AHEAD / SZ * 0.3
 	for k: int in mini(rivals.size(), _rivals.size()):
 		var r: Dictionary = rivals[k]
 		var rd: float = float(r["d"])
 		_rivals[k].position = pos(rd, float(r["lat"]))
 		_rivals[k].look_at(pos(rd + 60.0, float(r["lat"])), Vector3.UP)
+		var gap: float = absf(rd - d)
+		if gap < best_gap:
+			best_gap = gap
+			best = k
+	for k: int in _rivals.size():
+		var tag: Node = _rivals[k].get_node_or_null("Tag")
+		if tag != null:
+			(tag as Label3D).visible = k == best
 	var items: Array = game.get("items")
 	for k: int in mini(items.size(), _items.size()):
 		var it: Dictionary = items[k]
