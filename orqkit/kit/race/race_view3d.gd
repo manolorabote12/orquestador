@@ -453,7 +453,9 @@ func rebuild() -> void:
 	## Corredores con el arte del juego (caracoles, ranas, naves...): sin arte, coches.
 	var rival_art: Array[Dictionary] = []
 	for role: String in ["walker", "flyer", "spiky"]:
-		var e: Dictionary = Kit.sprite_entry(str(Kit.param("art.enemies." + role, "")))
+		var e: Dictionary = Kit.sprite_entry("rival_" + role)
+		if e.is_empty():
+			e = Kit.sprite_entry(str(Kit.param("art.enemies." + role, "")))
 		if not e.is_empty():
 			rival_art.append(e)
 	for k: int in rivals.size():

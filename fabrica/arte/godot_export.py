@@ -74,10 +74,9 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 		destino.write_bytes(Path(origen).read_bytes())
 		manifest.setdefault("musica", {})[nombre] = f"res://assets/musica/{nombre}{ext}"
 	for evento, origen in (voces or {}).items():
-		destino = base / "voces" / f"{evento}.wav"
-		destino.parent.mkdir(parents=True, exist_ok=True)
-		destino.write_bytes(Path(origen).read_bytes())
-		manifest.setdefault("voces", {})[evento] = f"res://assets/voces/{evento}.wav"
+		## OGG mono: el WAV pesaba 10 veces mas (6,3 MB de voces en un juego del 12 nov, mas que todo el arte).
+		destino = _voz_ogg(Path(origen), base / "voces", evento)
+		manifest.setdefault("voces", {})[evento] = f"res://assets/voces/{destino.name}"
 	if isinstance((fondos or {}).get("vertical"), (str, Path)):
 		## JPG: el fondo pesa 5 veces menos que en PNG y no necesita transparencia.
 		destino = base / "ui" / "fondo_titulo.jpg"
@@ -111,3 +110,25 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 	ruta_m = base / "manifest.json"
 	ruta_m.write_text(json.dumps(manifest, indent=1, ensure_ascii=False), encoding="utf-8")
 	return ruta_m
+
+
+def _voz_ogg(origen: Path, carpeta: Path, evento: str) -> Path:
+	"""Guarda la voz en OGG Vorbis mono (o en WAV si no hay ffmpeg); borra la del otro formato."""
+	import subprocess
+	carpeta.mkdir(parents=True, exist_ok=True)
+	ff = shutil.which("ffmpeg")
+	destino = carpeta / f"{evento}.ogg"
+	if ff:
+		r = subprocess.run([ff, "-hide_banner", "-loglevel", "error", "-y", "-i", str(origen), "-ac", "1", "-ar", "32000",
+			"-c:a", "libvorbis", "-q:a", "3", str(destino)], capture_output=True, timeout=60)
+		if r.returncode != 0 or not destino.exists() or destino.stat().st_size == 0:
+			destino.unlink(missing_ok=True)
+			ff = None
+	if not ff:
+		destino = carpeta / f"{evento}.wav"
+		destino.write_bytes(origen.read_bytes())
+	for viejo in carpeta.glob(f"{evento}.*"):
+		if viejo.suffix.lower() in (".wav", ".ogg") and viejo != destino:
+			viejo.unlink()
+			Path(str(viejo) + ".import").unlink(missing_ok=True)
+	return destino

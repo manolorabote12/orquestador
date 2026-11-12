@@ -51,6 +51,8 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Granja: tablero vacío sin granjero, cortado por los lados | Solo se dibujaban parcelas y casas | El granjero (arte del protagonista) camina hasta donde tocas; valla de madera alrededor; hojas y brillo al cosechar, polvo al plantar; margen a los lados |
 | Primer juego con capturas en el servidor («Caballerito de Nubes», 6/10): héroe aún pequeño y jefe sobre fondo azul liso | Cámara a 1.25; en la captura del jefe el fondo ilustrado se ponía en el juego anterior, que se estaba borrando | Cámara a 1.5 en plataformas; el fondo busca el juego que sigue vivo |
 | Granja con menús flojos | Monedas, pedidos y máquinas sin estilo propio | Placas y paneles de madera, barra de progreso de pedidos, recetas ingredientes → producto |
+| Cada juego ocupaba ~100 MB en Supabase | Voces en WAV (6 MB), la carpeta fabrica/ (capturas, portada) dentro del .pck y del APK, capturas y clip repetidos dentro del zip | Voces en OGG mono, fabrica/ fuera de la exportación, el zip sin lo que ya se sube aparte (~20 MB menos por versión); caché de 30 días en el Escaparate y de 1 año en el motor (menos tráfico) |
+| GitHub Actions bloqueado por minutos agotados | Reloj cada 15 min (~2.900 min/mes) y un despliegue por cada cambio pequeño | Reloj cada 30 min; los cambios se juntan en un solo despliegue |
 
 ## Reglas para no repetirlo
 

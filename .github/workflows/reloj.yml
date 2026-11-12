@@ -1,14 +1,15 @@
 # Red de seguridad y aprendizaje, gratis en GitHub Actions:
-#  - cada 15 minutos: si queda algo en la cola (un aviso se perdio), despierta la fabrica de RunPod;
+# Cada 30 minutos (antes 15): cada pasada cuenta como 1 minuto de GitHub Actions y a 15 se comian casi 3.000 al mes.
+#  - cada 30 minutos: si queda algo en la cola (un aviso se perdio), despierta la fabrica de RunPod;
 #  - cada 6 horas: la fabrica recalibra la dificultad con las partidas de los jugadores;
-#  - cada 15 minutos: la Lanzadera marca abandonos y campanas listas para produccion;
-#  - cada 15 minutos: el vigilante del gasto (nube/vigilante.py) avisa por correo y PARA la fabrica si
+#  - cada 30 minutos: la Lanzadera marca abandonos y campanas listas para produccion;
+#  - cada 30 minutos: el vigilante del gasto (nube/vigilante.py) avisa por correo y PARA la fabrica si
 #    el gasto se dispara. Umbrales en Settings -> Variables (ORQ_ALARMA_HORA_USD, ORQ_ALARMA_RUNPOD_HORA...).
 name: Reloj
 
 on:
   schedule:
-    - cron: "7,22,37,52 * * * *"
+    - cron: "7,37 * * * *"
     - cron: "41 */6 * * *"
   workflow_dispatch:
 

@@ -41,7 +41,9 @@ Deno.serve(async (req) => {
       return new Uint8Array(await data.arrayBuffer());
     },
     async subir(bucket, ruta, datos, tipo) {
-      const { error } = await admin.storage.from(bucket).upload(ruta, datos, { contentType: tipo, upsert: true });
+      // 30 días de caché: las direcciones llevan ?v=<versión>, así una versión nueva nunca sale vieja y cada
+      // partida repetida no vuelve a gastar tráfico de Supabase (el .pck pesa ~13 MB).
+      const { error } = await admin.storage.from(bucket).upload(ruta, datos, { contentType: tipo, upsert: true, cacheControl: "2592000" });
       if (error) throw new Error(`upload ${bucket}/${ruta}: ${error.message}`);
     },
     async borrar(bucket, rutas) {

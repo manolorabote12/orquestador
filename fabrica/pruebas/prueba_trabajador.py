@@ -36,7 +36,7 @@ class SupabaseFalso:
 		destino.write_bytes(self.archivos[clave])
 		return destino
 
-	def subir(self, ruta: str, archivo: Path, bucket: str = "juegos") -> str:
+	def subir(self, ruta: str, archivo: Path, bucket: str = "juegos", cache_s: int = 0) -> str:
 		## Para probar reintentos: la subida de la version de un trabajo concreto falla.
 		if getattr(self, "romper", "") and self.romper in ruta and "/v1/" in ruta:
 			raise RuntimeError(f"Supabase POST {ruta}: HTTP 500 roto a proposito")

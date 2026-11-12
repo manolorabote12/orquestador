@@ -64,7 +64,8 @@ def motor_web(sb) -> dict:
 	except FileNotFoundError as e:
 		return {"error": f"{e}. Godot dijo: {(r.stderr or r.stdout)[-400:]}"}
 	for f in lista:
-		sb.subir(f"godot/{subir_motor.VERSION_GODOT}/{f.name}", f, bucket="motor")
+		## Un año de cache: la carpeta lleva la version de Godot y nunca cambia (38 MB por jugador nuevo).
+		sb.subir(f"godot/{subir_motor.VERSION_GODOT}/{f.name}", f, bucket="motor", cache_s=31536000)
 	return {"motor": [f.name for f in lista], "version": subir_motor.VERSION_GODOT}
 
 

@@ -71,7 +71,7 @@ class Supabase:
 		destino.write_bytes(datos)
 		return destino
 
-	def subir(self, ruta: str, archivo: Path, bucket: str = "juegos") -> str:
+	def subir(self, ruta: str, archivo: Path, bucket: str = "juegos", cache_s: int = 0) -> str:
 		tipo = mimetypes.guess_type(archivo.name)[0] or "application/octet-stream"
 		if archivo.suffix == ".apk":
 			tipo = "application/vnd.android.package-archive"
@@ -80,7 +80,10 @@ class Supabase:
 		elif archivo.suffix in (".js", ".mjs"):
 			tipo = "text/javascript"
 		destino = f"/storage/v1/object/{bucket}/" + urllib.parse.quote(ruta)
-		self._peticion("POST", destino, archivo.read_bytes(), tipo, {"x-upsert": "true"})
+		cabeceras = {"x-upsert": "true"}
+		if cache_s:
+			cabeceras["cache-control"] = f"max-age={cache_s}"
+		self._peticion("POST", destino, archivo.read_bytes(), tipo, cabeceras)
 		return ruta
 
 	def listar(self, prefijo: str, bucket: str = "juegos", limite: int = 200) -> list[dict]:
@@ -220,7 +223,8 @@ def _comprimir(proyecto: Path, destino: Path, con_versiones: bool) -> Path:
 			rel = f.relative_to(proyecto)
 			if f.is_dir() or rel.parts[0] in (".godot", "build", "android") or (rel.parts[0] == "fabrica" and len(rel.parts) > 1 and rel.parts[1] == "arte"):
 				continue
-			if rel.parts[:2] == ("fabrica", "ficha"):
+			## La ficha, las capturas y el clip ya se suben aparte: dentro del zip estaban repetidos (~10 MB por juego).
+			if rel.parts[:2] in (("fabrica", "ficha"), ("fabrica", "capturas"), ("fabrica", "clip")):
 				continue
 			if rel.parts[:2] == ("fabrica", "versiones") and not con_versiones:
 				continue

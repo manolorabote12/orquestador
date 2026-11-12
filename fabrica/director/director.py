@@ -439,6 +439,16 @@ def a_biblia(d: dict) -> dict:
 				"tamano": [celda, celda], "mira_a": "frente",
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
+	## Carreras: los 3 rivales dibujados (12 nov: corrian coches de cajas o el heroe tenido de color).
+	## Mismo tamano y pose de carrera que el heroe; el kit los busca como rival_<tipo>.
+	if d.get("genero") == "carreras":
+		for e in d.get("enemigos", [])[:3]:
+			personajes.append({
+				"id": "rival_" + e["tipo"], "nombre": e["nombre"], "rol": "enemigo",
+				"descripcion": ("racing rival character, seen from behind or side, " + e["descripcion"])[:280],
+				"tamano": [celda, celda], "mira_a": "derecha",
+				"animaciones": {"run": {"frames": 4, "fps": 10, "bucle": True}, "hurt": {"frames": 1, "fps": 1, "bucle": False}},
+			})
 	return {
 		"schema": "orquestador/biblia/v1",
 		"juego": {"titulo": d["titulo"], "genero": d.get("genero", "plataformas"), "resumen": d["resumen"], "publico": "todos"},

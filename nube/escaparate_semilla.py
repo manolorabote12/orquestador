@@ -279,7 +279,8 @@ def notas_visuales(js: list[dict]) -> dict[str, int]:
 
 
 def _subir(ruta: str, datos: bytes, tipo: str) -> None:
-	_req("POST", f"{base()}/storage/v1/object/escaparate/{ruta}", datos, {"Content-Type": tipo, "x-upsert": "true"})
+	## 30 dias de cache: la app pide ?v=<version>, asi que una version nueva nunca sale vieja (menos trafico).
+	_req("POST", f"{base()}/storage/v1/object/escaparate/{ruta}", datos, {"Content-Type": tipo, "x-upsert": "true", "cache-control": "max-age=2592000"})
 
 
 def _bajar(ruta: str) -> bytes:

@@ -33,7 +33,7 @@ class SupabaseFalso:
 	def __init__(self) -> None:
 		self.archivos: dict[str, bytes] = {}
 
-	def subir(self, ruta: str, archivo: Path, bucket: str = "juegos") -> str:
+	def subir(self, ruta: str, archivo: Path, bucket: str = "juegos", cache_s: int = 0) -> str:
 		self.archivos[f"{bucket}/{ruta}"] = archivo.read_bytes()
 		return ruta
 
