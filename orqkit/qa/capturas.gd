@@ -123,6 +123,9 @@ func _shot_playing(game: Node, shot_name: String, wait: float) -> void:
 	if is_instance_valid(game) and bool(game.get("finished")) and game.has_method("retry"):
 		get_tree().paused = false
 		game.call("retry")
+		## El panel de «Nivel completado» no siempre se cierra con retry(): fuera.
+		for n: Node in get_tree().root.find_children("*", "ResultPanel", true, false):
+			n.queue_free()
 		await _shot(shot_name, 0.12)
 		return
 	await _shot(shot_name, 0.0)

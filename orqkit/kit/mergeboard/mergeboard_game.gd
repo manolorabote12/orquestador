@@ -48,8 +48,9 @@ func bot_script() -> String:
 	return "res://qa/mergeboard_bot.gd"
 
 
+## Fotos pronto: el bot vacia el tablero entregando pedidos y luego se veia un damero vacio (13 nov).
 func capture_delays() -> Vector2:
-	return Vector2(6.0, 4.0)
+	return Vector2(1.6, 1.6)
 
 
 func _reset() -> void:

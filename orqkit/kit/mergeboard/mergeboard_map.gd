@@ -62,6 +62,11 @@ static func new_state(level: Dictionary) -> Dictionary:
 	## Generadores en la fila de abajo, de izquierda a derecha.
 	for i: int in chains.size():
 		grid[Vector2i(i, H - 1)] = {"gen": chains[i]}
+	## Un par listo para fusionar de cada cadena (13 nov: el tablero empezaba vacio y la primera foto
+	## era un damero sin nada; en los juegos de este tipo se empieza con objetos a mano).
+	var spots: Array[Vector2i] = [Vector2i(1, 2), Vector2i(2, 2), Vector2i(4, 3), Vector2i(5, 3), Vector2i(1, 5), Vector2i(2, 5), Vector2i(4, 6), Vector2i(5, 6)]
+	for i2: int in mini(chains.size() * 2, spots.size()):
+		grid[spots[i2]] = {"c": chains[i2 / 2], "l": 1}
 	var orders: Array = []
 	for o: Variant in level.get("orders", []):
 		var need: Array = []

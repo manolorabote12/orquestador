@@ -185,8 +185,15 @@ func _physics_process(delta: float) -> void:
 	time_in_level = float(st["time"])
 	## Camara: sigue al agujero y se aleja cuando crece.
 	var z: float = clampf(60.0 / float(st["r"]) * 1.3, 0.55, 1.3)
+	## Sin alejarse mas que el ancho de la ciudad (13 nov: la ciudad quedaba en una columna estrecha
+	## con hierba vacia a los lados).
+	var city: Vector2 = st["size"]
+	z = maxf(z, get_viewport_rect().size.x / maxf(1.0, city.x + 40.0))
 	_camera.zoom = _camera.zoom.lerp(Vector2(z, z), minf(1.0, delta * 2.0))
 	_camera.position = _camera.position.lerp(st["pos"], minf(1.0, delta * 8.0))
+	## La camara no ensena lo que hay fuera de la ciudad por los lados.
+	var half_w: float = get_viewport_rect().size.x * 0.5 / _camera.zoom.x
+	_camera.position.x = clampf(_camera.position.x, minf(half_w - 20.0, city.x * 0.5), maxf(city.x - half_w + 20.0, city.x * 0.5))
 	_refresh()
 	if bool(st["won"]):
 		_finish()
