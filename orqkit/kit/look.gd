@@ -53,6 +53,26 @@ var _cache: Texture2D = null
 var _cache_path: String = ""
 
 
+## Fondo desenfocado: la imagen reducida a 1/6 y agrandada otra vez con suavizado (una vez, al cargar).
+## 13 nov: «fondo_distrae» salia en casi todas las criticas (profundidad de campo).
+static func soft_texture(tex: Texture2D) -> Texture2D:
+	var img: Image = tex.get_image()
+	if img == null or img.is_empty():
+		return tex
+	img = img.duplicate()
+	if img.is_compressed():
+		if img.decompress() != OK:
+			return tex
+	var w: int = img.get_width()
+	var h: int = img.get_height()
+	img.resize(maxi(8, w / 6), maxi(8, h / 6), Image.INTERPOLATE_BILINEAR)
+	## Se vuelve a agrandar aqui (suave): en pantalla no depende del filtro del proyecto (pixel art = nearest).
+	img.resize(mini(w, 1024), mini(h, 1820), Image.INTERPOLATE_BILINEAR)
+	## Algo menos de color: la partida (personajes y objetos) se queda con los colores vivos.
+	img.adjust_bcs(1.0, 1.0, 0.8)
+	return ImageTexture.create_from_image(img)
+
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	QA.logged.connect(_on_event)
@@ -195,11 +215,14 @@ static func make_backdrop(tex: Texture2D) -> CanvasLayer:
 	layer.layer = -50
 	var tr: TextureRect = TextureRect.new()
 	tr.name = "Art"
-	tr.texture = tex
+	tr.texture = soft_texture(tex)
+	tr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
 	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	tr.set_anchors_preset(Control.PRESET_FULL_RECT)
 	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	## Desenfoque suave y algo menos de color (profundidad de campo): el fondo no compite con la
+	## partida (13 nov: «fondo_distrae» salia en casi todas las criticas).
 	## Un poco mas grande que la pantalla para el vaiven.
 	tr.scale = Vector2(1.06, 1.06)
 	tr.pivot_offset = Vector2(360, 640)
