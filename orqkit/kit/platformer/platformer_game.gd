@@ -372,8 +372,9 @@ func _physics_process(delta: float) -> void:
 	if _ghost_acc >= GhostRunner.STEP and ghost_points.size() < 3000:
 		_ghost_acc -= GhostRunner.STEP
 		ghost_points.append([roundi(player.global_position.x), roundi(player.global_position.y)])
-	## 1 - Camara con anticipacion: mira hacia donde vas y un poco por encima.
-	var ahead: Vector2 = Vector2(player.facing * tile * 1.6 + player.velocity.x * 0.12, -tile * 1.2)
+	## 1 - Camara con anticipacion: mira hacia donde vas. Un poco por DEBAJO del heroe: el suelo queda por
+	## encima de los botones tactiles y no media pantalla de cielo vacio (capturas del 12 nov).
+	var ahead: Vector2 = Vector2(player.facing * tile * 1.6 + player.velocity.x * 0.12, tile * 0.6)
 	if runner:
 		## 9 - Runner: la camara deja mucho sitio delante para ver lo que viene.
 		ahead = Vector2(tile * 3.2, -tile * 1.2)
