@@ -211,18 +211,25 @@ def _normalizar_historia(d: dict) -> None:
 	h = d.get("historia")
 	if not h:
 		return
+	## La IA a veces devuelve la historia mal formada (un texto, frases sueltas como texto...): lo que no
+	## tiene la forma esperada se descarta en vez de tumbar el diseno (12 nov: 'str' has no attribute 'get').
+	if not isinstance(h, dict) or not isinstance(h.get("niveles", []), list):
+		d.pop("historia", None)
+		return
+	def _frases(xs: object) -> list[dict]:
+		return [x for x in (xs if isinstance(xs, list) else []) if isinstance(x, dict) and isinstance(x.get("quien"), str) and isinstance(x.get("texto", ""), str)]
 	fuera = set()
 	if not d.get("jefe"):
 		fuera.add("jefe")
 	if not generos.de(d)["enemigos"]:
 		fuera.add("rival")
-	niveles = [dict(n) for n in h.get("niveles", [])][:len(d["niveles"])]
-	while len(niveles) < len(d["niveles"]):
+	niveles = [dict(n) if isinstance(n, dict) else {"intro": []} for n in h.get("niveles", [])][:len(d.get("niveles") or [])]
+	while len(niveles) < len(d.get("niveles") or []):
 		niveles.append({"intro": []})
 	for n in niveles:
-		n["intro"] = [l for l in n.get("intro", []) if l["quien"] not in fuera]
+		n["intro"] = [l for l in _frases(n.get("intro")) if l["quien"] not in fuera]
 		if "fin" in n:
-			n["fin"] = [l for l in n["fin"] if l["quien"] not in fuera]
+			n["fin"] = [l for l in _frases(n["fin"]) if l["quien"] not in fuera]
 	d["historia"] = {"niveles": niveles}
 
 
@@ -329,7 +336,15 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 	usuario += "\n\n" + contenido.guia(gancho["genero"] if gancho else None)
 	## El diseno lo hace el modelo superior (ORQ_DISENO_SUPERIOR=0 vuelve al barato): con el barato una
 	## nave que esquiva asteroides salio como juego de plataformas (12 nov). ~0,07 $ mas por juego.
-	d, modelo = llm.con_router(PROMPT, usuario, HERRAMIENTA, lambda x: validar(normalizar(fijar(x))), gasto,
+	def _validar_seguro(x: dict) -> list[str]:
+		## Un dato con forma inesperada es un error que la IA corrige (o pasa al otro modelo), nunca una
+		## excepcion que tumba el juego (12 nov: 'str' object has no attribute 'get' en la historia).
+		import copy
+		try:
+			return validar(normalizar(fijar(copy.deepcopy(x))))
+		except Exception as e:  # noqa: BLE001 - cualquier forma rara se le devuelve a la IA como error
+			return [f"el diseno tiene un campo con forma inesperada ({e.__class__.__name__}: {str(e)[:120]}); respeta el esquema"]
+	d, modelo = llm.con_router(PROMPT, usuario, HERRAMIENTA, _validar_seguro, gasto,
 		primero_superior=os.environ.get("ORQ_DISENO_SUPERIOR", "1") != "0")
 	## Contenido propio que no pasa el control: se apunta la leccion (la directora la lee) y se sigue sin el.
 	if isinstance(d.get("contenido"), dict) and d.get("genero") in contenido.GENEROS:
