@@ -72,7 +72,12 @@ static func build(parent: Node2D, map: Array, tile: float, palette: Dictionary, 
 				var open_top: bool = y == 0 or rows[y - 1][x] != SOLID
 				while x < w and rows[y][x] == SOLID and (y == 0 or rows[y - 1][x] != SOLID) == open_top:
 					x += 1
-				_add_solid_run(solids, start, x - start, y, tile, c_solid, c_top, open_top, tile_tex)
+				## Profundidad (bloques encima): cuanto mas hondo, mas oscuro. El suelo dejaba de ser una
+				## cuadricula clara que llenaba media pantalla (critica «suelo_recargado», 12 nov).
+				var depth: int = 0
+				while y - depth - 1 >= 0 and rows[y - depth - 1][start] == SOLID:
+					depth += 1
+				_add_solid_run(solids, start, x - start, y, tile, c_solid, c_top, open_top, tile_tex, depth)
 				continue
 			if ch == MOVING:
 				var start_m: int = x
@@ -108,7 +113,7 @@ static func build(parent: Node2D, map: Array, tile: float, palette: Dictionary, 
 	return result
 
 
-static func _add_solid_run(solids: StaticBody2D, x0: int, count: int, y: int, tile: float, col: Color, top: Color, exposed: bool, tex: Texture2D = null) -> void:
+static func _add_solid_run(solids: StaticBody2D, x0: int, count: int, y: int, tile: float, col: Color, top: Color, exposed: bool, tex: Texture2D = null, depth: int = 0) -> void:
 	var shape: CollisionShape2D = CollisionShape2D.new()
 	var rect: RectangleShape2D = RectangleShape2D.new()
 	rect.size = Vector2(count * tile, tile)
@@ -123,7 +128,8 @@ static func _add_solid_run(solids: StaticBody2D, x0: int, count: int, y: int, ti
 		poly.texture = tex
 		## El relleno (sin aire encima) va mas oscuro: el suelo deja de ser una losa plana y se lee
 		## donde se pisa.
-		poly.color = Color.WHITE if exposed else Color(0.62, 0.62, 0.68)
+		var g: float = 1.0 if exposed else maxf(0.34, 0.62 - 0.12 * float(maxi(depth - 1, 0)))
+		poly.color = Color(g, g, g * 1.08)
 		poly.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
 		if float(tex.get_width()) > tile:
 			poly.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR

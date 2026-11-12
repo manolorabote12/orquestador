@@ -190,7 +190,7 @@ func _build_camera() -> void:
 	elif runner:
 		## Corredor: algo mas cerca tambien (heroe diminuto y media pantalla de cielo, 12 nov); sigue
 		## viendo de sobra lo que viene porque la camara va adelantada.
-		camera.zoom = Vector2(1.2, 1.2)
+		camera.zoom = Vector2(1.4, 1.4)  ## 12 nov: a 1,2 el pinguino seguia siendo pequeno (critica 6/10)
 	add_child(camera)
 	camera.make_current()
 	Juice.register_camera(camera)
@@ -432,6 +432,9 @@ func _on_coin(body: Node2D, coin: Area2D) -> void:
 	pulse.tween_property(_coins_label, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	Audio.play("coin", 0.12)
 	Juice.shake(0.05)
+	## Chispas doradas y un aro al recoger (critica «efectos_pobres», 12 nov).
+	Juice.sparkle(level, coin.global_position, Kit.color("coin", Color("#ffd23f")).lightened(0.3), 7, 220.0)
+	Juice.ring(level, coin.global_position, Kit.color("coin", Color("#ffd23f")), tile * 0.7, 0.22)
 	QA.log_event("coin", {"taken": coins_taken})
 	var tween: Tween = coin.create_tween()
 	tween.set_parallel(true)
