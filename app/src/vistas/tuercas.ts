@@ -2,7 +2,7 @@
 // El móvil nunca se concede nada: el servidor verifica cada anuncio y cada compra con Google.
 
 import type { App } from "../main";
-import { type EstadoTienda, type Invitacion, type Periodo, type ProductoTienda } from "../api";
+import { type EstadoTienda, type Invitacion, type MisGanancias, type Periodo, type ProductoTienda } from "../api";
 import { compartirEnlace } from "../compartir";
 import { ICONOS, aviso, bloqueError, h, svg, type VistaHecha } from "../ui";
 import { mensajeError } from "../errores";
@@ -30,7 +30,7 @@ export function vistaTuercas(app: App): VistaHecha {
     }
     if (!vivo) return;
     if (t.plan) cabecera.querySelector(".sheet-head")?.append(h("span", { class: "pill done" }, t.plan === "pro" ? "Taller Pro" : "Plan Taller"));
-    raiz.replaceChildren(cabecera, seccionPlanes(t), seccionAnuncio(t, saldo), seccionInvitar(), seccionPacks(t),
+    raiz.replaceChildren(cabecera, seccionPlanes(t), seccionGanancias(), seccionAnuncio(t, saldo), seccionInvitar(), seccionPacks(t),
       h("p", { class: "muted small", style: "text-align:center" },
         "Los pagos los gestiona Google Play. Las tuercas de los packs no caducan. ¿Una compra no te llegó? Cierra y abre la app: se recupera sola."));
   }
@@ -140,6 +140,78 @@ export function vistaTuercas(app: App): VistaHecha {
 
   // Planes mensuales: tuercas cada mes. Lo que se ofrece sale del servidor (tuercas por mes) y los
   // precios de Google Play; aquí solo se explica y se compra.
+  // Ganancias de la galería: lo que pagan los anuncios vistos en tus juegos compartidos. Tú eliges:
+  // pasarlo a tuercas (con premio) o cobrarlo en dinero por PayPal.
+  function seccionGanancias(): HTMLElement {
+    const s = h("section", { class: "sheet ganancias" }, h("div", { class: "sheet-head" }, h("h2", {}, "Lo que ganan tus juegos")),
+      h("p", { class: "muted small" }, "Cargando..."));
+    const euros = (c: number) => (c / 100).toLocaleString("es-ES", { style: "currency", currency: "EUR" });
+    async function cargar() {
+      let g: MisGanancias;
+      try {
+        g = await app.api.misGanancias();
+      } catch (e) {
+        s.replaceChildren(h("div", { class: "sheet-head" }, h("h2", {}, "Lo que ganan tus juegos")), bloqueError(e, "No se pudieron cargar tus ganancias.", () => void cargar()));
+        return;
+      }
+      if (!vivo) return;
+      const aTuercas = Math.floor((g.saldo_cent * g.tuercas_por_euro) / 100);
+      const pasar = h("button", { class: "btn btn-brass btn-small", type: "button" }, `Pasar a tuercas · ${aTuercas}`);
+      pasar.disabled = g.saldo_cent < 10;
+      pasar.addEventListener("click", async () => {
+        pasar.disabled = true;
+        try {
+          const r = await app.api.gananciasATuercas(g.saldo_cent);
+          app.ponerTuercas(r.credits);
+          aviso(`+${r.tuercas} tuercas`);
+          await cargar();
+        } catch (e) {
+          aviso(mensajeError(e, "No se pudo pasar a tuercas."));
+          pasar.disabled = false;
+        }
+      });
+      const cobrar = h("button", { class: "btn btn-line btn-small", type: "button" },
+        !g.cobro_activo ? "Cobrar en dinero · pronto" : g.saldo_cent < g.cobro_minimo_cent ? `Cobrar en dinero · desde ${euros(g.cobro_minimo_cent)}` : "Cobrar en dinero");
+      cobrar.disabled = !g.cobro_activo || g.saldo_cent < g.cobro_minimo_cent;
+      const formulario = h("form", { class: "cobro-form", hidden: true });
+      const paypal = h("input", { type: "email", placeholder: "Tu correo de PayPal", autocomplete: "email", required: "" }) as HTMLInputElement;
+      const nombre = h("input", { type: "text", placeholder: "Tu nombre y apellidos", autocomplete: "name", required: "" }) as HTMLInputElement;
+      const mayor = h("input", { type: "checkbox" }) as HTMLInputElement;
+      const enviar = h("button", { class: "btn btn-brass btn-small", type: "submit" }, `Pedir ${euros(g.saldo_cent)}`);
+      formulario.append(paypal, nombre, h("label", { class: "fila-check small" }, mayor, "Soy mayor de edad y los datos son míos"), enviar,
+        h("p", { class: "muted small" }, "Se paga por PayPal en los primeros días del mes siguiente."));
+      cobrar.addEventListener("click", () => { formulario.hidden = !formulario.hidden; if (!formulario.hidden) paypal.focus(); });
+      formulario.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        enviar.disabled = true;
+        try {
+          const r = await app.api.pedirCobro(paypal.value.trim(), nombre.value.trim(), mayor.checked);
+          aviso(`Cobro de ${euros(r.cent)} pedido`);
+          await cargar();
+        } catch (err) {
+          aviso(mensajeError(err, "No se pudo pedir el cobro."));
+          enviar.disabled = false;
+        }
+      });
+      const nombres: Record<string, string> = { reparto: "Reparto", a_tuercas: "A tuercas", cobro: "Cobro", cobro_devuelto: "Cobro devuelto" };
+      s.replaceChildren(
+        h("div", { class: "sheet-head" }, h("h2", {}, "Lo que ganan tus juegos"), h("span", { class: "tag" }, `${g.reparto_pct} % de sus anuncios`)),
+        h("div", { class: "gan-saldo" }, h("strong", {}, euros(g.saldo_cent)), h("span", { class: "muted small" }, `ganado en total ${euros(g.ganado_cent)}`)),
+        h("p", { class: "small" }, g.por_juego.length
+          ? `Este mes, ${g.anuncios_mes} anuncio${g.anuncios_mes === 1 ? "" : "s"} vistos en tus juegos. Se reparte a principios del mes siguiente.`
+          : "Comparte un juego en la galería (Mis juegos → Compartir): cada anuncio que se vea jugando a él te da una parte."),
+        g.por_juego.length ? h("ul", { class: "gan-juegos" }, ...g.por_juego.slice(0, 5).map((x) => h("li", {}, h("span", {}, x.titulo), h("span", { class: "muted" }, `${x.anuncios}`)))) : h("span"),
+        h("div", { class: "btn-row" }, pasar, cobrar), formulario,
+        h("p", { class: "muted small" }, `En tuercas te llevas ${g.tuercas_por_euro} por cada euro (comprándolas son unas 100).`),
+        g.movimientos.length ? h("details", { class: "plegable" }, h("summary", {}, h("h3", {}, "Movimientos")),
+          h("ul", { class: "gan-movs" }, ...g.movimientos.map((m) => h("li", {},
+            h("span", {}, nombres[m.tipo] ?? m.tipo, m.nota ? h("span", { class: "muted small" }, ` · ${m.nota}`) : ""),
+            h("span", { class: m.cent >= 0 ? "ok" : "muted" }, `${m.cent >= 0 ? "+" : ""}${euros(m.cent)}${m.tuercas ? ` → ${m.tuercas} tuercas` : ""}`))))) : h("span"));
+    }
+    void cargar();
+    return s;
+  }
+
   function seccionPlanes(t: EstadoTienda): HTMLElement {
     const planes = t.productos.filter((x) => x.tipo === "plan").sort((a, b) => (a.tuercasMes ?? 0) - (b.tuercasMes ?? 0));
     const s = h("section", { class: "sheet planes" }, h("div", { class: "sheet-head" }, h("h2", {}, "Planes"),

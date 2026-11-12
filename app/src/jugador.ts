@@ -14,6 +14,10 @@ export interface OpcionesJugador {
   titulo: string;
   /** Imagen de respaldo para el modo demostración. */
   portada?: string;
+  /** Galería: botón «Siguiente» para encadenar partidas sin salir (como en los portales de juegos). */
+  siguiente?: () => void;
+  /** Al cerrar el reproductor (por ejemplo, para un anuncio entre partidas). */
+  alCerrar?: () => void;
 }
 
 /** Página del iframe. Las URLs van como JSON escapado: nunca se interpretan como HTML. */
@@ -58,15 +62,22 @@ document.head.appendChild(s);
 /** Abre el reproductor a pantalla completa. Devuelve la función para cerrarlo. */
 export function abrirJugador(op: OpcionesJugador): () => void {
   const previo = document.activeElement as HTMLElement | null;
+  let cerrado = false;
   const cerrar = () => {
+    if (cerrado) return;
+    cerrado = true;
     window.removeEventListener("message", oir);
     document.removeEventListener("keydown", tecla);
     capa.remove();
     previo?.focus();
+    op.alCerrar?.();
   };
   const boton = h("button", { class: "player-close", "aria-label": "Cerrar el juego", onclick: () => cerrar() }, "✕");
   const estado = h("span", { class: "player-state" }, "");
-  const cabeza = h("div", { class: "player-bar" }, h("strong", {}, op.titulo), estado, boton);
+  const sig = op.siguiente
+    ? h("button", { class: "player-next", type: "button", onclick: () => { const ir = op.siguiente!; cerrar(); ir(); } }, "Siguiente ▸")
+    : null;
+  const cabeza = h("div", { class: "player-bar" }, h("strong", {}, op.titulo), estado, sig, boton);
   let cuerpo: HTMLElement;
   if (op.motor && op.pck) {
     const marco = h("iframe", {

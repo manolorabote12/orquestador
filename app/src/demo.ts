@@ -4,7 +4,7 @@
 import type { PuestoReto, RetoSemana } from "./api";
 import type { PerfilCreador } from "./creador";
 import type { Opiniones } from "./api";
-import type { AdmobIds, EstadoCharla, EventoJuego, Gancho, InformeAb, Invitacion, Resena, FilaLiga, Ingresos, FilaMarcador, JuegoEscaparate, Backend, CuentaApple, EstadoTienda, ModoYoutube, CampanaLz, CuentaPlay, Entrada, MiCampanaLz, PanelLz, PruebaLz, EstadoPlay, Evento, Marketing, Propuesta, Proyecto, Publicar, Resultado, Trabajo } from "./api";
+import type { AdmobIds, EstadoCharla, EventoJuego, Gancho, InformeAb, Invitacion, Resena, FilaLiga, Ingresos, FilaMarcador, JuegoEscaparate, MisGanancias, Backend, CuentaApple, EstadoTienda, ModoYoutube, CampanaLz, CuentaPlay, Entrada, MiCampanaLz, PanelLz, PruebaLz, EstadoPlay, Evento, Marketing, Propuesta, Proyecto, Publicar, Resultado, Trabajo } from "./api";
 import guiaPlay from "./demo/guia_play.json";
 import nivelesDemo from "./demo/niveles.json";
 import type { NivelesJuego } from "./editor";
@@ -173,6 +173,8 @@ interface Guardado {
   lz?: LzDemo;
   premium?: boolean;
   plan?: "taller" | "pro";
+  /** Ganancias simuladas de la galería (céntimos) y movimientos. */
+  ganancias?: { saldo: number; ganado: number; movs: MisGanancias["movimientos"] };
   youtube?: string;
   apple?: CuentaApple;
   escaparate?: Record<string, { autor: string; jugadas: number; desde: string }>;
@@ -294,8 +296,9 @@ export class Demo implements Backend {
     this.s.email = null;
     this.guardar();
   }
-  async escaparate(orden: "top" | "nuevos" | "semana") {
+  async escaparate(orden: "top" | "nuevos" | "semana", genero?: string): Promise<JuegoEscaparate[]> {
     await espera(350);
+    if (genero) return (await this.escaparate(orden)).filter((j) => j.genero === genero);
     const propios = this.s.proyectos.filter((p) => this.s.escaparate?.[p.id]).map((p) => this.fichaPropia(p));
     const otros = ESCAPARATE_DEMO.filter((j) => !(this.s.lz?.ocultas ?? []).includes(j.project_id))
       .map((j) => ({ ...j, megusta: j.megusta + (this.s.megusta?.includes(j.project_id) ? 1 : 0) }));
@@ -366,6 +369,43 @@ export class Demo implements Backend {
 
   archivosEscaparate(_j: JuegoEscaparate) {
     return { icono: ARCHIVOS["demo/icono.png"], portada: ARCHIVOS["demo/capturas/3_juego.jpg"], pck: null };
+  }
+
+  async anuncioGaleria(_proyectoId: string, _tipo: "intersticial" | "premio") {
+    await espera(100);
+  }
+
+  private gan() {
+    if (!this.s.ganancias) {
+      // Demostración: tus juegos ya han ganado algo el mes pasado.
+      this.s.ganancias = { saldo: 437, ganado: 437, movs: [{ tipo: "reparto", cent: 437, tuercas: 0, nota: "Anuncios del mes pasado: 212", created_at: new Date(Date.now() - 6 * 86400e3).toISOString() }] };
+    }
+    return this.s.ganancias;
+  }
+
+  async misGanancias(): Promise<MisGanancias> {
+    await espera(300);
+    const g = this.gan();
+    return { saldo_cent: g.saldo, ganado_cent: g.ganado, anuncios_mes: 58,
+      por_juego: [{ titulo: "Bigotes Veloces", anuncios: 41 }, { titulo: "Mago de Bolsillo", anuncios: 17 }],
+      movimientos: g.movs, cobros: [], tuercas_por_euro: 150, cobro_minimo_cent: 2000, cobro_activo: false, reparto_pct: 50 };
+  }
+
+  async gananciasATuercas(cent: number) {
+    await espera(500);
+    const g = this.gan();
+    if (cent > g.saldo || cent < 10) throw new ErrorApp("No tienes tanto saldo.");
+    const tuercas = Math.floor(cent * 1.5);
+    g.saldo -= cent;
+    g.movs.unshift({ tipo: "a_tuercas", cent: -cent, tuercas, nota: null, created_at: new Date().toISOString() });
+    this.s.tuercas += tuercas;
+    this.guardar();
+    return { tuercas, credits: this.s.tuercas, saldo_cent: g.saldo };
+  }
+
+  async pedirCobro(_paypal: string, _nombre: string, _mayor: boolean): Promise<{ cent: number }> {
+    await espera(400);
+    throw new ErrorApp("Los cobros en dinero aún no están abiertos. Mientras, puedes pasarlo a tuercas.");
   }
 
   async jugada(proyectoId: string) {

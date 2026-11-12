@@ -71,6 +71,20 @@ Si algo se ve mal o falla, apúntalo con una captura y me lo pasas tal cual.
 1. Crea la cuenta y la app «Orquestador» en AdMob.
 2. Crea un bloque **bonificado** y pega su id cuando `conectar.py` lo pida (o vuelve a lanzarlo).
 3. Cada usuario pone **sus** ids en cada juego (Publicar → Anuncios): la app le explica cómo.
+4. **Galería (pestaña Jugar)**: crea un bloque **intersticial** llamado «Galería entre partidas» y pon
+   su id en GitHub → Settings → Secrets and variables → Actions → **Variables** →
+   `ORQ_APP_ADMOB_GALERIA`. Vuelve a lanzar «App Android». Sin él, la galería funciona sin anuncios.
+
+## 6b. Reparto a los creadores (cada mes, 2 minutos)
+1. A principios de mes, mira en AdMob → Informes cuánto pagó el bloque «Galería entre partidas» el mes
+   anterior.
+2. GitHub → Actions → **«Galería: reparto y cobros»** → `repartir`, con el mes (`2026-11`) y esos euros.
+   Se reparte el 50 % entre los creadores según los anuncios vistos en sus juegos.
+3. **Cobros en dinero** (cuando estés dado de alta para pagar a otros; consúltalo con un gestor):
+   pídeme abrirlos (`cobro_dinero_activo = 1`). Cada mes, la acción `estado` te lista a quién pagar
+   por PayPal y cuánto; al pagarlo, márcalo con `pagado` y el número del cobro. Si un PayPal está
+   mal, `rechazado`: el dinero vuelve a su saldo. Hasta entonces, los creadores pasan su saldo a
+   tuercas (1 € = 150 tuercas).
 
 ## 7. Marketing (opcional, cuando quieras)
 Sin estas claves, esa red simplemente no se usa. Son secretos de GitHub y la lista está en `MARKETING-LEEME.md`:

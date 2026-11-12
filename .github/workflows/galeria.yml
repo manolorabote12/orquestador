@@ -1,0 +1,55 @@
+name: "Galeria: reparto y cobros"
+# Galeria tipo Poki (los juegos del Escaparate con anuncios en la app). Desde el movil: app de GitHub ->
+# Actions -> este workflow -> Run workflow.
+#  - estado:    repartos hechos y cobros en dinero pendientes (a quien pagar por PayPal y cuanto).
+#  - repartir:  a principios de mes, con lo que pago Google el mes anterior por los anuncios de la galeria
+#               (AdMob -> Informes -> bloque de la galeria). Reparte el 50 % entre los creadores.
+#  - pagado:    ya pagaste el cobro N por PayPal.
+#  - rechazado: el cobro N no se pudo pagar (PayPal mal escrito...): el dinero vuelve a su saldo.
+# Para abrir los cobros en dinero: Supabase -> settings -> cobro_dinero_activo = 1 (o pidemelo).
+on:
+  workflow_dispatch:
+    inputs:
+      accion:
+        type: choice
+        options: [estado, repartir, pagado, rechazado]
+        default: estado
+      mes:
+        description: "repartir: mes AAAA-MM (el que se reparte)"
+        required: false
+      euros:
+        description: "repartir: lo que pago Google ese mes por la galeria, en euros (12,34)"
+        required: false
+      cobro:
+        description: "pagado / rechazado: numero del cobro"
+        required: false
+      nota:
+        description: "pagado / rechazado: nota (opcional)"
+        required: false
+
+jobs:
+  galeria:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: nube
+      - name: Galeria
+        env:
+          ACCION: ${{ inputs.accion }}
+          MES: ${{ inputs.mes }}
+          EUROS: ${{ inputs.euros }}
+          COBRO: ${{ inputs.cobro }}
+          NOTA: ${{ inputs.nota }}
+        run: |
+          case "$ACCION" in
+            repartir) python3 nube/galeria.py repartir "$MES" "$EUROS" ;;
+            pagado|rechazado) python3 nube/galeria.py "$ACCION" "$COBRO" $NOTA ;;
+            *) python3 nube/galeria.py estado ;;
+          esac

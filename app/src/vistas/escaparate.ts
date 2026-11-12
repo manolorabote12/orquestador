@@ -8,7 +8,7 @@ import { abrirJugador } from "../jugador";
 import { aviso, bloqueError, h } from "../ui";
 import { mensajeError } from "../errores";
 
-const GENERO: Record<string, string> = { plataformas: "Plataformas", runner: "Runner", volador: "Volador", horda: "Hordas",
+export const GENERO: Record<string, string> = { plataformas: "Plataformas", runner: "Runner", volador: "Volador", horda: "Hordas",
   puzle: "Puzle", torres: "Torres", carreras: "Carreras", naves: "Naves", rompebloques: "Rompebloques", bloques: "Bloques",
   corredor: "Corredor 3D", serpiente: "Serpiente", memoria: "Memoria", cajas: "Cajas", preguntas: "Preguntas", apilar: "Apilar", topos: "Topos", saltos: "Saltos", arena: "Arena", aldea: "Aldea",
   ritmo: "Ritmo", clicker: "Clicker", cartas: "Cartas", rpg: "RPG por turnos",

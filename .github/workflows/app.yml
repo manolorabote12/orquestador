@@ -28,6 +28,7 @@ jobs:
       VITE_MUESTRAS_URL: ${{ secrets.SUPABASE_URL }}/storage/v1/object/public/motor/muestras
       # AdMob de la propia app Orquestador (anuncio con premio = +3 tuercas). Sin ellos, sin anuncios.
       VITE_ADMOB_REWARDED: ${{ vars.ORQ_APP_ADMOB_PREMIO }}
+      VITE_ADMOB_INTERSTICIAL: ${{ vars.ORQ_APP_ADMOB_GALERIA }}
       VITE_WEB: ${{ vars.ORQ_WEB }}
       # Entrar con Google en el movil: el ID del cliente web (publico; el secreto solo esta en Supabase).
       VITE_GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}

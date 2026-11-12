@@ -1048,3 +1048,61 @@ details.plegable > summary .tag { padding: 3px 8px; }
 .pasos-entrar li { counter-increment: p; padding: 10px 6px; border-radius: 12px; background: rgba(8, 20, 40, 0.45); border: 1px solid rgba(232, 240, 250, 0.1); font-size: 13px; color: var(--ink); }
 .pasos-entrar li::before { content: counter(p); display: grid; place-items: center; width: 26px; height: 26px; margin: 0 auto 6px; border-radius: 50%;
   background: linear-gradient(180deg, var(--brass-hi), var(--brass)); color: var(--paper-deep); font: 800 15px/1 var(--display); }
+
+/* ---------------------------------------------------------------- Jugar: galería tipo portal (nov 2026) */
+.tabbar { grid-template-columns: repeat(6, 1fr); padding: 5px; gap: 2px; }
+.tab { font-size: 11px; min-height: 54px; padding: 6px 0; }
+@media (max-width: 370px) { .tab { font-size: 10px; } .tab svg { width: 22px; height: 22px; } }
+
+.galeria { display: flex; flex-direction: column; gap: 14px; }
+.gal-cabeza { padding: 18px 2px 2px; }
+.gal-cabeza h1 { margin: 0; font: 800 46px/0.95 var(--display); letter-spacing: 0.01em;
+  background: linear-gradient(180deg, #fff6e0, var(--brass-hi) 55%, var(--brass)); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.4)); }
+.gal-cabeza p { margin: 8px 0 14px; color: var(--ink-dim); max-width: 36ch; }
+.gal-buscar { min-height: 50px; border-radius: 999px !important; padding-left: 44px !important; font-size: 16px;
+  background: rgba(8, 20, 40, 0.6) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239fb4cc' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4-4'/%3E%3C/svg%3E") no-repeat 16px 50% / 20px 20px !important; }
+.galeria > .chips { margin-top: 0; }
+.gal-rejilla { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 480px) { .gal-rejilla { grid-template-columns: repeat(3, 1fr); } }
+.gal-poster { position: relative; border-radius: 16px; overflow: hidden; background: var(--plate-b);
+  box-shadow: var(--sombra); border: 1px solid rgba(232, 240, 250, 0.1); }
+.gal-tocar { all: unset; display: block; width: 100%; cursor: pointer; }
+.gal-tocar:focus-visible { outline: 3px solid var(--brass-hi); outline-offset: -3px; border-radius: 16px; }
+.gal-portada { display: block; width: 100%; aspect-ratio: 3 / 4; object-fit: cover; object-position: center 40%; background: var(--plate-a);
+  transition: transform 0.25s ease; }
+.gal-portada.solo-icono { object-fit: contain; padding: 18%; }
+.gal-poster:active .gal-portada { transform: scale(1.04); }
+.gal-pie { position: absolute; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; gap: 2px; padding: 32px 10px 10px;
+  background: linear-gradient(180deg, transparent, rgba(5, 12, 26, 0.88) 45%); }
+.gal-pie strong { font: 700 19px/1.05 var(--display); color: #fff; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); overflow-wrap: anywhere; }
+.gal-pie .small { color: rgba(232, 240, 250, 0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gal-jugadas, .gal-megusta { position: absolute; top: 8px; padding: 3px 8px; border-radius: 999px; font: 600 11px/1.4 var(--mono);
+  background: rgba(5, 12, 26, 0.7); color: var(--ink); border: 0; backdrop-filter: blur(6px); }
+.gal-jugadas { left: 8px; pointer-events: none; }
+.gal-megusta { right: 8px; min-height: 30px; cursor: pointer; }
+.gal-megusta.activo { color: #ff9db0; }
+.gal-poster.grande { border-color: rgba(246, 207, 122, 0.45); }
+.gal-poster.grande .gal-portada { aspect-ratio: 16 / 11; }
+.gal-poster.grande .gal-pie strong { font-size: 30px; }
+.gal-jugar { align-self: flex-start; margin-top: 8px; padding: 8px 18px; border-radius: 999px; font: 800 18px/1 var(--display);
+  color: var(--paper-deep); background: linear-gradient(180deg, var(--brass-hi), var(--brass)); box-shadow: 0 4px 12px rgba(232, 176, 75, 0.35); }
+.gal-vacio { grid-column: 1 / -1; text-align: center; padding: 28px 8px; }
+.gal-creadores h2 { font-size: 22px; margin: 0 0 6px; }
+.gal-creadores .btn { margin-top: 10px; width: 100%; }
+
+.player-next { min-height: 40px; padding: 0 14px; border-radius: 12px; border: 0; cursor: pointer;
+  background: linear-gradient(180deg, var(--brass-hi), var(--brass)); color: var(--paper-deep); font: 800 16px/1 var(--display); }
+
+/* Ganancias del creador */
+.gan-saldo { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 2px 0 8px; }
+.gan-saldo strong { font: 800 46px/1 var(--display); color: var(--ok); text-shadow: 0 0 18px rgba(143, 227, 165, 0.25); }
+.gan-juegos, .gan-movs { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 6px; }
+.gan-juegos li, .gan-movs li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 10px; background: rgba(8, 20, 40, 0.4); font-size: 14px; }
+.gan-movs .ok { color: var(--ok); }
+.ganancias .btn-row { margin: 10px 0 6px; flex-wrap: wrap; }
+.ganancias details h3 { margin: 0; font-size: 15px; }
+.cobro-form { display: grid; gap: 8px; margin: 6px 0 10px; }
+.fila-check { display: flex; align-items: center; gap: 8px; }
+.fila-check input { width: 22px; height: 22px; accent-color: var(--brass); }
+.ganancias .btn-row .btn { flex: 1 1 140px; font-size: 18px; line-height: 1.15; }

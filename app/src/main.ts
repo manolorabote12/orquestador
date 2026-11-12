@@ -16,7 +16,7 @@ import { mensajeError, vigilarErrores } from "./errores";
 import { iniciarIdioma } from "./idioma";
 import { activarSonido, sonar } from "./sonido";
 
-export type Vista = "taller" | "juegos" | "lanzadera" | "tuercas" | "cuenta";
+export type Vista = "taller" | "galeria" | "juegos" | "lanzadera" | "tuercas" | "cuenta";
 
 type HacerVista = (app: App, detalle?: string) => VistaHecha;
 
@@ -24,6 +24,7 @@ type HacerVista = (app: App, detalle?: string) => VistaHecha;
 // las demas se adelantan en segundo plano cuando la app ya esta pintada.
 const CARGAR: Record<Vista, () => Promise<HacerVista>> = {
   taller: () => import("./vistas/taller").then((m) => m.vistaTaller),
+  galeria: () => import("./vistas/galeria").then((m) => m.vistaGaleria),
   juegos: () => import("./vistas/juegos").then((m) => m.vistaJuegos),
   lanzadera: () => import("./vistas/lanzadera").then((m) => m.vistaLanzadera),
   tuercas: () => import("./vistas/tuercas").then((m) => m.vistaTuercas),
@@ -55,6 +56,7 @@ export interface App {
 
 const PESTANAS: [Vista, string, string][] = [
   ["taller", "Taller", ICONOS.taller],
+  ["galeria", "Jugar", ICONOS.galeria],
   ["juegos", "Mis juegos", ICONOS.juegos],
   ["lanzadera", "Lanzadera", ICONOS.cohete],
   ["tuercas", "Tuercas", ICONOS.monedero],

@@ -33,10 +33,32 @@ export interface JuegoEscaparate {
   publicado_en: string;
 }
 
+/** Lo que ganan los juegos de un creador en la galería (anuncios) y lo que puede hacer con ello. */
+export interface MisGanancias {
+  saldo_cent: number;
+  ganado_cent: number;
+  anuncios_mes: number;
+  por_juego: { titulo: string; anuncios: number }[];
+  movimientos: { tipo: "reparto" | "a_tuercas" | "cobro" | "cobro_devuelto"; cent: number; tuercas: number; nota: string | null; created_at: string }[];
+  cobros: { cent: number; estado: "pendiente" | "pagado" | "rechazado"; created_at: string }[];
+  tuercas_por_euro: number;
+  cobro_minimo_cent: number;
+  cobro_activo: boolean;
+  reparto_pct: number;
+}
+
 /** Lo que la app puede pedir en esta area (servidor real o demostracion). */
 export interface ApiComunidad {
   /** Escaparate de la comunidad ("top" o "nuevos"). */
-  escaparate(orden: "top" | "nuevos" | "semana"): Promise<JuegoEscaparate[]>;
+  escaparate(orden: "top" | "nuevos" | "semana", genero?: string): Promise<JuegoEscaparate[]>;
+  /** Galería: un anuncio visto jugando a ese juego (cuenta para el reparto a su creador). */
+  anuncioGaleria(proyectoId: string, tipo: "intersticial" | "premio"): Promise<void>;
+  /** Ganancias del creador por los anuncios de sus juegos en la galería. */
+  misGanancias(): Promise<MisGanancias>;
+  /** Pasa céntimos del saldo a tuercas. Devuelve las tuercas sumadas y el saldo nuevo. */
+  gananciasATuercas(cent: number): Promise<{ tuercas: number; credits: number; saldo_cent: number }>;
+  /** Pide cobrar todo el saldo en dinero por PayPal. */
+  pedirCobro(paypal: string, nombre: string, mayor: boolean): Promise<{ cent: number }>;
   /** 3 propuestas de juego originales (género + giros) para una idea. */
   ganchos(idea: string): Promise<Gancho[]>;
   /** Reto de la semana (tema, premios, si ya participas) y su clasificación. */
@@ -88,8 +110,8 @@ export function supaComunidad(con: Conexion): ApiComunidad {
       if (error) throw new ErrorApp(error.message.includes("not_shared") ? "Primero compártelo en el escaparate (pestaña Compartir)." : "No se pudo presentar al reto.");
     },
 
-    async escaparate(orden: "top" | "nuevos" | "semana") {
-      const { data, error } = await con.sb.rpc("escaparate_lista", { p_orden: orden });
+    async escaparate(orden: "top" | "nuevos" | "semana", genero?: string) {
+      const { data, error } = await con.sb.rpc("escaparate_lista", { p_orden: orden, p_genero: genero ?? null });
       if (error) throw new ErrorApp("No se pudo cargar el escaparate.");
       return (data ?? []) as JuegoEscaparate[];
     },
@@ -128,6 +150,37 @@ export function supaComunidad(con: Conexion): ApiComunidad {
 
     async jugada(proyectoId: string) {
       await con.sb.rpc("escaparate_jugada", { p_project: proyectoId });
+    },
+
+    async anuncioGaleria(proyectoId: string, tipo: "intersticial" | "premio") {
+      await con.sb.rpc("galeria_anuncio", { p_project: proyectoId, p_tipo: tipo });
+    },
+
+    async misGanancias() {
+      const { data, error } = await con.sb.rpc("mis_ganancias");
+      if (error) throw new ErrorApp("No se pudieron cargar tus ganancias.");
+      return data as MisGanancias;
+    },
+
+    async gananciasATuercas(cent: number) {
+      const { data, error } = await con.sb.rpc("ganancias_a_tuercas", { p_cent: Math.floor(cent) });
+      if (error) throw new ErrorApp(error.message.includes("insufficient") ? "No tienes tanto saldo." : "No se pudo pasar a tuercas.");
+      return data as { tuercas: number; credits: number; saldo_cent: number };
+    },
+
+    async pedirCobro(paypal: string, nombre: string, mayor: boolean) {
+      const { data, error } = await con.sb.rpc("pedir_cobro", { p_paypal: paypal, p_nombre: nombre, p_mayor: mayor });
+      if (error) {
+        const m = error.message;
+        throw new ErrorApp(m.includes("cobros_off") ? "Los cobros en dinero aún no están abiertos. Mientras, puedes pasarlo a tuercas."
+          : m.includes("below_minimum") ? "Aún no llegas al mínimo para cobrar."
+          : m.includes("adults_only") ? "Para cobrar en dinero tienes que ser mayor de edad."
+          : m.includes("bad_paypal") ? "Revisa el correo de PayPal."
+          : m.includes("bad_name") ? "Escribe tu nombre completo."
+          : m.includes("pending_exists") ? "Ya tienes un cobro pendiente: llegará pronto."
+          : "No se pudo pedir el cobro.");
+      }
+      return data as { cent: number };
     },
 
     async denunciar(que: { proyecto?: string; campana?: string }, motivo: string) {

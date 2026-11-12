@@ -7,6 +7,8 @@ import { AdMob, AdmobConsentStatus } from "@capacitor-community/admob";
 import { NativePurchases, PURCHASE_TYPE, type Transaction } from "@capgo/native-purchases";
 
 const BLOQUE_PREMIO = (import.meta.env.VITE_ADMOB_REWARDED as string | undefined) ?? "";
+/** Anuncio entre partidas de la galería (bloque intersticial de AdMob de Orquestador). */
+const BLOQUE_INTERSTICIAL = (import.meta.env.VITE_ADMOB_INTERSTICIAL as string | undefined) ?? "";
 
 export function esNativo(): boolean {
   return Capacitor.isNativePlatform();
@@ -56,6 +58,23 @@ export async function verAnuncioConPremio(usuarioId: string): Promise<boolean> {
   await AdMob.prepareRewardVideoAd({ adId: BLOQUE_PREMIO, ssv: { userId: usuarioId } });
   const premio = await AdMob.showRewardVideoAd();
   return !!premio && Number(premio.amount) > 0;
+}
+
+/** Galería: hay anuncio entre partidas (app instalada con su bloque configurado). */
+export function intersticialDisponible(): boolean {
+  return esNativo() && !!BLOQUE_INTERSTICIAL;
+}
+
+/** Muestra un anuncio entre partidas. true si se llegó a mostrar (cuenta para el reparto). */
+export async function mostrarIntersticial(): Promise<boolean> {
+  if (!intersticialDisponible() || !(await iniciarAnuncios())) return false;
+  try {
+    await AdMob.prepareInterstitial({ adId: BLOQUE_INTERSTICIAL });
+    await AdMob.showInterstitial();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 // ---------------------------------------------------------------- compras
