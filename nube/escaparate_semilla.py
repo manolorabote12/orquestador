@@ -298,6 +298,10 @@ def publicar() -> int:
 		f = p.get("files") or {}
 		if p["id"] in ya or not f.get("web"):
 			continue
+		## Sin capturas no hay portada ni critica visual: no se publica (12 nov: «Agua a Bordo» salio asi).
+		if not [c for c in (f.get("capturas") or []) if isinstance(c, str)]:
+			print(f"::warning::{p['title']}: sin capturas (ni portada ni critica), no se publica en el Escaparate")
+			continue
 		## Al Escaparate solo va lo que la critica visual aprueba (o lo que aun no tiene critica).
 		if notas.get(p["id"], 10) < NOTA_MINIMA:
 			print(f"::warning::{p['title']}: nota visual {notas[p['id']]}/10, no se publica en el Escaparate")
@@ -350,11 +354,15 @@ def capturas(carpeta: str = "capturas_muestra") -> int:
 
 
 def retirar(todos: bool = True) -> int:
-	"""Quita del Escaparate los juegos de muestra (todos o solo los de antes del arreglo del arte)."""
+	"""Quita del Escaparate los juegos de muestra (todos, o solo los de antes del arreglo del arte y los
+	que se publicaron sin capturas)."""
 	u = cuenta()
 	if not u:
 		return 0
 	viejos = {p["id"] for p in rest("GET", f"projects?select=id&user_id=eq.{u}&created_at=lt.{PUBLICAR_DESDE}") or []}
+	for p in rest("GET", f"projects?select=id,files&user_id=eq.{u}") or []:
+		if not [c for c in ((p.get("files") or {}).get("capturas") or []) if isinstance(c, str)]:
+			viejos.add(p["id"])
 	for e in rest("GET", f"escaparate?select=project_id,titulo&user_id=eq.{u}") or []:
 		if not todos and e["project_id"] not in viejos:
 			continue
