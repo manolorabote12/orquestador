@@ -38,6 +38,10 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Juego perdido a los 30 minutos | El arte de verdad tarda 22-28 min | Tiempo máximo por juego: 45 min |
 | Nadie podía compartir juegos con arte de verdad | El Escaparate admitía 20 MB por juego | 50 MB |
 | Un reintento volvía a pagar el arte | El reintento pedía un diseño nuevo | Reusa el diseño del intento que ya tenía el arte (sale de la caché) |
+| Una nave que esquiva asteroides salió como juego de plataformas | El diseño lo hacía el modelo barato y las pistas de género tomaban la primera coincidencia | El diseño lo hace el modelo superior; gana el género con más palabras clave acertadas |
+| «'str' object has no attribute 'get'» en el diseño | El modelo superior escribió frases de la historia como texto | Lo mal formado se descarta; cualquier forma rara vuelve a la IA como error para corregirla |
+| Héroe y enemigos se ven pequeños (crítica 5/10 repetida) | El dibujo medía lo mismo que la caja de choque | El dibujo va un 35-40 % más grande que la caja de choque |
+| Jefe dentro de un cuadrado azul | La IA pintó el fondo de otro color | Si el recorte por color casi no quita nada, se recorta por el color del borde |
 
 ## Reglas para no repetirlo
 
