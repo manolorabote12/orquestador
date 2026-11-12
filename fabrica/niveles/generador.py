@@ -8221,7 +8221,14 @@ def parametros_roguelike(i: int, n: int, dificultad: str, ajuste: float = 0.0, m
 	"""El heroe empieza mas fuerte en los niveles altos (como si viniera de los anteriores)."""
 	base, k = CURVA.get(dificultad, CURVA["normal"])
 	d = max(0.0, min(1.0, base + k * (i / max(1, n - 1)) + ajuste))
-	return {"hp": 20 + int(10 * d), "atk": 3 + int(2 * d), "def": int(d > 0.6), "sight": 5, "potions": 1 + int(d > 0.5)}
+	p = {"hp": 20 + int(10 * d), "atk": 3 + int(2 * d), "def": int(d > 0.6), "sight": 5, "potions": 1 + int(d > 0.5)}
+	## Nivel con jefe a mitad de juego (i % 4 == 3): con las fuerzas de un nivel normal el jefe era
+	## imposible y la fabrica fallaba tras 8 rondas («Huesitos y Zombis», 12 nov). Se llega mas fuerte.
+	if mapa and any("B" in fila for fila in mapa):
+		p["hp"] += 8
+		p["atk"] += 1
+		p["potions"] += 1
+	return p
 
 
 ## << genero roguelike

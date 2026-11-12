@@ -59,6 +59,8 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | «Caracoles Turbo» (7/10): caracoles entre rascacielos, turbo soso, sin sensación de velocidad | La ciudad salía con cualquier cielo oscuro; botón plano; sin efectos de velocidad | Ciudad solo con bioma «ciudad» (si no, árboles y camino de tierra, nieve o arena); líneas de velocidad (doradas con turbo), botón de turbo que salta al cargarse, temblor al usarlo; nombres de rivales de tamaño fijo |
 | «Pingüino Express» (6/10): pingüino pequeño, suelo de hielo cuadriculado llenando media pantalla, sin efectos al recoger | Corredor a 1,2; todo el relleno del suelo igual de claro | Corredor a 1,4; el relleno se oscurece con la profundidad; chispas y aro dorado al recoger monedas |
 | «Torre Slime» sin capturas | Xvfb revienta al cargar GLX en algunas máquinas de RunPod | Si pasa, Xvfb sin GLX y Godot con OpenGL ES (EGL) |
+| «Huesitos y Zombis» (mazmorra) fallaba siempre en el nivel 4 | El jefe de mitad de juego (cada 4 niveles) contra un héroe con las fuerzas de un nivel normal: el bot perdía en todas las rondas | En los niveles con jefe el héroe empieza con +8 de vida, +1 de ataque y una poción más |
+| Botones de la pantalla de título genéricos (crítica repetida) | Todos con el mismo icono sobre el mismo cuadrado | Cada uno con su medallón de color dentro del marco de la piel |
 
 ## Reglas para no repetirlo
 
