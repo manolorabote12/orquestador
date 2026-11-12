@@ -1,16 +1,16 @@
-# Red de seguridad y aprendizaje, gratis en GitHub Actions:
-# Cada 30 minutos (antes 15): cada pasada cuenta como 1 minuto de GitHub Actions y a 15 se comian casi 3.000 al mes.
-#  - cada 30 minutos: si queda algo en la cola (un aviso se perdio), despierta la fabrica de RunPod;
-#  - cada 6 horas: la fabrica recalibra la dificultad con las partidas de los jugadores;
-#  - cada 30 minutos: la Lanzadera marca abandonos y campanas listas para produccion;
-#  - cada 30 minutos: el vigilante del gasto (nube/vigilante.py) avisa por correo y PARA la fabrica si
-#    el gasto se dispara. Umbrales en Settings -> Variables (ORQ_ALARMA_HORA_USD, ORQ_ALARMA_RUNPOD_HORA...).
+# Reloj lento de GitHub Actions: cada 2 horas, solo lo que necesita GitHub o correo.
+#  - la web al dia con el escaparate (paginas propias de los juegos nuevos);
+#  - los juegos de muestra del escaparate;
+#  - el vigilante del gasto (nube/vigilante.py): avisa por correo y PARA la fabrica si el gasto se
+#    dispara. Umbrales en Settings -> Variables (ORQ_ALARMA_HORA_USD, ORQ_ALARMA_RUNPOD_HORA...).
+# Lo demas (Lanzadera, reto, trabajos colgados, despertar la fabrica, reembolsos y aprender) lo hace
+# Supabase con pg_cron (migracion 066): el Reloj cada 15 minutos se comio los minutos gratis del mes.
+# La parada por gasto tambien esta en la base (guardian, cada 5 minutos).
 name: Reloj
 
 on:
   schedule:
-    - cron: "7,37 * * * *"
-    - cron: "41 */6 * * *"
+    - cron: "7 */2 * * *"
   workflow_dispatch:
 
 jobs:
@@ -25,45 +25,6 @@ jobs:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
       RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
     steps:
-      - name: Lanzadera (abandonos y campanas listas)
-        run: |
-          curl -sf -X POST "$SUPABASE_URL/rest/v1/rpc/lz_revisar" -H "Content-Type: application/json" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -d '{}'
-      - name: Premiar el reto de la semana pasada (si aun no; no paga dos veces)
-        run: |
-          curl -sf -X POST "$SUPABASE_URL/rest/v1/rpc/reto_premiar_anterior" -H "Content-Type: application/json" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -d '{}' || true
-      - name: Cerrar trabajos colgados (devuelve las tuercas segun las reglas)
-        run: |
-          curl -sf -X POST "$SUPABASE_URL/rest/v1/rpc/expire_stuck_jobs" -H "Content-Type: application/json" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -d '{}' || true
-      - name: Reembolsos de Google Play (cada 6 horas)
-        if: github.event.schedule == '41 */6 * * *'
-        run: |
-          curl -sf -X POST "$SUPABASE_URL/functions/v1/play-voided" \
-            -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" -H "Content-Type: application/json" -d '{}' || true
-      - name: Buscar la fabrica
-        id: ep
-        run: |
-          id=$(curl -sf -H "Authorization: Bearer $RUNPOD_API_KEY" https://rest.runpod.io/v1/endpoints \
-            | python3 -c "import json,sys; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get('data',[]); print(next((e['id'] for e in d if e.get('name')=='orq-fabrica'),''))")
-          echo "id=$id" >> "$GITHUB_OUTPUT"
-      - name: Aprender (cada 6 horas)
-        if: github.event.schedule == '41 */6 * * *' && steps.ep.outputs.id != ''
-        run: |
-          curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
-            -d '{"input": {"tarea": "aprender"}}' "https://api.runpod.ai/v2/${{ steps.ep.outputs.id }}/run"
-      - name: Despertar si hay cola
-        if: steps.ep.outputs.id != ''
-        run: |
-          n=$(curl -sf "$SUPABASE_URL/rest/v1/jobs?status=eq.queued&select=id&limit=1" \
-            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
-            | python3 -c "import json,sys; print(len(json.load(sys.stdin)))")
-          echo "En cola: $n"
-          if [ "$n" != "0" ]; then
-            curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
-              -d '{"input": {"despertar": "reloj"}}' "https://api.runpod.ai/v2/${{ steps.ep.outputs.id }}/run"
-          fi
       ## Juego recien publicado (o actualizado) en el escaparate: se regenera la web para que su pagina
       ## propia (imagen y titulo al compartir el enlace) exista en minutos y no al dia siguiente.
       - name: Web al dia con el escaparate
@@ -71,7 +32,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          desde=$(date -u -d '16 minutes ago' +%Y-%m-%dT%H:%M:%SZ)
+          desde=$(date -u -d '125 minutes ago' +%Y-%m-%dT%H:%M:%SZ)
           n=$(curl -sf "$SUPABASE_URL/rest/v1/escaparate?updated_at=gte.$desde&select=project_id&limit=1" \
             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
             | python3 -c "import json,sys; print(len(json.load(sys.stdin)))" || echo 0)

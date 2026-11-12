@@ -11,3 +11,7 @@ verify_jwt = false
 
 [functions.review-login]
 verify_jwt = false
+
+# La llama la propia base de datos (pg_cron + pg_net) con su clave x-reloj, sin sesion de usuario.
+[functions.reloj]
+verify_jwt = false

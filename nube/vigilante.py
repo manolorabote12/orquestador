@@ -1,4 +1,4 @@
-"""Vigilante del gasto: lo ejecuta el Reloj de GitHub cada 15 minutos (sin coste extra).
+"""Vigilante del gasto: lo ejecuta el Reloj de GitHub cada 2 horas (sin coste extra).
 
 Mira en una sola llamada (vigilancia() en Supabase) y en RunPod:
 	1 - Gasto de la ultima hora por encima de ORQ_ALARMA_HORA_USD -> PARA la fabrica y avisa.
@@ -22,7 +22,7 @@ import urllib.error
 import urllib.request
 
 AGENTE = "Orquestador/1.0 (+https://github.com)"
-VENTANA_MIN = 16
+VENTANA_MIN = 125  ## el Reloj de GitHub pasa cada 2 horas (12 nov); la parada rapida la hace el guardian de la base
 
 
 def umbrales() -> dict:

@@ -239,6 +239,16 @@ jobs:
           if [ -n "${{ vars.ADMOB_REWARDED_AD_UNIT }}" ]; then
             supabase secrets set --project-ref "$REF" --yes ADMOB_REWARDED_AD_UNIT="${{ vars.ADMOB_REWARDED_AD_UNIT }}"
           fi
+      ## Reloj de la base de datos (migracion 066): apunta la direccion del proyecto para que pg_cron
+      ## pueda llamar a la funcion "reloj" (una migracion no la sabe).
+      - name: Reloj de Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          curl -sf -X POST "$SUPABASE_URL/rest/v1/rpc/reloj_configurar" -H "Content-Type: application/json" \
+            -H "apikey: $SUPABASE_SERVICE_ROLE_KEY" -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY" \
+            -d "{\"p_url\": \"$SUPABASE_URL\"}" && echo "::notice::Reloj de Supabase configurado"
       - name: Motor web (la primera vez, cuando ya existe su almacen en Supabase)
         if: ${{ inputs.primera_vez }}
         env:
