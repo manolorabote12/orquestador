@@ -80,7 +80,9 @@ def para_juego(genero: str) -> dict:
 
 
 def anotar(genero: str, eleccion: dict, nota: int, problemas: list[str]) -> None:
-	if remoto_anotar is None or not eleccion:
+	## Tambien sin mandos: la nota de cada genero se guarda igual (13 nov: la tabla seguia vacia porque
+	## los juegos de muestra eran de generos sin mandos); sirve para ver que genero puntua peor.
+	if remoto_anotar is None:
 		return
 	try:
 		remoto_anotar(genero, eleccion, int(nota), [str(p)[:30] for p in problemas][:6])
