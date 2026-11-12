@@ -45,6 +45,8 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Defensa de torres sosa: enemigos diminutos y disparos que no se notan | El kit de torres no tenía efectos de impacto | Enemigos más grandes, rayo con brillo, destello blanco al golpear, estallido y «+oro» flotante al matar, temblor con el jefe |
 | La lluvia de tuercas seguía al cambiar de pantalla | Se añadía al documento y nadie la quitaba | Al cambiar de vista se borra |
 | Naves: héroe de 25 px y fondo vacío (crítica 5/10) | Nave dibujada a 96 px y cielo con solo estrellas | Nave a 132 px, enemigos un 25 % más grandes, nebulosas suaves y un planeta lejano; chispas en cada impacto, «+puntos» flotantes, explosión grande del jefe, la nave se ladea al moverse |
+| Tuberías: tablero gris plano, sin protagonista ni pistas de qué falla | Tubos dibujados como rayas grises | Tubos de metal con brillo y bridas, agua que corre con burbujas, gotas en cada fuga, grifo que gira, marco con tornillos, el protagonista celebra cada tramo lleno, confeti al ganar |
+| Juegos del servidor sin capturas ni crítica («X11 Display is not available») | xvfb-run fallaba en silencio | La pantalla virtual se arranca a mano, se espera a que esté lista y, si no arranca, el aviso dice por qué |
 
 ## Reglas para no repetirlo
 

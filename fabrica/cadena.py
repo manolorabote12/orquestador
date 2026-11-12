@@ -126,9 +126,43 @@ def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False
 		cmd += ["--display-driver", "x11"]
 	cmd += list(args)
 	## xvfb=True: pantalla virtual propia aunque haya DISPLAY (en el servidor puede apuntar a una que no existe).
-	if display and (xvfb or not os.environ.get("DISPLAY")) and shutil.which("xvfb-run"):
-		cmd = ["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd
+	if display and (xvfb or not os.environ.get("DISPLAY")):
+		return _con_pantalla_virtual(cmd, timeout)
 	return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
+
+
+def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProcess:
+	"""Arranca Xvfb a mano, espera a que este listo y lanza Godot con ese DISPLAY.
+
+	El 12 nov xvfb-run fallaba en el servidor sin decir nada ("X11 Display is not available"):
+	asi, si la pantalla virtual no arranca, el aviso dice por que.
+	"""
+	xvfb = shutil.which("Xvfb")
+	if not xvfb:
+		if shutil.which("xvfb-run"):
+			return subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd, capture_output=True, text=True, timeout=timeout)
+		return subprocess.CompletedProcess(cmd, 1, "", "No hay Xvfb (pantalla virtual) instalado")
+	os.makedirs("/tmp/.X11-unix", mode=0o1777, exist_ok=True)
+	num = next((n for n in range(90, 140) if not os.path.exists(f"/tmp/.X11-unix/X{n}") and not os.path.exists(f"/tmp/.X{n}-lock")), 99)
+	srv = subprocess.Popen([xvfb, f":{num}", "-screen", "0", "800x1400x24", "-nolisten", "tcp", "-ac", "+extension", "GLX", "+render", "-noreset"],
+		stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+	try:
+		for _ in range(50):
+			if os.path.exists(f"/tmp/.X11-unix/X{num}") or srv.poll() is not None:
+				break
+			time.sleep(0.1)
+		if srv.poll() is not None:
+			err = (srv.stderr.read() if srv.stderr else "")[-600:]
+			return subprocess.CompletedProcess(cmd, 1, "", f"Xvfb no arranco (codigo {srv.returncode}): {err}")
+		env = dict(os.environ, DISPLAY=f":{num}")
+		env.pop("WAYLAND_DISPLAY", None)
+		return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
+	finally:
+		srv.terminate()
+		try:
+			srv.wait(timeout=5)
+		except subprocess.TimeoutExpired:
+			srv.kill()
 
 
 def validar_godot(proyecto: Path, solo_niveles: bool) -> dict:
