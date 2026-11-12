@@ -427,8 +427,43 @@ def _r_poder(nv: Nivel) -> None:
 		nv.poderes_puestos += 1
 
 
+def _r_escalera(nv: Nivel) -> None:
+	## Tres plataformas cortas que suben con monedas: premio para quien encadena saltos. Por abajo
+	## se pasa corriendo sin problema (12 nov: el corredor era siempre lo mismo).
+	x = nv.llano(11)
+	for k, (dx, alto) in enumerate(((1, 3), (4, 4), (7, 5))):
+		fila = nv.suelo - alto
+		if fila < 2:
+			break
+		for j in range(2):
+			nv.poner(x + dx + j, fila, "#")
+		nv.poner(x + dx + 1, fila - 1, "C")
+
+
+def _r_doble_hueco(nv: Nivel) -> None:
+	## Dos huecos seguidos con una isla de 3: ritmo salto-salto.
+	for _ in range(2):
+		x = len(nv.cols)
+		for _ in range(2):
+			nv.cols.append(Columna(None))
+		nv.poner(x + 1, nv.suelo - 3, "C")
+		nv.llano(3)
+
+
+def _r_carril(nv: Nivel) -> None:
+	## Carril alto sobre un campo de pinchos: arriba se corre seguro y con monedas; abajo hay que
+	## saltar cada pincho. El suelo de despues esta limpio (luego viene un respiro).
+	x = nv.llano(11)
+	for j in range(1, 10):
+		nv.poner(x + j, nv.suelo - 3, "#")
+	for j in (2, 5, 8):
+		nv.poner(x + j, nv.suelo - 1, "^")
+	for j in (3, 5, 7):
+		nv.poner(x + j, nv.suelo - 4, "C")
+
+
 ## La plataforma tambien: saltar justo al salir de debajo de ella daria con la cabeza en su borde.
-OBSTACULOS_R = {"hueco", "pinchos", "escalon", "plataforma", "patrulla", "pinchudo", "volador"}
+OBSTACULOS_R = {"hueco", "pinchos", "escalon", "plataforma", "patrulla", "pinchudo", "volador", "escalera", "doble_hueco", "carril"}
 
 
 def generar_runner(i: int, n: int, enemigos: list[str], dificultad: str, semilla: int, ajuste: float = 0.0,
@@ -459,11 +494,18 @@ def generar_runner(i: int, n: int, enemigos: list[str], dificultad: str, semilla
 			pesos["volador"] = 0.5 + 0.6 * d
 		if op.get("poderes") and nv.poderes_puestos < 2:
 			pesos["poder"] = 0.5
+		## Piezas con mas idea desde el segundo nivel.
+		if i >= 1:
+			pesos["escalera"] = 0.5
+			pesos["carril"] = 0.3 + 0.5 * d
+			if d > 0.4:
+				pesos["doble_hueco"] = 0.6 * d
 		pesos.pop(ultimo, None)
 		nombres = list(pesos)
 		elegido = rng.choices(nombres, weights=[pesos[x] for x in nombres])[0]
 		{"hueco": _r_hueco, "pinchos": _r_pinchos, "escalon": _r_escalon, "plataforma": _r_plataforma,
-			"patrulla": _r_patrulla, "pinchudo": _r_pinchudo, "volador": _r_volador, "poder": _r_poder}[elegido](nv)
+			"patrulla": _r_patrulla, "pinchudo": _r_pinchudo, "volador": _r_volador, "poder": _r_poder,
+			"escalera": _r_escalera, "doble_hueco": _r_doble_hueco, "carril": _r_carril}[elegido](nv)
 		ultimo = elegido
 		## 10 - Respiro tras cada obstaculo (con mas dificultad, un poco mas corto).
 		if elegido in OBSTACULOS_R:
