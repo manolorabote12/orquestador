@@ -659,6 +659,7 @@ def restaurar_arte(zipf: Path, proyecto: Path) -> dict:
 def disenar_previa(idea: str, simulado: bool, gasto: "llm.Gasto") -> tuple[dict, str]:
 	"""Vista previa gratis: solo el diseno (con su toque de originalidad), sin niveles ni arte.
 	Luego fabricar() lo usa tal cual si el jugador lo aprueba (args.diseno)."""
+	idea = separar_estudio(idea)[0]
 	diseno, modelo = director.disenar(idea, simulado, gasto)
 	if not simulado or os.environ.get("ORQ_ORIGINALIDAD") == "1":
 		originalidad.diferenciar(diseno, fijo="[gancho:" in idea)

@@ -580,7 +580,7 @@ def atender_previa(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 		diseno, boceto = None, None
 		try:
 			inf = cadena.fabricar(argparse.Namespace(
-				idea=trabajo["idea"], salida=str(tmp), simulado=opciones.simulado, arte_simulado=True,
+				idea=cadena.separar_estudio(trabajo["idea"])[0], salida=str(tmp), simulado=opciones.simulado, arte_simulado=True,
 				comfy=opciones.comfy, crear=opciones.crear, editar=opciones.editar, lado=opciones.lado,
 				semilla=int(job.replace("-", "")[:6], 16) % 100000, apk=False, capturas=False, web=opciones.web,
 				ficha=False, clip=False, gasto=gasto, solo_boceto=True,
@@ -589,7 +589,7 @@ def atender_previa(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 		except Exception as e:  # noqa: BLE001 - sin boceto, al menos el diseno
 			print(f"[trabajador] vista previa sin boceto ({str(e)[:160]}): solo el diseno", flush=True)
 		if diseno is None:
-			diseno, _ = cadena.disenar_previa(trabajo["idea"], opciones.simulado, gasto)
+			diseno, _ = cadena.disenar_previa(cadena.separar_estudio(trabajo["idea"])[0], opciones.simulado, gasto)
 		sb.rpc("complete_preview_job", p_job=job, p_spec=diseno, p_cost_usd=coste_real(gasto, t0), p_boceto=boceto)
 		print(f"[trabajador] vista previa lista {job}: {diseno.get('titulo')} (boceto: {'si' if boceto else 'no'})", flush=True)
 	except Exception as e:  # noqa: BLE001 - se cierra como fallida; no habia cobro
@@ -615,6 +615,11 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 	usuario = trabajo["user_id"]
 	idea = trabajo["idea"]
 	canario = bool((trabajo.get("detail") or {}).get("canario"))
+	## Modo estudio (mas IA por juego): solo lo pide el servidor (juegos de muestra o detalle «estudio»),
+	## nunca el texto que escribe el jugador.
+	idea, pide_estudio = cadena.separar_estudio(idea)
+	if pide_estudio and ((trabajo.get("detail") or {}).get("semilla") or (trabajo.get("detail") or {}).get("estudio")):
+		idea = "[estudio] " + idea
 	print(f"[trabajador] trabajo {job}{' (canario)' if canario else ''}: {idea[:80]}", flush=True)
 	gasto = llm.Gasto()
 	t0 = time.time()
