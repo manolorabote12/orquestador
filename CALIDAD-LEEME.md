@@ -64,6 +64,17 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | «Huesitos» (mazmorra, 5/10): héroe de 15 px, monstruos como círculos, fondo de perfil detrás del tablero | El frame trae margen y se escalaba entero; la mazmorra no pedía arte de monstruos; usaba el fondo ilustrado | Dibujo recortado a lo que ocupa (llena la casilla), casillas más grandes, monstruos con el arte del juego, sin fondo ilustrado |
 | La fábrica no aprendía de la crítica | Cada mejora la hacía yo a mano | Experimentos por género (cámara, tamaño, piezas): la nota de la crítica decide qué variante sale más (experimentos.py, tabla experimentos) |
 | Botones de la pantalla de título genéricos (crítica repetida) | Todos con el mismo icono sobre el mismo cuadrado | Cada uno con su medallón de color dentro del marco de la piel |
+| «Al estilo Kingshot» salió como RPG por turnos | El diseño de Sonnet se cortaba (~2.700 tokens contra un límite de 3.000) y lo terminaba Haiku | 8.000 tokens y reintento con el doble si se corta; los juegos famosos nombrados en la idea fijan su género; errores de validación en el informe |
+| Diseños genéricos («uno más» del género) | Una sola pasada de la directora | Directora creativa: 3 conceptos, autocrítica y el mejor guía el diseño (gana 8/8 a ciegas, 27,9 → 37,1 de 50) |
+| RPG: arquero pequeño y franja de suelo vacía | Personajes a 210/150 px y cámara centrada arriba | Personajes un 30 % más grandes, más abajo, con sombra |
+| Laberinto: héroe de ~20 px en laberintos grandes | El laberinto entero cabía siempre en pantalla | Casillas a 84 px como mínimo con cámara que sigue al héroe; héroe a toda la casilla |
+| «fondo_distrae» en casi todas las críticas | Fondo ilustrado nítido detrás de la partida | Fondo desenfocado y algo menos saturado (profundidad de campo) |
+| «interfaz_sosa» y «efectos_pobres» en casi todas | Botones planos; partidas sin nada en el aire | Brillo arriba de los botones; motas de luz flotando (con gráficos altos) |
+| Reino: edificios de rectángulos y triángulos | El kit los dibujaba con formas | Los 7 edificios dibujados por la IA con el mundo del juego; partículas al terminar obras y al ganar |
+| Puzle de combinar 3 con formas geométricas | Piezas vectoriales | Las 6 piezas dibujadas con el tema (su color y forma, sin forzar la paleta) |
+| Carreras: nombres de rivales montados («DrPinZumbador») | Etiquetas de tamaño fijo de todos los rivales | Solo el nombre del rival más cercano |
+| Reto del día vacío en el runner | Con las piezas nuevas el bot no superaba suficientes niveles | Niveles de reserva |
+| La tabla de experimentos seguía vacía | Solo se apuntaban géneros con mandos | Se apunta la nota de todos los géneros |
 
 ## Reglas para no repetirlo
 
