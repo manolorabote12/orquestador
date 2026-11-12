@@ -379,6 +379,10 @@ def colores_juego(paleta: list[str]) -> dict[str, str]:
 	}
 
 
+## Generos sin enemigos de plataformas pero con monstruos que se ven (12 nov: en la mazmorra eran
+## circulos de color). Se dibujan con el arte del juego.
+GENEROS_CON_MONSTRUOS = ("roguelike",)
+
 TORRES_ARTE = {
 	"rayo": "a slim fast-firing turret with a thin nozzle or antenna on top",
 	"canon": "a chunky heavy cannon tower with one big round barrel",
@@ -404,7 +408,7 @@ def a_biblia(d: dict) -> dict:
 			"hurt": {"frames": 1, "fps": 1, "bucle": False},
 		},
 	}]
-	for e in (d["enemigos"] if generos.de(d)["enemigos"] else []):
+	for e in (d["enemigos"] if generos.de(d)["enemigos"] or d.get("genero") in GENEROS_CON_MONSTRUOS else []):
 		anim_mov = {"frames": 4, "fps": 10, "bucle": True}
 		if e["tipo"] == "flyer":
 			anim_mov["pose"] = "flying in place, wings flapping"
@@ -539,7 +543,7 @@ def a_game(d: dict, niveles: list[list[str]]) -> dict:
 		"enemies": enemigos,
 		"genre": generos.de(d)["kit"],
 		"runner_ramp": {"facil": 0.15, "normal": 0.22, "dificil": 0.3}[d["dificultad"]],
-		"art": {"coin": "moneda", "enemies": {} if not generos.de(d)["enemigos"] else dict({e["tipo"]: "enemigo_" + e["tipo"] for e in d["enemigos"]}, **({"boss": "jefe"} if d.get("jefe") and _con_jefe(d) else {}))},
+		"art": {"coin": "moneda", "enemies": {} if not (generos.de(d)["enemigos"] or d.get("genero") in GENEROS_CON_MONSTRUOS) else dict({e["tipo"]: "enemigo_" + e["tipo"] for e in d["enemigos"]}, **({"boss": "jefe"} if d.get("jefe") and _con_jefe(d) else {}))},
 		"boss_name": (d.get("jefe") or {}).get("nombre", "") if _con_jefe(d) else "",
 		"texts": textos,
 		"levels": _niveles_game(d, niveles),

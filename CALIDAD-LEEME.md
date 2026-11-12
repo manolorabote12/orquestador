@@ -61,6 +61,8 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | «Torre Slime» sin capturas | Xvfb revienta al cargar GLX en algunas máquinas de RunPod | Si pasa, Xvfb sin GLX y Godot con OpenGL ES (EGL) |
 | «Huesitos y Zombis» (mazmorra) fallaba siempre en el nivel 4 | El jefe de mitad de juego (cada 4 niveles) contra un héroe con las fuerzas de un nivel normal: el bot perdía en todas las rondas | En los niveles con jefe el héroe empieza con +8 de vida, +1 de ataque y una poción más |
 | Niveles de plataformas muy parecidos entre sí | El generador solo tenía llano, escalón, hueco, pinchos, plataforma y enemigos | Piezas nuevas desde el nivel 2: escalera de plataformas con monedas, arco de monedas, atajo (abajo pinchos, arriba plataforma con premio) y emboscada (enemigo + volador con plataforma para escapar) |
+| «Huesitos» (mazmorra, 5/10): héroe de 15 px, monstruos como círculos, fondo de perfil detrás del tablero | El frame trae margen y se escalaba entero; la mazmorra no pedía arte de monstruos; usaba el fondo ilustrado | Dibujo recortado a lo que ocupa (llena la casilla), casillas más grandes, monstruos con el arte del juego, sin fondo ilustrado |
+| La fábrica no aprendía de la crítica | Cada mejora la hacía yo a mano | Experimentos por género (cámara, tamaño, piezas): la nota de la crítica decide qué variante sale más (experimentos.py, tabla experimentos) |
 | Botones de la pantalla de título genéricos (crítica repetida) | Todos con el mismo icono sobre el mismo cuadrado | Cada uno con su medallón de color dentro del marco de la piel |
 
 ## Reglas para no repetirlo

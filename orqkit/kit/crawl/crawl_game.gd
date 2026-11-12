@@ -25,6 +25,8 @@ var _view: Control
 var _info: Label
 var _potion_btn: Button
 var _hero_tex: Texture2D = null
+## Dibujos de los monstruos por letra del mapa (recortados a lo que ocupa el dibujo).
+var _mon_tex: Dictionary = {}
 var _path: Array = []
 var _walk_t: float = 0.0
 var _cam: Vector2 = Vector2.ZERO
@@ -45,8 +47,18 @@ func _ready() -> void:
 		var sf: SpriteFrames = SpriteKit.frames_de(hero)
 		for anim: String in sf.get_animation_names():
 			if sf.get_frame_count(anim) > 0:
-				_hero_tex = sf.get_frame_texture(anim, 0)
+				_hero_tex = _recortar(sf.get_frame_texture(anim, 0))
 				break
+	## Monstruos con el arte del juego (antes eran circulos de color; la critica: «nivel vacio»).
+	for letra: String in ["r", "g", "s", "o", "B"]:
+		var rol: String = {"r": "walker", "g": "spiky", "s": "flyer", "o": "spiky", "B": "boss"}[letra]
+		var e: Dictionary = Kit.sprite_entry(str(Kit.param("art.enemies." + rol, "")))
+		if not e.is_empty():
+			var sfm: SpriteFrames = SpriteKit.frames_de(e)
+			for an: String in sfm.get_animation_names():
+				if sfm.get_frame_count(an) > 0:
+					_mon_tex[letra] = _recortar(sfm.get_frame_texture(an, 0))
+					break
 	_build_hud()
 	_reset()
 	Audio.play_track("nivel")
@@ -55,6 +67,27 @@ func _ready() -> void:
 
 func wants_grade() -> bool:
 	return false
+
+
+## Vista desde arriba: el fondo ilustrado (de perfil) no pega detras del tablero y distraia.
+func wants_backdrop() -> bool:
+	return false
+
+
+## El frame trae margen transparente alrededor: se recorta a lo que ocupa el dibujo para que el
+## personaje llene su casilla (12 nov: el heroe media 15 px en el movil, critica 5/10).
+func _recortar(tex: Texture2D) -> Texture2D:
+	if tex == null:
+		return null
+	var img: Image = tex.get_image()
+	if img == null or img.is_empty():
+		return tex
+	if img.is_compressed():
+		img.decompress()
+	var used: Rect2i = img.get_used_rect()
+	if used.size.x < 2 or used.size.y < 2:
+		return tex
+	return ImageTexture.create_from_image(img.get_region(used))
 
 
 func bot_script() -> String:
@@ -100,7 +133,7 @@ func _build_hud() -> void:
 	_info = Label.new()
 	_info.name = "Info"
 	_info.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_info.add_theme_font_size_override("font_size", 26)
+	_info.add_theme_font_size_override("font_size", 28)
 	_info.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.9))
 	_info.add_theme_constant_override("outline_size", 6)
 	top.add_child(_info)
@@ -144,7 +177,8 @@ func can_act() -> bool:
 
 
 func _cs() -> float:
-	return minf(_view.size.x / 9.0, 80.0)
+	## Casillas mas grandes (7,5 de ancho): heroe y monstruos se leen en el movil (12 nov).
+	return minf(_view.size.x / 7.5, 110.0)
 
 
 ## Casilla bajo un punto de la vista (la camara centra al heroe).
@@ -357,10 +391,14 @@ func _draw_view() -> void:
 		var c: Vector2 = o + (Vector2(m["p"]) + Vector2(0.5, 0.5)) * cs
 		var big: float = 1.3 if str(m["k"]) == "B" else 1.0
 		var col: Color = Color(str(MON_COL.get(str(m["k"]), "#aaaaaa")))
-		_view.draw_circle(c + Vector2(0, cs * 0.06), cs * 0.36 * big, Color(0, 0, 0, 0.4))
-		_view.draw_circle(c, cs * 0.34 * big, col)
-		_view.draw_circle(c + Vector2(-cs * 0.11, -cs * 0.06) * big, cs * 0.06 * big, Color.BLACK if str(m["k"]) != "B" else Color("#ffd54f"))
-		_view.draw_circle(c + Vector2(cs * 0.11, -cs * 0.06) * big, cs * 0.06 * big, Color.BLACK if str(m["k"]) != "B" else Color("#ffd54f"))
+		_view.draw_circle(c + Vector2(0, cs * 0.3), cs * 0.3 * big, Color(0, 0, 0, 0.35))
+		var mt: Texture2D = _mon_tex.get(str(m["k"]), null)
+		if mt != null:
+			_draw_fit(mt, c, cs * 0.9 * big, sin(_t * 4.0 + float(Vector2(m["p"]).x)) * cs * 0.03)
+		else:
+			_view.draw_circle(c, cs * 0.34 * big, col)
+			_view.draw_circle(c + Vector2(-cs * 0.11, -cs * 0.06) * big, cs * 0.06 * big, Color.BLACK if str(m["k"]) != "B" else Color("#ffd54f"))
+			_view.draw_circle(c + Vector2(cs * 0.11, -cs * 0.06) * big, cs * 0.06 * big, Color.BLACK if str(m["k"]) != "B" else Color("#ffd54f"))
 		if not bool(m["awake"]):
 			_view.draw_string(_view.get_theme_font("font", "Label"), c + Vector2(cs * 0.2, -cs * 0.25), "z", HORIZONTAL_ALIGNMENT_LEFT, -1, 22, Color(1, 1, 1, 0.8))
 		if int(m["hp"]) < int(m["max"]):
@@ -370,9 +408,8 @@ func _draw_view() -> void:
 	## Heroe.
 	var hc: Vector2 = o + (Vector2(st["p"]) + Vector2(0.5, 0.5)) * cs
 	if _hero_tex != null:
-		var ts: Vector2 = _hero_tex.get_size()
-		var k2: float = cs * 0.95 / maxf(ts.x, ts.y)
-		_view.draw_texture_rect(_hero_tex, Rect2(hc - ts * k2 * 0.5, ts * k2), false)
+		_view.draw_circle(hc + Vector2(0, cs * 0.32), cs * 0.3, Color(0, 0, 0, 0.35))
+		_draw_fit(_hero_tex, hc, cs * 0.96, absf(sin(_t * 3.0)) * -cs * 0.03)
 	else:
 		_view.draw_circle(hc, cs * 0.36, Color("#4cc9f0"))
 	## Numeros.
@@ -382,6 +419,13 @@ func _draw_view() -> void:
 		var fp: Vector2 = o + (Vector2(fd["at"]) + Vector2(0.1, 0.2)) * cs - Vector2(0, float(fd["t"]) * 40.0)
 		_view.draw_string_outline(font, fp, str(fd["txt"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 28, 6, Color.BLACK)
 		_view.draw_string(font, fp, str(fd["txt"]), HORIZONTAL_ALIGNMENT_LEFT, -1, 28, fd["col"])
+
+
+## Dibujo centrado en la casilla, que ocupa como mucho «lado» (y un poco de vaiven).
+func _draw_fit(tex: Texture2D, c: Vector2, lado: float, dy: float) -> void:
+	var ts: Vector2 = tex.get_size()
+	var k: float = lado / maxf(ts.x, ts.y)
+	_view.draw_texture_rect(tex, Rect2(c - ts * k * 0.5 + Vector2(0, dy), ts * k), false)
 
 
 func _item(c: Vector2, it: String, cs: float) -> void:
