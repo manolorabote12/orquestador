@@ -1,5 +1,6 @@
 """Directora creativa (director/conceptos.py) y laboratorio, sin IA: respuestas falsas del modelo."""
 
+import os
 import random
 import sys
 from pathlib import Path
@@ -102,9 +103,28 @@ check("informe: resumen y tabla", "B gana 1 de 1" in inf and "| gancho | 5.0 | 9
 director.disenar("un juego de gatos", True, llm.Gasto())
 check("simulado: sin concepto", director.ULTIMO_CONCEPTO is None)
 
+## Genero a medida automatico (modo estudio): solo con ORQ_A_MEDIDA_AUTO=1.
+from director import simulado as _sim  # noqa: E402
+am = dict(bueno, final=dict(bueno["final"], genero="a_medida", gancho="un juego de gravedad que se invierte"))
+check("a medida sin modo estudio: genero no valido", any("a_medida" in e for e in conceptos.validar(am)))
+os.environ["ORQ_A_MEDIDA_AUTO"] = "1"
+check("a medida en modo estudio: valido", conceptos.validar(am) == [], conceptos.validar(am))
+check("catalogo con a_medida en modo estudio", "- a_medida:" in conceptos.catalogo())
+real_exp, real_router = conceptos.explorar, llm.con_router
+conceptos.explorar = lambda idea, g, p=None: am
+llm.con_router = lambda sis, usu, h, val, g, primero_superior=False: (_sim.disenar("un gato"), "x")
+os.environ["ORQ_CONCEPTOS"] = "1"
+d_am, _ = director.disenar("un juego donde la gravedad cambia cada vez que respiras", False, llm.Gasto())
+check("a medida automatico: genero y concepto para el programador", d_am["genero"] == "a_medida"
+	and "gravedad que se invierte" in d_am["a_medida"]["descripcion"], d_am.get("genero"))
+os.environ.pop("ORQ_A_MEDIDA_AUTO")
+d_n, _ = director.disenar("un juego donde la gravedad cambia cada vez que respiras", False, llm.Gasto())
+check("sin modo estudio no se pasa a medida", d_n["genero"] != "a_medida", d_n["genero"])
+os.environ.pop("ORQ_CONCEPTOS")
+conceptos.explorar, llm.con_router = real_exp, real_router
+
 ## Modo estudio: la marca se quita y los ajustes valen solo para ese juego.
 import argparse  # noqa: E402
-import os  # noqa: E402
 
 import cadena  # noqa: E402
 

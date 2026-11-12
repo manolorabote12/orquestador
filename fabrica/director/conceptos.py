@@ -98,9 +98,17 @@ def activo() -> bool:
 	return os.environ.get("ORQ_CONCEPTOS", "0") == "1"
 
 
+def a_medida_auto() -> bool:
+	"""Modo estudio: la directora creativa puede pedir un genero programado solo para este juego."""
+	return os.environ.get("ORQ_A_MEDIDA_AUTO", "0") == "1"
+
+
 def catalogo() -> str:
-	return "GENEROS (id: que es):\n" + "\n".join(
-		f"- {g}: {d['etiqueta']}" for g, d in generos.GENEROS.items() if g != "a_medida")
+	lineas = [f"- {g}: {d['etiqueta']}" for g, d in generos.GENEROS.items() if g != "a_medida"]
+	if a_medida_auto():
+		lineas.append("- a_medida: un genero NUEVO programado solo para este juego. Solo si NINGUNO de los de arriba "
+			"puede jugar la idea de verdad (es mas lento y arriesgado); describe muy bien sus reglas en giro y primer_minuto.")
+	return "GENEROS (id: que es):\n" + "\n".join(lineas)
 
 
 def _objeto(v: object) -> object:
@@ -135,10 +143,10 @@ def validar(x: dict) -> list[str]:
 	if len(cs) != 3:
 		err.append("hacen falta exactamente 3 conceptos")
 	for i, c in enumerate(cs):
-		if str(c.get("genero", "")) not in generos.GENEROS:
+		if str(c.get("genero", "")) not in generos.GENEROS or (c.get("genero") == "a_medida" and not a_medida_auto()):
 			err.append(f"concepto {i + 1}: genero «{c.get('genero')}» no esta en la lista GENEROS")
 	f = x.get("final") or {}
-	if str(f.get("genero", "")) not in generos.GENEROS:
+	if str(f.get("genero", "")) not in generos.GENEROS or (f.get("genero") == "a_medida" and not a_medida_auto()):
 		err.append(f"final: genero «{f.get('genero')}» no esta en la lista GENEROS")
 	if len({str(c.get("gancho", ""))[:60].lower() for c in cs}) < len(cs):
 		err.append("los conceptos repiten gancho: tienen que ser distintos")

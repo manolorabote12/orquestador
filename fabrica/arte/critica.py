@@ -12,6 +12,7 @@ con vision). Sin capturas o sin IA, no hace nada.
 
 import base64
 import io
+import os
 from pathlib import Path
 
 from PIL import Image
@@ -72,7 +73,9 @@ def criticar(capturas: list[str], titulo: str, genero: str, gasto: llm.Gasto) ->
 	contenido: list[dict] = [{"type": "image", "source": {"type": "base64", "media_type": "image/png", "data": _png(c)}} for c in elegidas]
 	contenido.append({"type": "text", "text": f"Juego: «{titulo}» (genero: {genero}). Capturas: titulo, partida y, si hay, el jefe. Llama a la herramienta."})
 	try:
-		r = llm.llamar_herramienta(llm.MODELOS[0], SISTEMA, [{"role": "user", "content": contenido}], HERRAMIENTA, gasto, "critica_visual", max_tokens=1000)
+		## Modo estudio: critica con el modelo superior (ORQ_MODELO_CRITICA); normal, el barato.
+		modelo = os.environ.get("ORQ_MODELO_CRITICA") or llm.MODELOS[0]
+		r = llm.llamar_herramienta(modelo, SISTEMA, [{"role": "user", "content": contenido}], HERRAMIENTA, gasto, "critica_visual", max_tokens=1000)
 	except Exception:  # noqa: BLE001 - la critica nunca para un juego
 		return None
 	return normalizar(r)

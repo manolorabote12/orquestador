@@ -329,6 +329,7 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 	import plantillas
 	## Genero hecho a medida (capa 3): la app lo pide con «[a_medida]» delante de la idea.
 	a_medida = idea.strip().startswith("[a_medida]")
+	descripcion_extra = ""  ## concepto de la directora creativa para el programador (genero a medida automatico)
 	idea = idea.strip()[len("[a_medida]"):].strip() if a_medida else idea
 	idea, plantilla = plantillas.separar(idea.strip())
 	idea, gancho = giros.separar(idea)
@@ -345,7 +346,7 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 		## A medida solo si se pide; y si se pide, siempre (la descripcion es la idea tal cual).
 		if a_medida:
 			x["genero"] = "a_medida"
-			x["a_medida"] = {"descripcion": idea[:1200]}
+			x["a_medida"] = {"descripcion": (idea + descripcion_extra)[:1200]}
 			x["giros"] = []
 			x.pop("contenido", None)
 		elif x.get("genero") == "a_medida":
@@ -388,6 +389,12 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 		ULTIMO_CONCEPTO = conceptos.explorar(idea, gasto, pistas)
 		if ULTIMO_CONCEPTO:
 			usuario += "\n\n" + conceptos.guia(ULTIMO_CONCEPTO)
+			## Modo estudio: si ningun genero encaja, la directora creativa pide uno hecho a medida.
+			f = ULTIMO_CONCEPTO["final"]
+			if f.get("genero") == "a_medida" and conceptos.a_medida_auto() and not fam:
+				a_medida = True
+				descripcion_extra = ("\nConcepto: " + "; ".join(str(f.get(k, "")) for k in
+					("gancho", "giro", "primer_minuto", "momento_estrella", "progresion")))
 	usuario += "\n\n" + giros.guia(gancho["genero"] if gancho else None)
 	import contenido
 	usuario += "\n\n" + contenido.guia(gancho["genero"] if gancho else None)

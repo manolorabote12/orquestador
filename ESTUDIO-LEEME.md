@@ -11,11 +11,19 @@ premium).
 |---|---|---|
 | Diseño | Una pasada de la directora | **Directora creativa**: 3 conceptos distintos, autocrítica (gancho, claridad, retención, originalidad, encaje), elige y mejora el mejor; el diseño lo sigue |
 | Género a medida | 3 rondas, tope 3 $ | 8 rondas, tope 6 $, con memoria de lo que ya falló |
+| Género | Uno de los 120 de plantilla | Si ninguno encaja, la directora creativa pide un **género a medida** (Claude lo programa) |
+| Crítica visual | Modelo barato | Modelo superior (decide qué se queda en el pulido) |
 | Pulido | — | Hasta 3 rondas: capturas → crítica visual → arreglo → otra crítica. Se queda solo si los bots siguen ganando y la nota no baja |
 
 Variables (las pone el modo estudio solo para ese juego): `ORQ_CONCEPTOS=1`,
-`ORQ_A_MEDIDA_RONDAS`, `ORQ_A_MEDIDA_USD`, `ORQ_PULIR_RONDAS`, `ORQ_PULIR_USD` y
+`ORQ_A_MEDIDA_AUTO=1`, `ORQ_MODELO_CRITICA`, `ORQ_A_MEDIDA_RONDAS`, `ORQ_A_MEDIDA_USD`, `ORQ_PULIR_RONDAS`, `ORQ_PULIR_USD` y
 `ORQ_MODELO_PROGRAMADOR` (modelo para programar; por defecto el superior).
+
+## Resultado del laboratorio (13 nov, 8 ideas, juez a ciegas)
+
+La directora creativa gana **8 de 8**. Media sobre 50: 27,9 → 37,1. Gancho 5,2 → 7,6; retención
+4,9 → 7,2; originalidad 3,5 → 7,1; encaje con la idea 7,5 → 8,4; claridad igual (6,8). Coste del
+laboratorio: 1,74 $.
 
 ## Piezas
 
