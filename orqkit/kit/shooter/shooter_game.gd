@@ -121,6 +121,11 @@ func capture_delays() -> Vector2:
 
 
 ## Los bots: QaBot juega este genero con el script que devuelve esta funcion.
+## El espacio ya tiene sus estrellas y nebulosas: sin motas de ambiente encima (look.gd).
+func wants_ambient() -> bool:
+	return false
+
+
 func bot_script() -> String:
 	return "res://qa/shooter_bot.gd"
 
