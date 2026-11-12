@@ -143,26 +143,38 @@ def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProces
 			return subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd, capture_output=True, text=True, timeout=timeout)
 		return subprocess.CompletedProcess(cmd, 1, "", "No hay Xvfb (pantalla virtual) instalado")
 	os.makedirs("/tmp/.X11-unix", mode=0o1777, exist_ok=True)
-	num = next((n for n in range(90, 140) if not os.path.exists(f"/tmp/.X11-unix/X{n}") and not os.path.exists(f"/tmp/.X{n}-lock")), 99)
-	srv = subprocess.Popen([xvfb, f":{num}", "-screen", "0", "800x1400x24", "-nolisten", "tcp", "-ac", "+extension", "GLX", "+render", "-noreset"],
-		stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
-	try:
-		for _ in range(50):
-			if os.path.exists(f"/tmp/.X11-unix/X{num}") or srv.poll() is not None:
-				break
-			time.sleep(0.1)
-		if srv.poll() is not None:
-			err = (srv.stderr.read() if srv.stderr else "")[-600:]
-			return subprocess.CompletedProcess(cmd, 1, "", f"Xvfb no arranco (codigo {srv.returncode}): {err}")
-		env = dict(os.environ, DISPLAY=f":{num}")
-		env.pop("WAYLAND_DISPLAY", None)
-		return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
-	finally:
-		srv.terminate()
+	errores = []
+	## 12 nov: con "+extension GLX +render" Xvfb a veces se caia al arrancar (Segmentation fault en
+	## InitExtensions). Primero sin extras; si no arranca, con ellas; y al final xvfb-run.
+	for extra in ([], ["+extension", "GLX", "+render"]):
+		num = next((n for n in range(90, 140) if not os.path.exists(f"/tmp/.X11-unix/X{n}") and not os.path.exists(f"/tmp/.X{n}-lock")), 99)
+		srv = subprocess.Popen([xvfb, f":{num}", "-screen", "0", "800x1400x24", "-nolisten", "tcp", "-ac", "-noreset", *extra],
+			stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
 		try:
-			srv.wait(timeout=5)
-		except subprocess.TimeoutExpired:
-			srv.kill()
+			for _ in range(50):
+				if os.path.exists(f"/tmp/.X11-unix/X{num}") or srv.poll() is not None:
+					break
+				time.sleep(0.1)
+			if srv.poll() is not None:
+				err = (srv.stderr.read() if srv.stderr else "")
+				errores.append(f"Xvfb {' '.join(extra) or 'basico'} no arranco (codigo {srv.returncode}): " + err[-300:])
+				continue
+			env = dict(os.environ, DISPLAY=f":{num}")
+			env.pop("WAYLAND_DISPLAY", None)
+			return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
+		finally:
+			if srv.poll() is None:
+				srv.terminate()
+				try:
+					srv.wait(timeout=5)
+				except subprocess.TimeoutExpired:
+					srv.kill()
+	if shutil.which("xvfb-run"):
+		r = subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd, capture_output=True, text=True, timeout=timeout)
+		if r.returncode == 0:
+			return r
+		errores.append("xvfb-run: " + (r.stderr or "")[-300:])
+	return subprocess.CompletedProcess(cmd, 1, "", " | ".join(errores))
 
 
 def validar_godot(proyecto: Path, solo_niveles: bool) -> dict:
