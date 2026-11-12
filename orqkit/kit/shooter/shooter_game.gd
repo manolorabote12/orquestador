@@ -73,6 +73,9 @@ var _drag_from: float = 0.0
 var _drag_x: float = 0.0
 var _dragging: bool = false
 var _sparks: Array[Dictionary] = []
+var _muzzle: float = 0.0
+## Nebulosas y un planeta lejano: el fondo no queda vacio (critica «fondo_vacio»).
+var _nebulas: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -88,6 +91,10 @@ func _ready() -> void:
 	rng.seed = 99 + Kit.level_index
 	for i: int in 90:
 		_stars.append(Vector3(rng.randf() * W, rng.randf() * H, rng.randf_range(0.2, 1.0)))
+	var tints: Array[Color] = [Kit.color("accent", Color("#e8b04b")), Kit.color("enemy", Color("#d9774a")), Kit.color("solid", Color("#4f6787"))]
+	for i: int in 5:
+		_nebulas.append({"pos": Vector2(rng.randf() * W, rng.randf() * H * 1.4), "r": rng.randf_range(160.0, 300.0),
+			"col": tints[i % tints.size()].lerp(Kit.color("sky", Color("#0b0f1a")), 0.55), "planet": i == 2})
 	_world = Node2D.new()
 	_world.name = "World"
 	add_child(_world)
@@ -143,7 +150,7 @@ func _build_player() -> void:
 	add_child(_player)
 	var art: Dictionary = Kit.sprite_by_role("jugador")
 	if not art.is_empty():
-		var spr: AnimatedSprite2D = SpriteKit.animado(art, 96.0, "idle", false)
+		var spr: AnimatedSprite2D = SpriteKit.animado(art, 132.0, "idle", false)
 		_player.add_child(spr)
 		Skins.apply(spr)
 	else:
@@ -158,6 +165,12 @@ func _build_player() -> void:
 	flame.polygon = PackedVector2Array([Vector2(-12, 38), Vector2(12, 38), Vector2(0, 74)])
 	flame.z_index = -1
 	_player.add_child(flame)
+	var glow: Polygon2D = Polygon2D.new()
+	glow.name = "Glow"
+	glow.color = Color(1.0, 0.55, 0.2, 0.35)
+	glow.polygon = PackedVector2Array([Vector2(-20, 34), Vector2(20, 34), Vector2(0, 96)])
+	glow.z_index = -2
+	_player.add_child(glow)
 
 
 func _build_hud() -> void:
@@ -295,7 +308,7 @@ func _spawn_enemy(kind: String, at: Vector2) -> void:
 	var art_id: String = str(Kit.param("art.enemies." + str(k["art"]), "")) if str(k["art"]) != "" else ""
 	var entry: Dictionary = Kit.sprite_entry(art_id) if art_id != "" else {}
 	if not entry.is_empty():
-		var spr: AnimatedSprite2D = SpriteKit.animado(entry, float(k["r"]) * 2.3, "run", false)
+		var spr: AnimatedSprite2D = SpriteKit.animado(entry, float(k["r"]) * 2.9, "run", false)
 		spr.flip_v = false
 		n.add_child(spr)
 	elif kind == "A":
@@ -322,7 +335,7 @@ func _spawn_boss() -> void:
 	_world.add_child(n)
 	var entry: Dictionary = Kit.sprite_entry(str(Kit.param("art.enemies.boss", "")))
 	if not entry.is_empty():
-		n.add_child(SpriteKit.animado(entry, 210.0, "run", false))
+		n.add_child(SpriteKit.animado(entry, 250.0, "run", false))
 	else:
 		var body: Polygon2D = Polygon2D.new()
 		body.color = Kit.color("danger", Color("#ff6b5b"))
@@ -396,6 +409,7 @@ func steer_input() -> float:
 
 
 func _move_player(delta: float) -> void:
+	var before: float = player_x
 	var target: float = player_x
 	if bot_x != INF:
 		target = bot_x
@@ -404,6 +418,9 @@ func _move_player(delta: float) -> void:
 	else:
 		target = player_x + steer_input() * 900.0 * delta
 	player_x = clampf(move_toward(player_x, target, 1300.0 * delta), 40.0, W - 40.0)
+	## La nave se ladea hacia donde va.
+	var lean: float = clampf((player_x - before) / maxf(delta, 0.001) / 1300.0, -1.0, 1.0) * 0.28
+	_player.rotation = lerpf(_player.rotation, lean, minf(1.0, delta * 12.0))
 
 
 func _place_player() -> void:
@@ -412,6 +429,9 @@ func _place_player() -> void:
 	var flame: Node2D = _player.get_node_or_null("Flame")
 	if flame != null:
 		flame.scale.y = 0.8 + 0.3 * sin(time_in_level * 30.0)
+	var glow: Node2D = _player.get_node_or_null("Glow")
+	if glow != null:
+		glow.scale = Vector2(1.0 + 0.15 * sin(time_in_level * 23.0), 0.85 + 0.25 * sin(time_in_level * 17.0))
 
 
 func _fire() -> void:
@@ -423,6 +443,7 @@ func _fire() -> void:
 	if weapon >= 3:
 		shots.append(p + Vector2(-44.0, 22.0))
 		shots.append(p + Vector2(44.0, 22.0))
+	_muzzle = 0.06
 	if not fast and Engine.get_physics_frames() % 3 == 0:
 		Audio.play("shoot", 0.1, -16.0)
 
@@ -434,10 +455,12 @@ func _move_shots(delta: float) -> void:
 		var hit: bool = false
 		for e: Dictionary in enemies:
 			if (e["pos"] as Vector2).distance_to(n) < float(e["r"]) + 8.0:
+				_impact(n)
 				_damage_enemy(e, 1)
 				hit = true
 				break
 		if not hit and not boss.is_empty() and (boss["pos"] as Vector2).distance_to(n) < float(boss["r"]) and float((boss["pos"] as Vector2).y) > 40.0:
+			_impact(n)
 			_damage_boss(1)
 			hit = true
 		if not hit and n.y > -40.0:
@@ -455,6 +478,12 @@ func _damage_enemy(e: Dictionary, dmg: int) -> void:
 		_burst(e["pos"], Kit.color("enemy", Color("#d9774a")), 14)
 		if not fast:
 			Audio.play("stomp", 0.1, -6.0)
+			var big: bool = int(KINDS[e["kind"]]["hp"]) >= 4
+			Juice.burst(_world, e["pos"], Kit.color("enemy", Color("#d9774a")), 18 if big else 12, 340.0 if big else 260.0)
+			Juice.sparkle(_world, e["pos"], Color(1.0, 0.85, 0.4), 6)
+			_flota(e["pos"], "+%d" % int(KINDS[e["kind"]]["score"]))
+			if big:
+				Juice.shake(0.18)
 	elif not fast:
 		(e["node"] as Node2D).modulate = Color(2, 2, 2)
 		var tw: Tween = (e["node"] as Node2D).create_tween()
@@ -464,6 +493,11 @@ func _damage_enemy(e: Dictionary, dmg: int) -> void:
 func _damage_boss(dmg: int) -> void:
 	boss["hp"] = int(boss["hp"]) - dmg
 	_update_hud()
+	if not fast and int(boss["hp"]) > 0:
+		var bn: Node2D = boss["node"]
+		bn.modulate = Color(2, 2, 2)
+		var bt: Tween = bn.create_tween()
+		bt.tween_property(bn, "modulate", Color.WHITE, 0.1)
 	if int(boss["hp"]) <= 0:
 		_burst(boss["pos"], Kit.color("danger", Color("#ff6b5b")), 40)
 		(boss["node"] as Node2D).queue_free()
@@ -471,6 +505,13 @@ func _damage_boss(dmg: int) -> void:
 		if not fast:
 			Audio.play("win", 0.0, -4.0)
 			Juice.shake(0.6)
+			Juice.hitstop(0.12)
+			for i: int in 4:
+				var off: Vector2 = Vector2(randf_range(-90, 90), randf_range(-50, 50))
+				Juice.burst(_world, (boss["pos"] as Vector2) + off, Kit.color("danger", Color("#ff6b5b")), 16, 380.0)
+			Juice.ring(_world, boss["pos"], Color(1, 0.9, 0.6), 220.0, 0.5)
+			Juice.confetti(_world, boss["pos"])
+			_flota(boss["pos"], "+500")
 		boss = {}
 		_boss_bar.visible = false
 
@@ -553,6 +594,8 @@ func _move_pickups(delta: float) -> void:
 		var p: Vector2 = (it["pos"] as Vector2) + Vector2(0.0, enemy_speed() * 0.9 * delta)
 		if p.distance_to(Vector2(player_x, PLAYER_Y)) < 60.0:
 			(it["node"] as Node2D).queue_free()
+			if not fast:
+				Juice.sparkle(_world, p, Color(1.0, 0.9, 0.45) if it["kind"] == "C" else Kit.color("accent", Color("#e8b04b")), 7)
 			if it["kind"] == "C":
 				coins += 1
 				if not fast:
@@ -562,6 +605,8 @@ func _move_pickups(delta: float) -> void:
 				QA.log_event("weapon_up", {"level": weapon})
 				if not fast:
 					Audio.play("powerup", 0.05, -4.0)
+					Juice.ring(_world, Vector2(player_x, PLAYER_Y), Kit.color("accent", Color("#e8b04b")), 110.0, 0.4)
+					_flota(Vector2(player_x, PLAYER_Y - 70.0), Kit.text("shooter_power", "¡Arma +1!"))
 			_update_hud()
 			continue
 		if p.y > H + 40.0:
@@ -583,8 +628,37 @@ func _hurt(cause: String) -> void:
 		Audio.play("hurt")
 		Juice.shake(0.35)
 		Juice.vibrate(40)
+		Juice.burst(_world, Vector2(player_x, PLAYER_Y), Kit.color("danger", Color("#ff6b5b")), 14, 300.0)
+		Juice.ring(_world, Vector2(player_x, PLAYER_Y), Color(1, 0.4, 0.35), 90.0, 0.3)
 	if hp <= 0:
 		_lose()
+
+
+## Chispa pequena donde da cada disparo (se nota que acierta).
+func _impact(at: Vector2) -> void:
+	if fast:
+		return
+	_sparks.append({"pos": at, "vel": Vector2(randf_range(-90, 90), randf_range(-60, 40)), "life": 0.18, "col": Color(1, 0.95, 0.7)})
+	_sparks.append({"pos": at, "vel": Vector2(randf_range(-160, 160), randf_range(-120, 0)), "life": 0.22, "col": Kit.color("accent", Color("#e8b04b")).lightened(0.4)})
+
+
+## Texto que sube y se apaga (puntos, mejoras).
+func _flota(at: Vector2, txt: String) -> void:
+	if fast:
+		return
+	var l: Label = Label.new()
+	l.text = txt
+	l.add_theme_font_size_override("font_size", 34)
+	l.add_theme_color_override("font_color", Color(1.0, 0.9, 0.45))
+	l.add_theme_color_override("font_outline_color", Color(0.1, 0.05, 0.0))
+	l.add_theme_constant_override("outline_size", 8)
+	l.z_index = 30
+	l.position = at + Vector2(-40, -30)
+	_world.add_child(l)
+	var tw: Tween = l.create_tween().set_parallel()
+	tw.tween_property(l, "position:y", l.position.y - 80.0, 0.7).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tw.tween_property(l, "modulate:a", 0.0, 0.7).set_delay(0.25)
+	tw.chain().tween_callback(l.queue_free)
 
 
 func _burst(at: Vector2, col: Color, n: int) -> void:
@@ -683,6 +757,24 @@ func bot_state() -> Dictionary:
 func _draw_sky() -> void:
 	var base: Color = Kit.color("sky", Color("#0b0f1a"))
 	var star: Color = base.lightened(0.75)
+	for nb: Dictionary in _nebulas:
+		var span: float = H * 1.4 + 600.0
+		var c: Vector2 = nb["pos"]
+		c.y = fposmod(c.y + time_in_level * (34.0 if nb["planet"] else 14.0), span) - 300.0
+		var rad: float = float(nb["r"])
+		var col: Color = nb["col"]
+		if nb["planet"]:
+			## Planeta: disco con sombra y anillo.
+			rad *= 0.42
+			_sky.draw_circle(c, rad * 1.25, Color(col, 0.10))
+			_sky.draw_circle(c, rad, col.lightened(0.1))
+			_sky.draw_circle(c + Vector2(rad * 0.28, rad * 0.22), rad * 0.86, Color(base, 0.45))
+			_sky.draw_arc(c, rad * 1.55, -0.35, PI + 0.35, 40, Color(col.lightened(0.35), 0.5), 5.0, true)
+		else:
+			## Degradado suave: muchos discos concentricos casi transparentes.
+			for k: int in 14:
+				var f: float = 1.0 - float(k) / 14.0
+				_sky.draw_circle(c + Vector2(sin(float(k) * 0.9) * rad * 0.08, 0.0), rad * f, Color(col, 0.028))
 	for i: int in _stars.size():
 		var s: Vector3 = _stars[i]
 		var y: float = fposmod(s.y + time_in_level * 220.0 * s.z, H)
@@ -692,7 +784,12 @@ func _draw_sky() -> void:
 func _draw_fx() -> void:
 	var shot_col: Color = Kit.color("accent", Color("#e8b04b")).lightened(0.3)
 	for s: Vector2 in shots:
+		_fx.draw_rect(Rect2(s + Vector2(-7.0, -18.0), Vector2(14.0, 30.0)), Color(shot_col, 0.25))
 		_fx.draw_rect(Rect2(s + Vector2(-3.0, -14.0), Vector2(6.0, 22.0)), shot_col)
+		_fx.draw_rect(Rect2(s + Vector2(-1.0, -12.0), Vector2(2.0, 16.0)), Color(1, 1, 1, 0.9))
+	if _muzzle > 0.0 and not fast:
+		_muzzle -= get_physics_process_delta_time()
+		_fx.draw_circle(Vector2(player_x, PLAYER_Y - 56.0), 14.0, Color(1, 0.95, 0.7, 0.55))
 	var danger: Color = Kit.color("danger", Color("#ff6b5b"))
 	for b: Dictionary in bullets:
 		_fx.draw_circle(b["pos"], 10.0, Color(danger, 0.35))

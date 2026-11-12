@@ -44,6 +44,7 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Jefe dentro de un cuadrado azul | La IA pintó el fondo de otro color | Si el recorte por color casi no quita nada, se recorta por el color del borde |
 | Defensa de torres sosa: enemigos diminutos y disparos que no se notan | El kit de torres no tenía efectos de impacto | Enemigos más grandes, rayo con brillo, destello blanco al golpear, estallido y «+oro» flotante al matar, temblor con el jefe |
 | La lluvia de tuercas seguía al cambiar de pantalla | Se añadía al documento y nadie la quitaba | Al cambiar de vista se borra |
+| Naves: héroe de 25 px y fondo vacío (crítica 5/10) | Nave dibujada a 96 px y cielo con solo estrellas | Nave a 132 px, enemigos un 25 % más grandes, nebulosas suaves y un planeta lejano; chispas en cada impacto, «+puntos» flotantes, explosión grande del jefe, la nave se ladea al moverse |
 
 ## Reglas para no repetirlo
 
