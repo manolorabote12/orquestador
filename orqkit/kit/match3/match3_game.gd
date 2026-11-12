@@ -105,6 +105,17 @@ func _rebuild() -> void:
 	_pieces.clear()
 	_ice_nodes.clear()
 	var sky: Color = Kit.color("sky", Color("#1b2a41"))
+	## Marco del tablero: un panel con borde y sombra detras de las casillas.
+	var tl: Vector2 = cell_pos(Vector2i(0, 0)) - Vector2(cell, cell) * 0.5
+	var br: Vector2 = cell_pos(Vector2i(logic.w - 1, logic.h - 1)) + Vector2(cell, cell) * 0.5
+	for k: int in 3:
+		var pan: Polygon2D = Polygon2D.new()
+		var grow: float = [cell * 0.32, cell * 0.22, cell * 0.12][k]
+		var hs: Vector2 = (br - tl) * 0.5 + Vector2(grow, grow)
+		pan.polygon = PackedVector2Array([Vector2(-hs.x, -hs.y), Vector2(hs.x, -hs.y), Vector2(hs.x, hs.y), Vector2(-hs.x, hs.y)])
+		pan.position = (tl + br) * 0.5 + (Vector2(0, cell * 0.12) if k == 0 else Vector2.ZERO)
+		pan.color = [Color(0, 0, 0, 0.35), Kit.color("accent", Color("#e8b04b")).darkened(0.35), sky.darkened(0.35)][k]
+		_board.add_child(pan)
 	for y: int in logic.h:
 		for x: int in logic.w:
 			var c: Vector2i = Vector2i(x, y)
@@ -153,10 +164,29 @@ static func make_piece(k: int, s: int, size: float) -> Node2D:
 	if s == Match3Logic.BOMB:
 		col = Color(0.12, 0.12, 0.16)
 		shape = LevelBuilder._circle(r, 24)
+	## Aspecto de gema (12 nov: eran formas planas): sombra debajo, cuerpo, faceta clara arriba y brillo.
+	var shadow: Polygon2D = Polygon2D.new()
+	shadow.polygon = shape
+	shadow.color = Color(0, 0, 0, 0.32)
+	shadow.position = Vector2(0, r * 0.14)
+	root.add_child(shadow)
 	var body: Polygon2D = Polygon2D.new()
 	body.polygon = shape
 	body.color = col
 	root.add_child(body)
+	if s != Match3Logic.BOMB:
+		var low: Polygon2D = Polygon2D.new()
+		low.polygon = shape
+		low.color = col.darkened(0.22)
+		low.scale = Vector2(0.86, 0.86)
+		low.position = Vector2(0, r * 0.1)
+		root.add_child(low)
+		var facet: Polygon2D = Polygon2D.new()
+		facet.polygon = shape
+		facet.color = col.lightened(0.22)
+		facet.scale = Vector2(0.66, 0.66)
+		facet.position = Vector2(0, -r * 0.1)
+		root.add_child(facet)
 	var edge: Line2D = Line2D.new()
 	var pts: PackedVector2Array = shape.duplicate()
 	pts.append(shape[0])
@@ -165,10 +195,17 @@ static func make_piece(k: int, s: int, size: float) -> Node2D:
 	edge.default_color = col.darkened(0.45)
 	root.add_child(edge)
 	var shine: Polygon2D = Polygon2D.new()
-	shine.polygon = LevelBuilder._circle(r * 0.22, 10)
-	shine.position = Vector2(-r * 0.35, -r * 0.4)
-	shine.color = Color(1, 1, 1, 0.45)
+	shine.polygon = LevelBuilder._circle(r * 0.22, 12)
+	shine.scale = Vector2(1.5, 0.8)
+	shine.rotation = -0.6
+	shine.position = Vector2(-r * 0.32, -r * 0.42)
+	shine.color = Color(1, 1, 1, 0.6)
 	root.add_child(shine)
+	var dot2: Polygon2D = Polygon2D.new()
+	dot2.polygon = LevelBuilder._circle(r * 0.07, 8)
+	dot2.position = Vector2(r * 0.05, -r * 0.62)
+	dot2.color = Color(1, 1, 1, 0.8)
+	root.add_child(dot2)
 	match s:
 		Match3Logic.ROW, Match3Logic.COL:
 			for off: float in [-0.28, 0.28]:
