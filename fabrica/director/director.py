@@ -469,6 +469,13 @@ REINO_ARTE = {
 }
 
 
+## Puzle de combinar 3: las 6 piezas dibujadas con el tema del juego (13 nov: eran formas geometricas).
+## Cada una conserva su color y su forma (se distinguen tambien sin ver colores). El kit las busca
+## como pieza_<n>.
+PIEZAS_PUZLE = [("red", "round"), ("orange", "diamond-shaped"), ("yellow", "square"), ("green", "triangular"),
+	("blue", "star-shaped"), ("purple", "hexagonal")]
+
+
 def a_biblia(d: dict) -> dict:
 	"""6 - Diseno -> Biblia v1 (lo que necesita la cadena de arte)."""
 	fam = d["estilo"]["familia"]
@@ -520,6 +527,16 @@ def a_biblia(d: dict) -> dict:
 				"descripcion": (f"small defense tower building, {forma}, no creatures, "
 					f"made of the materials of this world: {mundo}")[:280],
 				"tamano": [celda, celda], "mira_a": "frente",
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
+	if d.get("genero") == "puzle":
+		mundo = d["escenario"]["descripcion"]
+		for n, (color, forma) in enumerate(PIEZAS_PUZLE):
+			objetos.append({
+				"id": f"pieza_{n}", "nombre": f"Pieza {n}", "rol": "objeto",
+				"descripcion": (f"single match-3 puzzle piece icon, a {forma} {color} glossy piece like a jewel or candy, "
+					f"bold dark outline, bright highlight, no face, themed after this world: {mundo}")[:300],
+				"tamano": [celda // 2, celda // 2], "mira_a": "frente", "libre_paleta": True,
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
 	if d.get("genero") == "reino":

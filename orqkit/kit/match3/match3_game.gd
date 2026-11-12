@@ -154,11 +154,47 @@ func _put_piece(c: Vector2i, at: Vector2) -> Node2D:
 
 ## Pieza vectorial: cada color tiene su forma (circulo, rombo, cuadrado, triangulo, estrella,
 ## hexagono) para que se distingan tambien sin ver colores.
+static var _piece_tex: Dictionary = {}
+
+
+## Pieza dibujada por la fabrica (pieza_0..pieza_5) o null si el juego no la tiene.
+static func piece_texture(k: int) -> Texture2D:
+	var key: int = k % 6
+	if not _piece_tex.has(key):
+		var tex: Texture2D = null
+		var entry: Dictionary = Kit.sprite_entry("pieza_%d" % key)
+		if not entry.is_empty():
+			var sf: SpriteFrames = SpriteKit.frames_de(entry)
+			for an: String in sf.get_animation_names():
+				if sf.get_frame_count(an) > 0:
+					tex = sf.get_frame_texture(an, 0)
+					break
+		_piece_tex[key] = tex
+	return _piece_tex[key] as Texture2D
+
+
 static func make_piece(k: int, s: int, size: float) -> Node2D:
 	var root: Node2D = Node2D.new()
 	root.set_meta("k", k)
 	root.set_meta("s", s)
 	var r: float = size * 0.36
+	var art: Texture2D = piece_texture(k) if s != Match3Logic.BOMB else null
+	if art != null:
+		## Con arte: la pieza dibujada sobre su sombra; las especiales llevan sus marcas encima.
+		var sh: Polygon2D = Polygon2D.new()
+		sh.polygon = LevelBuilder._circle(r * 0.95, 20)
+		sh.scale = Vector2(1.0, 0.45)
+		sh.position = Vector2(0, r * 0.95)
+		sh.color = Color(0, 0, 0, 0.28)
+		root.add_child(sh)
+		var spr: Sprite2D = Sprite2D.new()
+		spr.texture = art
+		spr.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+		var side: float = maxf(1.0, float(maxi(art.get_width(), art.get_height())))
+		spr.scale = Vector2.ONE * (r * 2.35 / side)
+		root.add_child(spr)
+		_special_marks(root, s, r, size)
+		return root
 	var col: Color = Color.from_hsv(HUES[k % HUES.size()], 0.68, 0.96)
 	var shape: PackedVector2Array = _shape(k, r)
 	if s == Match3Logic.BOMB:
@@ -206,6 +242,11 @@ static func make_piece(k: int, s: int, size: float) -> Node2D:
 	dot2.position = Vector2(r * 0.05, -r * 0.62)
 	dot2.color = Color(1, 1, 1, 0.8)
 	root.add_child(dot2)
+	_special_marks(root, s, r, size)
+	return root
+
+
+static func _special_marks(root: Node2D, s: int, r: float, size: float) -> void:
 	match s:
 		Match3Logic.ROW, Match3Logic.COL:
 			for off: float in [-0.28, 0.28]:
@@ -231,7 +272,6 @@ static func make_piece(k: int, s: int, size: float) -> Node2D:
 				dot.position = Vector2(cos(a), sin(a)) * r * 0.55
 				dot.color = Color.from_hsv(HUES[j], 0.7, 1.0)
 				root.add_child(dot)
-	return root
 
 
 static func _shape(k: int, r: float) -> PackedVector2Array:

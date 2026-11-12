@@ -436,6 +436,10 @@
 					"maxItems": 2,
 					"description": "Celda final en pixeles [ancho, alto]."
 				},
+				"libre_paleta": {
+					"type": "boolean",
+					"description": "No forzar la paleta del juego (piezas que deben conservar su color)."
+				},
 				"mira_a": {
 					"enum": [
 						"derecha",

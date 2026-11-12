@@ -35,6 +35,12 @@ MAX_INTENTOS = 2
 ORDEN_ROL = {"jugador": 0, "enemigo": 1}
 
 
+def _estilo_de(estilo: dict, s: dict) -> dict:
+	"""Estilo de una pieza: «libre_paleta» no fuerza la paleta del juego (13 nov: las 6 piezas del puzle
+	tienen que conservar su color para distinguirse; forzadas, dos acababan del mismo tono)."""
+	return dict(estilo, forzar_paleta=False) if s.get("libre_paleta") else estilo
+
+
 def _imagen(datos: bytes) -> Image.Image:
 	return Image.open(io.BytesIO(datos)).convert("RGBA")
 
@@ -188,7 +194,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 				informe.setdefault("revision_ia", {})[sid] = {"ok": None, "error": str(e)[:120]}
 		ficha.save(salida / f"{sid}_ficha.png")
 		ref_nombre = cliente.subir_imagen(f"{sid}_ficha.png", _bytes_png(ficha))
-		ficha_proc, _ = post.procesar_animacion([ficha], ficha, celda, estilo, paleta, chroma)
+		ficha_proc, _ = post.procesar_animacion([ficha], ficha, celda, _estilo_de(estilo, s), paleta, chroma)
 		ficha_proc[0].save(salida / f"{sid}_ficha_{celda[0]}x{celda[1]}.png")
 		fichas[sid] = (s, celda, ficha, ficha_proc, ref_nombre)
 
@@ -219,7 +225,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 				crudos = [ficha.copy() for _ in range(int(cfg["frames"]))]
 			giratorio = anim == "spin"
 			for intento in range(MAX_INTENTOS):
-				frames, derivas = post.procesar_animacion(crudos, ficha, celda, estilo, paleta, chroma)
+				frames, derivas = post.procesar_animacion(crudos, ficha, celda, _estilo_de(estilo, s), paleta, chroma)
 				rev = qa_arte.revisar_animacion(frames, ficha_proc[0], celda, derivas, paleta, chroma, pixel_art, giratorio)
 				if rev["ok"] or copias:
 					break
@@ -237,7 +243,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 						informe["regeneradas"] += 1
 				except runpod.TopeGPU as err:
 					tope_alcanzado(f"{sid}/{anim} sin repetir frames", err)
-					frames, derivas = post.procesar_animacion(crudos, ficha, celda, estilo, paleta, chroma)
+					frames, derivas = post.procesar_animacion(crudos, ficha, celda, _estilo_de(estilo, s), paleta, chroma)
 					break
 			hojas[sid][anim] = post.hoja(frames)
 			informe["sprites"][sid][anim] = {"frames": len(frames), "qa_ok": rev["ok"], "deriva_media": round(sum(derivas) / len(derivas), 1)}
