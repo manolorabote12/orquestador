@@ -57,8 +57,8 @@ func _ready() -> void:
 		var dl: Vector2 = game.call("capture_delays")
 		first = dl.x
 		second = dl.y
-	await _shot("3_juego", first)
-	await _shot("4_juego", second)
+	await _shot_playing(game, "3_juego", first)
+	await _shot_playing(game, "4_juego", second)
 	if horde:
 		game.set("auto_pick", false)
 		game.call("_gain_xp", 60)
@@ -113,6 +113,19 @@ func _add(path: String) -> Node:
 	var n: Node = (load(path) as PackedScene).instantiate()
 	add_child(n)
 	return n
+
+
+## Foto de la partida en juego: si el bot ya ha terminado el nivel (puzles rapidos, 13 nov: los
+## tornillos salian con «Nivel completado» en las dos fotos), se reintenta y se fotografia el
+## principio del nivel.
+func _shot_playing(game: Node, shot_name: String, wait: float) -> void:
+	await get_tree().create_timer(wait, true, false, true).timeout
+	if is_instance_valid(game) and bool(game.get("finished")) and game.has_method("retry"):
+		get_tree().paused = false
+		game.call("retry")
+		await _shot(shot_name, 0.12)
+		return
+	await _shot(shot_name, 0.0)
 
 
 func _shot(shot_name: String, wait: float) -> void:

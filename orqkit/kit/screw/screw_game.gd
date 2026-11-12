@@ -77,8 +77,9 @@ func bot_script() -> String:
 	return "res://qa/screw_bot.gd"
 
 
+## El bot resuelve el nivel en pocos segundos: fotos al principio (13 nov: salia «Nivel completado»).
 func capture_delays() -> Vector2:
-	return Vector2(4.0, 3.0)
+	return Vector2(0.8, 0.7)
 
 
 func wants_grade() -> bool:
