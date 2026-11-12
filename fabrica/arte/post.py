@@ -160,9 +160,21 @@ def procesar_animacion(frames: list[Image.Image], ficha: Image.Image, celda: tup
 	escala = escala_de_referencia(ficha_limpia, celda, margen)
 	salida: list[Image.Image] = []
 	derivas: list[float] = []
-	for f in frames:
-		limpio = quitar_fondo_seguro(f, chroma)
-		enc = encajar(limpio, celda, escala, pixel_art)
+	## Mismo alto en todos los frames: la IA dibuja cada frame a su tamano y con una escala comun el
+	## personaje crecia y encogia en reposo (12 nov, «Caballerito de Nubes»). Cada frame se escala para
+	## medir lo que la ficha; en un solo frame (salto, golpe) se deja algo de libertad a la pose.
+	cf = caja(ficha_limpia)
+	alto_obj = (cf[3] - cf[1]) * escala if cf else 0.0
+	limpios = [quitar_fondo_seguro(f, chroma) for f in frames]
+	bucle = len(limpios) >= 2
+	for limpio in limpios:
+		e = escala
+		b = caja(limpio)
+		if alto_obj and b and b[3] > b[1]:
+			e = alto_obj / (b[3] - b[1])
+			lo, hi = (0.6, 1.6) if bucle else (0.85, 1.15)
+			e = min(max(e, escala * lo), escala * hi)
+		enc = encajar(limpio, celda, e, pixel_art)
 		deriva = 0.0
 		if biblia_estilo.get("forzar_paleta", True):
 			enc, deriva = forzar_paleta(enc, paleta)

@@ -26,11 +26,11 @@ const ok = (n, c, d = '') => { res.push((c ? 'OK    ' : 'FALLO ') + n + (c ? '' 
   await pg.waitForTimeout(1500);
   // Taller: idea corta no deja fabricar.
   await pg.fill('textarea', 'gato');
-  ok('taller: idea corta no deja fabricar', await pg.locator('button:has-text("Fabricar juego")').isDisabled());
+  ok('taller: idea corta no deja fabricar', await pg.locator('button.btn-brass:has-text("Fabricar")').isDisabled());
   ultimoAviso = ''; await pg.click('button[data-uso="regalo"]');
   ok('taller: el uso cambia el ejemplo', (await pg.getAttribute('textarea', 'placeholder')).includes('Lucía'));
   await pg.fill('textarea', 'Lucía, que adora los gatos y la playa, recoge conchas esquivando cangrejos');
-  ultimoAviso = ''; await pg.click('button:has-text("Fabricar juego")');
+  ultimoAviso = ''; await pg.click('button.btn-brass:has-text("Fabricar")');
   await pg.waitForTimeout(36000);
   ok('taller: termina y propone la dedicatoria', await pg.locator('button:has-text("Escribir la dedicatoria")').isVisible());
   ultimoAviso = ''; await pg.click('button:has-text("Escribir la dedicatoria")');

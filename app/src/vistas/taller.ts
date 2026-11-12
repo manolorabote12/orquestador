@@ -389,7 +389,7 @@ export function vistaTaller(app: App): VistaHecha {
   });
   const ganchos = h("div", { class: "ganchos" }, pedirGanchos, ganchosLista);
   const precio = h("span", { class: "price" }, svg(ICONOS.tuerca), String(app.precio));
-  const fabricar = h("button", { class: "btn btn-brass" }, "Fabricar juego", precio);
+  const fabricar = h("button", { class: "btn btn-brass" }, "Fabricar", precio);
   // Vista previa gratis: Chispa piensa el diseño (un minuto) y lo enseña ANTES de cobrar nada.
   const verPrevia = h("button", { class: "btn btn-line", type: "button" }, "Probar gratis") as HTMLButtonElement;
   const previaCaja = h("div", { class: "plantilla previa", hidden: true, role: "region", "aria-live": "polite" });
@@ -401,10 +401,29 @@ export function vistaTaller(app: App): VistaHecha {
   const aMedida = h("input", { type: "checkbox", id: "a-medida" }) as HTMLInputElement;
   const aMedidaFila = h("label", { class: "check-row", for: "a-medida" }, aMedida,
     h("span", {}, "Inventar un género nuevo solo para este juego (beta: tarda más)"));
-  const form = h("section", { class: "sheet plano" },
-    h("div", { class: "sheet-head" }, h("h2", {}, "Tu idea"), cuenta),
-    usos, idea, marca, ganchos, chips, plantillas, tipos, aMedidaFila, h("div", { style: "height:16px" }),
-    h("div", { class: "btn-row" }, verPrevia, fabricar), h("div", { style: "height:8px" }), previaCaja, estado, nota);
+  // Tipos más usados a la vista, con su captura: se elige de un toque (el catálogo entero, debajo).
+  const rapidos = h("div", { class: "tipos-rapidos", role: "list", "aria-label": "Tipos de juego más usados" });
+  CATALOGO.slice(0, 12).forEach(([nombre, , arranque], i) => {
+    const id = CATALOGO_ID[i];
+    rapidos.append(h("button", { class: "tipo-rapido", type: "button", role: "listitem", onclick: () => {
+      idea.value = arranque;
+      soltarPlantilla();
+      actualizar();
+      idea.focus();
+      idea.setSelectionRange(idea.value.length, idea.value.length);
+      idea.scrollIntoView({ behavior: "smooth", block: "center" });
+    } }, h("img", { src: `generos/${id}.webp`, alt: "", loading: "lazy", width: "84", height: "112" }), h("span", {}, nombre)));
+  });
+  (tipos.querySelector("summary") as HTMLElement).textContent = `Ver los ${CATALOGO.length} tipos de juego`;
+  const mas = h("details", { class: "tipos mas-formas" }, h("summary", {}, "Más formas de empezar: plantillas, ideas originales, género nuevo"),
+    ganchos, plantillas, aMedidaFila);
+  // Compositor: la idea es lo primero y los botones van pegados a ella (como en los creadores de juegos con IA).
+  const form = h("section", { class: "sheet plano composer" },
+    h("div", { class: "sheet-head" }, h("h2", {}, "¿Qué juego fabricamos?"), cuenta),
+    usos, idea, marca,
+    h("div", { class: "btn-row composer-acciones" }, verPrevia, fabricar), previaCaja, estado, nota,
+    h("h3", { class: "composer-sub" }, "Ideas para empezar"), chips,
+    h("h3", { class: "composer-sub" }, "O elige un tipo"), rapidos, tipos, mas);
 
   function actualizar() {
     const n = idea.value.trim().length;
@@ -772,7 +791,8 @@ export function vistaTaller(app: App): VistaHecha {
   void app.api.juegos().then(async (js) => {
     if (js.length) return;
     const b = await tarjetaBienvenida(app);
-    if (b && form.isConnected) raiz.insertBefore(b, form);
+    // Después del compositor: la idea manda; el juego para probar queda justo debajo.
+    if (b && form.isConnected) form.after(b);
   }).catch(() => undefined);
 
   // Si hay un juego a medias (la app se cerró mientras se fabricaba), lo retomamos.

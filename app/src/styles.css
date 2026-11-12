@@ -1106,3 +1106,18 @@ details.plegable > summary .tag { padding: 3px 8px; }
 .fila-check { display: flex; align-items: center; gap: 8px; }
 .fila-check input { width: 22px; height: 22px; accent-color: var(--brass); }
 .ganancias .btn-row .btn { flex: 1 1 140px; font-size: 18px; line-height: 1.15; }
+
+/* Taller v3: compositor de la idea primero (12 nov) */
+.composer textarea { min-height: 150px; font-size: 1.05rem; line-height: 1.45; }
+.composer .sheet-head h2 { font-size: 1.9rem; }
+.composer-acciones { margin-top: 12px; }
+.composer-acciones .btn { white-space: nowrap; min-height: 56px; min-width: 0; padding-left: 12px; padding-right: 12px; }
+.composer-acciones .btn-brass { flex: 1.6; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.composer-sub { margin: 18px 0 6px; font-size: 0.85rem; letter-spacing: 0.04em; color: var(--ink-dim); font-weight: 700; }
+.tipos-rapidos { display: flex; gap: 10px; overflow-x: auto; padding: 4px 2px 10px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.tipo-rapido { flex: 0 0 auto; width: 92px; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; background: none; border: 0; cursor: pointer; scroll-snap-align: start; }
+.tipo-rapido img { width: 92px; height: 122px; object-fit: cover; border-radius: 14px; border: 2px solid rgba(255,255,255,0.12); background: #0d1b2e;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35); transition: transform .15s, border-color .15s; }
+.tipo-rapido span { font-size: 13px; font-weight: 700; color: var(--ink); text-align: center; line-height: 1.15; }
+.tipo-rapido:active img, .tipo-rapido:focus-visible img { transform: scale(0.96); border-color: var(--brass); }
+.mas-formas summary { font-size: 0.95rem; }

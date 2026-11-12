@@ -9,7 +9,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const informe = { errores: [], vistas: [], clics: [], pulsados: [], tiempos: {} };
 // Idioma del móvil del bot: ORQ_BOT_LANG=en recorre la app en inglés.
 const LANG = process.env.ORQ_BOT_LANG === 'en' ? 'en' : 'es';
-const TXT = LANG === 'en' ? { enviar: 'Send me the code', entrar: 'Sign in', fabricar: 'Make game' } : { enviar: 'Enviarme el código', entrar: 'Entrar', fabricar: 'Fabricar juego' };
+const TXT = LANG === 'en' ? { enviar: 'Send me the code', entrar: 'Sign in', fabricar: 'Make' } : { enviar: 'Enviarme el código', entrar: 'Entrar', fabricar: 'Fabricar' };
 const NO_PULSAR = /^English$|^Español$|sign out|delete|remove|^buy|subscribe|^pay|close class|no longer a gift|publish on google|upload to google|restore version|empty for next term|vaciar|salir|cerrar sesi|borrar (mi )?cuenta|eliminar|^borrar$|comprar|suscrib|pagar|restaurar versi|publicar en google|subir a google|ya no es un regalo|quitar|cerrar clase|terminar/i;
 
 async function auditar(pg, nombre) {
