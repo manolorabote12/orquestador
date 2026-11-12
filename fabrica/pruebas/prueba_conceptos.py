@@ -47,7 +47,7 @@ def falso(modelo, sistema, mensajes, herramienta, gasto, nota, max_tokens=3000, 
 real = llm.llamar_herramienta
 llm.llamar_herramienta = falso
 x = conceptos.explorar("un reino", llm.Gasto(), ["reino"])
-check("explorar: corrige con los errores", x is bueno and llamadas == ["conceptos", "conceptos_correccion"], llamadas)
+check("explorar: corrige con los errores", x == bueno and llamadas == ["conceptos", "conceptos_correccion"], llamadas)
 respuestas = [malo, malo]
 check("explorar: dos fallos -> None", conceptos.explorar("un reino", llm.Gasto()) is None)
 
@@ -58,6 +58,16 @@ def roto(*a, **k):
 
 llm.llamar_herramienta = roto
 check("explorar: la IA caida -> None", conceptos.explorar("un reino", llm.Gasto()) is None)
+llm.llamar_herramienta = real
+
+import json as _json  # noqa: E402
+texto = dict(bueno, final=_json.dumps(bueno["final"]))
+respuestas = [texto]
+llm.llamar_herramienta = falso
+x = conceptos.explorar("un reino", llm.Gasto())
+check("explorar: «final» como texto JSON se entiende", x and x["final"]["genero"] == "reino", x)
+respuestas = [dict(bueno, final="nada"), dict(bueno, final="tampoco")]
+check("explorar: «final» texto sin JSON -> None, sin excepcion", conceptos.explorar("un reino", llm.Gasto()) is None)
 llm.llamar_herramienta = real
 
 g = conceptos.guia(bueno)

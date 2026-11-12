@@ -11,6 +11,7 @@ demuestre que gana; laboratorio.py la prueba A/B). Si falla, el juego
 sigue como siempre (la exploracion nunca para un juego).
 """
 
+import json
 import os
 
 import generos
@@ -102,8 +103,34 @@ def catalogo() -> str:
 		f"- {g}: {d['etiqueta']}" for g, d in generos.GENEROS.items() if g != "a_medida")
 
 
+def _objeto(v: object) -> object:
+	"""Algunos modelos devuelven un objeto anidado como texto JSON (13 nov: «final» llego como str)."""
+	if isinstance(v, str):
+		try:
+			return json.loads(v)
+		except ValueError:
+			return v
+	return v
+
+
+def normalizar(x: object) -> dict:
+	if not isinstance(x, dict):
+		return {}
+	x = dict(x)
+	x["final"] = _objeto(x.get("final"))
+	cs = _objeto(x.get("conceptos"))
+	x["conceptos"] = [_objeto(c) for c in cs] if isinstance(cs, list) else []
+	return x
+
+
 def validar(x: dict) -> list[str]:
 	err = []
+	if not isinstance(x.get("final"), dict):
+		err.append("final: tiene que ser un objeto con los campos del concepto (no texto)")
+	if any(not isinstance(c, dict) for c in x.get("conceptos") or []):
+		err.append("conceptos: cada concepto tiene que ser un objeto (no texto)")
+	if err:
+		return err
 	cs = x.get("conceptos") or []
 	if len(cs) != 3:
 		err.append("hacen falta exactamente 3 conceptos")
@@ -132,7 +159,7 @@ def explorar(idea: str, gasto: llm.Gasto, pistas: list[str] | None = None) -> di
 	modelo = llm.MODELOS[-1]
 	mensajes = [{"role": "user", "content": usuario}]
 	try:
-		x = llm.llamar_herramienta(modelo, PROMPT, mensajes, HERRAMIENTA, gasto, "conceptos", max_tokens=4000)
+		x = normalizar(llm.llamar_herramienta(modelo, PROMPT, mensajes, HERRAMIENTA, gasto, "conceptos", max_tokens=6000))
 		err = validar(x)
 		if err:
 			mensajes += [
@@ -140,10 +167,10 @@ def explorar(idea: str, gasto: llm.Gasto, pistas: list[str] | None = None) -> di
 				{"role": "user", "content": [{"type": "tool_result", "tool_use_id": "c1", "is_error": True,
 					"content": "Corrige SOLO esto y vuelve a llamar a la herramienta:\n- " + "\n- ".join(err[:8])}]},
 			]
-			x = llm.llamar_herramienta(modelo, PROMPT, mensajes, HERRAMIENTA, gasto, "conceptos_correccion", max_tokens=4000)
+			x = normalizar(llm.llamar_herramienta(modelo, PROMPT, mensajes, HERRAMIENTA, gasto, "conceptos_correccion", max_tokens=6000))
 			if validar(x):
 				return None
-	except llm.ErrorIA:
+	except Exception:  # noqa: BLE001 - la exploracion nunca para un juego (ni con una respuesta con forma rara)
 		return None
 	return x
 

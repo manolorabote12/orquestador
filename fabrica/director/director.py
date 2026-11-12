@@ -449,6 +449,19 @@ TORRES_ARTE = {
 }
 
 
+## Reino (tipo Kingshot): los 7 edificios de la ciudad dibujados con el tema del juego (13 nov: eran
+## rectangulos y triangulos de colores). El kit los busca como edif_<look>.
+REINO_ARTE = {
+	"castle": "a grand castle keep with towers and banners, the heart of the city",
+	"farm": "a farmhouse with small crop fields and a barn",
+	"mill": "a lumber sawmill with stacked logs and a saw",
+	"quarry": "a stone quarry with cut stone blocks and a wooden crane",
+	"barracks": "military barracks with a training yard, weapon racks and a flag",
+	"stable": "a horse stable with hay bales and a fence",
+	"range": "an archery range hall with round straw targets",
+}
+
+
 def a_biblia(d: dict) -> dict:
 	"""6 - Diseno -> Biblia v1 (lo que necesita la cadena de arte)."""
 	fam = d["estilo"]["familia"]
@@ -499,6 +512,16 @@ def a_biblia(d: dict) -> dict:
 				"id": "torre_" + tid, "nombre": "Torre " + tid, "rol": "objeto",
 				"descripcion": (f"small defense tower building, {forma}, no creatures, "
 					f"made of the materials of this world: {mundo}")[:280],
+				"tamano": [celda, celda], "mira_a": "frente",
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
+	if d.get("genero") == "reino":
+		mundo = d["escenario"]["descripcion"]
+		for look, forma in REINO_ARTE.items():
+			objetos.append({
+				"id": "edif_" + look, "nombre": "Edificio " + look, "rol": "objeto",
+				"descripcion": (f"single strategy game building seen from a 3/4 top-down view, {forma}, no characters, "
+					f"no ground around it, made of the materials of this world: {mundo}")[:300],
 				"tamano": [celda, celda], "mira_a": "frente",
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})

@@ -418,7 +418,32 @@ func _draw_bld(b: String, r: Rect2) -> void:
 	_city.draw_string(_font, Vector2(r.get_center().x - nw * 0.5, r.end.y - 6), nm, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color(1, 1, 1, 0.9))
 
 
+## Edificios dibujados por la fabrica (edif_castle, edif_farm...; 13 nov). Sin arte, las formas de siempre.
+var _bld_tex: Dictionary = {}
+
+
+func _look_texture(look: String) -> Texture2D:
+	if not _bld_tex.has(look):
+		var tex: Texture2D = null
+		var entry: Dictionary = Kit.sprite_entry("edif_" + look)
+		if not entry.is_empty():
+			var sf: SpriteFrames = SpriteKit.frames_de(entry)
+			for an: String in sf.get_animation_names():
+				if sf.get_frame_count(an) > 0:
+					tex = sf.get_frame_texture(an, 0)
+					break
+		_bld_tex[look] = tex
+	return _bld_tex[look] as Texture2D
+
+
 func _draw_look(p: Vector2, s: float, look: String) -> void:
+	var art: Texture2D = _look_texture(look)
+	if art != null:
+		_city.draw_set_transform(p + Vector2(0, s * 0.72), 0.0, Vector2(1.0, 0.32))
+		_city.draw_circle(Vector2.ZERO, s * 1.05, Color(0, 0, 0, 0.28))
+		_city.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		_city.draw_texture_rect(art, Rect2(p - Vector2(s * 1.3, s * 1.75), Vector2(s * 2.6, s * 2.6)), false)
+		return
 	var wall: Color = Color("#d9c3a0")
 	var roof: Color = Color("#b5533c")
 	match look:
