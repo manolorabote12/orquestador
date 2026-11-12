@@ -33,6 +33,8 @@ var par: float = 0.0
 
 var _font: Font
 var _world: Node2D
+## El protagonista del juego hace de cocinero junto a los fuegos (13 nov: la cocina no tenia a nadie).
+var _chef: Node2D
 var _camera: Camera2D
 var _coins_label: Label
 var _time_label: Label
@@ -61,6 +63,20 @@ func _ready() -> void:
 	add_child(_camera)
 	_camera.make_current()
 	_camera.position = Vector2(360, 640)
+	var art: Dictionary = Kit.sprite_by_role("jugador")
+	if not art.is_empty():
+		_chef = Node2D.new()
+		_chef.name = "Chef"
+		_chef.z_index = 3
+		var sh: Polygon2D = Polygon2D.new()
+		sh.polygon = LevelBuilder._circle(62.0, 18)
+		sh.scale = Vector2(1.0, 0.3)
+		sh.color = Color(0, 0, 0, 0.22)
+		_chef.add_child(sh)
+		var spr: AnimatedSprite2D = SpriteKit.animado(art, 190.0, "idle", true)
+		Skins.apply(spr)
+		_chef.add_child(spr)
+		add_child(_chef)
 	_build_hud()
 	_reset()
 	Audio.play_track("nivel")
@@ -119,6 +135,9 @@ func _layout() -> void:
 			n += 1
 	if n == 1:
 		GRILLS[GRILLS.keys()[0]] = Vector2(330.0, 1010.0)
+	## El cocinero en el hueco libre: entre los fuegos, o a la derecha si solo hay uno en el centro.
+	if _chef != null:
+		_chef.position = Vector2(615.0, 1235.0) if n == 1 else Vector2(330.0, 1240.0)
 
 
 func _build_hud() -> void:
@@ -278,6 +297,9 @@ func _physics_process(delta: float) -> void:
 	time_in_level = float(st["time"])
 	if int(st["coins"]) > _last_coins:
 		_pops.append({"text": "+%d" % (int(st["coins"]) - _last_coins), "t": 1.0})
+		if _chef != null and not fast:
+			Juice.squash(_chef, Vector2(0.86, 1.16), 0.3)
+			Juice.sparkle(self, _chef.position + Vector2(0, -170), Kit.color("coin", Color("#ffd23f")), 8, 180.0)
 		_last_coins = int(st["coins"])
 	var keep: Array[Dictionary] = []
 	for p: Dictionary in _pops:
