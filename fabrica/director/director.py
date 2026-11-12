@@ -558,6 +558,8 @@ def a_game(d: dict, niveles: list[list[str]]) -> dict:
 		"iap": funciones_efectivas(d)["tienda"],
 		## Tipo de terreno para los generos vistos desde arriba que lo dibujan solos (imperio).
 		"biome": bioma(d),
+		## Experimentos: el kit acerca la camara o agranda los personajes segun la variante elegida.
+		**({"tune": {k: v for k, v in d["ajustes"].items() if k in ("zoom", "sprite")}} if d.get("ajustes") else {}),
 	}
 
 
@@ -773,6 +775,8 @@ def opciones_niveles(d: dict) -> dict:
 		"jefe": bool(d.get("jefe")) and _con_jefe(d),
 		"puntos_control": bool(extras.get("puntos_control", True)),
 		"plataformas_moviles": bool(extras.get("plataformas_moviles", False)),
+		## Experimentos: cuantas piezas especiales (escalera, atajo...) lleva el nivel (experimentos.py).
+		"piezas": float((d.get("ajustes") or {}).get("piezas", 1.0)),
 		"n_preguntas": len(d.get("preguntas") or []),
 		## Mezclas: el generador hace niveles que encajan con el giro (y los bots los prueban asi).
 		"cola": "cola" in (d.get("giros") or []),

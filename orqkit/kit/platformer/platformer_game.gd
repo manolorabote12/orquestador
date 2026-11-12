@@ -185,12 +185,14 @@ func _build_camera() -> void:
 	camera.position = player.global_position
 	## 4b - Mas cerca: a tamano real el heroe se veia diminuto en el movil (48 px de 720; con 1.25 aun 62 px).
 	## El volador y el corredor no: necesitan ver todo el hueco y lo que viene.
+	## Experimento del genero (game.json -> tune.zoom): la fabrica prueba variantes y aprende.
+	var tz: float = float(Kit.param("tune.zoom", 1.0))
 	if not flyer_mode and not runner:
-		camera.zoom = Vector2(1.5, 1.5)
+		camera.zoom = Vector2(1.5, 1.5) * tz
 	elif runner:
 		## Corredor: algo mas cerca tambien (heroe diminuto y media pantalla de cielo, 12 nov); sigue
 		## viendo de sobra lo que viene porque la camara va adelantada.
-		camera.zoom = Vector2(1.4, 1.4)  ## 12 nov: a 1,2 el pinguino seguia siendo pequeno (critica 6/10)
+		camera.zoom = Vector2(1.4, 1.4) * tz  ## 12 nov: a 1,2 el pinguino seguia siendo pequeno (critica 6/10)
 	add_child(camera)
 	camera.make_current()
 	Juice.register_camera(camera)

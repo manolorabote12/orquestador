@@ -52,7 +52,7 @@ func setup(enemy_kind: String, hp_mult: float, speed_mult: float, over: Dictiona
 	if entry.is_empty() and kind != "boss":
 		entry = Kit.sprite_by_role("enemigo")
 	if not entry.is_empty():
-		var spr: AnimatedSprite2D = SpriteKit.animado(entry, float(s["size"]), "run", false)
+		var spr: AnimatedSprite2D = SpriteKit.animado(entry, float(s["size"]) * float(Kit.param("tune.sprite", 1.0)), "run", false)
 		visual.add_child(spr)
 	else:
 		var body: Polygon2D = Polygon2D.new()

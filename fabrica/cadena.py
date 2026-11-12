@@ -681,6 +681,16 @@ def fabricar(args: argparse.Namespace) -> dict:
 		diseno, modelo = director.disenar(args.idea, args.simulado, gasto)
 	slug = director.slug(diseno)
 	cronometro("diseno", t)
+	## Experimentos: una variante de cada mando del genero (camara, tamano, piezas). La critica del
+	## final le pone nota y la fabrica aprende que funciona (experimentos.py). Un diseno que ya trae
+	## ajustes (vista previa aprobada) los conserva.
+	import experimentos
+	if modelo != "vista_previa":
+		diseno.pop("ajustes", None)
+	if not diseno.get("ajustes"):
+		ajustes = experimentos.para_juego(str(diseno.get("genero", "")))
+		if ajustes:
+			diseno["ajustes"] = ajustes
 	genero = generos.de(diseno)["etiqueta"]
 	rival = "" if not generos.de(diseno)["enemigos"] and diseno.get("genero") != "carreras" else f" contra {len(diseno['enemigos'])} tipos de enemigo"
 	evento("diseno", "ok", f"«{diseno['titulo']}» ({genero}): {diseno['heroe']['nombre']}{rival}",
@@ -947,6 +957,8 @@ def fabricar(args: argparse.Namespace) -> dict:
 		critica_v = critica.criticar(capturas, diseno["titulo"], str(diseno.get("genero", "")), gasto)
 		if critica_v:
 			evento("critica", "ok" if critica_v["nota"] >= 7 else "aviso", critica.resumen(critica_v), nota=critica_v["nota"])
+			experimentos.anotar(str(diseno.get("genero", "")), diseno.get("ajustes") or {}, critica_v["nota"],
+				[p["tipo"] for p in critica_v["problemas"]])
 	ficha_zip = hacer_ficha(args, proyecto, capturas)
 	clip_mp4 = hacer_clip(args, proyecto)
 	marketing = None

@@ -154,7 +154,7 @@ func _build_shape(color_body: Color, color_eye: Color, art: Dictionary) -> void:
 		eye.visible = false
 		## El dibujo va un 35 % mas grande que la caja de choque: asi el heroe se ve (12 nov: la critica
 		## visual repetia "personaje pequeno") y los golpes siguen siendo justos.
-		anim_sprite = SpriteKit.animado(art, hgt * 1.35, "idle", true)
+		anim_sprite = SpriteKit.animado(art, hgt * 1.35 * float(Kit.param("tune.sprite", 1.0)), "idle", true)
 		anim_sprite.name = "Sprite"
 		visual.add_child(anim_sprite)
 	floor_snap_length = 8.0

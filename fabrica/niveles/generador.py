@@ -291,13 +291,15 @@ def _pesos(nv: Nivel, i: int, n: int) -> dict[str, float]:
 		p["poder"] = 0.8
 	if nv.op.get("plataformas_moviles") and i >= 1:
 		p["puente"] = 0.6 + 0.6 * d
-	## Piezas especiales: aparecen a partir del segundo nivel (el primero ensena lo basico).
+	## Piezas especiales: aparecen a partir del segundo nivel (el primero ensena lo basico). Cuantas,
+	## lo decide el experimento del genero (opcion «piezas»).
 	if i >= 1:
-		p["escalera"] = 0.5
-		p["arco"] = 0.6
-		p["atajo"] = 0.4 + 0.5 * d
+		f = float(nv.op.get("piezas", 1.0))
+		p["escalera"] = 0.5 * f
+		p["arco"] = 0.6 * f
+		p["atajo"] = (0.4 + 0.5 * d) * f
 		if "walker" in nv.enemigos and d > 0.4:
-			p["emboscada"] = 0.5 * d
+			p["emboscada"] = 0.5 * d * f
 	return p
 
 
@@ -496,10 +498,11 @@ def generar_runner(i: int, n: int, enemigos: list[str], dificultad: str, semilla
 			pesos["poder"] = 0.5
 		## Piezas con mas idea desde el segundo nivel.
 		if i >= 1:
-			pesos["escalera"] = 0.5
-			pesos["carril"] = 0.3 + 0.5 * d
+			f = float(op.get("piezas", 1.0))
+			pesos["escalera"] = 0.5 * f
+			pesos["carril"] = (0.3 + 0.5 * d) * f
 			if d > 0.4:
-				pesos["doble_hueco"] = 0.6 * d
+				pesos["doble_hueco"] = 0.6 * d * f
 		pesos.pop(ultimo, None)
 		nombres = list(pesos)
 		elegido = rng.choices(nombres, weights=[pesos[x] for x in nombres])[0]

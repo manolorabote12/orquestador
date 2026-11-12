@@ -776,6 +776,11 @@ def conectar_aprendizaje(sb: "Supabase") -> None:
 	import originalidad
 	giros.remoto = lambda genero, giro, ok, problema: sb.rpc("giro_anotar", p_genero=genero, p_giro=giro, p_ok=ok, p_problema=problema)
 	originalidad.remoto = lambda genero, h: sb.rpc("huella_anotar", p_genero=genero, p_firma=h)
+	## Experimentos: cada juego prueba una variante y la nota de la critica se apunta (experimentos.py).
+	import experimentos
+	experimentos.remoto_historial = lambda genero: sb.rpc("experimentos_historial", p_genero=genero) or []
+	experimentos.remoto_anotar = lambda genero, eleccion, nota, problemas: sb.rpc("experimento_anotar",
+		p_genero=genero, p_eleccion=eleccion, p_nota=nota, p_problemas=problemas)
 
 
 def main(argv: list[str] | None = None) -> int:

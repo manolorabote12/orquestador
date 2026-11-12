@@ -150,7 +150,7 @@ func _build_player() -> void:
 	add_child(_player)
 	var art: Dictionary = Kit.sprite_by_role("jugador")
 	if not art.is_empty():
-		var spr: AnimatedSprite2D = SpriteKit.animado(art, 132.0, "idle", false)
+		var spr: AnimatedSprite2D = SpriteKit.animado(art, 132.0 * float(Kit.param("tune.sprite", 1.0)), "idle", false)
 		_player.add_child(spr)
 		Skins.apply(spr)
 	else:
