@@ -49,6 +49,8 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Juegos del servidor sin capturas ni crítica («X11 Display is not available») | xvfb-run fallaba en silencio | La pantalla virtual se arranca a mano, se espera a que esté lista y, si no arranca, el aviso dice por qué |
 | Carreras de caracoles con coches en una ciudad | Las carreras 3D dibujaban siempre coches de cajas | El jugador y los rivales son el arte del juego (de pie, mirando a la cámara, con sombra); si no hay arte de rivales, el mismo corredor teñido de otro color. Nombres de rivales más pequeños |
 | Granja: tablero vacío sin granjero, cortado por los lados | Solo se dibujaban parcelas y casas | El granjero (arte del protagonista) camina hasta donde tocas; valla de madera alrededor; hojas y brillo al cosechar, polvo al plantar; margen a los lados |
+| Primer juego con capturas en el servidor («Caballerito de Nubes», 6/10): héroe aún pequeño y jefe sobre fondo azul liso | Cámara a 1.25; en la captura del jefe el fondo ilustrado se ponía en el juego anterior, que se estaba borrando | Cámara a 1.5 en plataformas; el fondo busca el juego que sigue vivo |
+| Granja con menús flojos | Monedas, pedidos y máquinas sin estilo propio | Placas y paneles de madera, barra de progreso de pedidos, recetas ingredientes → producto |
 
 ## Reglas para no repetirlo
 

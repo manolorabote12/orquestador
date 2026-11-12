@@ -108,7 +108,8 @@ func _find_game() -> Node:
 	if "time_in_level" in root:
 		return root
 	for c: Node in root.get_children():
-		if "time_in_level" in c:
+		## Saltando el juego anterior que se esta borrando (en las capturas del jefe el fondo iba a parar a ese).
+		if "time_in_level" in c and not c.is_queued_for_deletion():
 			return c
 	return null
 
