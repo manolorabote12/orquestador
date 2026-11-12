@@ -53,3 +53,23 @@ static func animado(entry: Dictionary, target_px: float, first: String, pies: bo
 	if spr.sprite_frames.has_animation(first):
 		spr.play(first)
 	return spr
+
+
+## 4 - El protagonista del juego como mascota (generos sin heroe en la partida: cocina, puzles...).
+##     Sombra + personaje con su piel, origen en los pies. null si el juego no tiene arte del heroe.
+static func mascota(alto: float) -> Node2D:
+	var art: Dictionary = Kit.sprite_by_role("jugador")
+	if art.is_empty():
+		return null
+	var n: Node2D = Node2D.new()
+	n.name = "Mascot"
+	var sh: Polygon2D = Polygon2D.new()
+	sh.polygon = LevelBuilder._circle(alto * 0.33, 18)
+	sh.scale = Vector2(1.0, 0.3)
+	sh.color = Color(0, 0, 0, 0.22)
+	n.add_child(sh)
+	var spr: AnimatedSprite2D = animado(art, alto, "idle", true)
+	Skins.apply(spr)
+	n.add_child(spr)
+	return n
+

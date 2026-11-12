@@ -28,12 +28,25 @@ var _lanes: Array = []
 var _bot_on: bool = false
 var _pops: Array = []
 var _anim_t: float = 0.0
+## Arte del juego (13 nov: carretera gris y munecos de dos circulos): el protagonista guia al grupo.
+var _leader: Texture2D
+var _grass: Color = Color("#5fb35a")
+var _team: Color = Color("#4b5bd6")
 
 
 func _ready() -> void:
 	level = Kit.current_level()
 	RenderingServer.set_default_clear_color(Color("#7cc3f0"))
 	_font = UI.theme.get_font("font", "Label") if UI.theme != null else ThemeDB.fallback_font
+	_grass = Kit.color("solid", Color("#5fb35a")).lerp(Color("#5fb35a"), 0.5)
+	_team = Kit.color("accent", Color("#4b5bd6"))
+	var art: Dictionary = Kit.sprite_by_role("jugador")
+	if not art.is_empty():
+		var sf: SpriteFrames = SpriteKit.frames_de(art)
+		for an: String in ["idle", "run"] + Array(sf.get_animation_names()):
+			if sf.has_animation(an) and sf.get_frame_count(an) > 0:
+				_leader = sf.get_frame_texture(an, 0)
+				break
 	_build_hud()
 	_reset()
 	Audio.play_track("nivel")
@@ -180,11 +193,25 @@ func _draw_view() -> void:
 		return
 	var sz: Vector2 = _view.size
 	var base_y: float = sz.y * 0.78
-	## Carretera con rayas que pasan.
-	_view.draw_rect(Rect2(Vector2(sz.x * 0.06, 0), Vector2(sz.x * 0.88, sz.y)), Color("#c9cfd8"))
+	## Hierba a los lados con arbustos que pasan, bordillos rojos y blancos y carretera con rayas.
+	_view.draw_rect(Rect2(Vector2.ZERO, sz), _grass)
 	var off: float = fmod(float(st["d"]) * PX_PER_M, 80.0)
+	var off2: float = fmod(float(st["d"]) * PX_PER_M, 220.0)
+	for k3: int in int(sz.y / 220.0) + 2:
+		var by: float = float(k3) * 220.0 + off2 - 220.0
+		for bx: float in [sz.x * 0.03, sz.x * 0.97]:
+			_view.draw_circle(Vector2(bx, by + 8.0), 30.0, Color(0, 0, 0, 0.18))
+			_view.draw_circle(Vector2(bx, by), 30.0, _grass.darkened(0.28))
+			_view.draw_circle(Vector2(bx - 8.0, by - 8.0), 14.0, _grass.lightened(0.15))
+	var road: Rect2 = Rect2(Vector2(sz.x * 0.08, 0), Vector2(sz.x * 0.84, sz.y))
+	_view.draw_rect(road, Color("#8d94a3"))
+	_view.draw_rect(Rect2(road.position + Vector2(road.size.x * 0.06, 0), Vector2(road.size.x * 0.88, sz.y)), Color("#9aa1b0"))
 	for k: int in int(sz.y / 80.0) + 2:
-		_view.draw_rect(Rect2(Vector2(sz.x * 0.5 - 4, float(k) * 80.0 + off - 80.0), Vector2(8, 40)), Color(1, 1, 1, 0.7))
+		var yy: float = float(k) * 80.0 + off - 80.0
+		_view.draw_rect(Rect2(Vector2(sz.x * 0.5 - 4, yy), Vector2(8, 40)), Color(1, 1, 1, 0.7))
+		var curb: Color = Color("#e05a4f") if k % 2 == 0 else Color.WHITE
+		_view.draw_rect(Rect2(Vector2(road.position.x - 10.0, yy), Vector2(12, 80)), curb)
+		_view.draw_rect(Rect2(Vector2(road.end.x - 2.0, yy), Vector2(12, 80)), curb)
 	var tr: Array = st["track"]
 	for i: int in range(int(st["i"]), tr.size()):
 		var e: Dictionary = tr[i]
@@ -198,8 +225,14 @@ func _draw_view() -> void:
 					var good: bool = op.begins_with("+") or op.begins_with("x")
 					var cx: float = _sx(-M.LANE_X if side == "l" else M.LANE_X)
 					var r: Rect2 = Rect2(Vector2(cx - sz.x * 0.19, y - 50), Vector2(sz.x * 0.38, 70))
-					_view.draw_rect(r, Color(0.25, 0.55, 1.0, 0.55) if good else Color(1.0, 0.3, 0.3, 0.55))
-					_view.draw_rect(r, Color.WHITE, false, 4.0)
+					var gc: Color = Color(0.25, 0.6, 1.0) if good else Color(1.0, 0.32, 0.3)
+					## Puerta de cristal con postes y brillo (antes un rectangulo plano).
+					_view.draw_rect(r, Color(gc, 0.5))
+					_view.draw_rect(Rect2(r.position, Vector2(r.size.x, r.size.y * 0.35)), Color(1, 1, 1, 0.18))
+					_view.draw_rect(r, gc.lightened(0.5), false, 4.0)
+					for px: float in [r.position.x - 6.0, r.end.x - 6.0]:
+						_view.draw_rect(Rect2(Vector2(px, r.position.y - 26.0), Vector2(12, r.size.y + 30.0)), gc.darkened(0.35))
+						_view.draw_circle(Vector2(px + 6.0, r.position.y - 26.0), 9.0, gc.lightened(0.3))
 					var tw: float = _font.get_string_size(op, HORIZONTAL_ALIGNMENT_LEFT, -1, 46).x
 					_view.draw_string(_font, Vector2(cx - tw * 0.5, y), op, HORIZONTAL_ALIGNMENT_LEFT, -1, 46, Color.WHITE)
 			"enemy":
@@ -222,7 +255,16 @@ func _draw_view() -> void:
 				var bn: String = str(int(e.get("n", 0)))
 				var bw: float = _font.get_string_size(bn, HORIZONTAL_ALIGNMENT_LEFT, -1, 64).x
 				_view.draw_string(_font, Vector2(sz.x * 0.5 - bw * 0.5, y - 60), bn, HORIZONTAL_ALIGNMENT_LEFT, -1, 64, Color("#e05a4f"))
-	_crowd(Vector2(_sx(float(st["x"])), base_y), int(st["n"]), Color("#4b5bd6"), sz.x * 0.3)
+	_crowd(Vector2(_sx(float(st["x"])), base_y), int(st["n"]), _team, sz.x * 0.3)
+	## El protagonista va delante de su grupo.
+	if _leader != null:
+		var lh: float = 120.0
+		var lw: float = lh * float(_leader.get_width()) / maxf(1.0, float(_leader.get_height()))
+		var lc: Vector2 = Vector2(_sx(float(st["x"])), base_y - 40.0 + sin(_anim_t * 12.0) * 3.0)
+		_view.draw_set_transform(lc + Vector2(0, 4), 0.0, Vector2(1.0, 0.3))
+		_view.draw_circle(Vector2.ZERO, lw * 0.4, Color(0, 0, 0, 0.25))
+		_view.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		_view.draw_texture_rect(_leader, Rect2(lc - Vector2(lw * 0.5, lh), Vector2(lw, lh)), false)
 	var nt: String = str(int(st["n"]))
 	var nw: float = _font.get_string_size(nt, HORIZONTAL_ALIGNMENT_LEFT, -1, 40).x
 	_view.draw_string(_font, Vector2(_sx(float(st["x"])) - nw * 0.5, base_y + 110), nt, HORIZONTAL_ALIGNMENT_LEFT, -1, 40, Color.WHITE)
@@ -237,14 +279,19 @@ func _draw_view() -> void:
 func _crowd(c: Vector2, n: int, col: Color, max_r: float) -> void:
 	var shown: int = mini(n, 80)
 	for k: int in shown:
-		var r: float = sqrt(float(k)) * 9.0
+		var r: float = sqrt(float(k)) * 11.0
 		if r > max_r:
 			break
 		var a: float = float(k) * 2.4
 		var p: Vector2 = c + Vector2(cos(a), sin(a) * 0.6) * r
 		var bob: float = sin(_anim_t * 14.0 + float(k)) * 2.0
-		_view.draw_circle(p + Vector2(0, bob), 8.0, col)
-		_view.draw_circle(p + Vector2(0, bob - 9.0), 5.0, Color("#f1c27d"))
+		## Munecos mas grandes con sombra, contorno y brillo.
+		_view.draw_circle(p + Vector2(0, 7), 8.0, Color(0, 0, 0, 0.18))
+		_view.draw_circle(p + Vector2(0, bob), 11.0, col.darkened(0.45))
+		_view.draw_circle(p + Vector2(0, bob), 9.0, col)
+		_view.draw_circle(p + Vector2(-3, bob - 3), 3.0, col.lightened(0.45))
+		_view.draw_circle(p + Vector2(0, bob - 12.0), 7.0, Color("#6b4a2e"))
+		_view.draw_circle(p + Vector2(0, bob - 12.0), 5.5, Color("#f1c27d"))
 
 
 # ------------------------------------------------------------------ final
