@@ -146,7 +146,8 @@ func _draw_board() -> void:
 	for n: Node in _board.get_children():
 		n.queue_free()
 	var tex: Texture2D = Kit.first_tile_texture()
-	var grass: Color = Kit.color("sky", Color("#1b2a41")).lightened(0.12)
+	## Tablero claro y calmado: sobre un damero casi negro el juego parecia un prototipo.
+	var grass: Color = Kit.color("sky", Color("#1b2a41")).lightened(0.3)
 	for y: int in rows.size():
 		for x: int in rows[0].length():
 			var ch: String = rows[y][x]
@@ -162,9 +163,9 @@ func _draw_board() -> void:
 				else:
 					sq.color = Kit.color("solid", Color("#e8f0fa")).darkened(0.3)
 			elif ch == "#":
-				sq.color = grass.darkened(0.35)
+				sq.color = grass.darkened(0.22)
 			else:
-				sq.color = grass if (x + y) % 2 == 0 else grass.lightened(0.05)
+				sq.color = grass if (x + y) % 2 == 0 else grass.lightened(0.045)
 			_board.add_child(sq)
 	## La base es el heroe del juego; la entrada, una puerta oscura.
 	var b: Vector2i = TowerMap.find(rows, "B")
@@ -208,6 +209,19 @@ func _draw_tower(c: Vector2i) -> void:
 	var t: Dictionary = towers[c]
 	var n: Node2D = Node2D.new()
 	n.position = cell_pos(c)
+	## Con arte de la fabrica (torre_rayo, torre_canon, torre_hielo): la torre dibujada sobre una sombra.
+	var entry: Dictionary = Kit.sprite_entry("torre_" + str(t["kind"]))
+	if not entry.is_empty():
+		var shadow: Polygon2D = Polygon2D.new()
+		shadow.color = Color(0, 0, 0, 0.28)
+		shadow.polygon = LevelBuilder._circle(cell * 0.36, 14)
+		shadow.scale = Vector2(1.0, 0.45)
+		shadow.position = Vector2(0, cell * 0.3)
+		n.add_child(shadow)
+		n.add_child(SpriteKit.animado(entry, cell * 0.98, "idle", false))
+		_tower_pips(n, int(t["level"]))
+		_board.add_child(n)
+		return
 	var base: Polygon2D = Polygon2D.new()
 	base.color = Color(0.12, 0.12, 0.16)
 	base.polygon = LevelBuilder._circle(cell * 0.4, 8)
@@ -224,13 +238,18 @@ func _draw_tower(c: Vector2i) -> void:
 			top.color = Color(0.55, 0.85, 1.0)
 			top.polygon = PackedVector2Array([Vector2(0, -cell * 0.32), Vector2(cell * 0.28, 0), Vector2(0, cell * 0.32), Vector2(-cell * 0.28, 0)])
 	n.add_child(top)
-	for k: int in int(t["level"]) - 1:
+	_tower_pips(n, int(t["level"]))
+	_board.add_child(n)
+
+
+## Puntos dorados bajo la torre: uno por cada mejora.
+func _tower_pips(n: Node2D, level: int) -> void:
+	for k: int in level - 1:
 		var pip: Polygon2D = Polygon2D.new()
 		pip.color = Color(1, 0.9, 0.4)
 		pip.polygon = LevelBuilder._circle(cell * 0.07, 8)
-		pip.position = Vector2((float(k) - 0.5) * cell * 0.2, cell * 0.33)
+		pip.position = Vector2((float(k) - 0.5) * cell * 0.2, cell * 0.4)
 		n.add_child(pip)
-	_board.add_child(n)
 
 
 # ------------------------------------------------------------------ HUD

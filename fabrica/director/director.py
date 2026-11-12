@@ -357,6 +357,13 @@ def colores_juego(paleta: list[str]) -> dict[str, str]:
 	}
 
 
+TORRES_ARTE = {
+	"rayo": "a slim fast-firing turret with a thin nozzle or antenna on top",
+	"canon": "a chunky heavy cannon tower with one big round barrel",
+	"hielo": "a frost tower with a big ice crystal on top, light blue accents",
+}
+
+
 def a_biblia(d: dict) -> dict:
 	"""6 - Diseno -> Biblia v1 (lo que necesita la cadena de arte)."""
 	fam = d["estilo"]["familia"]
@@ -392,6 +399,24 @@ def a_biblia(d: dict) -> dict:
 			"descripcion": "enemy creature, huge final boss, " + jefe["descripcion"], "tamano": [grande, grande], "mira_a": "derecha",
 			"animaciones": {"run": {"frames": 4, "fps": 8, "bucle": True}, "hurt": {"frames": 1, "fps": 1, "bucle": False}},
 		})
+	objetos = [{
+		"id": "moneda", "nombre": d["coleccionable"]["nombre"], "rol": "objeto",
+		"descripcion": "collectible pickup item, " + d["coleccionable"]["descripcion"],
+		"tamano": [celda // 2, celda // 2], "mira_a": "frente",
+		"animaciones": {"spin": {"frames": 4, "fps": 8, "bucle": True}},
+	}]
+	## Defensa de torres: las tres torres dibujadas con el tema del juego (antes eran un triangulo, un
+	## circulo y un rombo: el juego parecia un prototipo). Una imagen cada una, sin frames de GPU.
+	if d.get("genero") == "torres":
+		mundo = d["escenario"]["descripcion"]
+		for tid, forma in TORRES_ARTE.items():
+			objetos.append({
+				"id": "torre_" + tid, "nombre": "Torre " + tid, "rol": "objeto",
+				"descripcion": (f"small defense tower building, {forma}, no creatures, "
+					f"made of the materials of this world: {mundo}")[:280],
+				"tamano": [celda, celda], "mira_a": "frente",
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
 	return {
 		"schema": "orquestador/biblia/v1",
 		"juego": {"titulo": d["titulo"], "genero": d.get("genero", "plataformas"), "resumen": d["resumen"], "publico": "todos"},
@@ -403,12 +428,7 @@ def a_biblia(d: dict) -> dict:
 			"negativo": "blurry, photo, text, watermark, multiple characters, cropped, logo",
 		},
 		"personajes": personajes,
-		"objetos": [{
-			"id": "moneda", "nombre": d["coleccionable"]["nombre"], "rol": "objeto",
-			"descripcion": "collectible pickup item, " + d["coleccionable"]["descripcion"],
-			"tamano": [celda // 2, celda // 2], "mira_a": "frente",
-			"animaciones": {"spin": {"frames": 4, "fps": 8, "bucle": True}},
-		}],
+		"objetos": objetos,
 		"escenarios": [{"id": "suelo", "descripcion": d["escenario"]["descripcion"], "tile": celda, "piezas": ["suelo"]}],
 		"musica": {
 			"tempo": d["musica"]["tempo"], "instrumentos": d["musica"]["instrumentos"], "ambiente": d["musica"]["ambiente"],
