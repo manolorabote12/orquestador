@@ -146,10 +146,17 @@ def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProces
 	errores = []
 	## 12 nov: con "+extension GLX +render" Xvfb a veces se caia al arrancar (Segmentation fault en
 	## InitExtensions). Primero sin extras; si no arranca, con ellas; y al final xvfb-run.
-	for extra in ([], ["+extension", "GLX", "+render"]):
+	## Y si aun asi se cae (en algunas maquinas de RunPod Xvfb revienta al cargar GLX): Xvfb SIN GLX y
+	## Godot con OpenGL ES por EGL, que no lo necesita (probado: mismas capturas).
+	sin_glx = ["-extension", "GLX"]
+	for extra, entorno_x in (([], {}), (["+extension", "GLX", "+render"], {}), (sin_glx, {})):
+		orden = cmd
+		if extra == sin_glx and "--rendering-driver" in cmd:
+			k = cmd.index("--rendering-driver")
+			orden = cmd[:k + 1] + ["opengl3_es"] + cmd[k + 2:]
 		num = next((n for n in range(90, 140) if not os.path.exists(f"/tmp/.X11-unix/X{n}") and not os.path.exists(f"/tmp/.X{n}-lock")), 99)
 		srv = subprocess.Popen([xvfb, f":{num}", "-screen", "0", "800x1400x24", "-nolisten", "tcp", "-ac", "-noreset", *extra],
-			stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+			stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, env=dict(os.environ, **entorno_x))
 		try:
 			for _ in range(50):
 				if os.path.exists(f"/tmp/.X11-unix/X{num}") or srv.poll() is not None:
@@ -157,11 +164,11 @@ def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProces
 				time.sleep(0.1)
 			if srv.poll() is not None:
 				err = (srv.stderr.read() if srv.stderr else "")
-				errores.append(f"Xvfb {' '.join(extra) or 'basico'} no arranco (codigo {srv.returncode}): " + err[-300:])
+				errores.append(f"Xvfb {' '.join(extra) or 'basico'} no arranco (codigo {srv.returncode}): " + err[-200:])
 				continue
-			env = dict(os.environ, DISPLAY=f":{num}")
+			env = dict(os.environ, DISPLAY=f":{num}", **entorno_x)
 			env.pop("WAYLAND_DISPLAY", None)
-			return subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, env=env)
+			return subprocess.run(orden, capture_output=True, text=True, timeout=timeout, env=env)
 		finally:
 			if srv.poll() is None:
 				srv.terminate()
