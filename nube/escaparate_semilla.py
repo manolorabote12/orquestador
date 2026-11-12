@@ -252,6 +252,24 @@ def seguir() -> int:
 	return 0
 
 
+def encargar_idea(idea: str) -> int:
+	"""Un juego concreto ya (pruebas de fuego): fuera de la lista y del objetivo, con el mismo control de saldo."""
+	idea = " ".join(idea.split())[:400]
+	if len(idea) < 12:
+		print("::error::Escribe la idea del juego (al menos 12 letras)")
+		return 1
+	if rest("POST", "rpc/fabrica_pausada", {}):
+		print("::error::La fabrica esta PARADA: reanudala antes de encargar juegos")
+		return 1
+	if cuantos_caben(1, saldo_runpod(), float(os.environ.get("ORQ_SEMILLA_RESERVA") or "3")) < 1:
+		print("::error::Saldo de RunPod en la reserva: no se encarga")
+		return 1
+	u = crear_cuenta()
+	encolar(u, idea)
+	print(f"::notice::Juego encargado: {idea}")
+	return 0
+
+
 def cancelar() -> int:
 	poner_objetivo(0)
 	u = cuenta()
@@ -411,6 +429,8 @@ def main(args: list[str]) -> int:
 	if accion == "encargar":
 		n = args[1].strip() if len(args) > 1 else "10"
 		return encargar(int(n) if n.isdigit() else 10)
+	if accion == "encargar_idea":
+		return encargar_idea(" ".join(args[1:]))
 	if accion == "publicar":
 		return publicar()
 	if accion == "seguir":

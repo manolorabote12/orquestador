@@ -3,6 +3,7 @@ name: "Escaparate: juegos de muestra"
 # Desde el movil: app de GitHub -> Actions -> este workflow -> Run workflow.
 #  - encargar: objetivo de N juegos. Van de uno en uno (el Reloj pone el siguiente cada 15 minutos y publica
 #              los terminados). Cada juego ~0,35 $; nunca baja el saldo de RunPod de 3 $.
+#  - encargar_idea: un juego concreto ya (campo «idea»), fuera de la lista.
 #  - estado:   cuantos van en cola, hechos, fallidos y publicados (y si la fabrica esta parada).
 #  - seguir:   lo mismo que hace el Reloj, sin esperar.
 #  - cancelar: quita los que aun no han empezado y pone el objetivo a 0.
@@ -16,12 +17,16 @@ on:
       accion:
         description: "estado, encargar, seguir o cancelar"
         type: choice
-        options: [estado, encargar, seguir, cancelar, capturas, retirar, retirar_viejos]
+        options: [estado, encargar, encargar_idea, seguir, cancelar, capturas, retirar, retirar_viejos]
         default: estado
       cantidad:
         description: "Cuantos juegos encargar (maximo 25)"
         required: false
         default: "10"
+      idea:
+        description: "Solo para encargar_idea: el juego concreto que se fabrica ya"
+        required: false
+        default: ""
 
 jobs:
   escaparate:
@@ -42,7 +47,10 @@ jobs:
         env:
           ACCION: ${{ inputs.accion }}
           CANTIDAD: ${{ inputs.cantidad }}
-        run: python3 nube/escaparate_semilla.py "$ACCION" "$CANTIDAD"
+          IDEA: ${{ inputs.idea }}
+        run: |
+          if [ "$ACCION" = encargar_idea ]; then python3 nube/escaparate_semilla.py "$ACCION" "$IDEA"
+          else python3 nube/escaparate_semilla.py "$ACCION" "$CANTIDAD"; fi
       - name: Despertar la fabrica
         if: inputs.accion == 'encargar'
         run: |
