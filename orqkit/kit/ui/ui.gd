@@ -102,10 +102,44 @@ func make_button(text: String, primary: bool = false, icon_kind: String = "") ->
 		if text != "":
 			b.text = "     " + text
 	b.resized.connect(func() -> void: b.pivot_offset = b.size * 0.5)
+	b.ready.connect(_add_shine.bind(b))
 	b.button_down.connect(_press.bind(b))
 	b.button_up.connect(_release.bind(b))
 	b.pressed.connect(_click.bind(primary))
 	return b
+
+
+## Brillo arriba del boton (13 nov: «botones planos, interfaz sosa» en casi todas las criticas). Solo con
+## esquinas redondeadas: el pixel art se queda con su boton plano.
+func _add_shine(b: Button) -> void:
+	if not is_instance_valid(b) or b.get_node_or_null("Shine") != null:
+		return
+	var box: StyleBox = b.get_theme_stylebox("normal")
+	if not (box is StyleBoxFlat):
+		return
+	var flat: StyleBoxFlat = box as StyleBoxFlat
+	var r: int = flat.corner_radius_top_left
+	if r < 6:
+		return
+	var shine: Panel = Panel.new()
+	shine.name = "Shine"
+	shine.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	var st: StyleBoxFlat = StyleBoxFlat.new()
+	st.bg_color = Color(1, 1, 1, 0.13)
+	st.corner_radius_top_left = maxi(2, r - 4)
+	st.corner_radius_top_right = maxi(2, r - 4)
+	st.corner_radius_bottom_left = 4
+	st.corner_radius_bottom_right = 4
+	st.anti_aliasing = flat.anti_aliasing
+	shine.add_theme_stylebox_override("panel", st)
+	shine.anchor_right = 1.0
+	shine.anchor_bottom = 0.42
+	var m: float = float(flat.border_width_left) + 4.0
+	shine.offset_left = m
+	shine.offset_right = -m
+	shine.offset_top = float(flat.border_width_top) + 3.0
+	b.add_child(shine)
+	b.move_child(shine, 0)
 
 
 ## Toque: el boton principal suena con mas cuerpo y vibra mas.
