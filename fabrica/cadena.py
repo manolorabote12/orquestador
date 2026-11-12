@@ -20,6 +20,7 @@ import copy
 import json
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -576,9 +577,12 @@ def niveles_reto(proyecto: Path, diseno: dict, semilla: int) -> int:
 	if not base:
 		return 0
 	## Uno de mas: el primero de cada genero suele ser especial (tutorial, tablero liso) y se tira.
-	d2["niveles"] = [copy.deepcopy(base[(len(base) // 3 + k) % len(base)]) for k in range(RETO_NIVELES + 1)]
+	## Y unos cuantos de reserva: con las piezas nuevas del runner (12 nov) el bot no supera algunos y el
+	## reto se quedaba sin los 3 minimos.
+	extra = RETO_NIVELES // 2
+	d2["niveles"] = [copy.deepcopy(base[(len(base) // 3 + k) % len(base)]) for k in range(RETO_NIVELES + 1 + extra)]
 	try:
-		mapas = director.generar_niveles(d2, semilla + 7777, ajustes={i: 0.2 for i in range(RETO_NIVELES + 1)})
+		mapas = director.generar_niveles(d2, semilla + 7777, ajustes={i: 0.2 for i in range(RETO_NIVELES + 1 + extra)})
 		campana = [{k: v for k, v in lv.items() if k != "name"} for lv in json.loads(original).get("levels", [])]
 		niveles = [lv for lv in director.a_game(d2, mapas)["levels"][1:] if {k: v for k, v in lv.items() if k != "name"} not in campana]
 		prueba = json.loads(original)
@@ -597,6 +601,7 @@ def niveles_reto(proyecto: Path, diseno: dict, semilla: int) -> int:
 				buenos.append(lv)
 	finally:
 		game_p.write_text(original, encoding="utf-8")
+	buenos = buenos[:RETO_NIVELES]
 	for lv in buenos:
 		lv.pop("variant_b", None)
 	if len(buenos) >= 3:
@@ -660,7 +665,42 @@ def disenar_previa(idea: str, simulado: bool, gasto: "llm.Gasto") -> tuple[dict,
 	return diseno, modelo
 
 
+## Modo estudio (13 nov): «[estudio]» delante de la idea = sin prisa ni tope bajo. Directora creativa con
+## 3 conceptos, mas rondas para programar un genero a medida y mas presupuesto de IA en esa fase.
+ESTUDIO = {"ORQ_CONCEPTOS": "1", "ORQ_A_MEDIDA_RONDAS": "8", "ORQ_A_MEDIDA_USD": "6", "ORQ_PULIR_RONDAS": "3"}
+
+
+def separar_estudio(idea: str) -> tuple[str, bool]:
+	"""Pura: quita «[estudio]» del principio de la idea (puede ir antes o despues de otras marcas)."""
+	t = idea.strip()
+	if t.startswith("[estudio]"):
+		return t[len("[estudio]"):].strip(), True
+	m = re.match(r"^(\[[a-z_]+(?::[^\]]*)?\]\s*)\[estudio\]\s*", t)
+	if m:
+		return (m.group(1) + t[m.end():]).strip(), True
+	return t, False
+
+
 def fabricar(args: argparse.Namespace) -> dict:
+	"""Fabrica el juego; con «[estudio]» en la idea, con los ajustes de ESTUDIO solo para este juego."""
+	idea, estudio = separar_estudio(str(args.idea))
+	if not estudio:
+		return _fabricar(args)
+	args.idea = idea
+	antes = {k: os.environ.get(k) for k in ESTUDIO}
+	os.environ.update(ESTUDIO)
+	try:
+		evento("estudio", "ok", "Modo estudio: más conceptos, más rondas y más pulido para tu juego")
+		return _fabricar(args)
+	finally:
+		for k, v in antes.items():
+			if v is None:
+				os.environ.pop(k, None)
+			else:
+				os.environ[k] = v
+
+
+def _fabricar(args: argparse.Namespace) -> dict:
 	t0 = time.time()
 	tiempos: dict[str, float] = {}
 	gasto = getattr(args, "gasto", None) or llm.Gasto()
@@ -700,6 +740,9 @@ def fabricar(args: argparse.Namespace) -> dict:
 	rival = "" if not generos.de(diseno)["enemigos"] and diseno.get("genero") != "carreras" else f" contra {len(diseno['enemigos'])} tipos de enemigo"
 	evento("diseno", "ok", f"«{diseno['titulo']}» ({genero}): {diseno['heroe']['nombre']}{rival}",
 		titulo=diseno["titulo"], modelo=modelo, usd=gasto.usd)
+	if modelo not in ("vista_previa", "simulado") and llm.ULTIMOS_ERRORES:
+		informe["errores_diseno"] = list(llm.ULTIMOS_ERRORES)
+		evento("diseno", "aviso", "Correcciones del diseño: " + " | ".join(llm.ULTIMOS_ERRORES)[:600])
 	## Que no sea un copia y pega de otro juego de la fabrica (con la directora simulada, la de las
 	## pruebas, solo si se pide: asi las pruebas no dependen de lo fabricado antes).
 	activa = not args.simulado or os.environ.get("ORQ_ORIGINALIDAD") == "1"
@@ -911,6 +954,15 @@ def fabricar(args: argparse.Namespace) -> dict:
 		except Exception as e:  # noqa: BLE001 - el reto es un extra
 			evento("reto", "aviso", f"Sin reto del día esta vez ({str(e)[:80]})")
 		cronometro("reto", t)
+
+	## 6c - Pulido (modo estudio): critica -> arreglo cosmetico o de codigo -> otra critica (pulir.py).
+	if not args.simulado and not args.arte_simulado:
+		import pulir
+		t = time.time()
+		r_pulido = pulir.pulir(proyecto, diseno, args.semilla, gasto)
+		if r_pulido:
+			informe["pulido"] = r_pulido
+			cronometro("pulido", t)
 
 	## 7 - APK
 	apk = None

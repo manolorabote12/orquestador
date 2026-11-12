@@ -27,14 +27,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          sparse-checkout: fabrica
+          sparse-checkout: |
+            fabrica
+            orqkit
       - name: Laboratorio
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ORQ_LAB_IDEAS: ${{ inputs.propias }}
           N: ${{ inputs.ideas }}
           ORQ_LAB_MODO: ${{ inputs.modo }}
-        run: python3 fabrica/laboratorio.py "$N"
+        run: |
+          mkdir -p laboratorio
+          set -o pipefail
+          python3 fabrica/laboratorio.py "$N" 2>&1 | tee laboratorio/log.txt
       - name: Subir informe a la rama laboratorio
         if: always()
         run: |

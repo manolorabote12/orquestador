@@ -11,6 +11,7 @@ seguridad de agente_genero (sin sistema, red, archivos ni cargar scripts de fuer
 """
 
 import json
+import os
 import re
 import tempfile
 from pathlib import Path
@@ -22,6 +23,9 @@ from director import llm
 GENERO = "a_medida"
 KIT = "custom"
 RONDAS = 3
+## Modo estudio (13 nov): mas rondas, tope de gasto y modelo propio para programar.
+##   ORQ_A_MEDIDA_RONDAS (por defecto 3), ORQ_A_MEDIDA_USD (tope de IA de esta fase, por defecto 3 $),
+##   ORQ_MODELO_PROGRAMADOR (por defecto el modelo superior).
 VARIANTES = 4
 
 HERRAMIENTA = {
@@ -117,20 +121,36 @@ def probar(proyecto: Path, diseno: dict, semilla: int) -> tuple[bool, str]:
 		"\n" + str(val.get("fallos_qa", ""))[:1500]
 
 
+def _intentos_previos(historial: list[dict]) -> str:
+	"""Con muchas rondas, que no repita lo que ya fallo: los errores de las rondas anteriores, resumidos."""
+	if len(historial) < 2:
+		return ""
+	return "\n\nRondas anteriores que tambien fallaron (no repitas esos enfoques):\n" + "\n".join(
+		f"- ronda {h['ronda']}: {str(h.get('errores', ''))[:300]}" for h in historial[:-1][-4:])
+
+
 def crear(proyecto: Path, diseno: dict, semilla: int, simulado: bool, gasto: llm.Gasto) -> dict:
 	"""Escribe y comprueba el genero a medida del juego. {"ok", "rondas", "notas"}."""
 	descripcion = str((diseno.get("a_medida") or {}).get("descripcion") or diseno.get("resumen", ""))[:1200]
 	actuales = archivos_actuales(proyecto)
 	historial: list[dict] = []
-	for ronda in range(1, RONDAS + 1):
+	rondas = max(1, min(20, int(os.environ.get("ORQ_A_MEDIDA_RONDAS", RONDAS) or RONDAS)))
+	tope = float(os.environ.get("ORQ_A_MEDIDA_USD", "3") or 3)
+	modelo = os.environ.get("ORQ_MODELO_PROGRAMADOR") or llm.MODELOS[-1]
+	inicio_usd = gasto.usd
+	for ronda in range(1, rondas + 1):
+		if not simulado and gasto.usd - inicio_usd >= tope:
+			historial.append({"ronda": ronda, "errores": f"tope de gasto de la fase ({tope:.2f} $)"})
+			break
 		if simulado:
 			nuevos = dict(actuales, notas="(simulado) la plantilla tal cual")
 		else:
 			usuario = ("Juego que hay que hacer: <descripcion>" + descripcion + "</descripcion>\nTitulo: " + diseno.get("titulo", "")
 				+ "\nArchivos actuales (la plantilla o tu version anterior):\n" + json.dumps(actuales, ensure_ascii=False)
-				+ ("\n\nLa prueba anterior fallo con esto. Corrige SOLO lo necesario:\n" + historial[-1]["errores"] if historial else ""))
+				+ ("\n\nLa prueba anterior fallo con esto. Corrige SOLO lo necesario:\n" + historial[-1]["errores"] if historial else "")
+				+ _intentos_previos(historial))
 			try:
-				nuevos = llm.llamar_herramienta(llm.MODELOS[-1], PROMPT, [{"role": "user", "content": usuario}], HERRAMIENTA,
+				nuevos = llm.llamar_herramienta(modelo, PROMPT, [{"role": "user", "content": usuario}], HERRAMIENTA,
 					gasto, f"a medida ronda {ronda}", max_tokens=16000)
 			except llm.ErrorIA as e:
 				historial.append({"ronda": ronda, "errores": f"IA: {e}"})

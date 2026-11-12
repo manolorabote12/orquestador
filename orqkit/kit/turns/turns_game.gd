@@ -11,8 +11,11 @@ extends Node2D
 ## Contrato con el kit: finished, deaths, time_in_level, fast, auto_retry, bot_script(),
 ## bot_state(), retry(), open_pause() y ResultPanel/FailPanel al acabar.
 
-const HERO_AT: Vector2 = Vector2(-250.0, 120.0)
-const ENEMY_X: float = 230.0
+## 13 nov: personajes mas grandes y mas abajo (la critica: «el arquero es pequeno y queda relegado al
+## borde; debajo, una franja de suelo vacia»).
+const HERO_AT: Vector2 = Vector2(-205.0, 120.0)
+const ENEMY_X: float = 175.0
+const ACTOR_SCALE: float = 1.3
 
 var rows: Array = []
 var finished: bool = false
@@ -83,7 +86,7 @@ func _ready() -> void:
 	## Con fondo pintado por la IA solo se dibuja el suelo (el cielo y los montes los pone el fondo).
 	ground.only_ground = Look.has_level_backdrop()
 	add_child(ground)
-	_hero = _actor(Kit.sprite_by_role("jugador"), 210.0, false)
+	_hero = _actor(Kit.sprite_by_role("jugador"), 210.0 * ACTOR_SCALE, false)
 	_hero.position = HERO_AT
 	add_child(_hero)
 	_bars = Node2D.new()
@@ -96,8 +99,9 @@ func _ready() -> void:
 	_camera.make_current()
 	Juice.register_camera(_camera)
 	var vp: Vector2 = get_viewport_rect().size
-	_camera.zoom = Vector2.ONE * minf(vp.x / 820.0, 1.5)
-	_camera.position = Vector2(0.0, -40.0)
+	_camera.zoom = Vector2.ONE * minf(vp.x / 730.0, 1.6)
+	## La accion abajo, cerca de los botones; arriba queda el cielo (y el fondo pintado).
+	_camera.position = Vector2(0.0, 120.0 - 0.26 * vp.y / _camera.zoom.y)
 	_build_hud()
 	_reset()
 	Audio.play_track("nivel")
@@ -110,6 +114,16 @@ func bot_script() -> String:
 
 func _actor(art: Dictionary, h: float, flip: bool) -> Node2D:
 	var rig: Node2D = Node2D.new()
+	## Sombra suave en el suelo: el personaje pisa el escenario en vez de flotar.
+	var shadow: Polygon2D = Polygon2D.new()
+	var pts: PackedVector2Array = PackedVector2Array()
+	for k: int in 24:
+		var a: float = TAU * float(k) / 24.0
+		pts.append(Vector2(cos(a) * h * 0.32, sin(a) * h * 0.07))
+	shadow.polygon = pts
+	shadow.color = Color(0.0, 0.0, 0.0, 0.32)
+	shadow.name = "Shadow"
+	rig.add_child(shadow)
 	if not art.is_empty():
 		var spr: AnimatedSprite2D = SpriteKit.animado(art, h, "idle", true)
 		spr.flip_h = flip
@@ -199,10 +213,10 @@ func _spawn_wave() -> void:
 	for i: int in list.size():
 		var e: Dictionary = list[i]
 		var big: bool = str(e["kind"]) == "B"
-		var n: Node2D = _actor(_arts.get(str(e["kind"]), {}), 250.0 if big else 150.0, true)
+		var n: Node2D = _actor(_arts.get(str(e["kind"]), {}), (250.0 if big else 150.0) * ACTOR_SCALE, true)
 		n.name = "Enemy%d" % i
-		var y: float = 120.0 if list.size() == 1 else lerpf(-20.0, 200.0, float(i) / float(maxi(list.size() - 1, 1)))
-		n.position = Vector2(ENEMY_X + 60.0 * float(i % 2), y)
+		var y: float = 120.0 if list.size() == 1 else lerpf(-30.0, 170.0, float(i) / float(maxi(list.size() - 1, 1)))
+		n.position = Vector2(ENEMY_X - 45.0 + 125.0 * float(i % 2), y)
 		n.z_index = int(y / 10.0)
 		add_child(n)
 		_enemy_nodes.append(n)
@@ -293,13 +307,13 @@ func _show_hero(action: String, ev: Array) -> void:
 				n2.create_tween().tween_property(n2, "modulate:a", 0.0, _t(0.35))
 				Audio.play("coin")
 			"heal":
-				UI.float_text(self, HERO_AT + Vector2(0, -230), "+%d" % int(round(float(d["amount"]))), Color("#5fd35f"), 38)
+				UI.float_text(self, HERO_AT + Vector2(0, -300), "+%d" % int(round(float(d["amount"]))), Color("#5fd35f"), 38)
 				Juice.sparkle(self, HERO_AT + Vector2(0, -100), Color("#5fd35f"), 10, 200.0)
 				Audio.play("powerup")
 			"guard":
-				UI.float_text(self, HERO_AT + Vector2(0, -230), Kit.text("turns_guard", "\u00a1En guardia!"), Color("#7fd0ff"), 32)
+				UI.float_text(self, HERO_AT + Vector2(0, -300), Kit.text("turns_guard", "\u00a1En guardia!"), Color("#7fd0ff"), 32)
 			"thorns":
-				UI.float_text(self, HERO_AT + Vector2(0, -200), "-%d" % int(round(float(d["amount"]))), UI.colors["peligro"], 30)
+				UI.float_text(self, HERO_AT + Vector2(0, -270), "-%d" % int(round(float(d["amount"]))), UI.colors["peligro"], 30)
 	_bars.queue_redraw()
 	await get_tree().create_timer(_t(0.45)).timeout
 
@@ -355,7 +369,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	## Tocar un enemigo lo marca como objetivo.
 	var list: Array = state.get("enemies", [])
 	for i: int in _enemy_nodes.size():
-		if i < list.size() and bool(list[i]["alive"]) and world.distance_to(_enemy_nodes[i].position + Vector2(0, -70)) < 110.0:
+		if i < list.size() and bool(list[i]["alive"]) and world.distance_to(_enemy_nodes[i].position + Vector2(0, -90)) < 140.0:
 			selected = i
 			_bars.queue_redraw()
 			return
@@ -372,13 +386,13 @@ func _draw_bars() -> void:
 	if party_mode:
 		_draw_party_bars()
 		return
-	_bar(HERO_AT + Vector2(0, -250), float(state["hp"]) / float(state["max_hp"]), Color("#5fd35f"), 200.0)
+	_bar(HERO_AT + Vector2(0, -250.0 * ACTOR_SCALE), float(state["hp"]) / float(state["max_hp"]), Color("#5fd35f"), 200.0)
 	var list: Array = state["enemies"]
 	for i: int in mini(list.size(), _enemy_nodes.size()):
 		var e: Dictionary = list[i]
 		if not bool(e["alive"]):
 			continue
-		var top: float = -280.0 if str(e["kind"]) == "B" else -185.0
+		var top: float = (-280.0 if str(e["kind"]) == "B" else -185.0) * ACTOR_SCALE
 		var p: Vector2 = _enemy_nodes[i].position + Vector2(0, top)
 		_bar(p, float(e["hp"]) / float(e["max_hp"]), Color("#ff5a4f"), 150.0)
 		if i == selected and phase == "player":

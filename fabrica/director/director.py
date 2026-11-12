@@ -51,6 +51,25 @@ def pistas_genero(idea: str) -> list[str]:
 
 PROMPT = PROMPT + "\n\n" + catalogo_generos()
 
+## Juegos famosos que la gente nombra y que en la fabrica son UN genero concreto: si la idea los nombra,
+## ese genero es obligatorio (12 nov: «al estilo Kingshot» salio como RPG por turnos).
+FAMOSOS = ("kingshot", "whiteout", "flappy", "subway", "snake", "guitar hero", "pokemon", "summoners war",
+	"age of empires", "hay day", "stardew", "slay the spire", "sudoku", "fruit ninja", "hole.io", "agar",
+	"helix jump", "terraria", "pubg", "fortnite", "free fire", "crossy road", "mario kart", "don't starve",
+	"last day on earth", "clash royale", "hill climb", "angry birds", "plants vs", "wordle", "coin master",
+	"monopoly go", "merge mansion", "2048", "hearthstone", "worms", "zuma", "hollow knight", "hitman go")
+
+
+def famoso(idea: str) -> tuple[str, str] | None:
+	"""Pura: (juego nombrado, genero obligatorio) si la idea nombra un juego famoso de un solo genero."""
+	t = _plano(idea)
+	for f in FAMOSOS:
+		if re.search(r"(?<![a-z0-9])" + re.escape(f), t):
+			gs = [g for g in generos.ORDEN if any(f in _plano(c) for c in generos.GENEROS[g].get("claves", []))]
+			if len(gs) == 1:
+				return f, gs[0]
+	return None
+
 ## 1 - Nombres protegidos que nunca deben aparecer (la IA ya lo sabe; esto es la red de seguridad).
 PROTEGIDOS = [
 	"mario", "luigi", "sonic", "pokemon", "pikachu", "zelda", "link", "kirby", "disney", "mickey",
@@ -182,6 +201,29 @@ VOLADOR = {
 }
 
 
+def _oscurecer(h: str, objetivo: float = 0.06) -> str:
+	"""Pura: el mismo tono, oscurecido hasta una luminancia por debajo de objetivo."""
+	r, g, b = (int(h[i:i + 2], 16) for i in (1, 3, 5))
+	for _ in range(40):
+		if _lum(f"#{r:02x}{g:02x}{b:02x}") < objetivo:
+			break
+		r, g, b = int(r * 0.85), int(g * 0.85), int(b * 0.85)
+	return f"#{r:02x}{g:02x}{b:02x}"
+
+
+def _arreglar_paleta(d: dict) -> None:
+	"""Una paleta toda clara (juegos infantiles, 13 nov) no tumba el diseno: se le anaden los oscuros
+	que pide el kit (cielo/fondo primero y un segundo oscuro), del mismo tono que sus colores."""
+	pal = ((d.get("estilo") or {}).get("paleta"))
+	if not isinstance(pal, list) or len(pal) < 2 or not all(isinstance(c, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", c) for c in pal):
+		return
+	if _lum(pal[0]) > 0.12:
+		pal.insert(0, _oscurecer(pal[0]))
+	if sum(1 for c in pal if _lum(c) < 0.1) < 2:
+		pal.insert(1, _oscurecer(pal[1], 0.08))
+	del pal[16:]
+
+
 def normalizar(d: dict) -> dict:
 	"""Quita lo que el genero no admite (jefe, disparo, poderes): lo pone el codigo, no la IA."""
 	g = generos.de(d)
@@ -192,6 +234,7 @@ def normalizar(d: dict) -> dict:
 	if not g["poderes"]:
 		d["poderes"] = []
 	_normalizar_historia(d)
+	_arreglar_paleta(d)
 	## Casino social (simulacion de apuestas): solo para mayores, nunca un juego infantil.
 	if g.get("adultos") and d.get("publico") == "infantil":
 		d["publico"] = "todos"
@@ -331,6 +374,10 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 	if gancho:
 		usuario += f"\nGancho elegido: genero {gancho['genero']} obligatorio con los giros {', '.join(gancho['giros']) or 'ninguno'}."
 	pistas = [] if (gancho or plantilla) else pistas_genero(idea)
+	fam = None if (gancho or plantilla or a_medida) else famoso(idea)
+	if fam:
+		usuario += f"\nLa idea nombra «{fam[0]}»: en esta fabrica eso es el genero {fam[1]} (OBLIGATORIO)."
+		pistas = [fam[1]] + [p for p in pistas if p != fam[1]]
 	if pistas:
 		usuario += ("\nPista por palabras clave de la idea (el primero manda si encaja): " + ", ".join(pistas[:4])
 			+ ". Elige uno de estos salvo que la idea pida claramente otro.")
@@ -350,6 +397,8 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 		## Un dato con forma inesperada es un error que la IA corrige (o pasa al otro modelo), nunca una
 		## excepcion que tumba el juego (12 nov: 'str' object has no attribute 'get' en la historia).
 		import copy
+		if fam and x.get("genero") != fam[1]:
+			return [f"genero: la idea nombra «{fam[0]}», que en esta fabrica es el genero {fam[1]}; usa genero {fam[1]}"]
 		try:
 			return validar(normalizar(fijar(copy.deepcopy(x))))
 		except Exception as e:  # noqa: BLE001 - cualquier forma rara se le devuelve a la IA como error

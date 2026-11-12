@@ -103,6 +103,13 @@ def llamar_herramienta(modelo: str, sistema: str, mensajes: list[dict], herramie
 		gasto.anotar(modelo, resp.get("usage", {}), time.time() - t0, nota)
 		if resp.get("stop_reason") == "refusal":
 			raise ErrorIA("La IA ha rechazado la peticion")
+		## Respuesta cortada por el limite: la herramienta llega a medias (12 nov: disenos de ~2.700
+		## tokens contra un limite de 3.000). Se repite con el doble de espacio.
+		if resp.get("stop_reason") == "max_tokens" and cuerpo["max_tokens"] < 32000 and intento < reintentos - 1:
+			cuerpo["max_tokens"] = min(32000, cuerpo["max_tokens"] * 2)
+			datos = json.dumps(cuerpo).encode("utf-8")
+			ultimo = "respuesta cortada por el limite de tokens"
+			continue
 		for bloque in resp.get("content", []):
 			if bloque.get("type") == "tool_use" and bloque.get("name") == herramienta["name"]:
 				return bloque.get("input", {})
@@ -110,14 +117,21 @@ def llamar_herramienta(modelo: str, sistema: str, mensajes: list[dict], herramie
 	raise ErrorIA(ultimo)
 
 
-def con_router(sistema: str, usuario: str, herramienta: dict, validar, gasto: Gasto, primero_superior: bool = False) -> tuple[dict, str]:
+## Errores de validacion de cada modelo en la ultima llamada a con_router (para el informe: el 12 nov
+## el reino tipo Kingshot salio como RPG porque Sonnet fallo dos veces y nadie supo por que).
+ULTIMOS_ERRORES: list[str] = []
+
+
+def con_router(sistema: str, usuario: str, herramienta: dict, validar, gasto: Gasto, primero_superior: bool = False,
+		max_tokens: int = 8000) -> tuple[dict, str]:
 	"""3 - Barato -> correccion con errores -> modelo superior. validar(dict) -> lista de errores.
 	primero_superior: el modelo bueno primero (y el barato de reserva). Para el DISENO del juego: es la
 	decision que mas pesa (genero, mundo, personajes, niveles) y cuesta centimos frente al arte."""
 	errores_previos: list[str] = []
+	ULTIMOS_ERRORES.clear()
 	for modelo in (list(reversed(MODELOS)) if primero_superior else MODELOS):
 		mensajes = [{"role": "user", "content": usuario}]
-		datos = llamar_herramienta(modelo, sistema, mensajes, herramienta, gasto, "diseno")
+		datos = llamar_herramienta(modelo, sistema, mensajes, herramienta, gasto, "diseno", max_tokens=max_tokens)
 		errores = validar(datos)
 		if not errores:
 			return datos, modelo
@@ -126,9 +140,11 @@ def con_router(sistema: str, usuario: str, herramienta: dict, validar, gasto: Ga
 			{"role": "user", "content": [{"type": "tool_result", "tool_use_id": "t1", "is_error": True,
 				"content": "El diseno no es valido. Corrige SOLO esto y vuelve a llamar a la herramienta:\n- " + "\n- ".join(errores[:12])}]},
 		]
-		datos = llamar_herramienta(modelo, sistema, mensajes, herramienta, gasto, "correccion")
+		ULTIMOS_ERRORES.extend(f"{modelo}: {e}" for e in errores[:4])
+		datos = llamar_herramienta(modelo, sistema, mensajes, herramienta, gasto, "correccion", max_tokens=max_tokens)
 		errores = validar(datos)
 		if not errores:
 			return datos, modelo
+		ULTIMOS_ERRORES.extend(f"{modelo} (corregido): {e}" for e in errores[:4])
 		errores_previos = errores
 	raise ErrorIA("El diseno sigue sin ser valido: " + "; ".join(errores_previos[:5]))

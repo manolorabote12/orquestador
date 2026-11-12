@@ -92,5 +92,23 @@ check("informe: resumen y tabla", "B gana 1 de 1" in inf and "| gancho | 5.0 | 9
 director.disenar("un juego de gatos", True, llm.Gasto())
 check("simulado: sin concepto", director.ULTIMO_CONCEPTO is None)
 
+## Modo estudio: la marca se quita y los ajustes valen solo para ese juego.
+import argparse  # noqa: E402
+import os  # noqa: E402
+
+import cadena  # noqa: E402
+
+check("estudio: delante", cadena.separar_estudio("[estudio] un gato") == ("un gato", True))
+check("estudio: detras de otra marca", cadena.separar_estudio("[a_medida] [estudio] un gato") == ("[a_medida] un gato", True))
+check("estudio: sin marca", cadena.separar_estudio("un gato [estudio]") == ("un gato [estudio]", False))
+visto = {}
+real_f = cadena._fabricar
+cadena._fabricar = lambda a: visto.update(idea=a.idea, c=os.environ.get("ORQ_CONCEPTOS"), r=os.environ.get("ORQ_A_MEDIDA_RONDAS")) or {}
+os.environ.pop("ORQ_CONCEPTOS", None)
+cadena.fabricar(argparse.Namespace(idea="[estudio] un dragon"))
+check("estudio: ajustes durante el juego", visto == {"idea": "un dragon", "c": "1", "r": "8"}, visto)
+check("estudio: y se quitan al terminar", os.environ.get("ORQ_CONCEPTOS") is None and os.environ.get("ORQ_A_MEDIDA_RONDAS") is None)
+cadena._fabricar = real_f
+
 print(f"== {fallos} fallos ==")
 sys.exit(1 if fallos else 0)
