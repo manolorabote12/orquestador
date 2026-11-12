@@ -181,6 +181,11 @@ export const EN: Record<string, string> = {
   // Tuercas
   "Tus tuercas": "Your bolts",
   "Planes": "Plans",
+  "Tu juego, fabricado con palabras": "Your game, built from words",
+  "Cuéntale tu idea a Chispa y la fábrica hace el juego entero: niveles, arte, música y listo para Google Play.": "Tell Chispa your idea and the factory builds the whole game: levels, art, music, ready for Google Play.",
+  "Describe tu idea": "Describe your idea",
+  "Mira el diseño gratis": "See the design for free",
+  "Juega y publícalo": "Play it and publish it",
   "tuercas cada mes": "bolts every month",
   "Fabrica cada mes sin pensar en el saldo. Cancela cuando quieras desde Google Play.": "Make games every month without watching your balance. Cancel anytime in Google Play.",
   "Cada mes": "Monthly",

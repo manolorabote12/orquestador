@@ -401,7 +401,7 @@ export function vistaTaller(app: App): VistaHecha {
   const aMedida = h("input", { type: "checkbox", id: "a-medida" }) as HTMLInputElement;
   const aMedidaFila = h("label", { class: "check-row", for: "a-medida" }, aMedida,
     h("span", {}, "Inventar un género nuevo solo para este juego (beta: tarda más)"));
-  const form = h("section", { class: "sheet" },
+  const form = h("section", { class: "sheet plano" },
     h("div", { class: "sheet-head" }, h("h2", {}, "Tu idea"), cuenta),
     usos, idea, marca, ganchos, chips, plantillas, tipos, aMedidaFila, h("div", { style: "height:16px" }),
     h("div", { class: "btn-row" }, verPrevia, fabricar), h("div", { style: "height:8px" }), previaCaja, estado, nota);

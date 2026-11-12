@@ -75,7 +75,7 @@ button { cursor: pointer; }
 .logo { display: flex; align-items: baseline; gap: 8px; min-width: 0; flex: 1 1 auto; overflow: hidden; }
 .logo b { font-family: var(--display); font-weight: 800; font-size: 24px; letter-spacing: 0.06em; line-height: 1; }
 .logo span { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-@media (max-width: 340px) { .logo span { display: none; } }
+@media (max-width: 420px) { .logo span { display: none; } }
 
 .nuts {
   display: flex; align-items: center; gap: 7px; flex: none;
@@ -916,3 +916,135 @@ a.btn { text-decoration: none; }
   background: var(--brass); transform: rotate(45deg); }
 .plan-pie { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 6px; }
 .plan-pie .btn-brass { width: 100%; }
+
+/* ================================================================ Taller de noche (v2, nov 2026)
+   El mismo taller de inventor, con materia: placas de metal remachadas, una lámpara que ilumina
+   el banco, papel de planos solo donde se dibuja la idea y una barra inferior que flota.
+   Va al final y solo reescribe lo necesario. */
+:root {
+  --night: #081428;
+  --plate-a: #17395f;
+  --plate-b: #0f2946;
+  --rivet: radial-gradient(circle at 35% 35%, #f6d48d 0 1.2px, #a8762a 1.6px 2.6px, transparent 3px);
+  --sombra: 0 10px 24px rgba(2, 8, 20, 0.45), 0 2px 0 rgba(0, 0, 0, 0.25);
+}
+html, body { background-color: var(--night); }
+body {
+  background-image:
+    radial-gradient(640px 420px at 50% -120px, rgba(255, 196, 102, 0.22), rgba(255, 196, 102, 0.06) 45%, transparent 70%),
+    radial-gradient(900px 700px at 50% 120%, rgba(0, 0, 0, 0.55), transparent 70%),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 24px 24px, 24px 24px;
+}
+
+/* Barra superior: marca con engranaje y tuercas en una moneda de latón. */
+.topbar { background: rgba(8, 20, 40, 0.78); border-bottom: 1px solid rgba(246, 207, 122, 0.14);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); }
+.logo { align-items: center; gap: 9px; }
+.logo .marca { width: 30px; height: 30px; flex: none; color: var(--brass); filter: drop-shadow(0 0 6px rgba(232, 176, 75, 0.35)); }
+.logo b { font-size: 25px; letter-spacing: 0.03em; text-transform: none;
+  background: linear-gradient(180deg, #fff6e0, var(--brass-hi) 60%, var(--brass)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nuts { border-radius: 999px; border: 1.5px solid rgba(246, 207, 122, 0.55);
+  background: linear-gradient(180deg, rgba(246, 207, 122, 0.2), rgba(156, 107, 31, 0.18));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 0 14px rgba(232, 176, 75, 0.18); padding: 5px 13px 5px 7px; }
+.demo-band { margin-top: 0; border-bottom: 0; border-radius: 0 0 10px 10px; margin-inline: 0; font-size: 11px; }
+
+/* Placas: metal con bisel arriba, sombra debajo y un remache en cada esquina. */
+.sheet {
+  background:
+    var(--rivet) left 7px top 7px / 8px 8px no-repeat,
+    var(--rivet) right 7px top 7px / 8px 8px no-repeat,
+    var(--rivet) left 7px bottom 7px / 8px 8px no-repeat,
+    var(--rivet) right 7px bottom 7px / 8px 8px no-repeat,
+    linear-gradient(180deg, var(--plate-a), var(--plate-b));
+  border: 1px solid rgba(232, 240, 250, 0.1);
+  border-top-color: rgba(232, 240, 250, 0.2);
+  border-radius: 14px;
+  box-shadow: var(--sombra), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  padding: 18px 18px 18px;
+}
+.sheet::after { display: none; }
+.sheet h2 { font-size: 26px; letter-spacing: 0.02em; text-transform: none; line-height: 1.05; }
+.sheet-head { margin-bottom: 12px; align-items: center; }
+.tag { padding: 3px 8px; border-radius: 999px; background: rgba(8, 20, 40, 0.5); color: var(--ink-dim); }
+details.plegable > summary .tag { padding: 3px 8px; }
+
+/* El papel de planos: solo donde se escribe la idea (lo mas importante de la app). */
+.sheet.plano {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px) 0 0 / 18px 18px,
+    linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px) 0 0 / 18px 18px,
+    linear-gradient(180deg, #1f5a92, #17487a);
+  border: 1px solid rgba(190, 225, 255, 0.35);
+  box-shadow: var(--sombra), inset 0 0 0 4px rgba(8, 20, 40, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+.sheet.plano textarea { background: rgba(6, 22, 44, 0.55); border-color: rgba(190, 225, 255, 0.3); font-size: 17px; }
+.sheet.plano textarea:focus { border-color: var(--brass-hi); box-shadow: 0 0 0 3px rgba(246, 207, 122, 0.25); }
+
+/* Chispa y su bocadillo: mas grande y con la luz de la lampara. */
+.chispa-row { grid-template-columns: 116px 1fr; padding-top: 18px; }
+.chispa { width: 116px; height: 135px; filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 22px rgba(255, 196, 102, 0.25)); }
+.bubble { background: linear-gradient(180deg, #fffaf0, #f1e6cf); border-radius: 16px 16px 16px 4px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35), 3px 3px 0 var(--brass-deep); font-size: 15.5px; }
+.bubble::before { border-right-color: #f6eedc; }
+
+/* Botones */
+.btn { border-radius: 12px; }
+.btn-brass { border: 0; text-transform: none; letter-spacing: 0.02em; font-size: 23px;
+  background: linear-gradient(180deg, #ffe3a3 0%, var(--brass-hi) 18%, var(--brass) 60%, #c98e2c 100%);
+  box-shadow: 0 5px 0 var(--brass-deep), 0 10px 22px rgba(232, 176, 75, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+.btn-brass:not(:disabled):hover { filter: brightness(1.05); }
+.btn-line { border-radius: 12px; background: rgba(8, 20, 40, 0.35); border-color: rgba(232, 240, 250, 0.18); }
+.chip { border-style: solid; border-color: rgba(232, 240, 250, 0.2); background: rgba(8, 20, 40, 0.35); color: var(--ink); }
+.chip.on, .chip.activo, .chips.desliza .chip[aria-selected="true"] { background: rgba(246, 207, 122, 0.16); border-color: var(--brass); color: var(--brass-hi); }
+
+/* Mis juegos: cartuchos con su portada. */
+.game-card { background: linear-gradient(180deg, var(--plate-a), var(--plate-b)); border: 1px solid rgba(232, 240, 250, 0.1);
+  border-top-color: rgba(232, 240, 250, 0.2); border-radius: 14px; box-shadow: var(--sombra); padding: 12px;
+  transition: transform 0.12s; }
+.game-card:active { transform: scale(0.985); }
+.game-icon { border-radius: 16px; border: 0; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); image-rendering: auto; }
+.game-card.con-portada { grid-template-columns: 96px 1fr; }
+.game-cover { width: 96px; border-radius: 12px; border: 0; box-shadow: 0 6px 14px rgba(0, 0, 0, 0.45); }
+.game-card h3 { font-family: var(--display); font-size: 22px; font-weight: 700; letter-spacing: 0.01em; line-height: 1.05; }
+
+/* Saldo de tuercas */
+.balance strong { background: linear-gradient(180deg, #fff3d0, var(--brass-hi) 50%, var(--brass)); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.35)); font-size: 72px; }
+.balance svg { width: 60px; height: 60px; filter: drop-shadow(0 0 16px rgba(232, 176, 75, 0.45)); }
+
+/* Barra inferior flotante: un dock de taller con la pestana activa iluminada. */
+.tabbar {
+  left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  max-width: 520px; margin: 0 auto;
+  padding: 6px;
+  border-radius: 22px;
+  background: rgba(10, 24, 46, 0.82);
+  backdrop-filter: blur(14px) saturate(1.2); -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  border: 1px solid rgba(232, 240, 250, 0.12);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.tab { border-radius: 16px; min-height: 56px; font-size: 11.5px; font-weight: 600; transition: color 0.15s, background 0.2s; }
+.tab::before { display: none; }
+.tab.on { color: var(--paper-deep); background: linear-gradient(180deg, var(--brass-hi), var(--brass)); box-shadow: 0 4px 12px rgba(232, 176, 75, 0.35); }
+.tab.on svg { transform: translateY(-1px); }
+.wrap { padding-bottom: calc(112px + env(safe-area-inset-bottom, 0px)); }
+.toast { bottom: calc(100px + env(safe-area-inset-bottom, 0px)); border-radius: 12px; }
+
+/* Cada pantalla entra con un pequeno deslizamiento (respuesta a tocar una pestana). */
+@media (prefers-reduced-motion: no-preference) {
+  #contenido > * { animation: entra 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes entra { from { opacity: 0; transform: translateY(10px); } }
+}
+
+/* Entrar: portada con Chispa en grande. */
+.portada-entrar { text-align: center; padding: 26px 8px 4px; }
+.portada-entrar h1 { margin: 0; font: 800 44px/0.95 var(--display); letter-spacing: 0.01em;
+  background: linear-gradient(180deg, #fff6e0, var(--brass-hi) 55%, var(--brass)); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 3px 0 rgba(0, 0, 0, 0.4)); }
+.portada-entrar p { margin: 10px auto 0; max-width: 30ch; color: var(--ink-dim); font-size: 16px; }
+.pasos-entrar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; counter-reset: p; }
+.pasos-entrar li { counter-increment: p; padding: 10px 6px; border-radius: 12px; background: rgba(8, 20, 40, 0.45); border: 1px solid rgba(232, 240, 250, 0.1); font-size: 13px; color: var(--ink); }
+.pasos-entrar li::before { content: counter(p); display: grid; place-items: center; width: 26px; height: 26px; margin: 0 auto 6px; border-radius: 50%;
+  background: linear-gradient(180deg, var(--brass-hi), var(--brass)); color: var(--paper-deep); font: 800 15px/1 var(--display); }

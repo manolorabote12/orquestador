@@ -107,5 +107,9 @@ export function vistaEntrar(app: App): VistaHecha {
     estado.textContent = "";
   });
 
-  return { el: h("div", { class: "wrap-inner" }, chispa.el, paso1, paso2, estado) };
+  const portada = h("header", { class: "portada-entrar" },
+    h("h1", {}, "Tu juego, fabricado con palabras"),
+    h("p", {}, "Cuéntale tu idea a Chispa y la fábrica hace el juego entero: niveles, arte, música y listo para Google Play."),
+    h("ol", { class: "pasos-entrar" }, h("li", {}, "Describe tu idea"), h("li", {}, "Mira el diseño gratis"), h("li", {}, "Juega y publícalo")));
+  return { el: h("div", { class: "wrap-inner" }, portada, chispa.el, paso1, paso2, estado) };
 }

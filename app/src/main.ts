@@ -76,6 +76,9 @@ try {
   if (r && /^[0-9a-f-]{36}$/i.test(r)) localStorage.setItem(CLAVE_REMIX, r.toLowerCase());
 } catch { /* sin almacenamiento: se hace desde el escaparate */ }
 
+// Marca: un engranaje de laton con una cruceta de mando en el centro (taller + juegos).
+const MARCA = `<svg class="marca" viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M13.6 2h4.8l.7 3.6 2.4 1 3-2.1 3.4 3.4-2.1 3 1 2.4 3.6.7v4.8l-3.6.7-1 2.4 2.1 3-3.4 3.4-3-2.1-2.4 1-.7 3.6h-4.8l-.7-3.6-2.4-1-3 2.1-3.4-3.4 2.1-3-1-2.4L2 18.4v-4.8l3.6-.7 1-2.4-2.1-3 3.4-3.4 3 2.1 2.4-1z"/><circle cx="16" cy="16" r="7.2" fill="#0a1e36"/><path fill="currentColor" d="M14.6 11.6h2.8v3h3v2.8h-3v3h-2.8v-3h-3v-2.8h3z"/></svg>`;
+
 async function arrancar(): Promise<void> {
   // Ningun fallo se pierde en silencio: lo no previsto se avisa con un texto claro.
   vigilarErrores((texto) => aviso(texto));
@@ -88,7 +91,7 @@ async function arrancar(): Promise<void> {
   const contenido = h("main", { id: "contenido" });
   const tabs = h("nav", { class: "tabbar", "aria-label": "Principal" });
   const barra = h("header", { class: "topbar" },
-    h("div", { class: "logo" }, h("b", {}, "ORQUESTADOR"), h("span", {}, "taller de juegos")),
+    h("div", { class: "logo" }, svg(MARCA), h("b", {}, "Orquestador"), h("span", {}, "taller de juegos")),
     tuercasEl);
   const banda = api.demo
     ? h("div", { class: "demo-band" }, "Modo demostración: todo simulado, nada se cobra")
