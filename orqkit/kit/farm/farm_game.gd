@@ -311,11 +311,36 @@ func _build_hud() -> void:
 	_machine_box = VBoxContainer.new()
 	_machine_box.add_theme_constant_override("separation", 6)
 	_machine_panel.add_child(_machine_box)
+	## Tablon de madera: granero, pedidos y semillas en un mueble de la granja (antes flotaban sueltos).
+	var board: PanelContainer = PanelContainer.new()
+	board.name = "Board"
+	var bsb: StyleBoxFlat = StyleBoxFlat.new()
+	bsb.bg_color = Color("#9a6a3f")
+	bsb.border_color = Color("#5d3a1e")
+	bsb.set_border_width_all(5)
+	bsb.border_width_top = 9
+	bsb.set_corner_radius_all(20)
+	bsb.set_content_margin_all(10)
+	bsb.shadow_color = Color(0, 0, 0, 0.35)
+	bsb.shadow_size = 10
+	bsb.shadow_offset = Vector2(0, 4)
+	board.add_theme_stylebox_override("panel", bsb)
+	board.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	col.add_child(board)
+	var bcol: VBoxContainer = VBoxContainer.new()
+	bcol.add_theme_constant_override("separation", 8)
+	bcol.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	board.add_child(bcol)
 	## Granero (lo que tienes).
 	var inv_scroll: ScrollContainer = ScrollContainer.new()
 	inv_scroll.vertical_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
-	inv_scroll.custom_minimum_size = Vector2(0, 62)
-	col.add_child(inv_scroll)
+	inv_scroll.custom_minimum_size = Vector2(0, 58)
+	var isb: StyleBoxFlat = StyleBoxFlat.new()
+	isb.bg_color = Color(0.2, 0.11, 0.04, 0.35)
+	isb.set_corner_radius_all(14)
+	isb.set_content_margin_all(6)
+	inv_scroll.add_theme_stylebox_override("panel", isb)
+	bcol.add_child(inv_scroll)
 	_inv_box = HBoxContainer.new()
 	_inv_box.name = "Inventory"
 	_inv_box.add_theme_constant_override("separation", 10)
@@ -324,12 +349,12 @@ func _build_hud() -> void:
 	_orders_box = HBoxContainer.new()
 	_orders_box.name = "Orders"
 	_orders_box.add_theme_constant_override("separation", 8)
-	col.add_child(_orders_box)
+	bcol.add_child(_orders_box)
 	## Semillas.
 	_seeds_box = HBoxContainer.new()
 	_seeds_box.name = "Seeds"
 	_seeds_box.add_theme_constant_override("separation", 8)
-	col.add_child(_seeds_box)
+	bcol.add_child(_seeds_box)
 
 
 func _icon(item: String, px: float) -> ItemIcon:
@@ -369,13 +394,15 @@ func _rebuild_seeds() -> void:
 		v.alignment = BoxContainer.ALIGNMENT_CENTER
 		v.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		b.add_child(v)
-		var ic: ItemIcon = _icon(str(crop), 40.0)
+		var ic: ItemIcon = _icon(str(crop), 48.0)
 		ic.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 		v.add_child(ic)
 		var l: Label = Label.new()
 		l.text = "%d" % int(MapRules.CROPS[crop]["seed"])
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.add_theme_font_size_override("font_size", 20)
+		l.add_theme_font_size_override("font_size", 22)
+		l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.6))
+		l.add_theme_constant_override("outline_size", 5)
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		v.add_child(l)
 		_seeds_box.add_child(b)
@@ -411,10 +438,13 @@ func _refresh() -> void:
 		if int(inv[it]) <= 0:
 			continue
 		var h: HBoxContainer = HBoxContainer.new()
-		h.add_child(_icon(str(it), 40.0))
+		h.add_child(_icon(str(it), 44.0))
 		var l: Label = Label.new()
 		l.text = "%d" % int(inv[it])
-		l.add_theme_font_size_override("font_size", 26)
+		l.add_theme_font_size_override("font_size", 28)
+		l.add_theme_color_override("font_color", Color("#fff3d6"))
+		l.add_theme_color_override("font_outline_color", Color("#3e2412"))
+		l.add_theme_constant_override("outline_size", 7)
 		h.add_child(l)
 		_inv_box.add_child(h)
 	for c: Node in _orders_box.get_children():
@@ -438,8 +468,15 @@ func _order_card(oi: int) -> Control:
 	sb.bg_color = Color("#fff3d6")
 	sb.border_color = Color("#c99a5a")
 	sb.set_border_width_all(3)
-	sb.set_corner_radius_all(10)
+	sb.set_corner_radius_all(12)
 	sb.set_content_margin_all(6)
+	sb.shadow_color = Color(0, 0, 0, 0.3)
+	sb.shadow_size = 5
+	sb.shadow_offset = Vector2(0, 3)
+	if MapRules.can_deliver(st, oi):
+		## Listo para entregar: borde verde que se nota de un vistazo.
+		sb.border_color = Color("#43a047")
+		sb.set_border_width_all(5)
 	card.add_theme_stylebox_override("panel", sb)
 	var v: VBoxContainer = VBoxContainer.new()
 	v.add_theme_constant_override("separation", 2)
@@ -451,11 +488,11 @@ func _order_card(oi: int) -> Control:
 		var need: int = int(o["items"][it])
 		var have: int = MapRules.count(st, str(it))
 		var box: VBoxContainer = VBoxContainer.new()
-		box.add_child(_icon(str(it), 34.0))
+		box.add_child(_icon(str(it), 46.0))
 		var l: Label = Label.new()
 		l.text = "%d/%d" % [mini(have, need), need]
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		l.add_theme_font_size_override("font_size", 18)
+		l.add_theme_font_size_override("font_size", 22)
 		l.add_theme_color_override("font_color", Color("#2f8a3a") if have >= need else Color("#7a5a3a"))
 		box.add_child(l)
 		items.add_child(box)
