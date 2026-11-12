@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Jugando · Orquestador</title>
+<link rel="icon" href="icono.svg" type="image/svg+xml">
+<script src="config.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #0b0f1a; overflow: hidden; touch-action: none; }
+  #canvas { position: fixed; inset: 0; width: 100%; height: 100%; display: block; outline: none; }
+  #carga { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+    color: #e8f0fa; font: 600 15px system-ui, sans-serif; text-align: center; padding: 16px; }
+  #barra { width: min(260px, 70vw); height: 10px; border-radius: 6px; background: #16233a; overflow: hidden; }
+  #barra i { display: block; height: 100%; width: 0; background: #e8b04b; transition: width .2s; }
+  #error { color: #ff8a7a; max-width: 80vw; display: none; }
+</style>
+</head>
+<body>
+<!-- Reproductor para la app de Android: la app abre aqui (navegador del sistema) los juegos que dentro
+     de su propia vista no arrancaban (12 nov). Recibe el paquete en el #: {"p": url del .pck, "t": titulo}.
+     Solo acepta paquetes del Supabase del proyecto, y el motor siempre es el de esta web. -->
+<canvas id="canvas" tabindex="0"></canvas>
+<div id="carga"><span id="txt">Cargando el motor...</span><div id="barra"><i></i></div><span id="error"></span></div>
+<script>
+(function () {
+  var c = window.ORQ || {};
+  var txt = document.getElementById("txt"), barra = document.querySelector("#barra i"), err = document.getElementById("error");
+  function fallo(m) { err.style.display = "block"; err.textContent = m; txt.textContent = "No se pudo abrir"; }
+  var d = {};
+  try { d = JSON.parse(decodeURIComponent(location.hash.slice(1))); } catch (e) { d = {}; }
+  var pck = String(d.p || "");
+  var permitido = String(c.supabase || "").replace(/\/$/, "") + "/storage/v1/object/";
+  if (!c.supabase || pck.indexOf(permitido) !== 0) { fallo("Enlace de juego no válido."); return; }
+  if (d.t) document.title = String(d.t).slice(0, 60) + " · Orquestador";
+  var motor = new URL("motor/" + (c.motor || "godot/4.6.3"), location.href).href.replace(/\/$/, "");
+  var s = document.createElement("script");
+  s.src = motor + "/index.js";
+  s.onerror = function () { fallo("No se pudo descargar el motor del juego. Revisa tu conexión."); };
+  s.onload = function () {
+    if (typeof Engine === "undefined") { fallo("Motor no válido."); return; }
+    if (!Engine.isWebGLAvailable(2)) { fallo("Tu móvil no puede mostrar el juego (falta WebGL 2)."); return; }
+    var e = new Engine({ executable: motor + "/index", mainPack: pck, canvasResizePolicy: 2, args: [],
+      ensureCrossOriginIsolationHeaders: false, focusCanvas: true });
+    txt.textContent = "Cargando tu juego...";
+    var ultimo = "", mb = 0, listo = false;
+    var vigia = setTimeout(function () { if (!listo) fallo("El juego no ha arrancado en 60 s" + (mb ? " (" + mb + " MB)" : "") + (ultimo ? ": " + ultimo : ".")); }, 60000);
+    e.startGame({
+      onProgress: function (a, t) { mb = Math.round(a / 1048576); if (t > 0) barra.style.width = Math.round(100 * a / t) + "%"; else txt.textContent = "Cargando tu juego... " + mb + " MB"; },
+      onPrintError: function () { ultimo = Array.prototype.join.call(arguments, " ").slice(0, 160); }
+    }).then(function () { listo = true; clearTimeout(vigia); document.getElementById("carga").style.display = "none"; })
+      .catch(function (x) { listo = true; clearTimeout(vigia); fallo(String(x && x.message || x) + (ultimo ? " — " + ultimo : "")); });
+  };
+  document.head.appendChild(s);
+})();
+</script>
+</body>
+</html>

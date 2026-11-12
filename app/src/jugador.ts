@@ -4,7 +4,12 @@
 // juego solo trae su paquete index.pck (~1 MB) con una URL firmada.
 // Todo va dentro de un iframe: al cerrar se libera el motor entero (memoria, audio, WebGL).
 
+import { Capacitor } from "@capacitor/core";
+import { Browser } from "@capacitor/browser";
 import { abrir, h } from "./ui";
+
+/** Web pública (GitHub Pages): ahí está juego.html, el reproductor para la app instalada. */
+const WEB = ((import.meta.env.VITE_WEB as string | undefined) ?? "").replace(/\/$/, "");
 
 export interface OpcionesJugador {
   /** Carpeta pública del motor, p. ej. https://x.supabase.co/storage/v1/object/public/motor/godot/4.6.3 */
@@ -67,6 +72,12 @@ document.head.appendChild(s);
 
 /** Abre el reproductor a pantalla completa. Devuelve la función para cerrarlo. */
 export function abrirJugador(op: OpcionesJugador): () => void {
+  // App instalada: dentro de su propia vista el motor se quedaba en «Cargando tu juego...» y en Chrome
+  // el mismo juego arrancaba (12 nov). Se juega en el navegador del sistema, encima de la app; al
+  // cerrarlo se vuelve a la app (y ahí sale, si toca, el anuncio entre partidas).
+  if (Capacitor.isNativePlatform() && op.motor && op.pck && WEB) {
+    return jugarEnNavegador(op);
+  }
   const previo = document.activeElement as HTMLElement | null;
   let cerrado = false;
   const cerrar = () => {
@@ -122,6 +133,21 @@ export function abrirJugador(op: OpcionesJugador): () => void {
   document.body.append(capa);
   boton.focus();
   return cerrar;
+}
+
+function jugarEnNavegador(op: OpcionesJugador): () => void {
+  let cerrado = false;
+  let quitar: (() => void) | null = null;
+  const cerrar = () => {
+    if (cerrado) return;
+    cerrado = true;
+    quitar?.();
+    op.alCerrar?.();
+  };
+  void Browser.addListener("browserFinished", cerrar).then((l) => { quitar = () => void l.remove(); if (cerrado) quitar(); });
+  const datos = encodeURIComponent(JSON.stringify({ p: op.pck, t: op.titulo }));
+  void Browser.open({ url: `${WEB}/juego.html#${datos}`, toolbarColor: "#0b0f1a" }).catch(() => cerrar());
+  return () => { void Browser.close().catch(() => undefined); cerrar(); };
 }
 
 /** Visor del clip vertical para redes: lo reproduce en bucle y deja descargarlo. */
