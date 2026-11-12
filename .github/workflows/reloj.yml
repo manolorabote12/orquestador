@@ -83,9 +83,16 @@ jobs:
         with:
           sparse-checkout: nube
       ## Juegos de muestra (workflow "Escaparate: juegos de muestra"): los terminados pasan al Escaparate y se pone el siguiente.
+      ## Mientras se despliega una fabrica nueva no se encarga nada: el juego lo cogeria la version
+      ## vieja (12 nov: un arreglo ya subido fallo otra vez por eso).
       - name: Escaparate de muestra
         if: always()
-        run: python3 nube/escaparate_semilla.py seguir || true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          n=$(gh run list -R "$GITHUB_REPOSITORY" --workflow desplegar.yml --limit 3 --json status --jq '[.[] | select(.status != "completed")] | length' 2>/dev/null || echo 0)
+          if [ "$n" != "0" ]; then echo "::notice::Despliegue en marcha: el escaparate de muestra espera"; exit 0; fi
+          python3 nube/escaparate_semilla.py seguir || true
       - name: Vigilante del gasto
         if: always()
         env:
