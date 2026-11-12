@@ -17,7 +17,7 @@ import generos
 from arte import interfaz
 from niveles import generador
 
-from . import llm, simulado
+from . import conceptos, llm, simulado
 
 RAIZ = Path(__file__).resolve().parent
 ESQUEMA = json.loads((RAIZ / "diseno.schema.json").read_text(encoding="utf-8"))
@@ -275,6 +275,9 @@ def a_story(d: dict) -> dict:
 	return {"cast": cast, "levels": niveles}
 
 
+ULTIMO_CONCEPTO: dict | None = None  ## el concepto creativo del ultimo diseno (para el informe)
+
+
 def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 	"""4 - Idea -> diseno valido. Devuelve (diseno, modelo usado).
 	Con plantilla de exito («[plantilla:id] ...»): la directora la recibe como obligatoria y despues
@@ -331,6 +334,13 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 	if pistas:
 		usuario += ("\nPista por palabras clave de la idea (el primero manda si encaja): " + ", ".join(pistas[:4])
 			+ ". Elige uno de estos salvo que la idea pida claramente otro.")
+	## Directora creativa (13 nov): 3 conceptos, autocritica y el mejor como guia del diseno.
+	global ULTIMO_CONCEPTO
+	ULTIMO_CONCEPTO = None
+	if conceptos.activo() and not (gancho or plantilla or a_medida):
+		ULTIMO_CONCEPTO = conceptos.explorar(idea, gasto, pistas)
+		if ULTIMO_CONCEPTO:
+			usuario += "\n\n" + conceptos.guia(ULTIMO_CONCEPTO)
 	usuario += "\n\n" + giros.guia(gancho["genero"] if gancho else None)
 	import contenido
 	usuario += "\n\n" + contenido.guia(gancho["genero"] if gancho else None)

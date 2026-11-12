@@ -681,6 +681,11 @@ def fabricar(args: argparse.Namespace) -> dict:
 		diseno, modelo = director.disenar(args.idea, args.simulado, gasto)
 	slug = director.slug(diseno)
 	cronometro("diseno", t)
+	## Concepto de la directora creativa: queda en la ficha del juego (informe y futuras mejoras).
+	if modelo != "vista_previa" and director.ULTIMO_CONCEPTO:
+		c = director.ULTIMO_CONCEPTO
+		evento("concepto", "ok", f"Concepto: {c['final'].get('gancho', '')}"[:200],
+			por_que=str(c.get("por_que", ""))[:300], opciones=[str(x.get("gancho", ""))[:120] for x in c.get("conceptos", [])])
 	## Experimentos: una variante de cada mando del genero (camara, tamano, piezas). La critica del
 	## final le pone nota y la fabrica aprende que funciona (experimentos.py). Un diseno que ya trae
 	## ajustes (vista previa aprobada) los conserva.

@@ -1,0 +1,45 @@
+name: "Laboratorio de prompts"
+# Prueba A/B a ciegas de mejoras de la directora (fabrica/laboratorio.py). Solo gasta IA (centimos por
+# idea); el informe va a la rama «laboratorio» (laboratorio/informe.md).
+on:
+  workflow_dispatch:
+    inputs:
+      ideas:
+        description: "Cuantas ideas (ab: 1 a 12; generos: casos de prueba)"
+        required: false
+        default: "6"
+      modo:
+        description: "ab (directora creativa contra la de siempre) o generos (acierto de genero)"
+        type: choice
+        options: [ab, generos]
+        default: ab
+      propias:
+        description: "Ideas propias separadas por | (si se rellena, se usan estas)"
+        required: false
+        default: ""
+
+jobs:
+  laboratorio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: fabrica
+      - name: Laboratorio
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ORQ_LAB_IDEAS: ${{ inputs.propias }}
+          N: ${{ inputs.ideas }}
+          ORQ_LAB_MODO: ${{ inputs.modo }}
+        run: python3 fabrica/laboratorio.py "$N"
+      - name: Subir informe a la rama laboratorio
+        if: always()
+        run: |
+          [ -d laboratorio ] || exit 0
+          cd laboratorio
+          git init -q -b laboratorio && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "Informe del laboratorio"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" laboratorio
