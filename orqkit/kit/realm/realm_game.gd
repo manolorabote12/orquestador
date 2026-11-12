@@ -203,6 +203,8 @@ func press_attack() -> void:
 		_sfx("win", -6.0)
 		if not fast:
 			UI.float_text(get_node("Hud"), at, Kit.text("re_victory", "\u00a1Victoria!"), Color("#ffd166"), 56)
+			Juice.burst(_city, _city.size * 0.5, Color("#ffd166"), 26, 380.0)
+			Juice.shake(0.35)
 	else:
 		_sfx("hurt", -4.0)
 		if not fast:
@@ -324,6 +326,12 @@ func _physics_process(delta: float) -> void:
 		for b: Variant in done:
 			_flash[str(b)] = 0.6
 			_sfx("powerup", -6.0)
+			## Obra terminada: chispas doradas sobre el edificio y aviso para los mods.
+			if not fast and _rects.has(str(b)):
+				var rc: Rect2 = _rects[str(b)]
+				Juice.burst(_city, rc.get_center() + Vector2(0, -10), Color("#ffd166"), 16, 240.0)
+				Juice.sparkle(_city, rc.get_center() + Vector2(0, -30), Color.WHITE, 8, 160.0)
+			QA.log_event("build_done", {"building": str(b), "level": int(st["lv"].get(str(b), 0))})
 	time_in_level = float(st["t"])
 	for f: Variant in _flash.keys():
 		_flash[f] = float(_flash[f]) - delta

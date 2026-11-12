@@ -144,6 +144,21 @@ EVENTOS = {
 	"race": "level_start, level_complete, defeat, coin, nitro, crash",
 }
 
+def eventos_de(genero: str) -> str:
+	"""Eventos de la partida que un mod puede escuchar en este genero. Los de la tabla, o los que el kit
+	del genero de verdad emite (QA.log_event en kit/<genero>/; 13 nov: en el reino se ofrecian los de
+	plataformas, y un mod de efectos escuchaba «coin» y «stomp», que alli no pasan)."""
+	if genero in EVENTOS:
+		return EVENTOS[genero]
+	carpeta = cadena.KIT / "kit" / genero
+	vistos: list[str] = []
+	for f in sorted(carpeta.glob("*.gd")) if carpeta.is_dir() else []:
+		for m in re.finditer(r'QA\.log_event\("([a-z_]+)"', f.read_text(encoding="utf-8")):
+			if m.group(1) not in vistos and not m.group(1).startswith(("mod_", "qa_", "bot_")):
+				vistos.append(m.group(1))
+	return ", ".join(vistos) if vistos else EVENTOS["platformer"]
+
+
 ## Generos que llaman a las reglas desde su propia simulacion (kit/mods.gd -> SIM_RULES).
 GENEROS_SIM = tuple(sorted(GENEROS_REGLAS)) + ("custom",)
 for _g in GENEROS_VIVOS:
@@ -273,7 +288,7 @@ def programar(proyecto: Path, instruccion: str, simulado_: bool, gasto: llm.Gast
 	reglas = PROMPT_REGLAS.format(api=REGLA_API, estado=GENEROS_REGLAS[genero]) if genero in GENEROS_REGLAS else \
 		"En este genero solo se pueden escribir mods (tipo \"mod\")."
 	sistema = PROMPT.format(api=BASE_API, juego=json.dumps({"titulo": diseno.get("titulo"), "heroe": diseno.get("heroe", {}).get("nombre"),
-		"resumen": diseno.get("resumen")}, ensure_ascii=False), genero=genero, eventos=EVENTOS.get(genero, EVENTOS["platformer"]),
+		"resumen": diseno.get("resumen")}, ensure_ascii=False), genero=genero, eventos=eventos_de(genero),
 		mods=", ".join(ya) or "ninguno", reglas=reglas)
 	intento: dict | None = None
 	errores: list[str] = []
