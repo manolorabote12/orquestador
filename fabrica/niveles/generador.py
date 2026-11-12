@@ -197,6 +197,51 @@ class Nivel:
 			self.poner(x + 4, self.suelo - 3, "C")
 		self.llano(3)
 
+	## Piezas con mas idea (12 nov: los niveles se parecian mucho entre si) --------------------
+	def b_escalera(self) -> None:
+		## Tres plataformas en escalera con monedas: subir y volver a bajar (juego en vertical).
+		x = self.llano(10)
+		altura = 3
+		for k, dx in enumerate((1, 4, 7)):
+			fila = self.suelo - altura - 2 * k
+			if fila < 2:
+				break
+			for j in range(2):
+				self.poner(x + dx + j, fila, "#")
+			self.poner(x + dx, fila - 1, "C")
+		self.llano(2)
+
+	def b_arco(self) -> None:
+		## Arco de 5 monedas sobre un llano: invita a saltar y se recoge de una vez (recompensa).
+		x = self.llano(9)
+		for k, alto in enumerate((1, 3, 4, 3, 1)):
+			self.poner(x + 2 + k, self.suelo - 1 - alto, "C")
+
+	def b_atajo(self) -> None:
+		## Dos caminos: abajo pinchos con un hueco limpio; arriba una plataforma larga con monedas.
+		## Por arriba es mas seguro y paga mas; por abajo, mas rapido.
+		self.llano(2)
+		x = self.llano(9)
+		for k in (3, 6):
+			self.poner(x + k, self.suelo - 1, "^")
+		for j in range(1, 9):
+			self.poner(x + j, self.suelo - 4, "#")
+		for j in (2, 4, 6):
+			self.poner(x + j, self.suelo - 5, "C")
+		self.llano(2)
+
+	def b_emboscada(self) -> None:
+		## Un enemigo de suelo y un volador a la vez, con una plataforma para escapar por encima.
+		self.bordillo()
+		x = self.llano(11)
+		self.poner(x + 6, self.suelo - 1, "E")
+		if "flyer" in self.enemigos:
+			self.poner(x + 3, self.suelo - 3, "F")
+		for j in range(4, 9):
+			self.poner(x + j, self.suelo - 4, "#")
+		self.poner(x + 6, self.suelo - 5, "C")
+		self.bordillo(cierra=True)
+
 	def b_jefe(self) -> None:
 		## Arena plana de 12 entre bordillos, sin nada encima, con punto de control antes.
 		self.llano(2)
@@ -246,6 +291,13 @@ def _pesos(nv: Nivel, i: int, n: int) -> dict[str, float]:
 		p["poder"] = 0.8
 	if nv.op.get("plataformas_moviles") and i >= 1:
 		p["puente"] = 0.6 + 0.6 * d
+	## Piezas especiales: aparecen a partir del segundo nivel (el primero ensena lo basico).
+	if i >= 1:
+		p["escalera"] = 0.5
+		p["arco"] = 0.6
+		p["atajo"] = 0.4 + 0.5 * d
+		if "walker" in nv.enemigos and d > 0.4:
+			p["emboscada"] = 0.5 * d
 	return p
 
 
@@ -283,7 +335,7 @@ def generar(i: int, n: int, enemigos: list[str], dificultad: str, semilla: int, 
 		elegido = rng.choices(nombres, weights=[pesos[x] for x in nombres])[0]
 		getattr(nv, "b_" + elegido)()
 		ultimo = elegido
-		if elegido in ("patrulla", "pinchudo", "volador", "combo"):
+		if elegido in ("patrulla", "pinchudo", "volador", "combo", "emboscada"):
 			enemigos_puestos += 1
 	## 6 - Si tocaba enemigo y el azar no lo puso, se pone uno antes de la meta.
 	if enemigos_puestos == 0 and "walker" in enemigos and i >= 1:

@@ -60,6 +60,7 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | «Pingüino Express» (6/10): pingüino pequeño, suelo de hielo cuadriculado llenando media pantalla, sin efectos al recoger | Corredor a 1,2; todo el relleno del suelo igual de claro | Corredor a 1,4; el relleno se oscurece con la profundidad; chispas y aro dorado al recoger monedas |
 | «Torre Slime» sin capturas | Xvfb revienta al cargar GLX en algunas máquinas de RunPod | Si pasa, Xvfb sin GLX y Godot con OpenGL ES (EGL) |
 | «Huesitos y Zombis» (mazmorra) fallaba siempre en el nivel 4 | El jefe de mitad de juego (cada 4 niveles) contra un héroe con las fuerzas de un nivel normal: el bot perdía en todas las rondas | En los niveles con jefe el héroe empieza con +8 de vida, +1 de ataque y una poción más |
+| Niveles de plataformas muy parecidos entre sí | El generador solo tenía llano, escalón, hueco, pinchos, plataforma y enemigos | Piezas nuevas desde el nivel 2: escalera de plataformas con monedas, arco de monedas, atajo (abajo pinchos, arriba plataforma con premio) y emboscada (enemigo + volador con plataforma para escapar) |
 | Botones de la pantalla de título genéricos (crítica repetida) | Todos con el mismo icono sobre el mismo cuadrado | Cada uno con su medallón de color dentro del marco de la piel |
 
 ## Reglas para no repetirlo
