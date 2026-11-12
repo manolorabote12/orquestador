@@ -472,9 +472,38 @@ func _side_button(parent: VBoxContainer, node_name: String, label: String, icon:
 	b.custom_minimum_size = Vector2(112, 112)
 	## Iconos con su color (moneda dorada, estrella y trofeo del acento), como en los juegos grandes.
 	var tint: Color = Kit.color("coin", UI.colors["acento"]).lightened(0.15) if icon == "coin" else (UI.colors["acento"] if icon in ["star", "trophy"] else UI.colors["texto"])
+	## Medallon de color propio por boton (antes todos eran iconos genericos sobre el mismo cuadrado:
+	## critica «interfaz_sosa» repetida, 12 nov). Va dentro del marco, asi respeta la piel del juego.
+	var tonos: Dictionary = {"BtnSeason": 0.78, "BtnDaily": 0.02, "BtnTorneo": 0.02, "BtnRoad": 0.12, "BtnShop": 0.36,
+		"BtnCross": 0.58, "BtnSettings": -1.0, "BtnArenaLive": 0.92, "BtnGear": 0.08, "BtnDeck": 0.68, "BtnHome": 0.3,
+		"BtnMarathon": 0.5, "BtnVersus": 0.95, "BtnGiftMenu": 0.9, "BtnPrizeMenu": 0.14}
+	var h: float = float(tonos.get(node_name, -1.0))
+	if h >= 0.0:
+		var medal: Control = Control.new()
+		medal.name = "Medal"
+		medal.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		medal.set_anchors_preset(Control.PRESET_FULL_RECT)
+		var base: Color = Color.from_hsv(h, 0.62, 0.78)
+		medal.draw.connect(func() -> void:
+			var c: Vector2 = medal.size * 0.5
+			var r: float = minf(medal.size.x, medal.size.y) * 0.36
+			medal.draw_circle(c + Vector2(0, r * 0.08), r, base.darkened(0.45))
+			medal.draw_circle(c, r, base)
+			medal.draw_circle(c + Vector2(0, -r * 0.18), r * 0.78, base.lightened(0.12))
+			medal.draw_arc(c, r, 0.0, TAU, 40, base.lightened(0.45), 3.0, true))
+		b.add_child(medal)
+		b.move_child(medal, 0)
+		tint = Color(1, 1, 1) if icon != "coin" else Kit.color("coin", UI.colors["acento"]).lightened(0.3)
 	for ch: Node in b.get_children():
 		if ch is UiIcon:
 			(ch as UiIcon).color = tint
+			if h >= 0.0:
+				## El icono dentro del medallon, con aire alrededor.
+				var ic: UiIcon = ch as UiIcon
+				ic.offset_left = 32.0
+				ic.offset_top = 32.0
+				ic.offset_right = -32.0
+				ic.offset_bottom = -32.0
 			(ch as UiIcon).queue_redraw()
 	box.add_child(b)
 	var l: Label = Label.new()
