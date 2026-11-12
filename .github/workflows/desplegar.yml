@@ -6,7 +6,10 @@ name: Desplegar
 on:
   push:
     branches: [main]
-    paths: ["fabrica/**", "orqkit/**", "nube/**", "supabase/**", ".github/workflows/desplegar.yml"]
+    ## Los scripts que solo lanzan los workflows (no van en ninguna imagen) no redespliegan la fabrica.
+    paths: ["fabrica/**", "orqkit/**", "nube/**", "supabase/**", ".github/workflows/desplegar.yml",
+      "!nube/escaparate_semilla.py", "!nube/prueba_escaparate_semilla.py", "!nube/galeria.py", "!nube/prueba_galeria.py",
+      "!nube/vigilante.py", "!nube/prueba_vigilante.py"]
   workflow_dispatch:
     inputs:
       primera_vez:

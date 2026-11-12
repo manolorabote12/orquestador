@@ -178,10 +178,34 @@ def diseno_con_arte(js: list[dict], idea: str) -> dict | None:
 	return None
 
 
+def despertar() -> bool:
+	"""Despierta la fabrica de RunPod para que coja la cola ya. Sin esto, un juego encargado por el Reloj
+	esperaba al siguiente Reloj (que GitHub retrasa a veces mas de media hora: 12 nov)."""
+	clave = os.environ.get("RUNPOD_API_KEY", "")
+	if not clave:
+		return False
+	cab = {"Authorization": "Bearer " + clave, "User-Agent": AGENTE, "Content-Type": "application/json"}
+	try:
+		with urllib.request.urlopen(urllib.request.Request("https://rest.runpod.io/v1/endpoints", headers=cab), timeout=30) as r:
+			d = json.loads(r.read())
+		d = d if isinstance(d, list) else d.get("data", [])
+		ep = next((e["id"] for e in d if e.get("name") == "orq-fabrica"), "")
+		if not ep:
+			return False
+		req = urllib.request.Request(f"https://api.runpod.ai/v2/{ep}/run", data=json.dumps({"input": {"despertar": "escaparate"}}).encode(),
+			method="POST", headers=cab)
+		with urllib.request.urlopen(req, timeout=30):
+			return True
+	except (urllib.error.URLError, OSError, ValueError, KeyError):
+		return False
+
+
 def encolar(u: str, idea: str, diseno: dict | None = None) -> None:
 	detalle = {"idea": idea, "semilla": True, **({"diseno": diseno} if diseno else {})}
 	rest("POST", "jobs", [{"user_id": u, "kind": "game", "cost": 0, "est_cost_usd": COSTE_JUEGO, "status": "queued",
 		"detail": detalle}], {"Prefer": "return=minimal"})
+	if not despertar():
+		print("::warning::No se pudo despertar la fabrica: el juego espera al siguiente Reloj")
 
 
 def encargar(n: int) -> int:
