@@ -136,7 +136,7 @@ real_f = cadena._fabricar
 cadena._fabricar = lambda a: visto.update(idea=a.idea, c=os.environ.get("ORQ_CONCEPTOS"), r=os.environ.get("ORQ_A_MEDIDA_RONDAS")) or {}
 os.environ.pop("ORQ_CONCEPTOS", None)
 cadena.fabricar(argparse.Namespace(idea="[estudio] un dragon"))
-check("estudio: ajustes durante el juego", visto == {"idea": "un dragon", "c": "1", "r": "8"}, visto)
+check("estudio: ajustes durante el juego", visto.get("idea") == "un dragon" and visto.get("r") == "8", visto)
 check("estudio: y se quitan al terminar", os.environ.get("ORQ_CONCEPTOS") is None and os.environ.get("ORQ_A_MEDIDA_RONDAS") is None)
 cadena._fabricar = real_f
 

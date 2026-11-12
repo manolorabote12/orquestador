@@ -261,8 +261,10 @@ def encargar_idea(idea: str) -> int:
 	if rest("POST", "rpc/fabrica_pausada", {}):
 		print("::error::La fabrica esta PARADA: reanudala antes de encargar juegos")
 		return 1
-	if cuantos_caben(1, saldo_runpod(), float(os.environ.get("ORQ_SEMILLA_RESERVA") or "3")) < 1:
-		print("::error::Saldo de RunPod en la reserva: no se encarga")
+	saldo = saldo_runpod()
+	reserva = float(os.environ.get("ORQ_SEMILLA_RESERVA") or "3")
+	if cuantos_caben(1, saldo, reserva) < 1:
+		print(f"::error::Saldo de RunPod {saldo if saldo is not None else '?'} $ (reserva {reserva:.2f} $): no se encarga")
 		return 1
 	u = crear_cuenta()
 	encolar(u, idea)

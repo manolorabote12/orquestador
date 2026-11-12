@@ -9,7 +9,7 @@ premium).
 
 | Fase | Modo normal | Modo estudio |
 |---|---|---|
-| Diseño | Una pasada de la directora | **Directora creativa**: 3 conceptos distintos, autocrítica (gancho, claridad, retención, originalidad, encaje), elige y mejora el mejor; el diseño lo sigue |
+| Diseño | (desde el 13 nov, para todos) | **Directora creativa**: 3 conceptos distintos, autocrítica (gancho, claridad, retención, originalidad, encaje), elige y mejora el mejor; el diseño lo sigue |
 | Género a medida | 3 rondas, tope 3 $ | 8 rondas, tope 6 $, con memoria de lo que ya falló |
 | Género | Uno de los 120 de plantilla | Si ninguno encaja, la directora creativa pide un **género a medida** (Claude lo programa) |
 | Crítica visual | Modelo barato | Modelo superior (decide qué se queda en el pulido) |

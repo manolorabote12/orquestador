@@ -668,7 +668,7 @@ def disenar_previa(idea: str, simulado: bool, gasto: "llm.Gasto") -> tuple[dict,
 
 ## Modo estudio (13 nov): «[estudio]» delante de la idea = sin prisa ni tope bajo. Directora creativa con
 ## 3 conceptos, mas rondas para programar un genero a medida y mas presupuesto de IA en esa fase.
-ESTUDIO = {"ORQ_CONCEPTOS": "1", "ORQ_A_MEDIDA_RONDAS": "8", "ORQ_A_MEDIDA_USD": "6", "ORQ_PULIR_RONDAS": "3",
+ESTUDIO = {"ORQ_A_MEDIDA_RONDAS": "8", "ORQ_A_MEDIDA_USD": "6", "ORQ_PULIR_RONDAS": "3",
 	"ORQ_MODELO_CRITICA": llm.MODELOS[-1], "ORQ_A_MEDIDA_AUTO": "1"}
 
 

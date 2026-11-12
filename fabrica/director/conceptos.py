@@ -6,8 +6,8 @@ otro giro, otro momento estrella), se autocritica como lo haria un productor de 
 (gancho en el primer minuto, claridad con un dedo, ganas de volver, originalidad frente a los
 juegos top del genero) y elige uno. El concepto elegido va a la directora de diseno como guia.
 
-Cuesta una llamada al modelo superior (~0,02-0,04 $). Se enciende con ORQ_CONCEPTOS=1 (cuando el laboratorio
-demuestre que gana; laboratorio.py la prueba A/B). Si falla, el juego
+Cuesta una llamada al modelo superior (~0,02-0,04 $). Encendida para todos desde el 13 nov (laboratorio: gana 8 de 8
+a ciegas, 27,9 -> 37,1 de 50; acierta el genero en 39 de 40). ORQ_CONCEPTOS=0 la apaga. Si falla, el juego
 sigue como siempre (la exploracion nunca para un juego).
 """
 
@@ -95,7 +95,7 @@ HERRAMIENTA = {
 
 
 def activo() -> bool:
-	return os.environ.get("ORQ_CONCEPTOS", "0") == "1"
+	return os.environ.get("ORQ_CONCEPTOS", "1") != "0"
 
 
 def a_medida_auto() -> bool:
