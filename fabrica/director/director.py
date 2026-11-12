@@ -564,7 +564,9 @@ def a_game(d: dict, niveles: list[list[str]]) -> dict:
 BIOMAS = {"desierto": ["desierto", "duna", "oasis", "faraon", "faraón", "egipt", "sahara", "nómada", "nomada", "desert", "dune", "pharaoh"],
 	"nieve": ["nieve", "hielo", "invierno", "vikingo", "polar", "glaciar", "nevad", "pingüino", "pinguino", "snow", "winter", "frozen", "viking"],
 	"otono": ["otoño", "otono", "calabaza", "halloween", "bruja", "autumn", "pumpkin"],
-	"volcan": ["volcan", "volcán", "lava", "infierno", "demonio", "volcano", "magma"]}
+	"volcan": ["volcan", "volcán", "lava", "infierno", "demonio", "volcano", "magma"],
+	## Carreras: con «ciudad» salen edificios; sin ella, arboles y camino (12 nov: caracoles entre rascacielos).
+	"ciudad": ["ciudad", "calle", "urbano", "urbana", "metropoli", "metrópoli", "rascacielos", "autopista", "neon", "neón", "city", "street", "downtown"]}
 
 
 def bioma(d: dict) -> str:

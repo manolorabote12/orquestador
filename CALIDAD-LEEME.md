@@ -56,6 +56,7 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | Héroe que crece y encoge en reposo («Caballerito de Nubes») | La IA dibuja cada frame a un tamaño distinto y se escalaban todos igual | Cada frame se ajusta al alto de la ficha del personaje |
 | Hordas y corredor con héroe diminuto | Cámara alejada (0,8 en hordas) y dibujos pequeños | Hordas: cámara a 0,95 y dibujos un 25-33 % más grandes; corredor: cámara a 1,2 y menos cielo |
 | Granjero robot sin capturas | Xvfb con +extension GLX se caía al arrancar (Segmentation fault) | Primero Xvfb sin extras, luego con ellas, al final xvfb-run |
+| «Caracoles Turbo» (7/10): caracoles entre rascacielos, turbo soso, sin sensación de velocidad | La ciudad salía con cualquier cielo oscuro; botón plano; sin efectos de velocidad | Ciudad solo con bioma «ciudad» (si no, árboles y camino de tierra, nieve o arena); líneas de velocidad (doradas con turbo), botón de turbo que salta al cargarse, temblor al usarlo; nombres de rivales de tamaño fijo |
 
 ## Reglas para no repetirlo
 

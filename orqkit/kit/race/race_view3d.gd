@@ -50,9 +50,15 @@ func pos(dist: float, lat_px: float, y: float = 0.0) -> Vector3:
 
 # ------------------------------------------------------------------ escenario
 
-## Noche si el cielo del juego es oscuro: ciudad con neones. Si no, dia con arboles.
+## Noche si el cielo del juego es oscuro (luz mas fria y tenue).
 func is_night() -> bool:
 	return Kit.color("sky", Color("#1b2a41")).v < 0.3
+
+
+## Ciudad con edificios solo si el juego va de ciudad (bioma «ciudad»). Antes bastaba un cielo oscuro y
+## unas carreras de caracoles en un jardin salian entre rascacielos (12 nov).
+func is_city() -> bool:
+	return str(Kit.param("biome", "")) == "ciudad"
 
 
 func _horizon() -> Color:
@@ -131,6 +137,12 @@ func _build_road() -> ArrayMesh:
 	var n_rows: int = (game.get("rows") as Array).size()
 	var grass: Color = _ground()
 	var asphalt: Color = Color(0.13, 0.13, 0.16) if is_night() else Color(0.22, 0.23, 0.26)
+	if not is_city():
+		## Fuera de la ciudad, camino de tierra (o nieve, arena, roca segun el bioma) en vez de asfalto.
+		var camino: Dictionary = {"nieve": Color(0.82, 0.86, 0.92), "desierto": Color(0.78, 0.62, 0.40), "volcan": Color(0.22, 0.17, 0.16)}
+		asphalt = camino.get(str(Kit.param("biome", "")), Color(0.50, 0.37, 0.24))
+		if is_night():
+			asphalt = asphalt.darkened(0.35)
 	var st: SurfaceTool = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 	for i: int in range(-10, n_rows + 14):
@@ -178,7 +190,7 @@ func _build_scenery() -> Node3D:
 	var n_rows: int = (game.get("rows") as Array).size()
 	var leaf: Color = Kit.color("accent", Color("#4cc26a"))
 	leaf = Color.from_hsv(fposmod(leaf.h + 0.25, 1.0) if absf(leaf.h - 0.33) > 0.2 else leaf.h, 0.55, 0.55)
-	if is_night():
+	if is_city():
 		return _build_city(root, rng, row, half, n_rows)
 	var trunks: Array[Transform3D] = []
 	var crowns: Array[Transform3D] = []
@@ -472,9 +484,11 @@ func rebuild() -> void:
 		tag.text = str(names[k % names.size()])
 		tag.billboard = BaseMaterial3D.BILLBOARD_ENABLED
 		## Nombre pequeño encima (antes tapaba media pantalla al pasar cerca).
-		tag.font_size = 40
-		tag.pixel_size = 0.006
-		tag.outline_size = 12
+		## Tamano fijo en pantalla: de cerca ya no tapa media pantalla (12 nov).
+		tag.fixed_size = true
+		tag.font_size = 30
+		tag.pixel_size = 0.0011
+		tag.outline_size = 10
 		tag.position = Vector3(0, 2.7 if car.get_node_or_null("Rider") != null else 1.9, 0)
 		tag.no_depth_test = false
 		car.add_child(tag)

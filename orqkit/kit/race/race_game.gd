@@ -51,6 +51,9 @@ var _hud: CanvasLayer
 var _place_label: Label
 var _coins_label: Label
 var _progress: Control
+## Lineas de velocidad (sobre todo con turbo): la critica pedia sensacion de rapidez (12 nov).
+var _speed_fx: Control
+var _nitro_ready_was: bool = false
 var _nitro_fill: ColorRect
 var _nitro_btn: Button
 var _go_label: Label
@@ -262,6 +265,12 @@ func _build_hud() -> void:
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_hud.add_child(root)
+	_speed_fx = Control.new()
+	_speed_fx.name = "SpeedLines"
+	_speed_fx.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_speed_fx.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_speed_fx.draw.connect(_draw_speed_lines)
+	root.add_child(_speed_fx)
 	var safe: MarginContainer = UI.safe_root(root, 20.0)
 	safe.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var col: VBoxContainer = VBoxContainer.new()
@@ -307,7 +316,8 @@ func _build_hud() -> void:
 	col.add_child(bottom)
 	_nitro_btn = UI.make_button(Kit.text("nitro", "Turbo"), true, "")
 	_nitro_btn.name = "BtnNitro"
-	_nitro_btn.custom_minimum_size = Vector2(200.0, 110.0)
+	_nitro_btn.custom_minimum_size = Vector2(220.0, 120.0)
+	_nitro_btn.add_theme_font_size_override("font_size", 40)
 	_nitro_btn.pressed.connect(use_nitro)
 	bottom.add_child(_nitro_btn)
 	_nitro_fill = ColorRect.new()
@@ -315,6 +325,29 @@ func _build_hud() -> void:
 	_nitro_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_nitro_fill.show_behind_parent = false
 	_nitro_btn.add_child(_nitro_fill)
+
+
+## Rayas que salen del centro hacia los bordes: mas y mas largas cuanto mas rapido (y con turbo, doradas).
+func _draw_speed_lines() -> void:
+	if fast:
+		return
+	var k: float = clampf((speed / MAX_SPEED - 0.75) * 3.0, 0.0, 1.0)
+	if boost_left > 0.0:
+		k = 1.0
+	if k <= 0.02:
+		return
+	var sz: Vector2 = _speed_fx.size
+	var c: Vector2 = Vector2(sz.x * 0.5, sz.y * 0.42)
+	var col: Color = Color(1.0, 0.85, 0.4) if boost_left > 0.0 else Color(1, 1, 1)
+	var n: int = 10 + int(k * 14.0)
+	var t: float = time_in_level
+	for i: int in n:
+		var a: float = TAU * float(i) / float(n) + sin(float(i) * 12.9898) * 0.3
+		var ph: float = fposmod(t * (1.6 + k) + float(i) * 0.37, 1.0)
+		var dir: Vector2 = Vector2(cos(a), sin(a))
+		var r0: float = sz.length() * (0.28 + 0.3 * ph)
+		var r1: float = r0 + sz.length() * (0.05 + 0.1 * k)
+		_speed_fx.draw_line(c + dir * r0, c + dir * r1, Color(col, 0.10 + 0.22 * k * (1.0 - ph)), 3.0 + 3.0 * k, true)
 
 
 func _draw_progress() -> void:
@@ -332,9 +365,20 @@ func _update_hud() -> void:
 	_place_label.text = "%d.\u00ba/4" % place
 	_coins_label.text = "%d/%d" % [coins, coins_total]
 	_nitro_btn.disabled = nitro < 1.0 or boost_left > 0.0
+	## Turbo listo: el boton da un salto para que se note.
+	var listo: bool = not _nitro_btn.disabled
+	if listo and not _nitro_ready_was and not fast:
+		_nitro_btn.pivot_offset = _nitro_btn.size * 0.5
+		var tw: Tween = _nitro_btn.create_tween()
+		tw.tween_property(_nitro_btn, "scale", Vector2(1.15, 1.15), 0.12)
+		tw.tween_property(_nitro_btn, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_BACK)
+		Audio.play("coin", 0.05, -8.0)
+	_nitro_ready_was = listo
 	_nitro_fill.position = Vector2(4, 4)
 	_nitro_fill.size = Vector2((_nitro_btn.size.x - 8.0) * clampf(nitro, 0.0, 1.0), _nitro_btn.size.y - 8.0)
 	_progress.queue_redraw()
+	if _speed_fx != null:
+		_speed_fx.queue_redraw()
 
 
 # ------------------------------------------------------------------ carrera
@@ -486,6 +530,9 @@ func use_nitro() -> void:
 	nitro = 0.0
 	boost_left = 2.5
 	Audio.play("powerup")
+	if not fast:
+		Juice.shake(0.25)
+		Juice.vibrate(30)
 	QA.log_event("nitro", {"d": int(d / ROW)})
 
 
