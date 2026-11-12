@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   android:
@@ -30,6 +30,7 @@ jobs:
       VITE_ADMOB_REWARDED: ${{ vars.ORQ_APP_ADMOB_PREMIO }}
       VITE_ADMOB_INTERSTICIAL: ${{ vars.ORQ_APP_ADMOB_GALERIA }}
       VITE_WEB: ${{ vars.ORQ_WEB }}
+      VITE_COMPILACION: ${{ github.run_number }}
       # Entrar con Google en el movil: el ID del cliente web (publico; el secreto solo esta en Supabase).
       VITE_GOOGLE_WEB_CLIENT_ID: ${{ vars.GOOGLE_OAUTH_CLIENT_ID }}
       ADMOB_APP_ID: ${{ vars.ORQ_APP_ADMOB_APP_ID }}
@@ -59,9 +60,26 @@ jobs:
           npx cap sync android
           # Version que sube sola, Android 16 (API 36) e ID de AdMob en el manifiesto.
           node scripts/preparar-android.mjs ${{ github.run_number }}
+      ## Siempre la misma llave de prueba (app/marca/debug.keystore, no es secreta): con una llave
+      ## nueva en cada compilacion, Android no dejaba actualizar encima y seguia la app vieja (12 nov).
       - name: APK de prueba
         working-directory: app/android
-        run: ./gradlew --no-daemon assembleDebug
+        run: |
+          mkdir -p ~/.android && cp ../marca/debug.keystore ~/.android/debug.keystore
+          ./gradlew --no-daemon assembleDebug
+      ## El ultimo APK siempre en el mismo enlace: .../releases/download/app-ultima/Orquestador.apk
+      - name: Publicar el APK en «app-ultima»
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp android/app/build/outputs/apk/debug/*.apk "$RUNNER_TEMP/Orquestador.apk"
+          gh release view app-ultima -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create app-ultima -R "$GITHUB_REPOSITORY" --prerelease --title "App de prueba (la ultima)" \
+              --notes "APK de prueba de la app. Se reemplaza en cada compilacion."
+          gh release upload app-ultima "$RUNNER_TEMP/Orquestador.apk" -R "$GITHUB_REPOSITORY" --clobber
+          gh release edit app-ultima -R "$GITHUB_REPOSITORY" --notes "APK de prueba, compilacion ${{ github.run_number }} ($(date -u +%Y-%m-%d\ %H:%M) UTC). Se reemplaza en cada compilacion."
+          echo "::notice::APK en https://github.com/$GITHUB_REPOSITORY/releases/download/app-ultima/Orquestador.apk"
       - name: AAB firmado para Google Play
         if: env.HAY_LLAVE == 'true'
         env:

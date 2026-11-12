@@ -105,6 +105,10 @@ export function vistaCuenta(app: App): VistaHecha {
         h("p", { class: "muted small" }, "Conexión"),
         h("p", {}, app.api.demo ? "Modo demostración (sin servidor)" : "Servidor de Orquestador"),
         h("div", { style: "height:12px" }),
+        // Para saber si el APK instalado es el último (12 nov: se instalaba uno viejo sin saberlo).
+        h("p", { class: "muted small" }, "Versión de la app"),
+        h("p", {}, `Compilación ${(import.meta.env.VITE_COMPILACION as string | undefined) || "local"}`),
+        h("div", { style: "height:12px" }),
         // Idioma de la app (los textos ya traducidos; el resto sigue en español).
         h("p", { class: "muted small" }, "Idioma"),
         h("div", { class: "chips", role: "group", "aria-label": "Idioma de la app" },
