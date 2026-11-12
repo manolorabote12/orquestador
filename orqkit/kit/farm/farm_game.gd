@@ -35,6 +35,7 @@ var _camera: Camera2D
 var _font: Font
 var _coins_label: Label
 var _goal_label: Label
+var _goal_bar: ProgressBar
 var _toast: Label
 var _toast_t: float = 0.0
 var _inv_box: HBoxContainer
@@ -273,20 +274,48 @@ func _build_hud() -> void:
 	top.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top.add_theme_constant_override("separation", 10)
 	col.add_child(top)
-	top.add_child(UiIcon.make("coin", Kit.color("coin", Color("#ffd23f")), 44.0))
+	## Monedas y pedidos en placas de madera (antes texto suelto sobre la hierba).
+	var coin_pill: PanelContainer = _pill()
+	top.add_child(coin_pill)
+	var coin_row: HBoxContainer = HBoxContainer.new()
+	coin_row.add_theme_constant_override("separation", 6)
+	coin_pill.add_child(coin_row)
+	coin_row.add_child(UiIcon.make("coin", Kit.color("coin", Color("#ffd23f")), 40.0))
 	_coins_label = Label.new()
 	_coins_label.name = "Coins"
 	_coins_label.add_theme_font_size_override("font_size", 38)
 	_coins_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
 	_coins_label.add_theme_constant_override("outline_size", 7)
-	top.add_child(_coins_label)
+	_coins_label.custom_minimum_size = Vector2(60, 0)
+	coin_row.add_child(_coins_label)
+	var gap: Control = Control.new()
+	gap.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	gap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	top.add_child(gap)
+	var goal_pill: PanelContainer = _pill()
+	top.add_child(goal_pill)
+	var goal_col: VBoxContainer = VBoxContainer.new()
+	goal_col.add_theme_constant_override("separation", 2)
+	goal_pill.add_child(goal_col)
 	_goal_label = Label.new()
 	_goal_label.name = "Goal"
-	_goal_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	_goal_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_goal_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_goal_label.add_theme_font_size_override("font_size", 26)
 	_goal_label.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.8))
 	_goal_label.add_theme_constant_override("outline_size", 6)
-	top.add_child(_goal_label)
+	goal_col.add_child(_goal_label)
+	_goal_bar = ProgressBar.new()
+	_goal_bar.show_percentage = false
+	_goal_bar.custom_minimum_size = Vector2(170, 12)
+	var bg: StyleBoxFlat = StyleBoxFlat.new()
+	bg.bg_color = Color(0.15, 0.08, 0.03, 0.6)
+	bg.set_corner_radius_all(6)
+	var fg: StyleBoxFlat = StyleBoxFlat.new()
+	fg.bg_color = Color("#7cd85a")
+	fg.set_corner_radius_all(6)
+	_goal_bar.add_theme_stylebox_override("background", bg)
+	_goal_bar.add_theme_stylebox_override("fill", fg)
+	goal_col.add_child(_goal_bar)
 	var pause_btn: Button = UI.make_icon_button("pause")
 	pause_btn.name = "BtnPause"
 	pause_btn.pressed.connect(open_pause)
@@ -304,7 +333,8 @@ func _build_hud() -> void:
 	grow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(grow)
 	## Panel de una maquina (recetas).
-	_machine_panel = PanelContainer.new()
+	_machine_panel = _pill(true)
+	_machine_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	_machine_panel.name = "Machine"
 	_machine_panel.visible = false
 	col.add_child(_machine_panel)
@@ -355,6 +385,26 @@ func _build_hud() -> void:
 	_seeds_box.name = "Seeds"
 	_seeds_box.add_theme_constant_override("separation", 8)
 	bcol.add_child(_seeds_box)
+
+
+## Placa de madera pequena para la barra de arriba y el panel de maquina.
+func _pill(big: bool = false) -> PanelContainer:
+	var p: PanelContainer = PanelContainer.new()
+	var sb: StyleBoxFlat = StyleBoxFlat.new()
+	sb.bg_color = Color("#9a6a3f")
+	sb.border_color = Color("#5d3a1e")
+	sb.set_border_width_all(4)
+	sb.set_corner_radius_all(18 if big else 22)
+	sb.content_margin_left = 14
+	sb.content_margin_right = 14
+	sb.content_margin_top = 6 if not big else 12
+	sb.content_margin_bottom = 6 if not big else 12
+	sb.shadow_color = Color(0, 0, 0, 0.3)
+	sb.shadow_size = 6
+	sb.shadow_offset = Vector2(0, 3)
+	p.add_theme_stylebox_override("panel", sb)
+	p.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return p
 
 
 func _icon(item: String, px: float) -> ItemIcon:
@@ -420,6 +470,9 @@ func _refresh() -> void:
 	_coins_label.text = "%d" % int(st["coins"])
 	_goal_label.text = Kit.text("farm_orders_done", "Pedidos {a}/{b}").format({"a": int(st["done"]), "b": int(st["goal"])})
 	coins = int(st["done"])
+	if _goal_bar != null:
+		_goal_bar.max_value = maxf(1.0, float(st["goal"]))
+		_goal_bar.value = float(st["done"])
 	## Solo se rehacen las listas si algo ha cambiado (asi un dedo pulsando no pierde el boton).
 	var sig: String = str(st["inv"]) + str(st["orders"]) + str(float(st["wait"]) > 0.0) + str(machine_open)
 	if machine_open >= 0:
@@ -526,6 +579,10 @@ func _fill_machine() -> void:
 	var t: Label = Label.new()
 	t.text = Kit.text("farm_m_" + str(info["name"]), str(info["name"]).capitalize()) + "  (%d/%d)" % [(m["queue"] as Array).size(), MapRules.QUEUE_MAX]
 	t.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	t.add_theme_font_size_override("font_size", 30)
+	t.add_theme_color_override("font_color", Color("#fff3d6"))
+	t.add_theme_color_override("font_outline_color", Color("#3e2412"))
+	t.add_theme_constant_override("outline_size", 7)
 	head.add_child(t)
 	var close: Button = UI.make_icon_button("close")
 	close.name = "CloseMachine"
@@ -538,17 +595,22 @@ func _fill_machine() -> void:
 		var row: HBoxContainer = HBoxContainer.new()
 		row.add_theme_constant_override("separation", 6)
 		_machine_box.add_child(row)
-		row.add_child(_icon(str(item), 40.0))
-		var eq: Label = Label.new()
-		eq.text = "="
-		row.add_child(eq)
+		## Fila de receta: ingredientes → producto, en una tarjeta clara.
 		for ing: Variant in r[0]:
-			row.add_child(_icon(str(ing), 30.0))
+			row.add_child(_icon(str(ing), 38.0))
 			var n: Label = Label.new()
 			n.text = "%d/%d" % [MapRules.count(st, str(ing)), int(r[0][ing])]
-			n.add_theme_font_size_override("font_size", 18)
+			n.add_theme_font_size_override("font_size", 22)
 			n.add_theme_color_override("font_color", Color("#9ff0a8") if MapRules.count(st, str(ing)) >= int(r[0][ing]) else Color("#ff9a8a"))
+			n.add_theme_color_override("font_outline_color", Color("#3e2412"))
+			n.add_theme_constant_override("outline_size", 5)
 			row.add_child(n)
+		var arrow: Label = Label.new()
+		arrow.text = "\u2192"
+		arrow.add_theme_font_size_override("font_size", 30)
+		arrow.add_theme_color_override("font_color", Color("#fff3d6"))
+		row.add_child(arrow)
+		row.add_child(_icon(str(item), 50.0))
 		var sp: Control = Control.new()
 		sp.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		row.add_child(sp)
