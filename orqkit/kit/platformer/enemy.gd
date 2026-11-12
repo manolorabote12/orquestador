@@ -78,7 +78,7 @@ func setup(enemy_kind: String, params: Dictionary, level_rows: Array[String], ti
 	if art.is_empty():
 		_build_shapes(col, w, h)
 	else:
-		anim_sprite = SpriteKit.animado(art, h * 1.15, "run", kind != "flyer")
+		anim_sprite = SpriteKit.animado(art, h * 1.4, "run", kind != "flyer")
 		anim_sprite.name = "Sprite"
 		visual.add_child(anim_sprite)
 		if kind == "spiky":

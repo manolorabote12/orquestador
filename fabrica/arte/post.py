@@ -65,6 +65,15 @@ def quitar_fondo_borde(img: Image.Image, tol: float = 46.0) -> Image.Image:
 	return Image.fromarray(out.clip(0, 255).astype(np.uint8), "RGBA")
 
 
+def quitar_fondo_seguro(img: Image.Image, chroma: tuple[int, int, int]) -> Image.Image:
+	"""Recorte por color y, si casi no quita nada (la IA pinto el fondo de otro color: azul oscuro, gris...),
+	por el color del borde. 12 nov: un jefe salio dentro de un cuadrado azul marino."""
+	limpio = quitar_fondo(img, chroma)
+	if float((np.asarray(limpio)[..., 3] < 16).mean()) < 0.15:
+		limpio = quitar_fondo_borde(limpio)
+	return limpio
+
+
 def caja(img: Image.Image) -> tuple[int, int, int, int] | None:
 	a = np.asarray(img)[..., 3]
 	ys, xs = np.nonzero(a > 16)
@@ -147,12 +156,12 @@ def procesar_animacion(frames: list[Image.Image], ficha: Image.Image, celda: tup
 						biblia_estilo: dict, paleta: list[tuple[int, int, int]], chroma: tuple[int, int, int]) -> tuple[list[Image.Image], list[float]]:
 	pixel_art = biblia_estilo["familia"] == "pixel_art"
 	margen = 0.86 if biblia_estilo.get("contorno") == "oscuro_1px" else 0.92
-	ficha_limpia = quitar_fondo(ficha, chroma)
+	ficha_limpia = quitar_fondo_seguro(ficha, chroma)
 	escala = escala_de_referencia(ficha_limpia, celda, margen)
 	salida: list[Image.Image] = []
 	derivas: list[float] = []
 	for f in frames:
-		limpio = quitar_fondo(f, chroma)
+		limpio = quitar_fondo_seguro(f, chroma)
 		enc = encajar(limpio, celda, escala, pixel_art)
 		deriva = 0.0
 		if biblia_estilo.get("forzar_paleta", True):

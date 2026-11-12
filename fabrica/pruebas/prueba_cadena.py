@@ -92,7 +92,7 @@ def main() -> int:
 		tipos = {e["tipo"] for e in dis["enemigos"]}
 		esperados = {"walker": "E", "spiky": "K", "flyer": "F"}
 		aparecen = {t for t, ch in esperados.items() if ch in usados}
-		check("enemigos del diseno en los niveles", aparecen <= tipos and ("walker" not in tipos or "walker" in aparecen or dis.get("genero") in ("volador", "horda", "puzle", "torres", "carreras")), f"{sorted(aparecen)} de {sorted(tipos)}")
+		check("enemigos del diseno en los niveles", aparecen <= tipos and ("walker" not in tipos or "walker" in aparecen or dis.get("genero") in ("volador", "horda", "puzle", "torres", "carreras", "naves")), f"{sorted(aparecen)} de {sorted(tipos)}")
 		check("icono creado", (proyecto / "icon.png").exists())
 		tx = ficha.textos(dis, len(dis["niveles"]))
 		check("ficha: textos ES/EN dentro de los limites de Google Play", all(

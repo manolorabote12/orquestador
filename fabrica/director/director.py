@@ -7,6 +7,7 @@ probados. Asi una mala respuesta de la IA no puede romper el juego.
 
 import colorsys
 import json
+import os
 import re
 from pathlib import Path
 
@@ -42,7 +43,10 @@ def catalogo_generos() -> str:
 def pistas_genero(idea: str) -> list[str]:
 	"""Generos cuyas palabras clave aparecen en la idea (en el orden de prioridad de generos.ORDEN)."""
 	t = _plano(idea)
-	return [g for g in generos.ORDEN if any(_plano(c) in t for c in generos.GENEROS[g].get("claves", []))]
+	n = {g: sum(1 for c in generos.GENEROS[g].get("claves", []) if _plano(c) in t) for g in generos.ORDEN}
+	## Primero el que mas palabras clave acierta («defiende... castillo... torres» es torres, no aldea);
+	## a igualdad, el orden de prioridad de siempre.
+	return sorted((g for g in generos.ORDEN if n[g]), key=lambda g: -n[g])
 
 
 PROMPT = PROMPT + "\n\n" + catalogo_generos()
@@ -323,7 +327,10 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 	usuario += "\n\n" + giros.guia(gancho["genero"] if gancho else None)
 	import contenido
 	usuario += "\n\n" + contenido.guia(gancho["genero"] if gancho else None)
-	d, modelo = llm.con_router(PROMPT, usuario, HERRAMIENTA, lambda x: validar(normalizar(fijar(x))), gasto)
+	## El diseno lo hace el modelo superior (ORQ_DISENO_SUPERIOR=0 vuelve al barato): con el barato una
+	## nave que esquiva asteroides salio como juego de plataformas (12 nov). ~0,07 $ mas por juego.
+	d, modelo = llm.con_router(PROMPT, usuario, HERRAMIENTA, lambda x: validar(normalizar(fijar(x))), gasto,
+		primero_superior=os.environ.get("ORQ_DISENO_SUPERIOR", "1") != "0")
 	## Contenido propio que no pasa el control: se apunta la leccion (la directora la lee) y se sigue sin el.
 	if isinstance(d.get("contenido"), dict) and d.get("genero") in contenido.GENEROS:
 		_, err = contenido.validar(d["genero"], d["contenido"])

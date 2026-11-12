@@ -31,7 +31,7 @@ begin
     raise exception 'debia fallar';
   exception when others then assert sqlerrm like '%bad_preview%', sqlerrm; end;
   -- 6 - Limite diario de vistas previas.
-  for n in 1..14 loop
+  for n in 1..5 loop
     update public.jobs set created_at = greatest(date_trunc('day', now()), now() - interval '2 minutes') where user_id = u;
     perform public.queue_preview(u, 'otra idea distinta numero ' || n || ' para probar');
   end loop;

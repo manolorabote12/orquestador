@@ -661,9 +661,21 @@ func _on_player_died(cause: String) -> void:
 	Juice.shake(0.45)
 	Juice.vibrate(40)
 	Juice.hitstop(0.08)
-	await get_tree().create_timer(0.35, true, false, true).timeout
+	## Muerte con gesto: el heroe sale despedido girando y se desvanece (antes desaparecia sin mas).
+	Juice.burst(level, player.global_position + Vector2(0.0, -28.0), Kit.color("accent", Color.ORANGE), 18, 340.0)
+	var tw: Tween = player.visual.create_tween().set_parallel(true)
+	tw.tween_property(player.visual, "rotation", TAU * 1.5, 0.5)
+	tw.tween_property(player.visual, "position:y", player.visual.position.y - 90.0, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(player.visual, "scale", Vector2(0.2, 0.2), 0.5).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+	tw.tween_property(player.visual, "modulate:a", 0.0, 0.5)
+	var base_y: float = player.visual.position.y
+	await get_tree().create_timer(0.55, true, false, true).timeout
 	if is_instance_valid(player):
+		tw.kill()
+		player.visual.position.y = base_y
+		player.visual.modulate.a = 1.0
 		player.respawn()
+		Juice.ring(level, player.global_position + Vector2(0.0, -28.0), Color(1, 1, 1, 0.9), 70.0)
 		_update_hearts(false)
 
 
@@ -688,6 +700,7 @@ func _on_goal(body: Node2D) -> void:
 	Audio.play("win")
 	Audio.play_track("victoria", false)
 	Juice.shake(0.2)
+	Juice.confetti(level, player.global_position + Vector2(0.0, -40.0))
 	result_panel = ResultPanel.open(self, {
 		"stars": stars, "coins": coins_taken, "coins_total": coins_total, "score": score, "record": record,
 	})

@@ -160,7 +160,7 @@ static func _add_coin(parent: Node2D, center: Vector2, tile: float, col: Color, 
 		shape_poly.polygon = _circle(tile * 0.22, 14)
 		poly = shape_poly
 	else:
-		poly = SpriteKit.animado(art, tile * 0.5, "spin", false)
+		poly = SpriteKit.animado(art, tile * 0.62, "spin", false)
 	poly.name = "Look"
 	area.add_child(poly)
 	## 2 - Flotan un poco, desfasadas por posicion para que no se muevan todas a la vez.

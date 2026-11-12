@@ -89,7 +89,7 @@ def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, int
 				ultimo = [str(e)[:120]]
 				break
 			informe["generaciones"] += 1
-			img = post.quitar_fondo(Image.open(io.BytesIO(datos)).convert("RGBA"), chroma)
+			img = post.quitar_fondo_seguro(Image.open(io.BytesIO(datos)).convert("RGBA"), chroma)
 			bb = post.caja(img)
 			if bb is None:
 				ultimo = ["vacio"]

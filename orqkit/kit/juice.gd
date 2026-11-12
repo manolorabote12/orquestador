@@ -162,6 +162,67 @@ func ring(parent: Node, at: Vector2, col: Color, radius: float = 70.0, seconds: 
 	return r
 
 
+## 6d - Polvo: nubecitas bajas que se abren a los lados (saltar, caer, frenar). Barato y da peso.
+func dust(parent: Node, at: Vector2, col: Color = Color(1, 1, 1, 0.75), amount: int = 6, force: float = 1.0) -> void:
+	if parent == null:
+		return
+	var fx: CPUParticles2D = CPUParticles2D.new()
+	fx.position = at
+	fx.one_shot = true
+	fx.explosiveness = 0.9
+	fx.amount = amount
+	fx.lifetime = 0.42
+	fx.direction = Vector2(0.0, -0.25)
+	fx.spread = 85.0
+	fx.initial_velocity_min = 50.0 * force
+	fx.initial_velocity_max = 150.0 * force
+	fx.gravity = Vector2(0.0, -40.0)
+	fx.damping_min = 160.0
+	fx.damping_max = 260.0
+	fx.texture = dot_texture()
+	fx.scale_amount_min = 0.5
+	fx.scale_amount_max = 1.0
+	fx.scale_amount_curve = _shrink_curve()
+	fx.color = col
+	fx.color_ramp = _fade_ramp(col)
+	fx.z_index = 18
+	parent.add_child(fx)
+	fx.emitting = true
+	fx.finished.connect(fx.queue_free)
+
+
+## 6e - Confeti de victoria: papelitos de colores que suben y caen girando.
+func confetti(parent: Node, at: Vector2, amount: int = 46) -> void:
+	if parent == null:
+		return
+	var colores: Array[Color] = [Kit.color("accent", Color.GOLD), Kit.color("good", Color.LIME_GREEN),
+		Kit.color("danger", Color.TOMATO), Color.WHITE, Kit.color("accent", Color.GOLD).lerp(Color.DEEP_SKY_BLUE, 0.7)]
+	for i: int in colores.size():
+		var fx: CPUParticles2D = CPUParticles2D.new()
+		fx.position = at
+		fx.one_shot = true
+		fx.explosiveness = 0.85
+		fx.amount = maxi(4, amount / colores.size())
+		fx.lifetime = 1.5
+		fx.direction = Vector2(0.0, -1.0)
+		fx.spread = 55.0
+		fx.initial_velocity_min = 380.0
+		fx.initial_velocity_max = 760.0
+		fx.gravity = Vector2(0.0, 1100.0)
+		fx.damping_min = 60.0
+		fx.damping_max = 140.0
+		fx.angular_velocity_min = -540.0
+		fx.angular_velocity_max = 540.0
+		fx.scale_amount_min = 7.0
+		fx.scale_amount_max = 12.0
+		fx.color = colores[i]
+		fx.color_ramp = _fade_ramp(colores[i])
+		fx.z_index = 30
+		parent.add_child(fx)
+		fx.emitting = true
+		fx.finished.connect(fx.queue_free)
+
+
 ## Texturas de particula hechas una vez (punto suave y estrella de cuatro puntas).
 var _dot: Texture2D = null
 var _star: Texture2D = null

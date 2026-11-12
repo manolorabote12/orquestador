@@ -110,10 +110,12 @@ def llamar_herramienta(modelo: str, sistema: str, mensajes: list[dict], herramie
 	raise ErrorIA(ultimo)
 
 
-def con_router(sistema: str, usuario: str, herramienta: dict, validar, gasto: Gasto) -> tuple[dict, str]:
-	"""3 - Barato -> correccion con errores -> modelo superior. validar(dict) -> lista de errores."""
+def con_router(sistema: str, usuario: str, herramienta: dict, validar, gasto: Gasto, primero_superior: bool = False) -> tuple[dict, str]:
+	"""3 - Barato -> correccion con errores -> modelo superior. validar(dict) -> lista de errores.
+	primero_superior: el modelo bueno primero (y el barato de reserva). Para el DISENO del juego: es la
+	decision que mas pesa (genero, mundo, personajes, niveles) y cuesta centimos frente al arte."""
 	errores_previos: list[str] = []
-	for modelo in MODELOS:
+	for modelo in (list(reversed(MODELOS)) if primero_superior else MODELOS):
 		mensajes = [{"role": "user", "content": usuario}]
 		datos = llamar_herramienta(modelo, sistema, mensajes, herramienta, gasto, "diseno")
 		errores = validar(datos)

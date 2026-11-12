@@ -152,7 +152,9 @@ func _build_shape(color_body: Color, color_eye: Color, art: Dictionary) -> void:
 	if not art.is_empty():
 		poly.visible = false
 		eye.visible = false
-		anim_sprite = SpriteKit.animado(art, hgt, "idle", true)
+		## El dibujo va un 35 % mas grande que la caja de choque: asi el heroe se ve (12 nov: la critica
+		## visual repetia "personaje pequeno") y los golpes siguen siendo justos.
+		anim_sprite = SpriteKit.animado(art, hgt * 1.35, "idle", true)
 		anim_sprite.name = "Sprite"
 		visual.add_child(anim_sprite)
 	floor_snap_length = 8.0
@@ -306,6 +308,7 @@ func _physics_process(delta: float) -> void:
 		jumping = true
 		buffer_left = 0.0
 		Juice.squash(visual, Vector2(0.7, 1.3))
+		Juice.ring(get_parent(), global_position + Vector2(0.0, -8.0), Color(1, 1, 1, 0.8), 44.0, 0.25)
 		jumped.emit()
 
 	if can_shoot:
@@ -403,6 +406,7 @@ func _do_jump() -> void:
 	coyote_left = 0.0
 	buffer_left = 0.0
 	Juice.squash(visual, Vector2(0.78, 1.22))
+	Juice.dust(get_parent(), global_position, Color(1, 1, 1, 0.7), 5)
 	jumped.emit()
 
 
@@ -411,6 +415,7 @@ func _on_landed(speed: float) -> void:
 		return
 	var k: float = clampf(speed / float(p["max_fall_speed"]), 0.0, 1.0)
 	Juice.squash(visual, Vector2(1.0 + 0.3 * k, 1.0 - 0.25 * k))
+	Juice.dust(get_parent(), global_position, Color(1, 1, 1, 0.75), 4 + int(8.0 * k), 0.8 + k)
 	if k > 0.6:
 		Juice.shake(0.12 * k)
 	landed.emit(speed)
