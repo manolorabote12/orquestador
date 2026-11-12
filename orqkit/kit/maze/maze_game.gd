@@ -36,6 +36,7 @@ var trail: Dictionary = {}
 var _board: Node2D
 var _player: Node2D
 var _camera: Camera2D
+var _follow: bool = false
 var _coins_label: Label
 var _moving: float = 0.0
 var _swipe_from: Vector2 = Vector2.ZERO
@@ -77,8 +78,20 @@ func _fit_camera() -> void:
 	var h: float = float(rows.size()) * CELL
 	var vp: Vector2 = get_viewport_rect().size
 	var z: float = minf(vp.x / (w + CELL), vp.y * 0.78 / (h + CELL))
+	## Laberinto grande: no se encoge tanto que el heroe quede diminuto (13 nov: «unos 20 px»). La
+	## camara sigue al heroe por el laberinto, con las casillas a ~84 px en pantalla como minimo.
+	_follow = z * CELL < 84.0
+	if _follow:
+		z = 84.0 / CELL
 	_camera.zoom = Vector2.ONE * minf(z, 1.2)
 	_camera.position = Vector2(w, h) * 0.5 + Vector2(0.0, CELL * 0.4)
+	if _follow:
+		_camera.limit_left = int(-CELL * 0.5)
+		_camera.limit_top = int(-CELL * 1.5)
+		_camera.limit_right = int(w + CELL * 0.5)
+		_camera.limit_bottom = int(h + CELL * 1.5)
+		_camera.position_smoothing_enabled = true
+		_camera.position_smoothing_speed = 7.0
 
 
 func _build_player() -> void:
@@ -88,7 +101,7 @@ func _build_player() -> void:
 	add_child(_player)
 	var art: Dictionary = Kit.sprite_by_role("jugador")
 	if not art.is_empty():
-		var spr: AnimatedSprite2D = SpriteKit.animado(art, CELL * 0.85, "idle", false)
+		var spr: AnimatedSprite2D = SpriteKit.animado(art, CELL * 1.02, "idle", false)
 		_player.add_child(spr)
 		Skins.apply(spr)
 	else:
@@ -230,6 +243,8 @@ func _any_exit() -> bool:
 
 
 func _physics_process(delta: float) -> void:
+	if _follow and _player != null:
+		_camera.position = _player.position
 	if finished:
 		return
 	time_in_level += delta
