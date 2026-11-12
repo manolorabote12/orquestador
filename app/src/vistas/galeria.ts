@@ -76,8 +76,10 @@ export function vistaGaleria(app: App): VistaHecha {
     const i = lista.findIndex((x) => x.project_id === j.project_id);
     const otro = lista.length > 1 ? lista[(i + 1) % lista.length] : null;
     let siguiente = false;
+    const web = ((import.meta.env.VITE_WEB as string | undefined) ?? "").replace(/\/$/, "");
     abrirJugador({
       motor, pck: motor ? f.pck : null, titulo: j.titulo, portada: f.portada,
+      web: web ? `${web}/jugar.html?j=${j.project_id}` : null,
       siguiente: otro ? () => { siguiente = true; } : undefined,
       alCerrar: () => {
         void entrePartidas(j).finally(() => { if (siguiente && otro && vivo) jugar(otro); });

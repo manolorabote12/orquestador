@@ -4,7 +4,7 @@
 // juego solo trae su paquete index.pck (~1 MB) con una URL firmada.
 // Todo va dentro de un iframe: al cerrar se libera el motor entero (memoria, audio, WebGL).
 
-import { h } from "./ui";
+import { abrir, h } from "./ui";
 
 export interface OpcionesJugador {
   /** Carpeta pública del motor, p. ej. https://x.supabase.co/storage/v1/object/public/motor/godot/4.6.3 */
@@ -18,6 +18,8 @@ export interface OpcionesJugador {
   siguiente?: () => void;
   /** Al cerrar el reproductor (por ejemplo, para un anuncio entre partidas). */
   alCerrar?: () => void;
+  /** Página pública del juego: si en el móvil no arranca, se ofrece abrirla en el navegador. */
+  web?: string | null;
 }
 
 /** Página del iframe. Las URLs van como JSON escapado: nunca se interpretan como HTML. */
@@ -50,9 +52,13 @@ s.onload=function(){
   var e=new Engine({executable:D.motor+"/index",mainPack:D.pck,canvasResizePolicy:2,args:[],
     ensureCrossOriginIsolationHeaders:false,focusCanvas:true,experimentalVK:false});
   txt.textContent="Cargando tu juego...";
-  e.startGame({onProgress:function(a,t){if(t>0)barra.style.width=Math.round(100*a/t)+"%";}})
-   .then(function(){carga.style.display="none";avisar("listo");})
-   .catch(function(x){fallo(String(x&&x.message||x));});
+  // Sin tamaño conocido (descarga comprimida) la barra no se movía y parecía colgado: se enseñan los MB.
+  var ultimo="",mb=0,listo=false;
+  var vigia=setTimeout(function(){if(!listo){fallo("El juego no ha arrancado en 45 s"+(mb?" ("+mb+" MB descargados)":" (no ha descargado nada)")+(ultimo?": "+ultimo:"."));avisar("lento");}},45000);
+  e.startGame({onProgress:function(a,t){mb=Math.round(a/1048576);if(t>0)barra.style.width=Math.round(100*a/t)+"%";else txt.textContent="Cargando tu juego... "+mb+" MB";},
+    onPrintError:function(){ultimo=Array.prototype.join.call(arguments," ").slice(0,160);}})
+   .then(function(){listo=true;clearTimeout(vigia);carga.style.display="none";avisar("listo");})
+   .catch(function(x){listo=true;clearTimeout(vigia);fallo(String(x&&x.message||x)+(ultimo?" — "+ultimo:""));});
 };
 document.head.appendChild(s);
 })();
@@ -100,8 +106,13 @@ export function abrirJugador(op: OpcionesJugador): () => void {
   function oir(e: MessageEvent) {
     const d = e.data as { orq?: string; estado?: string } | null;
     if (!d || d.orq !== "jugador") return;
-    estado.textContent = d.estado === "error" ? "error" : "";
+    estado.textContent = d.estado === "error" || d.estado === "lento" ? "error" : "";
     capa.dataset.estado = d.estado ?? "";
+    // Si en el móvil no arranca, la misma partida en el navegador del sistema (otro motor web).
+    if ((d.estado === "error" || d.estado === "lento") && op.web && !capa.querySelector(".player-web")) {
+      cabeza.insertBefore(h("button", { class: "btn btn-brass btn-small player-web", type: "button",
+        onclick: () => { void abrir(op.web!); } }, "Abrir en el navegador"), boton);
+    }
   }
   function tecla(e: KeyboardEvent) {
     if (e.key === "Escape") cerrar();
