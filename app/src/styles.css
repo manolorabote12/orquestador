@@ -308,7 +308,8 @@ details.plegable > summary {
 }
 details.plegable > summary::-webkit-details-marker { display: none; }
 details.plegable > summary h2 { margin: 0; flex: 1 1 auto; }
-details.plegable > summary .tag { max-width: 45%; min-width: min(4.5em, 45%); flex: 0 0 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* El resumen cede: el titulo no se parte en dos lineas por culpa de la etiqueta (12 nov). */
+details.plegable > summary .tag { max-width: 40%; min-width: 0; flex: 0 10 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 details.plegable > summary svg { width: 22px; height: 22px; flex: none; color: var(--ink-dim); transition: transform 0.15s; }
 details.plegable[open] > summary { margin-bottom: 10px; }
 details.plegable[open] > summary svg { transform: rotate(180deg); }
