@@ -42,6 +42,8 @@ ningún control automático veía. Este documento recoge cómo se revisa ahora y
 | «'str' object has no attribute 'get'» en el diseño | El modelo superior escribió frases de la historia como texto | Lo mal formado se descarta; cualquier forma rara vuelve a la IA como error para corregirla |
 | Héroe y enemigos se ven pequeños (crítica 5/10 repetida) | El dibujo medía lo mismo que la caja de choque | El dibujo va un 35-40 % más grande que la caja de choque |
 | Jefe dentro de un cuadrado azul | La IA pintó el fondo de otro color | Si el recorte por color casi no quita nada, se recorta por el color del borde |
+| Defensa de torres sosa: enemigos diminutos y disparos que no se notan | El kit de torres no tenía efectos de impacto | Enemigos más grandes, rayo con brillo, destello blanco al golpear, estallido y «+oro» flotante al matar, temblor con el jefe |
+| La lluvia de tuercas seguía al cambiar de pantalla | Se añadía al documento y nadie la quitaba | Al cambiar de vista se borra |
 
 ## Reglas para no repetirlo
 

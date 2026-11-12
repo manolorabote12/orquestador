@@ -16,10 +16,11 @@ const TOWERS: Dictionary = {
 	"hielo": {"cost": 65, "range": 1.9, "rate": 0.9, "dmg": 0.7},
 }
 const ENEMIES: Dictionary = {
-	"walker": {"hp": 6.0, "speed": 1.0, "gold": 4, "lives": 1, "size": 0.62},
-	"flyer": {"hp": 3.6, "speed": 1.7, "gold": 4, "lives": 1, "size": 0.55},
-	"spiky": {"hp": 16.0, "speed": 0.62, "gold": 9, "lives": 2, "size": 0.7},
-	"boss": {"hp": 110.0, "speed": 0.45, "gold": 60, "lives": 6, "size": 1.25},
+	## Tamano en casillas: los enemigos tienen que leerse en el movil (12 nov: se veian de 16 px).
+	"walker": {"hp": 6.0, "speed": 1.0, "gold": 4, "lives": 1, "size": 0.86},
+	"flyer": {"hp": 3.6, "speed": 1.7, "gold": 4, "lives": 1, "size": 0.78},
+	"spiky": {"hp": 16.0, "speed": 0.62, "gold": 9, "lives": 2, "size": 0.92},
+	"boss": {"hp": 110.0, "speed": 0.45, "gold": 60, "lives": 6, "size": 1.45},
 }
 const WAVE_GAP: float = 9.0
 ## A quien apunta cada torre (se cambia tocandola): el mas adelantado, el de mas vida o el mas cerca.
@@ -625,12 +626,17 @@ func _beam(a: Vector2, b: Vector2, col: Color) -> void:
 		return
 	var l: Line2D = Line2D.new()
 	l.points = PackedVector2Array([a, b])
-	l.width = 4.0
-	l.default_color = col
+	l.width = 7.0
+	l.default_color = col.lightened(0.25)
+	l.begin_cap_mode = Line2D.LINE_CAP_ROUND
+	l.end_cap_mode = Line2D.LINE_CAP_ROUND
 	_fx.add_child(l)
 	var tw: Tween = l.create_tween()
-	tw.tween_property(l, "modulate:a", 0.0, 0.12)
+	tw.tween_property(l, "width", 1.5, 0.14)
+	tw.parallel().tween_property(l, "modulate:a", 0.0, 0.14)
 	tw.tween_callback(l.queue_free)
+	## Chispa donde da el rayo.
+	Juice.sparkle(_fx, b, col.lerp(Color.WHITE, 0.5), 3, 120.0)
 
 
 func _shell_node(at: Vector2) -> Node2D:
@@ -667,15 +673,44 @@ func _hit(e: Dictionary, dmg: float) -> void:
 	var n: Node2D = e["node"]
 	var bar: ColorRect = n.get_node("Hp")
 	bar.size.x = cell * 0.6 * clampf(float(e["hp"]) / float(e["max"]), 0.0, 1.0)
+	if not fast and float(e["hp"]) > 0.0:
+		## Golpe: destello blanco y un pequeno respingo.
+		## (Sin Juice.flash: con golpes seguidos guardaria el blanco como color normal y se quedaria blanco.)
+		n.modulate = Color(2.6, 2.6, 2.6, 1)
+		n.create_tween().tween_property(n, "modulate", Color.WHITE, 0.08)
 	if float(e["hp"]) <= 0.0:
 		enemies.erase(e)
 		kills += 1
-		gold += int(ENEMIES[e["kind"]]["gold"])
+		var oro: int = int(ENEMIES[e["kind"]]["gold"])
+		gold += oro
 		if not fast:
-			Juice.burst(_fx, n.position, Kit.color("enemy", Color("#d9774a")), 6, 160.0)
+			var jefe: bool = str(e["kind"]) == "boss"
+			Juice.burst(_fx, n.position, Kit.color("enemy", Color("#d9774a")), 26 if jefe else 12, 300.0 if jefe else 200.0)
+			Juice.sparkle(_fx, n.position, Kit.color("accent", Color.GOLD), 4, 160.0)
+			_flota(n.position, "+%d" % oro)
+			if jefe:
+				Juice.shake(0.5)
+				Juice.hitstop(0.12, 0.03)
 			Audio.play("stomp", 0.15, -8.0)
 		n.queue_free()
 		_update_hud()
+
+
+## Oro ganado: un numero que sube y se desvanece donde cae el enemigo.
+func _flota(at: Vector2, txt: String) -> void:
+	var l: Label = Label.new()
+	l.text = txt
+	l.add_theme_font_size_override("font_size", int(cell * 0.38))
+	l.add_theme_color_override("font_color", Kit.color("accent", Color.GOLD))
+	l.add_theme_color_override("font_outline_color", Color(0, 0, 0, 0.85))
+	l.add_theme_constant_override("outline_size", 6)
+	l.position = at + Vector2(-cell * 0.3, -cell * 0.6)
+	l.z_index = 40
+	_fx.add_child(l)
+	var tw: Tween = l.create_tween().set_parallel(true)
+	tw.tween_property(l, "position:y", l.position.y - cell * 0.7, 0.7).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(l, "modulate:a", 0.0, 0.7).set_delay(0.25)
+	tw.chain().tween_callback(l.queue_free)
 
 
 # ------------------------------------------------------------------ entrada

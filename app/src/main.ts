@@ -157,6 +157,8 @@ async function arrancar(): Promise<void> {
       recordarVista(vista);
       limpiar?.();
       limpiar = null;
+      // La lluvia de tuercas de un juego terminado es de esa pantalla: no sigue cayendo en la siguiente.
+      for (const l of document.querySelectorAll(".lluvia")) l.remove();
       for (const b of tabs.querySelectorAll<HTMLButtonElement>(".tab")) {
         b.classList.toggle("on", b.dataset.vista === vista);
         b.setAttribute("aria-current", b.dataset.vista === vista ? "page" : "false");
