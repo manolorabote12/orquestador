@@ -159,6 +159,11 @@ func _dress() -> void:
 	var opt_out: bool = game.has_method("wants_grade") and not bool(game.call("wants_grade"))
 	if wants_grade() and not opt_out and game.get_node_or_null("Grade") == null:
 		game.add_child(make_grade())
+	## Motas de luz flotando detras de la partida (13 nov: «efectos_pobres, poca vida» en casi todas las
+	## criticas). Solo con graficos altos, en 2D y si el juego no lo rechaza (wants_ambient).
+	var no_amb: bool = game.has_method("wants_ambient") and not bool(game.call("wants_ambient"))
+	if wants_grade() and not no_amb and game.get_node_or_null("Ambient") == null and game.get_viewport().get_camera_3d() == null:
+		game.add_child(make_ambient())
 	if game.get_node_or_null("LevelBackdrop") != null:
 		return
 	if game.has_method("wants_backdrop") and not bool(game.call("wants_backdrop")):
@@ -207,6 +212,52 @@ func set_high(on: bool) -> void:
 		game.add_child(make_grade())
 	elif not on and g != null:
 		g.queue_free()
+
+
+static func make_ambient() -> CanvasLayer:
+	var layer: CanvasLayer = CanvasLayer.new()
+	layer.name = "Ambient"
+	## Por encima de la partida y por debajo del HUD (si fuera detras, el suelo de muchos juegos las taparia).
+	layer.layer = 5
+	var fx: CPUParticles2D = CPUParticles2D.new()
+	fx.name = "Motes"
+	fx.position = Vector2(360.0, 1380.0)
+	fx.emission_shape = CPUParticles2D.EMISSION_SHAPE_RECTANGLE
+	fx.emission_rect_extents = Vector2(520.0, 60.0)
+	fx.amount = 36
+	fx.lifetime = 11.0
+	## Ya flotando desde el primer fotograma (tambien en las capturas de la tienda).
+	fx.preprocess = 11.0
+	fx.direction = Vector2(0.0, -1.0)
+	fx.spread = 18.0
+	fx.gravity = Vector2(0.0, 0.0)
+	fx.initial_velocity_min = 70.0
+	fx.initial_velocity_max = 150.0
+	fx.angular_velocity_min = -40.0
+	fx.angular_velocity_max = 40.0
+	## Punto de luz suave (degradado redondo), no un cuadrado.
+	var glow: GradientTexture2D = GradientTexture2D.new()
+	glow.width = 64
+	glow.height = 64
+	glow.fill = GradientTexture2D.FILL_RADIAL
+	glow.fill_from = Vector2(0.5, 0.5)
+	glow.fill_to = Vector2(1.0, 0.5)
+	var g: Gradient = Gradient.new()
+	g.set_color(0, Color(1, 1, 1, 1))
+	g.set_color(1, Color(1, 1, 1, 0))
+	glow.gradient = g
+	fx.texture = glow
+	fx.scale_amount_min = 0.25
+	fx.scale_amount_max = 0.6
+	var tint: Color = Kit.color("accent", Color("#ffd166")).lightened(0.35)
+	var ramp: Gradient = Gradient.new()
+	ramp.set_color(0, Color(tint, 0.0))
+	ramp.set_color(1, Color(tint, 0.0))
+	ramp.add_point(0.2, Color(tint, 0.55))
+	ramp.add_point(0.8, Color(tint, 0.4))
+	fx.color_ramp = ramp
+	layer.add_child(fx)
+	return layer
 
 
 static func make_backdrop(tex: Texture2D) -> CanvasLayer:
