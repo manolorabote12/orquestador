@@ -31,7 +31,7 @@ const fs = require('fs');
   await pg.click('button:has-text("Sign in")', { timeout: 3000 }).catch(() => {}); await pg.waitForTimeout(1500);
   await juntar('taller');
   await pg.fill('textarea', 'un gato ninja rápido que salta por tejados de noche y aplasta ratas robot');
-  await pg.click('button:has-text("Make game")');
+  await pg.click('button.btn-brass:has-text("Make")'); await pg.waitForTimeout(800); await pg.click('button:has-text("Make this game")', { timeout: 4000 }).catch(() => {});
   for (let k = 0; k < 7; k++) { await pg.waitForTimeout(5000); await juntar('fabricando'); }
   for (const v of ['juegos', 'lanzadera', 'tuercas', 'cuenta']) { await pg.click(`button.tab[data-vista="${v}"]`); await pg.waitForTimeout(1200); await juntar(v); }
   await pg.click(`button.tab[data-vista="juegos"]`); await pg.waitForTimeout(1000);

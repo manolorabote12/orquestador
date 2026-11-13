@@ -4,8 +4,9 @@
 // el diccionario se queda en español (fase 1: lo que más se ve).
 import { EN as EN1 } from "./idioma-en";
 import { EN2 } from "./idioma-en2";
+import { EN3 } from "./idioma-en3";
 
-const EN: Record<string, string> = { ...EN1, ...EN2 };
+const EN: Record<string, string> = { ...EN1, ...EN2, ...EN3 };
 
 export type Idioma = "es" | "en";
 const CLAVE = "orq_idioma";
@@ -26,9 +27,19 @@ export function ponerIdioma(i: Idioma): void {
 const REGLAS: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^(.+?) \((\d+)\)$/, (m) => `${t(m[1])} (${m[2]})`],
   [/^(.+?) (\d+)$/, (m) => (EN[m[1]] ? `${EN[m[1]]} ${m[2]}` : m[0])],
-  [/^Tu tema para (.+)$/, (m) => `Your theme for ${m[1]}`],
-  [/^Probar una partida de (.+)$/, (m) => `Play a sample of ${m[1]}`],
-  [/^Jugar a (.+)$/, (m) => `Play ${m[1]}`],
+  [/^Tu tema para (.+)$/, (m) => `Your theme for ${t(m[1])}`],
+  [/^Probar una partida de (.+)$/, (m) => `Play a sample of ${t(m[1])}`],
+  [/^Jugar a (.+)$/, (m) => `Play ${t(m[1])}`],
+  [/^Ver los (\d+) tipos de juego$/, (m) => `See all ${m[1]} game types`],
+  [/^≈ 1 juego$/, () => "≈ 1 game"],
+  [/^› (.+)$/, (m) => `› ${t(m[1])}`],
+  [/^Niveles listos \((\d+) rehechos? por el analizador\)$/, (m) => `Levels ready (${m[1]} remade by the analyzer)`],
+  [/^Arte listo: (\d+) imágenes \((\d+) rehechas? por el control de calidad\)$/, (m) => `Art ready: ${m[1]} images (${m[2]} redone by quality control)`],
+  [/^Rehaciendo niveles que el bot no supera: (.+)$/, (m) => `Remaking levels the bot can't beat: ${m[1]}`],
+  [/^«(.+)»: (.+) contra (\d+) tipos? de enemigo$/, (m) => `«${m[1]}»: ${m[2]} vs ${m[3]} enemy type${m[3] === "1" ? "" : "s"}`],
+  [/^ganado en total (.+)$/, (m) => `earned in total ${m[1]}`],
+  [/^Este mes, (\d+) anuncios vistos en tus juegos\. Se reparte a principios del mes siguiente\.$/, (m) => `This month, ${m[1]} ads watched in your games. Paid out at the start of next month.`],
+  [/^· Anuncios del mes pasado: (\d+)$/, (m) => `· Ads last month: ${m[1]}`],
   [/^Empieza con una plantilla de éxito$/, () => "Start from a proven template"],
   [/^O elige un tipo de juego$/, () => "Or pick a game type"],
   [/^Al superar el nivel (\d+)$/, (m) => `After beating level ${m[1]}`],
