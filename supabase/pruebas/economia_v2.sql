@@ -4,8 +4,9 @@ do $$
 declare
   a uuid; b uuid; c uuid; d uuid; j uuid; sigue boolean;
 begin
-  assert (select credits from public.pricing where kind = 'game') = 80;
-  assert public.setting('welcome_credits') = 40 and public.setting('reward_ad_credits') = 3;
+  -- Precios vigentes desde economia v3 (13 nov): juego 120, bienvenida 120, anuncio 2.
+  assert (select credits from public.pricing where kind = 'game') = 120;
+  assert public.setting('welcome_credits') = 120 and public.setting('reward_ad_credits') = 2;
   assert public.correo_normal('P.e.Pe+juegos@GMail.com') = 'pepe@gmail.com';
   assert public.correo_normal('pepe+x@outlook.com') = 'pepe@outlook.com';
   assert public.correo_normal('pe.pe@outlook.com') = 'pe.pe@outlook.com';
@@ -13,10 +14,10 @@ begin
   insert into auth.users (email, email_confirmed_at) values ('analopez+2@gmail.com', now()) returning id into b;
   insert into auth.users (email, email_confirmed_at) values ('ana.lopez@googlemail.com', now()) returning id into c;
   insert into auth.users (email, email_confirmed_at) values ('otra.ana@gmail.com', now()) returning id into d;
-  assert (select credits from public.profiles where id = a) = 40, 'la primera cuenta cobra';
+  assert (select credits from public.profiles where id = a) = 120, 'la primera cuenta cobra';
   assert (select credits from public.profiles where id = b) = 0, 'el mismo gmail con +etiqueta no cobra';
   assert (select credits from public.profiles where id = c) = 0, 'googlemail con puntos tampoco';
-  assert (select credits from public.profiles where id = d) = 40, 'otra persona si';
+  assert (select credits from public.profiles where id = d) = 120, 'otra persona si';
   assert not exists (select 1 from public.credit_ledger where user_id in (b, c) and reason = 'signup');
   -- Invitarse a uno mismo con otra cuenta del mismo correo no vale.
   perform set_config('request.jwt.claim.sub', a::text, false);

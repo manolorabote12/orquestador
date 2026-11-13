@@ -437,7 +437,7 @@ export class Demo implements Backend {
     return this.s.tuercas;
   }
   async precioJuego() {
-    return 80;
+    return 120;
   }
 
   async borrarBoceto(_proyectoId: string): Promise<void> {
@@ -468,8 +468,8 @@ export class Demo implements Backend {
 
   async encargar(idea: string) {
     if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
-    if (this.s.tuercas < 80) throw new ErrorApp("No tienes tuercas suficientes para un juego completo.");
-    this.s.tuercas -= 80;
+    if (this.s.tuercas < 120) throw new ErrorApp("No tienes tuercas suficientes para un juego completo.");
+    this.s.tuercas -= 120;
     const t: Trabajo = {
       id: "demo-" + Date.now(), kind: "game", project_id: null, status: "queued", created_at: new Date().toISOString(), idea: idea.trim().replace(/^\[(plantilla|gancho):[a-z0-9_:,]*\]\s*/, ""),
       progress: [], result: null, error: null, refunded: false, titulo: null,
@@ -1404,16 +1404,16 @@ export class Demo implements Backend {
     const hasta = this.s.plan ? new Date(Date.now() + 30 * 86400e3).toISOString() : null;
     return {
       productos: [
-        { id: "tuercas_300", tipo: "tuercas", tuercas: 300, precio: "2,99 €" },
-        { id: "tuercas_1100", tipo: "tuercas", tuercas: 1100, precio: "9,99 €" },
-        { id: "tuercas_3600", tipo: "tuercas", tuercas: 3600, precio: "29,99 €" },
-        { id: "plan_taller", tipo: "plan", tuercas: 0, precio: "4,99 €", plan: "taller", tuercasMes: 250,
-          precios: { mensual: "4,99 €", anual: "49,99 €" } },
-        { id: "plan_pro", tipo: "plan", tuercas: 0, precio: "12,99 €", plan: "pro", tuercasMes: 800,
-          precios: { mensual: "12,99 €", anual: "129,99 €" } },
+        { id: "tuercas_300", tipo: "tuercas", tuercas: 180, precio: "2,99 €" },
+        { id: "tuercas_1100", tipo: "tuercas", tuercas: 660, precio: "9,99 €" },
+        { id: "tuercas_3600", tipo: "tuercas", tuercas: 2000, precio: "29,99 €" },
+        { id: "plan_taller", tipo: "plan", tuercas: 0, precio: "4,99 €", plan: "taller", tuercasMes: 300,
+          precios: { mensual: "4,99 €", anual: "54,99 €" } },
+        { id: "plan_pro", tipo: "plan", tuercas: 0, precio: "12,99 €", plan: "pro", tuercasMes: 1000,
+          precios: { mensual: "12,99 €", anual: "139,99 €" } },
       ],
       premium: !!this.s.premium || !!this.s.plan, premiumHasta: hasta,
-      plan: this.s.plan ?? null, planHasta: hasta, planEntrega: hasta, topeMeses: 2, bonusPro: 20,
+      plan: this.s.plan ?? null, planHasta: hasta, planEntrega: hasta, topeMeses: 2, bonusPro: 10,
       aviso: "Demostración: las compras son simuladas y no se cobra nada.", anuncios: true,
     };
   }

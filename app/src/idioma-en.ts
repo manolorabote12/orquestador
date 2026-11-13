@@ -211,7 +211,7 @@ export const EN: Record<string, string> = {
   "tuercas cada mes": "bolts every month",
   "Fabrica cada mes sin pensar en el saldo. Cancela cuando quieras desde Google Play.": "Make games every month without watching your balance. Cancel anytime in Google Play.",
   "Cada mes": "Monthly",
-  "Cada año · 2 meses gratis": "Yearly · 2 months free",
+  "Cada año · 1 mes gratis": "Yearly · 1 month free",
   "Tus juegos se fabrican antes que la cola gratis": "Your games are made before the free queue",
   "Tu juego sale primero en la Lanzadera": "Your game shows first in the Launchpad",
   "Cambiar o cancelar": "Change or cancel",

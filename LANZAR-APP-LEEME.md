@@ -84,13 +84,13 @@ Cifrado en tránsito: **sí**. Se puede pedir el borrado: **sí** → URL `ORQ_W
 - **Permisos**: solo Internet y los de AdMob/Billing (`AD_ID`: declararlo como "Publicidad").
 
 ## 5. Productos (Monetizar → Productos)
-Productos integrados (consumibles): `tuercas_300`, `tuercas_1100`, `tuercas_3600`.
+Productos integrados (consumibles): `tuercas_300` (2,99 €, da 180 tuercas), `tuercas_1100` (9,99 €, da 660) y `tuercas_3600` (29,99 €, da 2.000). Los ids se quedan así; las tuercas que da cada uno las pone el servidor (economía v3, 13 nov).
 Suscripciones (planes mensuales), cada una con **dos planes base**, `mensual` y `anual`, renovación automática:
 
 | Suscripción | Plan base `mensual` | Plan base `anual` | Qué da (lo pone el servidor) |
 |---|---|---|---|
-| `plan_taller` | 4,99 € | 49,99 € | 250 tuercas al mes, cola rápida, primero en la Lanzadera |
-| `plan_pro` | 12,99 € | 129,99 € | 800 tuercas al mes, lo mismo y +20 % en packs |
+| `plan_taller` | 4,99 € | 54,99 € | 300 tuercas al mes, cola rápida, primero en la Lanzadera |
+| `plan_pro` | 12,99 € | 139,99 € | 1.000 tuercas al mes, lo mismo y +10 % en packs |
 
 Pon los dos en el mismo **grupo** (para que Google deje pasar de Taller a Pro prorrateando).
 La antigua `premium_mensual` ya no se ofrece: no hace falta crearla.

@@ -6,10 +6,10 @@ declare
 begin
   insert into auth.users (email, email_confirmed_at) values ('previa@example.com', now()) returning id into u;
   insert into auth.users (email, email_confirmed_at) values ('ajeno@example.com', now()) returning id into otro;
-  update public.profiles set credits = 100 where id = u;
+  update public.profiles set credits = 140 where id = u;
   -- 1 - Pedir la vista previa no cobra nada.
   select r.job_id into p from public.queue_preview(u, 'un orco que defiende su torre de cartas') r;
-  assert (select credits from public.profiles where id = u) = 100, 'gratis';
+  assert (select credits from public.profiles where id = u) = 140, 'gratis';
   assert (select status from public.jobs where id = p) = 'queued';
   -- 2 - La fabrica la coge antes que un juego que ya estaba en cola.
   update public.profiles set credits = 1000 where id = otro;
@@ -23,7 +23,7 @@ begin
   assert (select status from public.jobs where id = p) = 'done';
   -- 4 - Fabricar con esa vista previa: cobra y el trabajo lleva el diseno.
   select r.job_id into j from public.queue_game(u, 'un orco que defiende su torre de cartas', p) r;
-  assert (select credits from public.profiles where id = u) = 20, 'cobra 80';
+  assert (select credits from public.profiles where id = u) = 20, 'cobra 120';
   assert (select detail -> 'diseno' ->> 'titulo' from public.jobs where id = j) = 'Torre Orca', 'con su diseno';
   -- 5 - La vista previa de otro no vale.
   begin

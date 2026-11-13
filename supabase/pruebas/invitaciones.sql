@@ -34,7 +34,7 @@ begin
   assert (select credits from public.profiles where id = a) = ca and (select credits from public.profiles where id = b) = cb;
   -- La primera compra de B: los dos cobran 30. La segunda no paga otra vez.
   perform public.grant_purchase(b, 'tuercas_300', 'tok-inv-1', 'GPA.inv-1');
-  assert (select credits from public.profiles where id = a) = ca + 30 and (select credits from public.profiles where id = b) = cb + 300 + 30;
+  assert (select credits from public.profiles where id = a) = ca + 30 and (select credits from public.profiles where id = b) = cb + 180 + 30;
   perform public.grant_purchase(b, 'tuercas_300', 'tok-inv-2', 'GPA.inv-2');
   assert (select credits from public.profiles where id = a) = ca + 30;
   perform set_config('request.jwt.claim.sub', a::text, false);
@@ -46,7 +46,7 @@ begin
   perform public.usar_invitacion(cod);
   select credits into cb from public.profiles where id = c;
   perform public.grant_purchase(c, 'tuercas_300', 'tok-inv-3', 'GPA.inv-3');
-  assert (select credits from public.profiles where id = c) = cb + 300 and (select credits from public.profiles where id = a) = ca + 30;
+  assert (select credits from public.profiles where id = c) = cb + 180 and (select credits from public.profiles where id = a) = ca + 30;
   update public.settings set value = 20 where key = 'invitaciones_mes';
   assert not has_function_privilege('anon', 'public.usar_invitacion(text)', 'execute');
   -- Ranking semanal: solo lo que se ha movido esta semana; los me gusta pesan mas.

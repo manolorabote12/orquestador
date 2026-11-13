@@ -33,7 +33,7 @@ begin
   perform public.pausar_fabrica(false);
   assert not public.fabrica_pausada();
   perform public.reserve_job(u, 'game', '{"idea":"x"}'::jsonb);
-  assert (select credits from public.profiles where id = u) = 420, 'reanudada: cobra y encola';
+  assert (select credits from public.profiles where id = u) = 380, 'reanudada: cobra y encola';
   assert not has_function_privilege('authenticated', 'public.pausar_fabrica(boolean, text)', 'execute');
   assert not has_function_privilege('authenticated', 'public.vigilancia(numeric, integer)', 'execute');
   assert not has_function_privilege('anon', 'public.claim_game_job(text)', 'execute');

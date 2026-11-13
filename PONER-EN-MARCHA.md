@@ -102,8 +102,8 @@ código del revisor. Es esto:
    `app\tienda\capturas\`.
 4. **Contenido de la aplicación.** Privacidad, acceso para el revisor, anuncios, público de 16
    años o más y seguridad de los datos (la tabla está en `LANZAR-APP-LEEME.md`).
-5. **Productos.** `tuercas_300`, `tuercas_1100`, `tuercas_3600` y la suscripción
-   `premium_mensual`.
+5. **Productos.** `tuercas_300`, `tuercas_1100`, `tuercas_3600` y las suscripciones `plan_taller` y
+   `plan_pro` (precios y tuercas en `LANZAR-APP-LEEME.md`, punto 5).
 6. **Cuentas personales nuevas.** Google exige una prueba cerrada con 12 probadores durante 14
    días antes de pasar a producción.
 

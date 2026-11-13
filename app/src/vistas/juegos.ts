@@ -97,6 +97,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
   // ------------------------------------------------------------------ lista
 
   async function lista(): Promise<void> {
+    cartel(true);
     parar();
     raiz.replaceChildren(h("section", { class: "sheet" }, h("div", { class: "sheet-head" }, h("h2", {}, "Mis juegos")), h("p", { class: "muted" }, "Cargando...")));
     let entradas: Entrada[];
@@ -1588,8 +1589,15 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
 
   // ------------------------------------------------------------------ ficha + taller
 
+  // El cartel de la pestaña es para la lista; en la ficha de un juego manda el juego.
+  function cartel(ver: boolean): void {
+    const c = raiz.previousElementSibling;
+    if (c?.classList.contains("cartel-chispa")) (c as HTMLElement).hidden = !ver;
+  }
+
   async function ficha(id: string): Promise<void> {
     parar();
+    cartel(false);
     let p: Proyecto;
     let precioVideos = 20;
     let cuenta: CuentaPlay | null = null;
@@ -1607,7 +1615,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
     // el juego completo. Sin taller, APK ni publicación hasta entonces.
     const borrador = p.files as unknown as { borrador?: boolean; preview?: string; idea?: string } | null;
     if (borrador?.borrador) {
-      const precio = await app.api.precioJuego().catch(() => 80);
+      const precio = await app.api.precioJuego().catch(() => 120);
       const fabricarlo = h("button", { class: "btn btn-brass", style: "width:100%" }, "Fabricarlo con su arte, música y APK",
         h("span", { class: "price" }, svg(ICONOS.tuerca), String(precio))) as HTMLButtonElement;
       fabricarlo.disabled = !borrador.preview || !borrador.idea || precio > app.tuercas;
@@ -1654,11 +1662,17 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       galeria.append(img);
       void app.api.url(c).then((u) => { img.src = u; }).catch(() => img.remove());
     }
-    const cabecera = h("section", { class: "sheet" },
+    // Cabecera de la ficha (13 nov): el juego en grande, con su captura de fondo y «Jugar ya» encima.
+    const heroe = h("div", { class: "ficha-heroe" },
       h("div", { class: "detail-head" }, icono(p.files?.icono),
         h("div", {}, h("h2", {}, p.titulo), h("span", { class: "pill done" }, `versión ${p.version}`))),
-      h("div", { style: "height:14px" }), galeria, h("div", { style: "height:14px" }),
-      h("button", { class: "btn btn-brass", style: "width:100%", onclick: () => void jugar(p) }, svg(ICONOS.jugar), "Jugar ya"),
+      h("button", { class: "btn btn-brass", style: "width:100%", onclick: () => void jugar(p) }, svg(ICONOS.jugar), "Jugar ya"));
+    const fondoHeroe = (p.files?.capturas ?? [])[2] ?? (p.files?.capturas ?? [])[0];
+    if (fondoHeroe) void app.api.url(fondoHeroe).then((u) => heroe.style.setProperty("--fondo", `url("${u}")`)).catch(() => undefined);
+    else if (p.genero) heroe.style.setProperty("--fondo", `url("generos_arte/${p.genero}.webp")`);
+    const cabecera = h("section", { class: "sheet" },
+      heroe,
+      h("div", { style: "height:14px" }), galeria,
       h("div", { style: "height:10px" }),
       // 1 - Descargas en una rejilla compacta: lo importante (jugar) va solo y grande.
       h("div", { class: "descargas" },

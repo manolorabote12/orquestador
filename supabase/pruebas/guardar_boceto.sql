@@ -6,7 +6,7 @@ declare
 begin
   insert into auth.users (email, email_confirmed_at) values ('borrador@example.com', now()) returning id into u;
   insert into auth.users (email, email_confirmed_at) values ('fisgon@example.com', now()) returning id into otro;
-  update public.profiles set credits = 100 where id = u;
+  update public.profiles set credits = 140 where id = u;
   insert into public.jobs (user_id, kind, cost, status, finished_at, created_at, detail, result)
   values (u, 'game_preview', 0, 'done', now(), now() - interval '5 days', '{"idea":"una rana que salta nenufares gigantes"}'::jsonb,
           jsonb_build_object('diseno', '{"titulo":"Rana Saltarina","genero":"plataformas"}'::jsonb, 'boceto', u::text || '/x/boceto/index.pck'))
@@ -20,7 +20,7 @@ begin
   -- Su dueno si: sin cobrar nada.
   perform set_config('request.jwt.claim.sub', u::text, false);
   pr := public.guardar_boceto(p);
-  assert (select credits from public.profiles where id = u) = 100, 'gratis';
+  assert (select credits from public.profiles where id = u) = 140, 'gratis';
   assert (select title from public.projects where id = pr) = 'Rana Saltarina';
   assert (select files ->> 'borrador' from public.projects where id = pr) = 'true';
   assert (select files ->> 'web' from public.projects where id = pr) like '%/boceto/index.pck';

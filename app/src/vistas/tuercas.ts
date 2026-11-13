@@ -211,7 +211,7 @@ export function vistaTuercas(app: App): VistaHecha {
           : "Comparte un juego en la galería (Mis juegos → Compartir): cada anuncio que se vea jugando a él te da una parte."),
         g.por_juego.length ? h("ul", { class: "gan-juegos" }, ...g.por_juego.slice(0, 5).map((x) => h("li", {}, h("span", {}, x.titulo), h("span", { class: "muted" }, `${x.anuncios}`)))) : h("span"),
         h("div", { class: "btn-row" }, pasar, cobrar), formulario,
-        h("p", { class: "muted small" }, `En tuercas te llevas ${g.tuercas_por_euro} por cada euro (comprándolas son unas 100).`),
+        h("p", { class: "muted small" }, `En tuercas te llevas ${g.tuercas_por_euro} por cada euro (comprándolas son unas 70).`),
         g.movimientos.length ? h("details", { class: "plegable" }, h("summary", {}, h("h3", {}, "Movimientos")),
           h("ul", { class: "gan-movs" }, ...g.movimientos.map((m) => h("li", {},
             h("span", {}, nombres[m.tipo] ?? m.tipo, m.nota ? h("span", { class: "muted small" }, ` · ${m.nota}`) : ""),
@@ -235,7 +235,7 @@ export function vistaTuercas(app: App): VistaHecha {
     }
     // Mensual o anual (el anual sale a 10 meses: 2 gratis).
     const seg = h("div", { class: "segmento", role: "radiogroup", "aria-label": "Forma de pago" });
-    for (const [k, txt] of [["mensual", "Cada mes"], ["anual", "Cada año · 2 meses gratis"]] as [Periodo, string][]) {
+    for (const [k, txt] of [["mensual", "Cada mes"], ["anual", "Cada año · 1 mes gratis"]] as [Periodo, string][]) {
       const b = h("button", { type: "button", role: "radio", "aria-checked": String(periodo === k), class: periodo === k ? "activo" : "" }, txt);
       b.addEventListener("click", () => { periodo = k; s.replaceWith(seccionPlanes(t)); });
       seg.append(b);

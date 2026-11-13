@@ -1269,3 +1269,11 @@ details.como summary { cursor: pointer; color: var(--brass-hi); font-weight: 700
 .gratis-fila { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 12px; }
 .gratis-fila img { width: 64px; height: 64px; object-fit: contain; }
 .pack-carta .btn { white-space: nowrap; padding-left: 4px; padding-right: 4px; font-size: 1.05rem; }
+/* Ficha de un juego: cabecera con la captura de fondo. */
+.ficha-heroe { position: relative; display: grid; gap: 14px; margin: -6px -6px 0; padding: 70px 14px 14px; border-radius: 18px;
+  overflow: hidden; isolation: isolate; }
+.ficha-heroe::before { content: ""; position: absolute; inset: -20px; z-index: -2; background: var(--fondo, none) center 30% / cover;
+  filter: blur(6px) saturate(1.2); transform: scale(1.05); }
+.ficha-heroe::after { content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgba(8, 18, 38, 0.2), rgba(8, 18, 38, 0.92) 70%); }
+.ficha-heroe h2 { text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); }

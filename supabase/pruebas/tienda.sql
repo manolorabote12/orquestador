@@ -7,9 +7,9 @@ begin
   insert into auth.users (email, email_confirmed_at) values ('otra@x.com', now()) returning id into o;
   select credits into c0 from public.profiles where id = u;
   j := public.grant_purchase(u, 'tuercas_1100', 'tok-1', 'GPA.1');
-  assert j ->> 'resultado' = 'concedida' and (j ->> 'credits')::int = c0 + 1100, j::text;
+  assert j ->> 'resultado' = 'concedida' and (j ->> 'credits')::int = c0 + 660, j::text;
   j := public.grant_purchase(u, 'tuercas_1100', 'tok-1', 'GPA.1');
-  assert j ->> 'resultado' = 'ya_concedida' and (j ->> 'credits')::int = c0 + 1100, 'el mismo token no da dos veces: ' || j::text;
+  assert j ->> 'resultado' = 'ya_concedida' and (j ->> 'credits')::int = c0 + 660, 'el mismo token no da dos veces: ' || j::text;
   begin perform public.grant_purchase(o, 'tuercas_1100', 'tok-1', 'GPA.1'); raise exception 'debia fallar';
   exception when others then assert sqlerrm like '%token_other_user%', sqlerrm; end;
   begin perform public.grant_purchase(u, 'no_existe', 'tok-2', 'GPA.2'); raise exception 'debia fallar';
