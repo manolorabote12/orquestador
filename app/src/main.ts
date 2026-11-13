@@ -15,6 +15,7 @@ import { activarVibracion, engancharAtras, recordarVista, ultimaVista, vigilarCo
 import { mensajeError, vigilarErrores } from "./errores";
 import { iniciarIdioma } from "./idioma";
 import { activarSonido, sonar } from "./sonido";
+import { activarToques, deslizarPestanas, entrarPantalla } from "./efectos";
 
 export type Vista = "taller" | "galeria" | "juegos" | "lanzadera" | "tuercas" | "cuenta";
 
@@ -161,6 +162,8 @@ async function arrancar(): Promise<void> {
     ir(vista: Vista, detalle?: string) {
       if (vista !== actual && !tabs.hidden) historia.push(actual);
       if (historia.length > 20) historia.shift();
+      const orden = PESTANAS.map(([id]) => id);
+      const dir = Math.sign(orden.indexOf(vista) - orden.indexOf(actual));
       actual = vista;
       recordarVista(vista);
       limpiar?.();
@@ -185,6 +188,7 @@ async function arrancar(): Promise<void> {
         const cartel = !detalle && CARTELES[vista] ? cartelChispa(...CARTELES[vista]!) : null;
         if (cartel) contenido.replaceChildren(cartel, v.el);
         else contenido.replaceChildren(v.el);
+        entrarPantalla(contenido, detalle ? 0 : dir);
         window.scrollTo({ top: 0 });
       }).catch((e: unknown) => {
         clearTimeout(espera);
@@ -241,6 +245,13 @@ async function arrancar(): Promise<void> {
     contenido.replaceChildren(vistaEntrar(app).el);
   }
 
+  activarToques();
+  deslizarPestanas(contenido, (d) => {
+    if (tabs.hidden) return;
+    const orden = PESTANAS.map(([id]) => id);
+    const i = orden.indexOf(actual) + d;
+    if (i >= 0 && i < orden.length) app.ir(orden[i]);
+  });
   void vigilarConexion(sinRed);
   void activarVibracion();
   void engancharAtras(() => {

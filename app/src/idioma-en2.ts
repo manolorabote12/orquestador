@@ -2,6 +2,7 @@
 // estimación de ganancias y textos sueltos de las fichas. La clave es el texto exacto en español.
 
 export const EN2: Record<string, string> = {
+  "Música": "Music", "Banda sonora de la app: tranquila en los menús y con ritmo mientras se fabrica": "App soundtrack: calm in the menus, upbeat while your game is being made",
   // 13 nov: carrusel, carteles con Chispa y portadas
   "Haz un juego como…": "Make a game like…",
   "RPG de batallas": "Battle RPG", "Reino y conquista": "Kingdom and conquest",

@@ -7,6 +7,7 @@
 import { Capacitor } from "@capacitor/core";
 import { Browser } from "@capacitor/browser";
 import { abrir, h } from "./ui";
+import { silencioPorJuego } from "./sonido";
 
 /** Web pública (GitHub Pages): ahí está juego.html, el reproductor para la app instalada. */
 const WEB = ((import.meta.env.VITE_WEB as string | undefined) ?? "").replace(/\/$/, "");
@@ -86,6 +87,7 @@ export function abrirJugador(op: OpcionesJugador): () => void {
     window.removeEventListener("message", oir);
     document.removeEventListener("keydown", tecla);
     capa.remove();
+    silencioPorJuego(false);
     previo?.focus();
     op.alCerrar?.();
   };
@@ -131,6 +133,7 @@ export function abrirJugador(op: OpcionesJugador): () => void {
   window.addEventListener("message", oir);
   document.addEventListener("keydown", tecla);
   document.body.append(capa);
+  silencioPorJuego(true);
   boton.focus();
   return cerrar;
 }

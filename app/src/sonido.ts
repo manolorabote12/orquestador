@@ -176,9 +176,79 @@ function programar(): void {
   }
 }
 
+// ---------------------------------------------------------------- música de verdad (13 nov)
+// Pistas hechas con IA (ACE-Step en RunPod: fabrica/arte_app.py musica): el tema de los menús suena
+// bajito por toda la app, la de la fábrica mientras se fabrica y la fanfarria al terminar. Si los
+// archivos no cargan, queda la melodía del sintetizador de siempre (solo mientras se fabrica).
+type Pista = "menu" | "fabrica";
+const VOLUMEN: Record<Pista, number> = { menu: 0.32, fabrica: 0.42 };
+const pistas: Partial<Record<Pista, HTMLAudioElement>> = {};
+let pistaSonando: Pista | null = null;
+let archivosMal = false;
+let jugando = false;
+let primerToque = false;
+
+function pista(p: Pista): HTMLAudioElement {
+  let a = pistas[p];
+  if (!a) {
+    a = new Audio(`musica/${p}.mp3`);
+    a.loop = true;
+    a.preload = "auto";
+    a.volume = 0;
+    a.addEventListener("error", () => { archivosMal = true; ponerMusica(); }, { once: true });
+    pistas[p] = a;
+  }
+  return a;
+}
+
+function fundir(a: HTMLAudioElement, hasta: number, ms: number, alAcabar?: () => void): void {
+  const desde = a.volume;
+  const t0 = performance.now();
+  const paso = (t: number) => {
+    const k = Math.min(1, (t - t0) / ms);
+    a.volume = Math.max(0, Math.min(1, desde + (hasta - desde) * k));
+    if (k < 1) requestAnimationFrame(paso);
+    else alAcabar?.();
+  };
+  requestAnimationFrame(paso);
+}
+
+function ponerPistas(): void {
+  const quiere: Pista | null = !musicaActiva || document.hidden || jugando || !primerToque ? null : musicaPedida ? "fabrica" : "menu";
+  if (quiere === pistaSonando) return;
+  if (pistaSonando) {
+    const vieja = pista(pistaSonando);
+    fundir(vieja, 0, 700, () => vieja.pause());
+  }
+  pistaSonando = quiere;
+  if (quiere) {
+    const a = pista(quiere);
+    void a.play().then(() => fundir(a, VOLUMEN[quiere], 1200)).catch(() => { pistaSonando = null; });
+  }
+}
+
+/** Un juego abierto dentro de la app tiene su propia música: la de la app se calla mientras tanto. */
+export function silencioPorJuego(on: boolean): void {
+  jugando = on;
+  ponerMusica();
+}
+
+/** Fanfarria de verdad al terminar un juego (si los archivos están; si no, la del sintetizador). */
+export function fanfarria(): void {
+  if (!efectos || document.hidden) return;
+  if (archivosMal) { sonar("exito"); return; }
+  const a = new Audio("musica/victoria.mp3");
+  a.volume = 0.6;
+  void a.play().catch(() => sonar("exito"));
+}
+
 function ponerMusica(): void {
+  if (!archivosMal) {
+    ponerPistas();
+    return;
+  }
   const c = audio();
-  const debe = musicaPedida && musicaActiva && !document.hidden;
+  const debe = musicaPedida && musicaActiva && !document.hidden && !jugando;
   if (!c || !busMusica) return;
   if (debe && relojMusica === null && c.state === "running") {
     siguienteNota = c.currentTime + 0.1;
@@ -222,6 +292,7 @@ export function ponerMusicaActiva(v: boolean): void {
 export function activarSonido(): void {
   const despertar = () => {
     const c = audio();
+    if (!primerToque) { primerToque = true; ponerMusica(); }
     if (c && c.state === "suspended") void c.resume().then(ponerMusica).catch(() => undefined);
   };
   document.addEventListener("pointerdown", (ev) => {

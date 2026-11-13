@@ -1178,3 +1178,20 @@ details.plegable > summary .tag { padding: 3px 8px; }
 .cartel-mascota { width: 120px; height: 140px; object-fit: contain; align-self: end; margin-bottom: -16px;
   filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.5)); animation: flota 3.4s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .chispa-3d, .chispa-3d.cambia, .cartel-mascota { animation: none; } }
+
+/* Efectos (13 nov): onda al tocar, chispas de laton y pestaña activa que brilla. */
+.con-onda { overflow: hidden; isolation: isolate; }
+.onda { position: absolute; border-radius: 50%; pointer-events: none; z-index: -1;
+  background: radial-gradient(circle, rgba(255, 243, 196, 0.45) 0%, rgba(255, 243, 196, 0) 60%);
+  transform: scale(0); animation: onda 0.6s ease-out forwards; }
+@keyframes onda { to { transform: scale(1); opacity: 0; } }
+.chispas { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+.chispas i { position: absolute; width: 7px; height: 7px; border-radius: 2px; box-shadow: 0 0 8px currentColor; }
+.btn-brass { transition: transform 0.12s ease, filter 0.2s ease; }
+.btn-brass:active:not(:disabled) { transform: translateY(2px) scale(0.98); filter: brightness(1.12); }
+.btn-brass:not(:disabled) { animation: brillo-laton 4.5s ease-in-out infinite; }
+@keyframes brillo-laton { 0%, 85%, 100% { filter: none; } 92% { filter: brightness(1.18) drop-shadow(0 0 10px rgba(246, 207, 122, 0.55)); } }
+.tab { transition: color 0.2s ease, transform 0.15s ease; }
+.tab.on svg { filter: drop-shadow(0 0 6px rgba(246, 207, 122, 0.7)); animation: tab-salta 0.35s ease-out; }
+@keyframes tab-salta { 0% { transform: translateY(0) scale(1); } 45% { transform: translateY(-5px) scale(1.15); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .btn-brass:not(:disabled), .tab.on svg { animation: none; } }

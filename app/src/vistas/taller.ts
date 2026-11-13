@@ -12,7 +12,8 @@ import { mensajeError } from "../errores";
 import { encaja, nuevos, type Tipo } from "../catalogo";
 import { USOS, infoUso, type Uso } from "../usos";
 import { abrirSeccion } from "./juegos";
-import { musica, sonar } from "../sonido";
+import { fanfarria, musica, sonar } from "../sonido";
+import { chispas } from "../efectos";
 
 // Dos engranajes de latón engranados (el pequeño gira al revés y más deprisa).
 const DIENTES = (n: number, r: number) => Array.from({ length: n }, (_, i) =>
@@ -684,7 +685,8 @@ export function vistaTaller(app: App): VistaHecha {
   function terminado(t: Trabajo) {
     pararReloj();
     musica(false);
-    sonar("exito");
+    fanfarria();
+    chispas(window.innerWidth / 2, window.innerHeight / 3, 40);
     lluviaDeTuercas();
     void cancelarAvisoEspera(t.id);
     vibrar("exito");

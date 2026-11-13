@@ -98,7 +98,7 @@ export function vistaCuenta(app: App): VistaHecha {
       h("section", { class: "sheet" },
         h("div", { class: "sheet-head" }, h("h2", {}, "Sonido")),
         interruptor("Efectos de sonido", "Toques, tuercas y la fanfarria al terminar un juego", efectosEncendidos(), ponerEfectos),
-        interruptor("Música del taller", "Suena mientras se fabrica un juego", musicaEncendida(), ponerMusicaActiva)),
+        interruptor("Música", "Banda sonora de la app: tranquila en los menús y con ritmo mientras se fabrica", musicaEncendida(), ponerMusicaActiva)),
       h("section", { class: "sheet" },
         h("div", { class: "sheet-head" }, h("h2", {}, "Cuenta")),
         h("p", { class: "muted small" }, "Correo"), correo, h("div", { style: "height:12px" }),
