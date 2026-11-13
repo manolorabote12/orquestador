@@ -166,6 +166,39 @@ CARTELES = {
 }
 
 
+## Chispa, la mascota de la app (13 nov): la misma identidad que el dibujo de siempre (cabeza de latón
+## con un ojo, antena con chispa, cuerpo naranja con una tuerca), pero en 3D de calidad.
+MASCOTA = ("Chispa, an adorable heroic little robot mascot character: rounded golden brass head shaped like an old TV "
+	"with one big glowing cyan eye on a dark screen face, a small antenna with a bright electric spark on top, compact "
+	"orange body with a hexagonal golden nut emblem on the chest, short arms with round hands, short legs with tiny jet boots, "
+	"friendly confident expression, premium polished 3D render like the mascot of a top mobile game, soft studio lighting, "
+	"rim light, full body, centered, plain solid flat magenta background (#FF00FF), no shadow, no text, no logo")
+
+## Poses (con la base como referencia: FLUX.2 klein edita manteniendo el personaje).
+POSES = {
+	"hola": "the same robot character waving hello with one hand, happy eye, full body",
+	"pensando": "the same robot character thinking with a hand on its chin, a small glowing light bulb above its antenna, full body",
+	"trabajando": "the same robot character holding a big wrench and a glowing blueprint, building something, sparks flying, full body",
+	"celebrando": "the same robot character jumping with joy with both arms up, confetti and stars around, full body",
+	"triste": "the same robot character looking a bit sad and apologetic, droopy antenna, full body",
+	"jugando": "the same robot character holding a game controller excitedly, full body",
+	"tuercas": "the same robot character hugging a big shiny golden hexagonal nut coin, full body",
+	"cohete": "the same robot character flying upward with flames from its jet boots, one fist up, full body",
+	"durmiendo": "the same robot character sitting and sleeping peacefully with a small Z bubble, eye closed, full body",
+	"ganando": "the same robot character holding a golden trophy up proudly, full body",
+}
+POSE_FIN = (", keep exactly the same character design, colors and proportions, premium 3D render, plain solid flat "
+	"magenta background (#FF00FF), no shadow, no text")
+
+FONDOS = {
+	"fondo_app": (720, 1280, "dark atmospheric background of a futuristic game creation workshop at night, deep navy and indigo "
+		"tones, faint glowing blueprint lines and holographic game sketches floating in the distance, soft bokeh lights, "
+		"warm golden accents, very low contrast, calm, mostly dark with empty space, no characters, no text, no logo"),
+	"fondo_cabecera": (1024, 576, "wide dark banner of a magical game factory with conveyor belts carrying tiny glowing game worlds, "
+		"deep navy blue and gold palette, cinematic, soft glow, darker at the edges, no characters, no text, no logo"),
+}
+
+
 def cliente():
 	from arte import runpod
 	return runpod.cliente(os.environ["ORQ_COMFY"])
@@ -222,6 +255,48 @@ def main(argv: list[str]) -> int:
 				print(f"ok {cid} ({getattr(cli, 'usd', 0.0):.3f} $)", flush=True)
 			except Exception as e:  # noqa: BLE001
 				fallos.append(f"{cid}: {str(e)[:120]}")
+	elif que == "mascota":
+		destino = RAIZ / "app" / "public" / "mascota" / "candidatos"
+		for k in range(int(argv[1]) if len(argv) > 1 and argv[1].isdigit() else 6):
+			try:
+				img = generar(cli, MASCOTA, 1024, 1024, 4100 + k * 13)
+				guardar(img, destino / f"c{k}.webp", (512, 512))
+				hechos.append(f"c{k}")
+			except Exception as e:  # noqa: BLE001
+				fallos.append(f"c{k}: {str(e)[:120]}")
+	elif que == "poses":
+		from arte import post
+		base = RAIZ / "app" / "public" / "mascota" / "base.png"
+		cli.subir_imagen("chispa_base.png", base.read_bytes())
+		wf = json.loads((Path(__file__).parent / "plantillas" / "runpod" / "editar_klein.json").read_text(encoding="utf-8"))
+		destino = RAIZ / "app" / "public" / "mascota"
+		ids = argv[1].split(",") if len(argv) > 1 and argv[1] else list(POSES)
+		for k, pid in enumerate(ids):
+			if getattr(cli, "usd", 0.0) >= tope():
+				break
+			try:
+				datos = cli.generar(wf, {"PROMPT": POSES[pid] + POSE_FIN, "SEED": 5200 + k * 17, "REF1": "chispa_base.png"})[0]
+				img = post.quitar_fondo_seguro(Image.open(io.BytesIO(datos)).convert("RGBA"), (255, 0, 255))
+				caja = img.getbbox()
+				if caja:
+					img = img.crop(caja)
+				img.thumbnail((512, 512), Image.LANCZOS)
+				destino.mkdir(parents=True, exist_ok=True)
+				img.save(destino / f"{pid}.webp", "WEBP", quality=85, method=6)
+				hechos.append(pid)
+			except Exception as e:  # noqa: BLE001
+				fallos.append(f"{pid}: {str(e)[:120]}")
+	elif que == "fondos":
+		destino = RAIZ / "app" / "public" / "fondos"
+		for k, (fid, (w, h, sujeto)) in enumerate(FONDOS.items()):
+			try:
+				gw, gh = (576, 1024) if h > w else (1024, 576)
+				for v in range(2):
+					img = generar(cli, sujeto, gw, gh, 7300 + k * 19 + v * 101)
+					guardar(img, destino / f"{fid}_{v}.webp", (w, h))
+					hechos.append(f"{fid}_{v}")
+			except Exception as e:  # noqa: BLE001
+				fallos.append(f"{fid}: {str(e)[:120]}")
 	print(f"::notice::Arte de la app ({que}): {len(hechos)} hechos, {len(fallos)} fallos, {getattr(cli, 'usd', 0.0):.2f} $")
 	for f in fallos[:20]:
 		print("  FALLO", f)

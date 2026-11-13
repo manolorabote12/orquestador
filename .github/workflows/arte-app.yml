@@ -8,10 +8,10 @@ on:
       que:
         description: "generos o carteles"
         type: choice
-        options: [generos, carteles]
+        options: [generos, carteles, mascota, poses, fondos]
         default: generos
       ids:
-        description: "Solo estos generos (separados por comas); vacio = todos"
+        description: "generos/poses: solo estos (separados por comas); mascota: cuantos candidatos"
         required: false
         default: ""
       tope:
@@ -31,7 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          sparse-checkout: fabrica
+          sparse-checkout: |
+            fabrica
+            app/public/mascota
       - run: pip install pillow numpy
       - name: Generar
         run: |
