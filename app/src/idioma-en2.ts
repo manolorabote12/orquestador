@@ -2,6 +2,15 @@
 // estimación de ganancias y textos sueltos de las fichas. La clave es el texto exacto en español.
 
 export const EN2: Record<string, string> = {
+  // 13 nov: carrusel, carteles con Chispa y portadas
+  "Haz un juego como…": "Make a game like…",
+  "RPG de batallas": "Battle RPG", "Reino y conquista": "Kingdom and conquest",
+  "Puzle de combinar": "Match puzzle", "Defensa de torres": "Tower defense",
+  "Juega gratis": "Play free", "Juegos que la comunidad ha fabricado. Toca uno y juega al momento.": "Games the community has made. Tap one and play instantly.",
+  "Tu estudio": "Your studio", "Todo lo que has fabricado, listo para jugar, cambiar y publicar.": "Everything you have made, ready to play, change and publish.",
+  "Despega tu juego": "Launch your game", "Probadores para tu juego: os ayudáis a cumplir lo que pide Google.": "Testers for your game: help each other meet Google's rules.",
+  "Tienda": "Shop", "Tuercas para fabricar y cambiar tus juegos, y planes para no pensar en el saldo.": "Bolts to make and change your games, and plans so you never worry about your balance.",
+  "Tu cuenta": "Your account", "Tu perfil de creador, tus logros y tus ajustes.": "Your creator profile, achievements and settings.",
   // Tipos de juego (nombre y qué es)
   "Plataformas": "Platformer", "Salta y pisa a tus enemigos": "Jump and stomp your enemies",
   "Runner": "Runner", "Corre sin parar y salta": "Run non-stop and jump",

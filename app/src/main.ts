@@ -9,7 +9,7 @@ import "@fontsource/ibm-plex-mono/latin-500";
 
 import "./styles.css";
 import { crearBackend, type Backend } from "./api";
-import { ICONOS, aviso, bloqueError, h, svg, type VistaHecha } from "./ui";
+import { ICONOS, aviso, bloqueError, cartelChispa, h, svg, type Pose, type VistaHecha } from "./ui";
 import { vistaEntrar } from "./vistas/entrar";
 import { activarVibracion, engancharAtras, recordarVista, ultimaVista, vigilarConexion } from "./comodidad";
 import { mensajeError, vigilarErrores } from "./errores";
@@ -17,6 +17,14 @@ import { iniciarIdioma } from "./idioma";
 import { activarSonido, sonar } from "./sonido";
 
 export type Vista = "taller" | "galeria" | "juegos" | "lanzadera" | "tuercas" | "cuenta";
+
+const CARTELES: Partial<Record<Vista, [string, string, Pose]>> = {
+  galeria: ["Juega gratis", "Juegos que la comunidad ha fabricado. Toca uno y juega al momento.", "jugando"],
+  juegos: ["Tu estudio", "Todo lo que has fabricado, listo para jugar, cambiar y publicar.", "trabajando"],
+  lanzadera: ["Despega tu juego", "Probadores para tu juego: os ayudáis a cumplir lo que pide Google.", "cohete"],
+  tuercas: ["Tienda", "Tuercas para fabricar y cambiar tus juegos, y planes para no pensar en el saldo.", "tuercas"],
+  cuenta: ["Tu cuenta", "Tu perfil de creador, tus logros y tus ajustes.", "ganando"],
+};
 
 type HacerVista = (app: App, detalle?: string) => VistaHecha;
 
@@ -173,7 +181,10 @@ async function arrancar(): Promise<void> {
         if (mio !== turno) return;
         const v = hacer(app, detalle);
         limpiar = v.limpiar ?? null;
-        contenido.replaceChildren(v.el);
+        // Cartel con Chispa arriba de cada pestaña (no en el taller, que ya la tiene, ni en la ficha de un juego).
+        const cartel = !detalle && CARTELES[vista] ? cartelChispa(...CARTELES[vista]!) : null;
+        if (cartel) contenido.replaceChildren(cartel, v.el);
+        else contenido.replaceChildren(v.el);
         window.scrollTo({ top: 0 });
       }).catch((e: unknown) => {
         clearTimeout(espera);

@@ -32,10 +32,7 @@ export function vistaGaleria(app: App): VistaHecha {
   const destacado = h("div");
   const rejilla = h("div", { class: "gal-rejilla" }, h("p", { class: "muted small" }, "Cargando..."));
 
-  const cabeza = h("header", { class: "gal-cabeza" },
-    h("h1", {}, "Juega gratis"),
-    h("p", {}, "Juegos que la comunidad ha fabricado con Orquestador. Toca uno y juega al momento, sin instalar nada."),
-    buscar);
+  const cabeza = h("header", { class: "gal-cabeza" }, buscar);
   const creadores = h("section", { class: "sheet gal-creadores" },
     h("h2", {}, "¿Quieres ver tu juego aquí?"),
     h("p", { class: "muted small" }, "Compártelo desde Mis juegos. Cada anuncio que se vea jugando a tu juego te da una parte de lo que paga: la ves en Tuercas y la pasas a tuercas o la cobras."),

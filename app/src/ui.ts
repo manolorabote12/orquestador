@@ -70,23 +70,45 @@ const CHISPA_SVG = `
   </g>
 </svg>`;
 
-export type Humor = "" | "thinking" | "happy" | "error";
+export type Humor = "" | "thinking" | "happy" | "error" | "queued";
 
 export interface Chispa {
   el: HTMLElement;
-  decir(texto: string, humor?: Humor): void;
+  decir(texto: string, humor?: Humor, pose?: Pose): void;
 }
 
 /** Chispa con su bocadillo. El texto siempre se pone como texto. */
-export function crearChispa(saludo: string): Chispa {
-  const figura = svg(CHISPA_SVG);
+// Chispa en 3D (13 nov, hecha con IA en RunPod: fabrica/arte_app.py): una pose por estado de animo.
+export type Pose = "hola" | "pensando" | "trabajando" | "celebrando" | "triste" | "jugando" | "tuercas" | "cohete" | "durmiendo" | "ganando";
+const POSE_DE: Record<string, Pose> = { "": "hola", thinking: "pensando", happy: "celebrando", error: "triste", queued: "trabajando" };
+
+export function imagenChispa(pose: Pose, clase = "chispa-3d"): HTMLImageElement {
+  const img = h("img", { class: clase, src: `mascota/${pose}.webp`, alt: "", decoding: "async", "data-pose": pose }) as HTMLImageElement;
+  return img;
+}
+
+export function crearChispa(saludo: string, pose: Pose = "hola"): Chispa {
+  // Respaldo: si la imagen no carga (no deberia), el dibujo de siempre.
+  const figura = h("div", { class: "chispa-figura" }, imagenChispa(pose));
+  (figura.firstChild as HTMLImageElement).addEventListener("error", () => { figura.replaceChildren(svg(CHISPA_SVG)); }, { once: true });
   const bocadillo = h("p", { class: "bubble", "aria-live": "polite" }, saludo);
   const el = h("section", { class: "chispa-row" }, figura, bocadillo);
   return {
     el,
-    decir(texto: string, humor: Humor = "") {
+    decir(texto: string, humor: Humor = "", otra?: Pose) {
       bocadillo.textContent = texto;
-      figura.setAttribute("class", "chispa " + humor);
+      const img = figura.querySelector("img");
+      const nueva = otra ?? POSE_DE[humor] ?? "hola";
+      if (img && img.dataset.pose !== nueva) {
+        img.dataset.pose = nueva;
+        img.src = `mascota/${nueva}.webp`;
+        img.classList.remove("cambia");
+        void img.offsetWidth;
+        img.classList.add("cambia");
+      }
+      figura.setAttribute("class", "chispa-figura " + humor);
+      const s2 = figura.querySelector("svg");
+      if (s2) s2.setAttribute("class", "chispa " + humor);
     },
   };
 }
@@ -143,4 +165,11 @@ export function fotoGenero(id: string, attrs: Record<string, string> = {}): HTML
   const img = h("img", { src: `generos_arte/${id}.webp`, alt: "", loading: "lazy", decoding: "async", ...attrs }) as HTMLImageElement;
   img.addEventListener("error", () => { if (!img.src.includes("/generos/")) img.src = `generos/${id}.webp`; }, { once: true });
   return img;
+}
+
+/** Cartel de arriba de una pestaña: fondo ilustrado, título, una frase y Chispa en su pose. */
+export function cartelChispa(titulo: string, texto: string, pose: Pose): HTMLElement {
+  return h("header", { class: "cartel-chispa" },
+    h("div", { class: "cartel-texto" }, h("h1", {}, titulo), h("p", {}, texto)),
+    imagenChispa(pose, "cartel-mascota"));
 }
