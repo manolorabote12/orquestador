@@ -51,6 +51,16 @@ func _ready() -> void:
 	level = Kit.current_level()
 	RenderingServer.set_default_clear_color(Color("#1c2333") if _mode() == "biz" else Color("#2a1f18"))
 	_font = UI.theme.get_font("font", "Label") if UI.theme != null else ThemeDB.fallback_font
+	## El protagonista abajo, en el hueco que deja la lista de negocios (13 nov: media pantalla vacia).
+	var mas: Node2D = SpriteKit.mascota(250.0)
+	if mas != null:
+		var layer: CanvasLayer = CanvasLayer.new()
+		layer.name = "Mascot"
+		layer.layer = 10
+		add_child(layer)
+		var vp: Vector2 = get_viewport_rect().size
+		mas.position = Vector2(vp.x * 0.5, vp.y * 0.86)
+		layer.add_child(mas)
 	_build_hud()
 	_reset()
 	_restore()
