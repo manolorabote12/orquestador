@@ -281,7 +281,8 @@ static func make_backdrop(tex: Texture2D) -> CanvasLayer:
 	var sky: Color = Kit.color("sky", Color("#1b2a41"))
 	var veil: ColorRect = ColorRect.new()
 	veil.name = "Veil"
-	veil.color = Color(sky, 0.5 if sky.v < 0.3 else 0.32)
+	## Velo mas ligero con cielo oscuro (13 nov: en los juegos de noche el fondo quedaba negro del todo).
+	veil.color = Color(sky, 0.34 if sky.v < 0.3 else 0.28)
 	veil.set_anchors_preset(Control.PRESET_FULL_RECT)
 	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	layer.add_child(veil)

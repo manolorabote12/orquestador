@@ -159,8 +159,9 @@ func _on_haptics(on: bool, feedback: bool = true) -> void:
 	b.text = "     " + label + ": " + (Kit.text("on", "Si") if on else Kit.text("off", "No"))
 	b.theme_type_variation = "PrimaryButton" if on else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
+		icon.queue_redraw()
 	if feedback:
 		Save.set_setting("haptics", on, false)
 		Juice.vibrate(30)
@@ -171,8 +172,9 @@ func _on_stats(on: bool, feedback: bool = true) -> void:
 	b.text = "     " + Kit.text("anon_stats", "Datos an\u00f3nimos") + ": " + (Kit.text("on", "Si") if on else Kit.text("off", "No"))
 	b.theme_type_variation = "PrimaryButton" if on else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
+		icon.queue_redraw()
 	if feedback:
 		Save.set_setting("telemetry", on, false)
 
@@ -182,8 +184,9 @@ func _on_online(on: bool, feedback: bool = true) -> void:
 	b.text = "     " + Kit.text("leaderboard", "Clasificaci\u00f3n") + ": " + (Kit.text("on", "Si") if on else Kit.text("off", "No"))
 	b.theme_type_variation = "PrimaryButton" if on else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
+		icon.queue_redraw()
 	if feedback:
 		Save.set_setting("online", on, false)
 		if not on:
@@ -195,8 +198,9 @@ func _on_notify(on: bool, feedback: bool = true) -> void:
 	b.text = "     " + Kit.text("notifications", "Avisos") + ": " + (Kit.text("on", "Si") if on else Kit.text("off", "No"))
 	b.theme_type_variation = "PrimaryButton" if on else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
+		icon.queue_redraw()
 	if feedback:
 		Save.set_setting("notifications", on, false)
 		Notify.reschedule()
@@ -207,8 +211,9 @@ func _on_ghosts(on: bool, feedback: bool = true) -> void:
 	b.text = "     " + Kit.text("ghosts", "Fantasmas") + ": " + (Kit.text("on", "Si") if on else Kit.text("off", "No"))
 	b.theme_type_variation = "PrimaryButton" if on else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
+		icon.queue_redraw()
 	if feedback:
 		Save.set_setting("ghosts", on, false)
 
@@ -230,8 +235,9 @@ func _on_graphics(on: bool, feedback: bool = true) -> void:
 	b.text = "     " + Kit.text("graphics", "Gr\u00e1ficos") + ": " + (Kit.text("gfx_high", "Altos") if on else Kit.text("gfx_low", "Bajos"))
 	b.theme_type_variation = "PrimaryButton" if on else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
+		icon.queue_redraw()
 	if feedback:
 		Look.set_high(on)
 
@@ -257,8 +263,9 @@ func _paint_access() -> void:
 	b.text = "     " + Kit.text("accessibility", "Accesibilidad") + ": " + names[mode]
 	b.theme_type_variation = "PrimaryButton" if mode > 0 else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if mode > 0 else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if mode > 0 else UI.colors["texto"]
+		icon.queue_redraw()
 
 
 func _on_story(on: bool, feedback: bool = true) -> void:
@@ -266,8 +273,9 @@ func _on_story(on: bool, feedback: bool = true) -> void:
 	b.text = "     " + Kit.text("story", "Historia") + ": " + (Kit.text("on", "Si") if on else Kit.text("off", "No"))
 	b.theme_type_variation = "PrimaryButton" if on else ""
 	var icon: UiIcon = b.get_child(0) as UiIcon
-	icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
-	icon.queue_redraw()
+	if icon != null:
+		icon.color = UI.colors["acento_texto"] if on else UI.colors["texto"]
+		icon.queue_redraw()
 	if feedback:
 		Save.set_setting("story", on, false)
 		if on:

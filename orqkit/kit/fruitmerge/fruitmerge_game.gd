@@ -248,13 +248,19 @@ func _draw_view() -> void:
 	var o: Vector2 = _o()
 	var w: float = float(st["w"])
 	var sz: Vector2 = _view.size
-	_view.draw_rect(Rect2(Vector2.ZERO, sz), Color("#fdf0d5"))
-	for i: int in 14:
-		_view.draw_circle(Vector2(fmod(float(i) * 173.0, sz.x), fmod(float(i) * 311.0, sz.y)), 40.0 + float(i % 4) * 18.0, Color(1, 0.85, 0.6, 0.18))
+	## Con fondo ilustrado (13 nov) se ve el mundo del juego detras y el tarro es de cristal; sin el, la crema de siempre.
+	var arte: bool = Look.has_level_backdrop()
+	if not arte:
+		_view.draw_rect(Rect2(Vector2.ZERO, sz), Color("#fdf0d5"))
+		for i: int in 14:
+			_view.draw_circle(Vector2(fmod(float(i) * 173.0, sz.x), fmod(float(i) * 311.0, sz.y)), 40.0 + float(i % 4) * 18.0, Color(1, 0.85, 0.6, 0.18))
 	## Tarro.
 	var jar: Rect2 = Rect2(o, Vector2(w, M.H) * k)
 	_view.draw_rect(jar.grow(10.0), Color("#c9a66b"))
-	_view.draw_rect(jar, Color("#fff8e7"))
+	_view.draw_rect(jar, Color(1.0, 0.973, 0.906, 0.72) if arte else Color("#fff8e7"))
+	if arte:
+		## Brillo del cristal.
+		_view.draw_rect(Rect2(jar.position + Vector2(10.0, 10.0), Vector2(10.0, jar.size.y * 0.7)), Color(1, 1, 1, 0.35))
 	## Linea de rebose.
 	var ly: float = o.y + M.LINE * k
 	var danger: bool = int(st["over"]) > 0
