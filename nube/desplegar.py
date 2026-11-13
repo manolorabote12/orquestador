@@ -62,7 +62,8 @@ def pedir(metodo: str, url: str, cuerpo: dict | None = None) -> object:
 		except urllib.error.HTTPError as e:
 			cuerpo_err = e.read().decode("utf-8", "replace")[:500]
 			if e.code in (429, 500, 502, 503) and intento < 3:
-				time.sleep(3 * (intento + 1))
+				## 429: el limite de RunPod es por minuto, asi que se espera de verdad (20, 40 y 60 s).
+				time.sleep((20 if e.code == 429 else 3) * (intento + 1))
 				continue
 			raise ErrorRunPod(f"{metodo} {url}: HTTP {e.code} {cuerpo_err}") from e
 		except (urllib.error.URLError, ConnectionError, TimeoutError, OSError) as e:
