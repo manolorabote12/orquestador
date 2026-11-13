@@ -205,7 +205,7 @@ const ESCAPARATE_DEMO: JuegoEscaparate[] = [
   { project_id: "esc-4", titulo: "Moto Neón", genero: "carreras", resumen: "Carreras nocturnas con turbo.", autor: "Dani",
     version: 1, jugadas: 77, megusta: 12, remixes: 0, publicado_en: hace_(3) },
   { project_id: "esc-5", titulo: "Mago de Bolsillo", genero: "horda", resumen: "Hordas de slimes y hechizos.", autor: "Sara",
-    version: 5, jugadas: 2210, megusta: 340, remixes: 31, publicado_en: hace_(150) },
+    version: 5, jugadas: 2210, megusta: 340, remixes: 31, publicado_en: hace_(150), play: "com.sara.magobolsillo" },
   { project_id: "esc-7", titulo: "Vía Neón", genero: "corredor", resumen: "Esquiva trenes en tres carriles.", autor: "Noa",
     version: 2, jugadas: 510, megusta: 87, remixes: 5, publicado_en: hace_(20) },
   { project_id: "esc-8", titulo: "Invasores de Gominola", genero: "naves", resumen: "Tu nave contra marcianos de colores.", autor: "Leo",

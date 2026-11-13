@@ -31,6 +31,8 @@ export interface JuegoEscaparate {
   megusta: number;
   remixes: number;
   publicado_en: string;
+  /** Paquete de Google Play si el autor lo ha publicado en produccion (portal_lista). */
+  play?: string | null;
 }
 
 /** Lo que ganan los juegos de un creador en la galería (anuncios) y lo que puede hacer con ello. */
@@ -111,7 +113,9 @@ export function supaComunidad(con: Conexion): ApiComunidad {
     },
 
     async escaparate(orden: "top" | "nuevos" | "semana", genero?: string) {
-      const { data, error } = await con.sb.rpc("escaparate_lista", { p_orden: orden, p_genero: genero ?? null });
+      // portal_lista = escaparate_lista + el enlace de Google Play (si el servidor aun no la tiene, la de siempre).
+      let { data, error } = await con.sb.rpc("portal_lista", { p_orden: orden, p_genero: genero ?? null });
+      if (error) ({ data, error } = await con.sb.rpc("escaparate_lista", { p_orden: orden, p_genero: genero ?? null }));
       if (error) throw new ErrorApp("No se pudo cargar el escaparate.");
       return (data ?? []) as JuegoEscaparate[];
     },

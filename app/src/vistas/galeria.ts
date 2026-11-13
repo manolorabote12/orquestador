@@ -7,7 +7,7 @@ import type { App } from "../main";
 import { type JuegoEscaparate } from "../api";
 import { abrirJugador } from "../jugador";
 import { intersticialDisponible, mostrarIntersticial } from "../nativo";
-import { aviso, bloqueError, h, type VistaHecha } from "../ui";
+import { abrir, aviso, bloqueError, h, type VistaHecha } from "../ui";
 import { mensajeError } from "../errores";
 import { GENERO } from "./escaparate";
 
@@ -117,7 +117,11 @@ export function vistaGaleria(app: App): VistaHecha {
           h("span", { class: "small" }, [GENERO[j.genero] ?? "", j.autor].filter(Boolean).join(" · ")),
           grande ? h("span", { class: "gal-jugar" }, "▶ Jugar") : null)),
       h("span", { class: "gal-jugadas", "aria-label": `${j.jugadas} partidas` }, `▶ ${j.jugadas}`),
-      corazon);
+      corazon,
+      // Publicado en Google Play: insignia que lleva a su ficha.
+      j.play ? h("button", { class: "gal-play", type: "button", "aria-label": `${j.titulo} en Google Play`,
+        onclick: (e: Event) => { e.stopPropagation(); void abrir(`https://play.google.com/store/apps/details?id=${encodeURIComponent(j.play!)}`); } },
+        "Google Play") : null);
     return tarjeta;
   }
 
