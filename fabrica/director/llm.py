@@ -6,6 +6,7 @@ superior (Sonnet). Asi el caso normal cuesta centimos y el dificil sigue saliend
 """
 
 import json
+import re
 import os
 import time
 import urllib.error
@@ -112,9 +113,63 @@ def llamar_herramienta(modelo: str, sistema: str, mensajes: list[dict], herramie
 			continue
 		for bloque in resp.get("content", []):
 			if bloque.get("type") == "tool_use" and bloque.get("name") == herramienta["name"]:
-				return bloque.get("input", {})
+				return reubicar(reparar_entrada(bloque.get("input", {})), herramienta.get("input_schema", {}))
 		ultimo = "La IA no uso la herramienta"
 	raise ErrorIA(ultimo)
+
+
+_PARAM = re.compile(r'<parameter name="([^"]+)">(.*?)(?=</parameter>|<parameter name="|$)', re.S)
+
+
+def _desde_parametros(texto: str) -> object:
+	"""'\n<parameter name="a">1</parameter><parameter name="b">x' -> {"a": 1, "b": "x"} (o el texto si no)."""
+	if '<parameter name="' not in texto:
+		return texto
+	out: dict = {}
+	for nombre, valor in _PARAM.findall(texto):
+		v = valor.strip()
+		try:
+			out[nombre] = json.loads(v)
+		except ValueError:
+			out[nombre] = v
+	return out or texto
+
+
+def reparar_entrada(x: object) -> object:
+	"""13 nov: con esquemas grandes Sonnet a veces escribe los objetos anidados como texto con etiquetas
+	<parameter name="..."> (o como JSON en texto). Se reconstruyen antes de validar: si no, el diseno
+	fallaba entero, se pagaba una correccion y a veces acababa en el modelo barato."""
+	if isinstance(x, dict):
+		return {k: reparar_entrada(v) for k, v in x.items()}
+	if isinstance(x, list):
+		return [reparar_entrada(v) for v in x]
+	if isinstance(x, str):
+		t = x.strip()
+		if t.startswith("<parameter") or t.startswith("\n<parameter"):
+			return reparar_entrada(_desde_parametros(t))
+		if (t.startswith("{") and t.endswith("}")) or (t.startswith("[") and t.endswith("]")):
+			try:
+				return reparar_entrada(json.loads(t))
+			except ValueError:
+				return x
+	return x
+
+
+def reubicar(x: object, esquema: dict) -> object:
+	"""Campos que se salieron a la raiz (13 nov: «tempo», «victoria», «nombre_plural»... junto a «titulo»):
+	si un campo desconocido es propio de uno solo de los objetos del esquema, vuelve a su sitio."""
+	props = esquema.get("properties") if isinstance(esquema, dict) else None
+	if not isinstance(x, dict) or not isinstance(props, dict) or esquema.get("additionalProperties") is not False:
+		return x
+	for k in [k for k in x if k not in props]:
+		duenos = [p for p, sub in props.items() if isinstance(sub, dict) and k in (sub.get("properties") or {})]
+		if len(duenos) == 1:
+			d = duenos[0]
+			if not isinstance(x.get(d), dict):
+				x[d] = {}
+			x[d].setdefault(k, x[k])
+			del x[k]
+	return x
 
 
 ## Errores de validacion de cada modelo en la ultima llamada a con_router (para el informe: el 12 nov

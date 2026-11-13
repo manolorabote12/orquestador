@@ -730,7 +730,16 @@ func _build_scene_art() -> void:
 	var hero_art: Dictionary = Kit.sprite_by_role("jugador")
 	if not hero_art.is_empty():
 		var anims: Dictionary = hero_art.get("animaciones", {})
-		_hero = SpriteKit.animado(hero_art, 220.0, "idle" if anims.has("idle") else "run", true)
+		## 13 nov: a 220 px la critica lo veia «diminuto, no es el protagonista».
+		_hero = SpriteKit.animado(hero_art, 260.0, "idle" if anims.has("idle") else "run", true)
+		## Escala exacta (no entera) para que mida ~290 px: con x2 se quedaba corto en la portada. Solo el
+		## pixel art mantiene la escala entera.
+		if str(Kit.assets.get("familia", "")) != "pixel":
+			var ch: float = float((hero_art.get("celda", [128, 128]) as Array)[1])
+			var k2: float = 290.0 / (ch * 0.86)
+			_hero.scale = Vector2(k2, k2)
+			_hero.texture_filter = CanvasItem.TEXTURE_FILTER_LINEAR
+			_hero.position = Vector2(0.0, -ch * k2 * 0.5)
 		Skins.apply(_hero)
 		_hero_root.add_child(_hero)
 	var coin_art: Dictionary = Kit.sprite_entry(str(Kit.param("art.coin", "moneda")))
