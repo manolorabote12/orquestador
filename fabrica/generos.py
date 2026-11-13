@@ -3135,7 +3135,7 @@ EDITOR: dict[str, dict] = {
 	"cajas": {"letras": ".#PBOQR", "una": "", "filas": [5, 12], "ancho": [5, 12]},
 	"topos": {"letras": ".o", "una": "", "filas": [2, 4], "ancho": [3, 4]},
 	"aldea": {"letras": ".#HGEMKCAO", "una": "H", "filas": [14, 24], "ancho": [14, 24]},
-	"arena": {"letras": ".#*BPR", "una": "P", "filas": [11, 31], "ancho": [9, 25]},
+	"arena": {"letras": ".#*BPRAGgOTt", "una": "P", "filas": [11, 31], "ancho": [9, 25]},
 	"laberinto": {"letras": ".#PCXLD", "una": "P", "filas": [7, 15], "ancho": [5, 11]},
 	"golf": {"letras": ".#BHWS", "una": "BH", "filas": [8, 18], "ancho": [5, 11]},
 	"imperio": {"letras": ".~^TBOPEcqlwht#", "una": "P", "filas": [16, 34], "ancho": [14, 28]},

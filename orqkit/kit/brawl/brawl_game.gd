@@ -10,6 +10,17 @@ extends Node2D
 ##     la arena hacia el centro y quita vida fuera del circulo.
 ## 6 - Ganas al eliminar a todos los rivales; si te eliminan, repites.
 ## Mapa: "#" muro, "*" arbusto, "B" caja, "P" tu salida, "R" salida de un rival, "." suelo.
+## Modos (nivel "mode"):
+##   "showdown" (por defecto): todos contra todos, el ultimo en pie gana.
+##   "survival": tu (y tus aliados "A") contra oleadas ("waves") que salen de las "R". Sin gas.
+##   "ball": 3 contra 3. "O" el balon, "G" la porteria rival (marcas ahi) y "g" la tuya. Quien lo
+##     toca lo lleva; el boton de ataque lo chuta (hacia la porteria si esta a tiro). Gana quien
+##     marque 2 o vaya ganando al acabar el tiempo ("time"); con empate, el siguiente gol gana.
+##   "turrets": 3 contra 3. "t" la torreta rival, "T" la tuya: dispara sola a quien se acerque.
+##     Gana quien derribe la otra; al acabar el tiempo, la que tenga mas vida.
+##   En los dos de equipo nadie queda fuera: a los 3 s vuelves a tu salida.
+## Personajes: el jugador lleva el elegido (Brawlers.chosen()) y cada bot uno del catalogo, con su
+## vida, velocidad, dano, forma de disparar y super (ver brawlers.gd).
 ## Nivel: {"map", "rival_hp", "rival_dmg", "aim" (error en radianes), "reaction" (s),
 ##   "gas_start" (s), "gas_time" (s que tarda en cerrarse), "par" (s para la tercera estrella)}.
 ## Contrato con el kit: finished, deaths, time_in_level, fast, auto_retry, bot_script(),
@@ -27,6 +38,11 @@ const PLAYER_HP: float = 3200.0
 const PLAYER_DMG: float = 300.0
 ## Segundos del principio en los que los rivales abren cajas en vez de buscar pelea.
 const FARM_TIME: float = 16.0
+const RESPAWN_TIME: float = 3.0
+const BALL_GOALS: int = 2
+const TURRET_HP: float = 7500.0
+const TURRET_RANGE: float = 520.0
+const BALL_R: float = 22.0
 
 var rows: Array[String] = []
 var finished: bool = false
@@ -98,6 +114,25 @@ var _send_acc: float = 0.0
 var _countdown: Label = null
 ## Cooperativo (sala con amigos en modo "coop"): juntos contra oleadas de bots.
 var coop: bool = false
+## Modo de juego (ver arriba) y lo que lleva cada uno.
+var mode: String = "showdown"
+var teams: bool = false
+var respawn: bool = false
+## Las pruebas (y el bot de QA) pueden dejar que el juego mueva al jugador con la misma IA.
+var autopilot: bool = false
+var time_limit: float = 150.0
+var waves: int = 3
+var goals_score: Array[int] = [0, 0]
+var overtime: bool = false
+## Balon: posicion, velocidad y quien lo lleva.
+var ball: Dictionary = {}
+## Porterias: casillas de la que defiende cada equipo (0 = la tuya "g", 1 = la rival "G").
+var goal_cells: Array[Dictionary] = [{}, {}]
+var turrets: Array = [null, null]
+var _allies: Array[Vector2] = []
+var _ball_start: Vector2 = Vector2.ZERO
+var _turret_at: Array[Vector2] = [Vector2.ZERO, Vector2.ZERO]
+var _wave_pending: bool = false
 var wave: int = 0
 const COOP_WAVES: int = 3
 const NET_RATE: float = 1.0 / 12.0
@@ -117,7 +152,14 @@ func _ready() -> void:
 	gas_start = float(lv.get("gas_start", 40.0))
 	gas_time = float(lv.get("gas_time", 40.0))
 	par = float(lv.get("par", 60.0))
-	if coop:
+	mode = str(lv.get("mode", "showdown"))
+	if not mode in ["showdown", "survival", "ball", "turrets"] or not online.is_empty():
+		mode = "showdown"
+	teams = coop or mode != "showdown"
+	respawn = mode in ["ball", "turrets"]
+	time_limit = float(lv.get("time", 150.0))
+	waves = clampi(int(lv.get("waves", 3)), 1, 8)
+	if coop or mode != "showdown":
 		gas_start = 99999.0
 	RenderingServer.set_default_clear_color(Kit.color("sky", Color("#1b2a41")).darkened(0.35))
 	for t: String in ["walker", "spiky", "flyer"]:
@@ -176,12 +218,23 @@ func _ready() -> void:
 		_net_open()
 	Audio.play_track("nivel")
 	UI.float_text(_fx, player.position + Vector2(0.0, -150.0), Kit.text("coop_hint", "\u00a1Juntos contra {n} oleadas!").format({"n": COOP_WAVES}) if coop
-		else Kit.text("brawl_hint", "\u00a1El \u00faltimo en pie gana!"), UI.colors["acento"], 36)
+		else _mode_hint(), UI.colors["acento"], 36)
 	QA.log_event("level_start", {"level": Kit.level_index, "genre": "brawl", "rivals": _spawns.size()})
 
 
 func bot_script() -> String:
 	return "res://qa/brawl_bot.gd"
+
+
+func _mode_hint() -> String:
+	match mode:
+		"survival":
+			return Kit.text("brawl_hint_survival", "\u00a1Aguanta {n} oleadas!").format({"n": waves})
+		"ball":
+			return Kit.text("brawl_hint_ball", "\u00a1Mete el bal\u00f3n en su porter\u00eda!")
+		"turrets":
+			return Kit.text("brawl_hint_turrets", "\u00a1Derriba su torreta!")
+	return Kit.text("brawl_hint", "\u00a1El \u00faltimo en pie gana!")
 
 
 # ------------------------------------------------------------------ montaje
@@ -198,6 +251,14 @@ func _reset() -> void:
 	_walls.clear()
 	_bush.clear()
 	_spawns.clear()
+	_allies.clear()
+	goal_cells = [{}, {}]
+	turrets = [null, null]
+	goals_score = [0, 0]
+	overtime = false
+	ball = {}
+	wave = 0
+	_wave_pending = false
 	_flow.clear()
 	_dmg_acc.clear()
 	finished = false
@@ -226,6 +287,22 @@ func _reset() -> void:
 					_start = center_of(cell)
 				"R":
 					_spawns.append(center_of(cell))
+				"A":
+					_allies.append(center_of(cell))
+				"O":
+					_ball_start = center_of(cell)
+					ball = {"pos": _ball_start, "vel": Vector2.ZERO, "holder": null, "cool": 0.0}
+				"g":
+					goal_cells[0][cell] = true
+				"G":
+					goal_cells[1][cell] = true
+				"T":
+					_turret_at[0] = center_of(cell)
+				"t":
+					_turret_at[1] = center_of(cell)
+	if mode == "ball" and ball.is_empty():
+		_ball_start = Vector2(_size) * TILE * 0.5
+		ball = {"pos": _ball_start, "vel": Vector2.ZERO, "holder": null, "cool": 0.0}
 	coins_total = boxes.size()
 	for cell: Vector2i in _walls.keys():
 		var w: Node2D = Node2D.new()
@@ -241,8 +318,25 @@ func _reset() -> void:
 	by_id.clear()
 	if online.is_empty():
 		player = _make_fighter(true, _start, 0)
-		for i: int in _spawns.size():
-			_make_fighter(false, _spawns[i], i)
+		if teams:
+			player.team = 0
+		for i: int in _allies.size():
+			var a: BrawlFighter = _make_fighter(false, _allies[i], 20 + i)
+			a.team = 0
+			a.name = "Ally%d" % i
+			a.bar_color = Color("#4fc3ff")
+			a.ai["home"] = _allies[i]
+		if mode == "survival":
+			spawn_survival(1)
+		else:
+			for i: int in _spawns.size():
+				var r: BrawlFighter = _make_fighter(false, _spawns[i], i)
+				if teams:
+					r.team = 1
+				r.ai["home"] = _spawns[i]
+		if mode == "turrets":
+			for t: int in 2:
+				_make_turret(t)
 	else:
 		_net_fighters()
 	var world: Vector2 = Vector2(_size) * TILE
@@ -262,26 +356,34 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 	var f: BrawlFighter = BrawlFighter.new()
 	f.is_player = is_player
 	f.position = at
+	var b: Dictionary = Brawlers.catalog()[0] if not online.is_empty() else (Brawlers.chosen() if is_player else Brawlers.for_bot(i))
 	if is_player:
 		f.name = "Player"
 		## Mejora de la tienda: +8 % de vida y dano por nivel.
 		var up: float = 1.0 + 0.08 * float(Save.upgrade_level("luchador"))
-		f.max_hp = Kit.player_hp(PLAYER_HP) * up
-		f.damage = PLAYER_DMG * up
-		f.speed = float(Kit.param("player.brawl_speed", 330.0))
+		f.max_hp = Kit.player_hp(PLAYER_HP) * up * float(b.get("hp", 1.0))
+		f.damage = PLAYER_DMG * up * float(b.get("dmg", 1.0))
+		f.speed = float(Kit.param("player.brawl_speed", 330.0)) * float(b.get("speed", 1.0))
 		f.bar_color = Color("#5fd35f")
-		f.setup(Kit.sprite_by_role("jugador"), Kit.color("accent", Color.ORANGE), 92.0)
+		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 92.0)
 		if f.sprite != null:
 			Skins.apply(f.sprite)
+			if str(b.get("tint", "")) != "":
+				f.sprite.self_modulate = Brawlers.tint(b)
 	else:
 		f.name = "Rival%d" % i
-		f.max_hp = rival_hp
-		f.damage = PLAYER_DMG * rival_dmg
-		f.speed = 290.0
+		f.max_hp = rival_hp * float(b.get("hp", 1.0))
+		f.damage = PLAYER_DMG * rival_dmg * float(b.get("dmg", 1.0))
+		f.speed = 290.0 * float(b.get("speed", 1.0))
 		f.reload_time = 1.35
 		f.bar_color = Color("#ff5a4f")
-		f.setup(_arts[i % _arts.size()] if not _arts.is_empty() else {}, Kit.color("danger", Color("#ff6b5b")), 88.0)
-		f.ai = {"think": 0.1 * float(i), "aim": 0.0, "strafe": 1.0 if i % 2 == 0 else -1.0, "flip": 1.5, "goal": at}
+		## Los aliados (i >= 20) se ven como tu personaje, tenido; los rivales, con el arte de enemigos.
+		var art: Dictionary = Kit.sprite_by_role("jugador") if i >= 20 else (_arts[i % _arts.size()] if not _arts.is_empty() else {})
+		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 88.0)
+		if f.sprite != null and str(b.get("tint", "")) != "":
+			f.sprite.self_modulate = Brawlers.tint(b)
+	f.ai = {"think": 0.1 * float(i), "aim": 0.0, "strafe": 1.0 if i % 2 == 0 else -1.0, "flip": 1.5, "goal": at,
+		"atk": Brawlers.attack_of(b), "super": str(b.get("super", "ola")), "brawler": str(b.get("id", "")), "home": at}
 	f.hp = f.max_hp
 	f.remember_base()
 	f.facing = Vector2.UP if is_player else Vector2.DOWN
@@ -358,13 +460,15 @@ func _update_hud() -> void:
 	if _left_label == null:
 		return
 	_left_label.text = str(rivals_left())
-	if time_in_level < gas_start:
+	if mode != "showdown":
+		_mode_hud()
+	elif time_in_level < gas_start:
 		var t: int = int(ceil(gas_start - time_in_level))
 		_gas_label.text = Kit.text("brawl_gas_in", "Gas en {t}").format({"t": "%d:%02d" % [t / 60, t % 60]})
 		_gas_label.add_theme_color_override("font_color", UI.colors["texto_suave"])
 	else:
 		_gas_label.text = Kit.text("brawl_gas", "\u00a1Llega el gas!")
-		_gas_label.add_theme_color_override("font_color", Color("#9dff6b"))
+		_gas_label.add_theme_color_override("font_color", Color(str(Kit.param("brawl_gas_color", "#73f259"))).lightened(0.3))
 	if player != null:
 		_pad_attack.fill = player.ammo / float(BrawlFighter.AMMO_MAX)
 		_pad_attack.armed = player.ammo >= 1.0
@@ -501,10 +605,23 @@ func _physics_process(delta: float) -> void:
 	if time_in_level >= gas_start:
 		var t: float = clampf((time_in_level - gas_start) / maxf(gas_time, 1.0), 0.0, 1.0)
 		gas_radius = lerpf(gas_max, TILE * 2.4, t)
+	if respawn:
+		_respawns(delta)
+		if time_in_level >= time_limit and not overtime:
+			_time_up()
+			if finished or failed:
+				return
 	for f: BrawlFighter in fighters:
 		if not f.alive:
 			continue
-		if f.is_player:
+		if f.ai.has("turret"):
+			_turret_think(f, delta)
+			_tick(f, delta)
+			continue
+		if f.is_player and autopilot:
+			_think(f, delta)
+			aim_target = best_target(f)
+		elif f.is_player:
 			_control_player(delta)
 		elif f.remote:
 			_net_follow(f, delta)
@@ -519,14 +636,18 @@ func _physics_process(delta: float) -> void:
 	_move_bullets(delta)
 	_flush_damage(delta)
 	_pickups(delta)
+	if mode == "ball" and not ball.is_empty():
+		_ball_step(delta)
+	if finished or failed:
+		return
 	if Input.is_action_just_pressed("shoot"):
 		attack()
 	if Input.is_action_just_pressed("super"):
 		use_super()
 	_camera.position = player.position
-	if coop and not player.alive:
+	if (coop or respawn) and not player.alive:
 		for o: BrawlFighter in fighters:
-			if o.alive and o.team == 0:
+			if o.alive and o.team == 0 and not o.ai.has("turret"):
 				_camera.position = o.position
 				break
 	_fx.queue_redraw()
@@ -573,6 +694,13 @@ func _tick(f: BrawlFighter, delta: float) -> void:
 	f.ammo = minf(float(BrawlFighter.AMMO_MAX), f.ammo + delta / f.reload_time)
 	f.reveal = maxf(f.reveal - delta, 0.0)
 	f.calm += delta
+	if f.ai.has("shield"):
+		f.ai["shield"] = float(f.ai["shield"]) - delta
+		if float(f.ai["shield"]) <= 0.0:
+			f.ai.erase("shield")
+	if f.ai.has("turret"):
+		f.queue_redraw()
+		return
 	if f.calm > 3.0 and f.hp < f.max_hp:
 		f.hp = minf(f.max_hp, f.hp + f.max_hp * REGEN * delta)
 	if f.position.distance_to(gas_center) > gas_radius:
@@ -598,14 +726,20 @@ func visible_to(viewer: BrawlFighter, target: BrawlFighter) -> bool:
 func rivals_left() -> int:
 	var n: int = 0
 	for f: BrawlFighter in fighters:
-		if f.alive and not f.is_player and (not coop or f.team == 1):
+		if f.alive and not f.is_player and (not teams or f.team == 1) and not f.ai.has("turret"):
 			n += 1
 	return n
 
 
-## Enemigos: en el cooperativo, solo los del otro equipo (sin fuego amigo).
+## Enemigos: en el cooperativo y los modos de equipo, solo los del otro equipo (sin fuego amigo).
 func foes(a: BrawlFighter, b: BrawlFighter) -> bool:
-	return a != b and (not coop or a.team != b.team)
+	return a != b and (not teams or a.team != b.team)
+
+
+## Alcance de los disparos de cada uno (segun su forma de disparar).
+func range_of(f: BrawlFighter) -> float:
+	var atk: Dictionary = f.ai.get("atk", {})
+	return SHOT_RANGE * float(atk.get("range", 1.0))
 
 
 func humans_alive() -> int:
@@ -618,11 +752,14 @@ func humans_alive() -> int:
 
 func best_target(f: BrawlFighter) -> BrawlFighter:
 	var best: BrawlFighter = null
-	var best_d: float = SHOT_RANGE * 1.05
+	var best_d: float = range_of(f) * 1.05
 	for o: BrawlFighter in fighters:
 		if not foes(f, o) or not o.alive or not visible_to(f, o):
 			continue
 		var d: float = o.position.distance_to(f.position)
+		## Las torretas solo si no hay nadie mas cerca (primero los que se mueven).
+		if o.ai.has("turret"):
+			d += 160.0
 		if d < best_d and line_clear(f.position, o.position):
 			best_d = d
 			best = o
@@ -661,6 +798,8 @@ func attack() -> bool:
 	if finished or failed or player == null or not player.alive:
 		return false
 	var dir: Vector2 = player.facing
+	if mode == "ball" and ball.get("holder") == player:
+		return kick(player)
 	if aim_target != null and aim_target.alive:
 		## Apunta a donde esta (sin adelantarse): moviendose de lado se pueden esquivar las balas.
 		dir = (aim_target.position - player.position).normalized()
@@ -701,10 +840,15 @@ func shoot(f: BrawlFighter, dir: Vector2) -> bool:
 func _spawn_shot(f: BrawlFighter, origin: Vector2, dir: Vector2) -> void:
 	f.reveal = 1.0
 	f.facing = dir
-	var col: Color = Kit.color("accent", Color("#ffb627")) if f.is_player else Color("#ff6b5b")
-	for k: int in 3:
-		var d: Vector2 = dir.rotated((float(k) - 1.0) * 0.07)
-		bullets.append({"pos": origin + d * 30.0 + Vector2(0, -26), "vel": d * SHOT_SPEED, "owner": f, "dmg": f.damage, "left": SHOT_RANGE, "col": col, "w": 9.0})
+	var col: Color = Kit.color("accent", Color("#ffb627")) if f.is_player else (Color("#4fc3ff") if teams and f.team == 0 else Color("#ff6b5b"))
+	var atk: Dictionary = f.ai.get("atk", {})
+	var n: int = int(atk.get("n", 3))
+	var spread: float = float(atk.get("spread", 0.07))
+	var w: float = 14.0 if n == 1 else 9.0
+	for k: int in n:
+		var d: Vector2 = dir.rotated((float(k) - float(n - 1) * 0.5) * spread)
+		bullets.append({"pos": origin + d * 30.0 + Vector2(0, -26), "vel": d * SHOT_SPEED * float(atk.get("speed", 1.0)), "owner": f,
+			"dmg": f.damage * float(atk.get("dmg", 1.0)), "left": range_of(f), "col": col, "w": w})
 
 
 func fire_super(f: BrawlFighter) -> bool:
@@ -720,6 +864,37 @@ func fire_super(f: BrawlFighter) -> bool:
 func _spawn_super(f: BrawlFighter, origin: Vector2) -> void:
 	f.reveal = 1.0
 	var col: Color = Color("#ffe066") if f.is_player else Color("#ff9a3c")
+	match str(f.ai.get("super", "ola")):
+		"escudo":
+			f.ai["shield"] = 3.0
+			Juice.ring(_fx, origin + Vector2(0, -30), Color("#7fe7ff"), 90.0, 0.35)
+			Audio.play("powerup")
+			QA.log_event("super", {"player": f.is_player, "kind": "escudo"})
+			return
+		"cura":
+			for o: BrawlFighter in fighters:
+				if o.alive and not o.ai.has("turret") and (o == f or (teams and o.team == f.team)) and o.position.distance_to(origin) < 330.0:
+					o.hp = minf(o.max_hp, o.hp + o.max_hp * 0.4)
+					Juice.sparkle(_fx, o.position + Vector2(0, -40), Color("#7dff9a"), 10, 200.0)
+					o.queue_redraw()
+			Juice.ring(_fx, origin + Vector2(0, -26), Color("#7dff9a"), 330.0, 0.4)
+			Audio.play("powerup")
+			QA.log_event("super", {"player": f.is_player, "kind": "cura"})
+			return
+		"dash":
+			_dash(f, col)
+			return
+		"bomba":
+			var t: BrawlFighter = best_target(f)
+			var to: Vector2 = t.position if t != null else origin + f.facing * 300.0
+			if to.distance_to(origin) > SUPER_RANGE * 1.2:
+				to = origin + (to - origin).normalized() * SUPER_RANGE * 1.2
+			var dist: float = maxf(origin.distance_to(to), 1.0)
+			bullets.append({"pos": origin + Vector2(0, -26), "vel": (to - origin).normalized() * 700.0, "owner": f, "dmg": f.damage * 2.6,
+				"left": dist, "col": Color("#ff7a2f"), "w": 18.0, "bomb": true})
+			Audio.play("shoot", 0.1, -4.0)
+			QA.log_event("super", {"player": f.is_player, "kind": "bomba"})
+			return
 	for k: int in 16:
 		var d: Vector2 = Vector2.RIGHT.rotated(TAU * float(k) / 16.0)
 		bullets.append({"pos": origin + Vector2(0, -26), "vel": d * SHOT_SPEED * 0.85, "owner": f, "dmg": f.damage * 1.5, "left": SUPER_RANGE, "col": col, "w": 13.0})
@@ -738,6 +913,13 @@ func _move_bullets(delta: float) -> void:
 		b["pos"] = p
 		b["left"] = float(b["left"]) - step.length()
 		var dead: bool = float(b["left"]) <= 0.0
+		## La bomba va por el aire (salta muros) y explota al llegar.
+		if b.has("bomb"):
+			if dead:
+				_explode(p + Vector2(0, 26), float(b["dmg"]), b["owner"] as BrawlFighter)
+				bullets.remove_at(i)
+			i -= 1
+			continue
 		var feet: Vector2 = p + Vector2(0, 26)
 		var cell: Vector2i = cell_of(feet)
 		if not dead and boxes.has(cell):
@@ -750,7 +932,7 @@ func _move_bullets(delta: float) -> void:
 			for f: BrawlFighter in fighters:
 				if not f.alive or f == b["owner"]:
 					continue
-				if coop and is_instance_valid(b["owner"]) and (b["owner"] as BrawlFighter).team == f.team:
+				if teams and is_instance_valid(b["owner"]) and (b["owner"] as BrawlFighter).team == f.team:
 					continue
 				if f.position.distance_to(feet) < BrawlFighter.RADIUS + 10.0:
 					dead = true
@@ -769,7 +951,12 @@ func _move_bullets(delta: float) -> void:
 
 
 func _hit_fighter(f: BrawlFighter, dmg: float, by: BrawlFighter, col: Color) -> void:
+	if f.ai.has("shield"):
+		dmg *= 0.25
 	var killed: bool = f.hit(dmg)
+	## Quien lleva el balon lo suelta al recibir un golpe fuerte.
+	if mode == "ball" and ball.get("holder") == f and dmg > f.max_hp * 0.12:
+		_drop_ball(f)
 	if by != null and is_instance_valid(by) and by.alive:
 		by.super_charge = minf(1.0, by.super_charge + 0.07)
 		by.calm = 0.0
@@ -835,6 +1022,33 @@ func _on_death(f: BrawlFighter, by: BrawlFighter) -> void:
 	if coop:
 		_coop_death(f, by)
 		return
+	if mode == "ball" and ball.get("holder") == f:
+		_drop_ball(f)
+	if f.ai.has("turret"):
+		_turret_down(f)
+		return
+	if respawn:
+		f.ai["respawn"] = RESPAWN_TIME
+		if by != null and is_instance_valid(by) and by.is_player:
+			kills += 1
+			UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
+		if f.is_player:
+			UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_respawn", "Vuelves en 3 s"), UI.colors["peligro"], 34)
+		Audio.play("hurt", 0.1, -6.0)
+		return
+	if mode == "survival":
+		if f.is_player:
+			_lose()
+			return
+		if f.team == 0:
+			return
+		if by != null and is_instance_valid(by) and by.is_player:
+			kills += 1
+			UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
+		Audio.play("hurt", 0.1, -6.0)
+		if rivals_left() == 0:
+			_survival_cleared()
+		return
 	if f.is_player:
 		placed = rivals_left() + 1
 		if OS.has_environment("ARENA_DEBUG"):
@@ -864,7 +1078,7 @@ func _pickups(delta: float) -> void:
 		if float(c["t"]) > 0.4:
 			for f: BrawlFighter in fighters:
 				## Los rivales se hacen fuertes hasta +30 % (si no, el que gana una pelea se vuelve imparable).
-				if f.alive and f.position.distance_to(c["pos"] as Vector2) < 56.0 and (f.is_player or f.power < 3):
+				if f.alive and not f.ai.has("turret") and f.position.distance_to(c["pos"] as Vector2) < 56.0 and (f.is_player or f.power < 3):
 					f.add_power()
 					taken = true
 					if f.is_player:
@@ -898,16 +1112,25 @@ func _think(f: BrawlFighter, delta: float) -> void:
 	var goal: Vector2 = ai["goal"]
 	var to: Vector2 = next_step(f.position, goal) - f.position
 	f.velocity = to.normalized() * f.speed if to.length() > 12.0 else Vector2.ZERO
-	## Disparar: tarda "reaction" en apuntar y falla un poco ("aim").
+	## Con el balon: chuta en cuanto ve la porteria a tiro.
+	if mode == "ball" and ball.get("holder") == f:
+		var gp: Vector2 = goal_center(1 - f.team)
+		if f.position.distance_to(gp) < SHOT_RANGE * 0.9 and line_clear(f.position, gp):
+			kick(f)
+		return
+	## Disparar: tarda "reaction" en apuntar y falla un poco ("aim"). En piloto automatico, el
+	## jugador apunta como una persona que juega bien (algo mejor que los bots).
+	var react: float = reaction * (0.6 if f.is_player else 1.0)
+	var err: float = aim_error * (0.5 if f.is_player else 1.0)
 	if target != null and visible_to(f, target):
 		var d: float = f.position.distance_to(target.position)
-		if d < SHOT_RANGE * 0.92 and line_clear(f.position, target.position):
+		if d < range_of(f) * 0.92 and line_clear(f.position, target.position):
 			ai["aim"] = float(ai["aim"]) + delta
-			if f.super_charge >= 1.0 and d < SUPER_RANGE * 0.85:
+			if f.super_charge >= 1.0 and _super_ready(f, target, d):
 				fire_super(f)
-			elif float(ai["aim"]) >= reaction and f.ammo >= 1.0:
-				ai["aim"] = reaction * 0.35
-				shoot(f, _lead(f, target).rotated(_rng.randf_range(-aim_error, aim_error)))
+			elif float(ai["aim"]) >= react and f.ammo >= 1.0:
+				ai["aim"] = react * 0.35
+				shoot(f, _lead(f, target).rotated(_rng.randf_range(-err, err)))
 			return
 	ai["aim"] = maxf(float(ai["aim"]) - delta, 0.0)
 	## Sin nadie a tiro: abre cajas.
@@ -919,16 +1142,26 @@ func _think(f: BrawlFighter, delta: float) -> void:
 
 func _pick_target(f: BrawlFighter) -> BrawlFighter:
 	var best: BrawlFighter = null
+	## En el balon, a por quien lo lleve si es del otro equipo.
+	if mode == "ball":
+		var h: Variant = ball.get("holder")
+		if h != null and is_instance_valid(h) and foes(f, h as BrawlFighter) and (h as BrawlFighter).alive:
+			return h as BrawlFighter
 	## Al principio se dedican a abrir cajas (como en los juegos de arena): solo pelean si alguien se acerca.
-	var farming: bool = time_in_level < FARM_TIME and (not boxes.is_empty() or not cubes.is_empty())
+	var farming: bool = mode == "showdown" and time_in_level < FARM_TIME and (not boxes.is_empty() or not cubes.is_empty())
 	var best_d: float = 420.0 if farming else 650.0
+	## Torretas: pelean con quien se cruce, pero sin dejar de empujar hacia la torreta.
+	if mode == "turrets":
+		best_d = 460.0
 	for o: BrawlFighter in fighters:
 		if not foes(f, o) or not o.alive or not visible_to(f, o):
 			continue
 		var d: float = o.position.distance_to(f.position)
 		## Nunca mas de dos a por el mismo (todos contra todos de verdad, sin encerronas).
-		if _hunters(o, f) >= 2:
+		if not teams and _hunters(o, f) >= 2:
 			d += 400.0
+		if o.ai.has("turret"):
+			d += 220.0
 		if d < best_d:
 			best_d = d
 			best = o
@@ -944,6 +1177,18 @@ func _hunters(target: BrawlFighter, except: BrawlFighter) -> int:
 
 
 func _pick_goal(f: BrawlFighter, target: BrawlFighter) -> Vector2:
+	if mode == "ball":
+		var g: Vector2 = _ball_goal(f, target)
+		if g != Vector2.INF:
+			return g
+	elif mode == "turrets" and (target == null or target.ai.has("turret")):
+		## Sin nadie cerca: a por la torreta rival (a su distancia de tiro).
+		var tt: Variant = turrets[1 - f.team] if f.team >= 0 else null
+		if tt != null and is_instance_valid(tt) and (tt as BrawlFighter).alive:
+			var tp: Vector2 = (tt as BrawlFighter).position
+			if f.position.distance_to(tp) > range_of(f) * 0.8 or not line_clear(f.position, tp):
+				return tp
+			return f.position + (tp - f.position).normalized().orthogonal() * 120.0 * float(f.ai["strafe"])
 	## 1 - El gas manda: hacia el centro.
 	if time_in_level >= gas_start and f.position.distance_to(gas_center) > gas_radius - TILE * 1.6:
 		return gas_center
@@ -960,7 +1205,15 @@ func _pick_goal(f: BrawlFighter, target: BrawlFighter) -> Vector2:
 		if d < 240.0:
 			return f.position - dir * 160.0
 		return f.position + dir.orthogonal() * 140.0 * float(f.ai["strafe"])
-	## 4 - Cubos sueltos, cajas o hacia el centro.
+	## 4 - Supervivencia: las oleadas van a por tu equipo; tus aliados no se separan de ti.
+	if mode == "survival" or respawn:
+		if f.team == 1:
+			var near: BrawlFighter = _nearest_foe(f, true)
+			if near != null:
+				return near.position
+		elif not f.is_player and player != null and player.alive:
+			return player.position + Vector2(140.0 * float(f.ai["strafe"]), 90.0)
+	## 5 - Cubos sueltos, cajas o hacia el centro.
 	var best: Vector2 = gas_center
 	var best_d: float = 99999.0
 	for c: Dictionary in cubes:
@@ -1022,6 +1275,428 @@ func _coop_death(f: BrawlFighter, by: BrawlFighter) -> void:
 		_net_end(2)
 
 
+# ------------------------------------------------------------------ modos
+
+func _nearest_foe(f: BrawlFighter, movers_only: bool) -> BrawlFighter:
+	var best: BrawlFighter = null
+	var best_d: float = 1e9
+	for o: BrawlFighter in fighters:
+		if not o.alive or not foes(f, o) or (movers_only and o.ai.has("turret")):
+			continue
+		var d: float = o.position.distance_to(f.position)
+		if d < best_d:
+			best_d = d
+			best = o
+	return best
+
+
+## Cuando conviene usar el super (la IA y el piloto automatico).
+func _super_ready(f: BrawlFighter, target: BrawlFighter, d: float) -> bool:
+	match str(f.ai.get("super", "ola")):
+		"escudo":
+			return f.hp < f.max_hp * 0.65 and d < 420.0
+		"cura":
+			return f.hp < f.max_hp * 0.55
+		"dash":
+			return d < 330.0 and not target.ai.has("turret")
+		"bomba":
+			return d < SUPER_RANGE * 1.15
+	return d < SUPER_RANGE * 0.85
+
+
+## Embestida: sale disparado hacia el rival (sin atravesar muros) y golpea a todos al llegar.
+func _dash(f: BrawlFighter, col: Color) -> void:
+	var t: BrawlFighter = best_target(f)
+	var dir: Vector2 = (t.position - f.position).normalized() if t != null else f.facing
+	var p: Vector2 = f.position
+	var moved: float = 0.0
+	while moved < 320.0:
+		var np: Vector2 = p + dir * 12.0
+		if not free_at(np, BrawlFighter.RADIUS * 0.8):
+			break
+		p = np
+		moved += 12.0
+		if int(moved) % 48 == 0:
+			Juice.burst(_fx, p + Vector2(0, -30), Color(col, 0.6), 2, 60.0)
+	f.position = p
+	f.facing = dir
+	for o: BrawlFighter in fighters.duplicate():
+		if o.alive and foes(f, o) and o.position.distance_to(p) < 140.0:
+			_hit_fighter(o, f.damage * 2.2, f, col)
+			var push: Vector2 = o.position + dir * 70.0
+			if o.alive and not o.ai.has("turret") and free_at(push, BrawlFighter.RADIUS * 0.8):
+				o.position = push
+	Juice.ring(_fx, p + Vector2(0, -26), col, 140.0, 0.3)
+	Juice.shake(0.3)
+	Audio.play("stomp")
+	QA.log_event("super", {"player": f.is_player, "kind": "dash"})
+
+
+## Explosion de la bomba: dana a los rivales y rompe cajas alrededor.
+func _explode(at: Vector2, dmg: float, by: BrawlFighter) -> void:
+	var owner_ok: bool = by != null and is_instance_valid(by)
+	Juice.ring(_fx, at + Vector2(0, -26), Color("#ff7a2f"), 170.0, 0.35)
+	Juice.burst(_fx, at + Vector2(0, -26), Color("#ffb347"), 22, 360.0)
+	Juice.shake(0.35)
+	Audio.play("stomp")
+	for o: BrawlFighter in fighters.duplicate():
+		if o.alive and o.position.distance_to(at) < 165.0 and (not owner_ok or foes(by, o)):
+			_hit_fighter(o, dmg, by if owner_ok else null, Color("#ff7a2f"))
+	for c: Vector2i in boxes.keys():
+		if center_of(c).distance_to(at) < 150.0:
+			_hit_box(c, dmg, by if owner_ok else null)
+	QA.log_event("super", {"player": owner_ok and by.is_player, "kind": "bomba"})
+
+
+## Supervivencia: oleada n (mas rivales y mas fuertes cada vez) desde las salidas "R".
+func spawn_survival(n: int) -> void:
+	wave = n
+	_wave_pending = false
+	var spots: Array[Vector2] = _spawns.duplicate()
+	if spots.is_empty():
+		spots.append(gas_center)
+	var count: int = clampi(1 + n, 2, 6)
+	for k: int in count:
+		var at: Vector2 = spots[k % spots.size()] + Vector2(float(k / spots.size()) * 60.0, 0.0)
+		var f: BrawlFighter = _make_fighter(false, at, k + n)
+		f.name = "Wave%d_%d" % [n, k]
+		f.team = 1
+		f.max_hp *= 0.7 + 0.12 * float(n)
+		f.hp = f.max_hp
+		f.remember_base()
+		f.ai["think"] = 0.5 + 0.1 * float(k)
+	if player != null and n > 1:
+		UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("coop_wave", "Oleada {n} de {max}").format({"n": n, "max": waves}), Color("#ffe066"), 42)
+		Audio.play("powerup")
+	QA.log_event("survival_wave", {"wave": n})
+
+
+func _survival_cleared() -> void:
+	if _wave_pending or finished or failed:
+		return
+	if wave >= waves:
+		_win()
+		return
+	_wave_pending = true
+	spawn_survival.call_deferred(wave + 1)
+
+
+## Equipos: los eliminados vuelven a su salida a los 3 s, enteros y sin cubos.
+func _respawns(delta: float) -> void:
+	for f: BrawlFighter in fighters:
+		if f.alive or not f.ai.has("respawn"):
+			continue
+		f.ai["respawn"] = float(f.ai["respawn"]) - delta
+		if float(f.ai["respawn"]) > 0.0:
+			continue
+		f.ai.erase("respawn")
+		f.position = f.ai.get("home", _start)
+		f.power = 0
+		f.max_hp = float(f.ai.get("base_hp", f.max_hp))
+		f.damage = float(f.ai.get("base_dmg", f.damage))
+		f.hp = f.max_hp
+		f.ammo = float(BrawlFighter.AMMO_MAX)
+		f.alive = true
+		f.visible = true
+		f.velocity = Vector2.ZERO
+		Juice.sparkle(_fx, f.position + Vector2(0, -40), f.bar_color, 10, 200.0)
+
+
+func _time_up() -> void:
+	var a: float = 0.0
+	var b: float = 0.0
+	if mode == "ball":
+		a = float(goals_score[0])
+		b = float(goals_score[1])
+	elif mode == "turrets":
+		for t: int in 2:
+			var tt: Variant = turrets[t]
+			var v: float = (tt as BrawlFighter).hp / (tt as BrawlFighter).max_hp if tt != null and is_instance_valid(tt) else 0.0
+			if t == 0:
+				a = v
+			else:
+				b = v
+	if absf(a - b) < 0.001:
+		overtime = true
+		UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("brawl_overtime", "\u00a1Pr\u00f3rroga! El siguiente golpe gana"), Color("#ffe066"), 40)
+		QA.log_event("overtime", {"mode": mode})
+		return
+	if a > b:
+		_win()
+	else:
+		_lose()
+
+
+func _mode_hud() -> void:
+	match mode:
+		"survival":
+			_left_label.text = str(rivals_left())
+			_gas_label.text = Kit.text("coop_wave", "Oleada {n} de {max}").format({"n": wave, "max": waves})
+			_gas_label.add_theme_color_override("font_color", Color("#ffe066"))
+			return
+		"ball":
+			_left_label.text = "%d - %d" % [goals_score[0], goals_score[1]]
+		"turrets":
+			var pc: Array[int] = [0, 0]
+			for t: int in 2:
+				var tt: Variant = turrets[t]
+				if tt != null and is_instance_valid(tt):
+					pc[t] = int(ceil(100.0 * (tt as BrawlFighter).hp / (tt as BrawlFighter).max_hp))
+			_left_label.text = "%d%% - %d%%" % [pc[0], pc[1]]
+	if overtime:
+		_gas_label.text = Kit.text("brawl_overtime_short", "\u00a1Pr\u00f3rroga!")
+		_gas_label.add_theme_color_override("font_color", Color("#ff8a5c"))
+	else:
+		var t: int = int(ceil(maxf(time_limit - time_in_level, 0.0)))
+		_gas_label.text = "%d:%02d" % [t / 60, t % 60]
+		_gas_label.add_theme_color_override("font_color", UI.colors["texto"] if t > 20 else Color("#ff8a5c"))
+	if player != null and _pad_attack != null:
+		var want: String = Kit.text("brawl_kick", "\u00a1Chuta!") if mode == "ball" and ball.get("holder") == player else Kit.text("brawl_attack", "\u00a1Fuego!")
+		if _pad_attack.label != want:
+			_pad_attack.label = want
+			_pad_attack.queue_redraw()
+
+
+# --- torretas
+
+func _make_turret(t: int) -> void:
+	var at: Vector2 = _turret_at[t]
+	if at == Vector2.ZERO:
+		at = _start + Vector2(0.0, -TILE) if t == 0 else (_spawns[0] + Vector2(0.0, TILE) if not _spawns.is_empty() else gas_center)
+	var f: BrawlFighter = BrawlFighter.new()
+	f.name = "Turret%d" % t
+	f.position = at
+	f.team = t
+	f.max_hp = TURRET_HP
+	f.damage = PLAYER_DMG * 0.9
+	f.speed = 0.0
+	f.reload_time = 0.9
+	f.bar_color = Color("#4fc3ff") if t == 0 else Color("#ff5a4f")
+	f.setup({}, Color("#8fa3c0") if t == 0 else Color("#c08f8f"), 0.0)
+	if f.body != null:
+		f.body.polygon = LevelBuilder._circle(46.0, 8)
+		f.body.position = Vector2(0.0, -34.0)
+		var top: Polygon2D = Polygon2D.new()
+		top.color = f.bar_color
+		top.polygon = LevelBuilder._circle(26.0, 8)
+		top.position = Vector2(0.0, -58.0)
+		f.rig.add_child(top)
+	f.ai = {"turret": true, "atk": {"n": 1, "spread": 0.0, "range": TURRET_RANGE / SHOT_RANGE, "speed": 1.0, "dmg": 1.0},
+		"cool": 1.0, "think": 0.0, "aim": 0.0, "strafe": 1.0, "flip": 1.0, "goal": at, "home": at}
+	f.hp = f.max_hp
+	f.remember_base()
+	f.facing = Vector2.DOWN if t == 0 else Vector2.UP
+	_actors.add_child(f)
+	fighters.append(f)
+	turrets[t] = f
+
+
+func _turret_think(f: BrawlFighter, delta: float) -> void:
+	f.velocity = Vector2.ZERO
+	f.ai["cool"] = float(f.ai["cool"]) - delta
+	if float(f.ai["cool"]) > 0.0:
+		return
+	var target: BrawlFighter = null
+	var best_d: float = TURRET_RANGE
+	for o: BrawlFighter in fighters:
+		if not o.alive or not foes(f, o) or o.ai.has("turret") or not visible_to(f, o):
+			continue
+		var d: float = o.position.distance_to(f.position)
+		if d < best_d and line_clear(f.position, o.position):
+			best_d = d
+			target = o
+	if target == null:
+		return
+	f.ai["cool"] = 0.85
+	f.ammo = float(BrawlFighter.AMMO_MAX)
+	shoot(f, _lead(f, target).rotated(_rng.randf_range(-0.05, 0.05)))
+
+
+func _turret_down(f: BrawlFighter) -> void:
+	Juice.burst(_fx, f.position + Vector2(0, -40), Color("#ffb347"), 40, 460.0)
+	Juice.ring(_fx, f.position + Vector2(0, -40), Color("#ff7a2f"), 220.0, 0.45)
+	Juice.shake(0.5)
+	Audio.play("stomp")
+	QA.log_event("turret_down", {"team": f.team})
+	if f.team == 1:
+		_win()
+	else:
+		_lose()
+
+
+# --- balon
+
+func goal_center(t: int) -> Vector2:
+	var cells: Dictionary = goal_cells[t]
+	if cells.is_empty():
+		var w: Vector2 = Vector2(_size) * TILE
+		return Vector2(w.x * 0.5, w.y - TILE * 0.5) if t == 0 else Vector2(w.x * 0.5, TILE * 0.5)
+	var sum: Vector2 = Vector2.ZERO
+	for c: Vector2i in cells.keys():
+		sum += center_of(c)
+	return sum / float(cells.size())
+
+
+func _closest_to_ball(team: int) -> BrawlFighter:
+	var best: BrawlFighter = null
+	var best_d: float = 1e9
+	var bp: Vector2 = ball["pos"]
+	for f: BrawlFighter in fighters:
+		if not f.alive or f.team != team or f.ai.has("turret") or (f.is_player and not autopilot):
+			continue
+		var d: float = f.position.distance_to(bp)
+		if d < best_d:
+			best_d = d
+			best = f
+	return best
+
+
+## Meta de la IA en el balon (Vector2.INF = la normal: pelear con su objetivo).
+func _ball_goal(f: BrawlFighter, target: BrawlFighter) -> Vector2:
+	var h: Variant = ball.get("holder")
+	var holder: BrawlFighter = h as BrawlFighter if h != null and is_instance_valid(h) else null
+	if holder == f:
+		return goal_center(1 - f.team)
+	if holder == null:
+		var bp: Vector2 = ball["pos"]
+		if _closest_to_ball(f.team) == f or f.position.distance_to(bp) < 260.0:
+			return bp
+		if target != null:
+			return Vector2.INF
+		return bp.lerp(goal_center(f.team), 0.45)
+	if foes(f, holder):
+		return Vector2.INF
+	## Un companero lo lleva: le abre camino por delante.
+	if target != null and f.position.distance_to(target.position) < 420.0:
+		return Vector2.INF
+	return holder.position + (goal_center(1 - f.team) - holder.position).normalized() * 220.0
+
+
+func kick(f: BrawlFighter) -> bool:
+	if ball.get("holder") != f:
+		return false
+	var gp: Vector2 = goal_center(1 - f.team)
+	var dir: Vector2 = f.facing
+	if f.position.distance_to(gp) < SHOT_RANGE * 1.1 or not f.is_player:
+		dir = (gp - f.position).normalized().rotated(_rng.randf_range(-0.06, 0.06))
+	ball["holder"] = null
+	ball["kicker"] = f
+	ball["cool"] = 0.4
+	ball["pos"] = f.position + dir * 44.0
+	ball["vel"] = dir * 1250.0
+	Audio.play("jump", 0.1)
+	if f.rig != null:
+		Juice.squash(f.rig, Vector2(1.15, 0.88), 0.1)
+	QA.log_event("kick", {"player": f.is_player, "team": f.team})
+	return true
+
+
+func _drop_ball(f: BrawlFighter) -> void:
+	ball["holder"] = null
+	ball["kicker"] = f
+	ball["cool"] = 0.5
+	ball["vel"] = Vector2.RIGHT.rotated(_rng.randf() * TAU) * 260.0
+	ball["pos"] = f.position
+
+
+func _ball_step(delta: float) -> void:
+	ball["cool"] = float(ball.get("cool", 0.0)) - delta
+	var h: Variant = ball.get("holder")
+	if h != null:
+		var holder: BrawlFighter = h as BrawlFighter
+		if not is_instance_valid(holder) or not holder.alive:
+			ball["holder"] = null
+		else:
+			ball["pos"] = holder.position + holder.facing * 34.0
+			_check_goal()
+			return
+	var v: Vector2 = ball["vel"]
+	var p: Vector2 = ball["pos"]
+	var nx: Vector2 = p + Vector2(v.x * delta, 0.0)
+	if blocked(cell_of(nx)) or boxes.has(cell_of(nx)):
+		v.x = -v.x * 0.7
+	else:
+		p = nx
+	var ny: Vector2 = p + Vector2(0.0, v.y * delta)
+	if blocked(cell_of(ny)) or boxes.has(cell_of(ny)):
+		v.y = -v.y * 0.7
+	else:
+		p = ny
+	v *= pow(0.35, delta)
+	if v.length() < 8.0:
+		v = Vector2.ZERO
+	ball["vel"] = v
+	ball["pos"] = p
+	if _check_goal():
+		return
+	## Lo coge quien lo toque (el que lo acaba de chutar espera un momento).
+	for f: BrawlFighter in fighters:
+		if not f.alive or f.ai.has("turret"):
+			continue
+		if f == ball.get("kicker") and float(ball["cool"]) > 0.0:
+			continue
+		if f.position.distance_to(p) < BrawlFighter.RADIUS + BALL_R + 6.0:
+			ball["holder"] = f
+			ball["vel"] = Vector2.ZERO
+			if f.is_player:
+				Audio.play("coin", 0.1, -4.0)
+			break
+
+
+func _check_goal() -> bool:
+	var c: Vector2i = cell_of(ball["pos"] as Vector2)
+	for t: int in 2:
+		if goal_cells[t].has(c):
+			_goal_scored(1 - t)
+			return true
+	return false
+
+
+func _goal_scored(team: int) -> void:
+	goals_score[team] += 1
+	var bp: Vector2 = ball["pos"]
+	Juice.burst(_fx, bp, Color("#ffe066"), 36, 420.0)
+	Juice.shake(0.4)
+	Audio.play("win" if team == 0 else "hurt")
+	UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("brawl_goal", "\u00a1GOL!") if team == 0 else Kit.text("brawl_goal_them", "\u00a1Gol de ellos!"),
+		Color("#ffe066") if team == 0 else UI.colors["peligro"], 52)
+	QA.log_event("goal", {"team": team, "score": goals_score.duplicate()})
+	if goals_score[team] >= BALL_GOALS or overtime:
+		if team == 0:
+			_win()
+		else:
+			_lose()
+		return
+	## Saque: todos a su salida y el balon al centro.
+	for f: BrawlFighter in fighters:
+		if f.ai.has("turret"):
+			continue
+		f.position = f.ai.get("home", _start)
+		f.velocity = Vector2.ZERO
+		if not f.alive and f.ai.has("respawn"):
+			f.ai["respawn"] = 0.0
+	ball = {"pos": _ball_start, "vel": Vector2.ZERO, "holder": null, "cool": 0.6}
+	bullets.clear()
+
+
+func _draw_ball() -> void:
+	var p: Vector2 = ball["pos"]
+	var lift: float = 22.0 if ball.get("holder") != null else 14.0
+	_fx.draw_set_transform(p + Vector2(0, 6), 0.0, Vector2(1.0, 0.42))
+	_fx.draw_circle(Vector2.ZERO, BALL_R, Color(0, 0, 0, 0.3))
+	_fx.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	var c: Vector2 = p + Vector2(0, -lift)
+	_fx.draw_circle(c, BALL_R + 3.0, Color(0.05, 0.05, 0.08))
+	_fx.draw_circle(c, BALL_R, Color("#fdfdfd"))
+	var spin: float = time_in_level * (6.0 if (ball["vel"] as Vector2).length() > 30.0 else 0.0)
+	for k: int in 5:
+		var d: Vector2 = Vector2.RIGHT.rotated(spin + TAU * float(k) / 5.0) * BALL_R * 0.62
+		_fx.draw_circle(c + d, 5.0, Color("#2b2d42"))
+	_fx.draw_circle(c, 6.0, Color("#2b2d42"))
+	if ball.get("holder") == null:
+		_fx.draw_arc(p + Vector2(0, 2), BALL_R + 10.0 + sin(time_in_level * 6.0) * 3.0, 0.0, TAU, 28, Color(1, 1, 1, 0.5), 3.0, true)
+
+
 # ------------------------------------------------------------------ final
 
 func _win() -> void:
@@ -1050,6 +1725,15 @@ func _win() -> void:
 ## 3 estrellas ganando rapido y entero; 2 si llegas con vida de sobra o a tiempo; 1 por ganar.
 func stars_earned() -> int:
 	var n: int = 1
+	if mode == "ball":
+		n += 1 if goals_score[1] == 0 else 0
+		n += 1 if time_in_level <= par else 0
+		return n
+	if mode == "turrets":
+		var mine: Variant = turrets[0]
+		n += 1 if mine != null and (mine as BrawlFighter).hp >= (mine as BrawlFighter).max_hp * 0.5 else 0
+		n += 1 if time_in_level <= par else 0
+		return n
 	if player.hp >= player.max_hp * 0.4:
 		n += 1
 	if time_in_level <= par:
@@ -1071,8 +1755,18 @@ func _lose() -> void:
 	if auto_retry:
 		retry.call_deferred()
 		return
-	var p: FailPanel = FailPanel.open(self, Kit.text("brawl_lose", "\u00a1Te han eliminado!"),
-		Kit.text("brawl_place", "Has quedado en el puesto {n}. \u00a1Otra vez!").format({"n": placed}))
+	var title: String = Kit.text("brawl_lose", "\u00a1Te han eliminado!")
+	var sub: String = Kit.text("brawl_place", "Has quedado en el puesto {n}. \u00a1Otra vez!").format({"n": placed})
+	match mode:
+		"ball":
+			title = Kit.text("brawl_lose_ball", "\u00a1Han ganado ellos!")
+			sub = Kit.text("brawl_lose_ball_sub", "{a} a {b}. \u00a1La revancha!").format({"a": goals_score[0], "b": goals_score[1]})
+		"turrets":
+			title = Kit.text("brawl_lose_turrets", "\u00a1Han derribado tu torreta!")
+			sub = Kit.text("brawl_lose_turrets_sub", "Protege la tuya y ataca la suya. \u00a1Otra vez!")
+		"survival":
+			sub = Kit.text("brawl_lose_survival", "Has llegado a la oleada {n} de {max}. \u00a1Otra vez!").format({"n": wave, "max": waves})
+	var p: FailPanel = FailPanel.open(self, title, sub)
 	p.closed.connect(retry)
 
 
@@ -1286,7 +1980,8 @@ func _notification(what: int) -> void:
 
 func bot_state() -> Dictionary:
 	return {"deaths": deaths, "coins": coins, "finished": finished, "failed": failed, "stomps": kills, "kills": kills,
-		"hp": player.hp if player != null else 0.0, "rivals_left": rivals_left(), "time": time_in_level, "place": placed}
+		"hp": player.hp if player != null else 0.0, "rivals_left": rivals_left(), "time": time_in_level, "place": placed,
+		"mode": mode, "score": goals_score.duplicate(), "wave": wave}
 
 
 func capture_delays() -> Vector2:
@@ -1320,6 +2015,18 @@ func _draw_floor() -> void:
 	## Lineas de pista finas (dan sensacion de campo de juego).
 	_floor.draw_rect(Rect2(Vector2(TILE * 0.5, TILE * 0.5), w - Vector2(TILE, TILE)), Color(1, 1, 1, 0.14), false, 4.0)
 	_floor.draw_arc(w * 0.5, TILE * 1.6, 0.0, TAU, 48, Color(1, 1, 1, 0.14), 4.0, true)
+	## Porterias: la tuya azul, la suya roja, con red.
+	for t: int in 2:
+		var gc: Color = Color("#4fc3ff") if t == 0 else Color("#ff5a4f")
+		for cell: Vector2i in goal_cells[t].keys():
+			var r: Rect2 = Rect2(Vector2(cell) * TILE, Vector2(TILE, TILE))
+			_floor.draw_rect(r, Color(gc, 0.35))
+			for k: int in 5:
+				var x: float = r.position.x + TILE * float(k) / 4.0
+				_floor.draw_line(Vector2(x, r.position.y), Vector2(x, r.end.y), Color(1, 1, 1, 0.35), 2.0)
+				var y: float = r.position.y + TILE * float(k) / 4.0
+				_floor.draw_line(Vector2(r.position.x, y), Vector2(r.end.x, y), Color(1, 1, 1, 0.35), 2.0)
+			_floor.draw_rect(r, gc, false, 5.0)
 
 
 func _draw_wall(n: Node2D, cell: Vector2i) -> void:
@@ -1412,6 +2119,14 @@ func _draw_fx() -> void:
 		_fx.draw_line(p - v * 46.0, p, Color(col, 0.28), w * 1.6, true)
 		_fx.draw_line(p - v * 22.0, p, col, w, true)
 		_fx.draw_circle(p, w * 0.7, col.lerp(Color.WHITE, 0.6))
+	## Escudos.
+	for f: BrawlFighter in fighters:
+		if f.alive and f.ai.has("shield"):
+			var a: float = clampf(float(f.ai["shield"]), 0.0, 1.0)
+			_fx.draw_circle(f.position + Vector2(0, -34), 62.0, Color(0.5, 0.9, 1.0, 0.16 * a))
+			_fx.draw_arc(f.position + Vector2(0, -34), 62.0, 0.0, TAU, 40, Color(0.6, 0.95, 1.0, 0.8 * a), 4.0, true)
+	if mode == "ball" and not ball.is_empty():
+		_draw_ball()
 	## Vida, cubos y municion por encima de todo.
 	for f: BrawlFighter in fighters:
 		f.draw_overlay(_fx)
@@ -1421,6 +2136,12 @@ func _draw_gas() -> void:
 	if time_in_level < gas_start or gas_radius >= gas_max:
 		return
 	var thick: float = 4000.0
-	var col: Color = Color(0.45, 0.95, 0.35, 0.32)
-	_gas.draw_arc(gas_center, gas_radius + thick * 0.5, 0.0, TAU, 96, col, thick)
-	_gas.draw_arc(gas_center, gas_radius, 0.0, TAU, 96, Color(0.7, 1.0, 0.5, 0.75), 6.0, true)
+	## Color de lo que cierra la arena (game.json "brawl_gas_color": marea azul, lava...); de serie, gas verde.
+	var base: Color = Color(str(Kit.param("brawl_gas_color", "#73f259")))
+	_gas.draw_arc(gas_center, gas_radius + thick * 0.5, 0.0, TAU, 96, Color(base, 0.34), thick)
+	## Borde con oleaje: un aro que ondula y otro mas claro.
+	var pts: PackedVector2Array = PackedVector2Array()
+	for k: int in 97:
+		var a: float = TAU * float(k) / 96.0
+		pts.append(gas_center + Vector2.RIGHT.rotated(a) * (gas_radius + sin(a * 14.0 + time_in_level * 3.0) * 8.0))
+	_gas.draw_polyline(pts, Color(base.lightened(0.45), 0.85), 7.0, true)

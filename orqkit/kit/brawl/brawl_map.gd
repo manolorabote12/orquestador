@@ -5,6 +5,8 @@ extends RefCounted
 ## 3 - Se llega andando a todos los rivales y a todas las cajas (las cajas cortan el paso
 ##     hasta que se rompen, asi que cuentan como muro).
 ## 4 - Rivales que se pueden ganar: vida, punteria, reaccion y gas dentro de margenes.
+## 5 - Modos: "ball" pide las dos porterias (G y g) y se llega a ellas; "turrets", las dos
+##     torretas (T y t); en los de equipo, como mucho 3 aliados (A) y tiempo de 60 a 300 s.
 
 const NEIGHBORS: Array[Vector2i] = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
 
@@ -25,6 +27,7 @@ static func analyze(level: Dictionary) -> Dictionary:
 	var rivals: Array[Vector2i] = []
 	var boxes: Array[Vector2i] = []
 	var players: int = 0
+	var marks: Dictionary = {}
 	for y: int in h:
 		var row: String = str(map[y])
 		for x: int in mini(row.length(), w):
@@ -36,6 +39,10 @@ static func analyze(level: Dictionary) -> Dictionary:
 					rivals.append(Vector2i(x, y))
 				"B":
 					boxes.append(Vector2i(x, y))
+				"A", "G", "g", "T", "t", "O":
+					if not marks.has(row[x]):
+						marks[row[x]] = []
+					(marks[row[x]] as Array).append(Vector2i(x, y))
 	if players != 1:
 		issues.append("brawl_player")
 	if rivals.is_empty() or rivals.size() > 6:
@@ -74,6 +81,22 @@ static func analyze(level: Dictionary) -> Dictionary:
 		if not touch:
 			issues.append("brawl_box_closed")
 			break
+	var mode: String = str(level.get("mode", "showdown"))
+	var need: Array = {"ball": ["G", "g"], "turrets": ["T", "t"]}.get(mode, [])
+	for ch: String in need:
+		if not marks.has(ch):
+			issues.append("brawl_%s_missing" % mode)
+			break
+	for ch: String in marks.keys():
+		for c: Variant in marks[ch]:
+			if not seen.has(c) and not issues.has("brawl_unreachable"):
+				issues.append("brawl_unreachable")
+	if (marks.get("A", []) as Array).size() > 3:
+		issues.append("brawl_allies")
+	if mode in ["ball", "turrets"]:
+		var t: float = float(level.get("time", 150.0))
+		if t < 60.0 or t > 300.0:
+			issues.append("brawl_time")
 	if float(seen.size()) < float(w * h) * 0.45:
 		issues.append("brawl_cramped")
 	var hp: float = float(level.get("rival_hp", 2600.0))

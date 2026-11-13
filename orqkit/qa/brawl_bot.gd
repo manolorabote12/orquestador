@@ -4,12 +4,25 @@ extends RefCounted
 ## 2 - Dispara con el boton de ataque (que apunta solo) como mucho 4 veces por segundo.
 ## 3 - Usa el super cuando lo tiene y el rival esta cerca.
 ## 4 - Con poca vida se aleja hasta curarse; huye del gas; recoge cubos y abre cajas si no hay nadie.
+## 5 - En los modos de equipo (supervivencia, balon, torretas) deja que el juego le mueva con la
+##     misma IA que sus companeros (piloto automatico), que sabe jugar a cada modo.
 
 const TAP_GAP: float = 0.25
 
 
 static func run(tree: SceneTree, game: Node, max_frames: int) -> bool:
 	game.set("auto_retry", true)
+	if str(game.get("mode")) != "showdown":
+		game.set("autopilot", true)
+		for f: int in max_frames:
+			await tree.physics_frame
+			if not is_instance_valid(game):
+				return false
+			if bool(game.get("finished")):
+				return true
+			if int(game.get("deaths")) >= 2:
+				return false
+		return false
 	var tap: float = 0.0
 	var think: float = 0.0
 	var flip: float = 1.2
@@ -69,7 +82,7 @@ static func _nearest_rival(game: Node, me: BrawlFighter) -> BrawlFighter:
 	var best: BrawlFighter = null
 	var best_d: float = 1e9
 	for o: BrawlFighter in game.get("fighters"):
-		if o == me or not o.alive:
+		if o == me or not o.alive or not bool(game.call("foes", me, o)):
 			continue
 		var d: float = o.position.distance_to(me.position)
 		if d < best_d:

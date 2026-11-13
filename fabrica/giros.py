@@ -50,6 +50,11 @@ GIROS: dict[str, dict] = {
 		"generos": ["plataformas", "runner", "volador", "horda"], "seguro": True, "mezcla": False,
 		"claves": ["fantasma", "contra ti mismo", "tu mejor tiempo", "speedrun", "ghost"],
 	},
+	"modos": {
+		"nombre": "Muchos modos", "que": "Cada nivel es un modo distinto: todos contra todos, supervivencia por oleadas, balón 3 contra 3 y torretas 3 contra 3",
+		"generos": ["arena"], "seguro": False, "mezcla": True,
+		"claves": ["modos", "3 contra 3", "3vs3", "3 vs 3", "balon", "balón", "pelota", "torretas", "supervivencia", "survival", "brawl ball"],
+	},
 	"cola": {
 		"nombre": "Laberinto serpiente", "que": "Mezcla con la serpiente: las casillas que dejas atrás se cierran",
 		"generos": ["laberinto"], "seguro": False, "mezcla": True,

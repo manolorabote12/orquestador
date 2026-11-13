@@ -1609,6 +1609,12 @@ def generar_arena(i: int, n: int, enemigos: list[str], dificultad: str, semilla:
 	3 - Al menos la mitad de la arena es suelo libre; mas muros, cajas y rivales segun avanza."""
 	rnd = random.Random(semilla)
 	d = _arena_d(i, n, dificultad, ajuste)
+	## Con el giro «modos» cada nivel es de un modo (todos contra todos, supervivencia, balon y torretas).
+	modo = MODOS_ARENA[i % len(MODOS_ARENA)] if (opciones or {}).get("modos") else "showdown"
+	if modo in ("ball", "turrets"):
+		return _arena_equipos(i, d, rnd, modo)
+	if modo == "survival":
+		return _arena_supervivencia(generar_arena(i, n, enemigos, dificultad, semilla, ajuste, None))
 	ancho = 13 + 2 * int(d * 2.0)
 	alto = 19 + 2 * int(d * 3.0)
 	mitad = ancho // 2
@@ -1679,13 +1685,141 @@ def generar_arena(i: int, n: int, enemigos: list[str], dificultad: str, semilla:
 	return filas
 
 
-def parametros_arena(i: int, n: int, dificultad: str, ajuste: float = 0.0) -> dict:
-	"""Vida, dano, punteria y reflejos de los rivales; cuando llega el gas y en cuanto se cierra."""
+def parametros_arena(i: int, n: int, dificultad: str, ajuste: float = 0.0, mapa: list[str] | None = None) -> dict:
+	"""Vida, dano, punteria y reflejos de los rivales; cuando llega el gas y en cuanto se cierra.
+	El modo sale del mapa (modo_arena): balon y torretas llevan tiempo; supervivencia, oleadas."""
 	d = _arena_d(i, n, dificultad, ajuste)
 	rivales = _arena_rivales(d)
-	return {"rival_hp": int(round((2000 + 1500 * d) / 100.0)) * 100, "rival_dmg": round(0.55 + 0.35 * d, 2),
+	out = {"rival_hp": int(round((2000 + 1500 * d) / 100.0)) * 100, "rival_dmg": round(0.55 + 0.35 * d, 2),
 		"aim": round(0.32 - 0.18 * d, 2), "reaction": round(0.7 - 0.3 * d, 2),
 		"gas_start": round(45.0 - 12.0 * d), "gas_time": round(40.0 - 10.0 * d), "par": 10 * rivales + 15}
+	modo = modo_arena(mapa or [])
+	if modo != "showdown":
+		out["mode"] = modo
+		## En equipo los rivales son algo mas flojos: el bot (y la gente) juegan con aliados que fallan.
+		out["rival_hp"] = int(round((1700 + 900 * d) / 100.0)) * 100
+		out["rival_dmg"] = round(0.48 + 0.25 * d, 2)
+		out["aim"] = round(out["aim"] + 0.04, 2)
+		out["reaction"] = round(out["reaction"] + 0.08, 2)
+	if modo == "survival":
+		out["waves"] = 2 + int(d * 2.0)
+		out["par"] = 25 * out["waves"] + 20
+	elif modo == "ball":
+		out["time"] = 120
+		out["par"] = 75
+	elif modo == "turrets":
+		out["time"] = 135
+		out["par"] = 100
+	return out
+
+
+## Modos de la arena (kit/brawl): el mapa dice cual es.
+MODOS_ARENA = ["showdown", "survival", "ball", "showdown", "turrets"]
+
+
+def modo_arena(mapa: list[str]) -> str:
+	t = "".join(mapa)
+	if "G" in t:
+		return "ball"
+	if "T" in t:
+		return "turrets"
+	if "A" in t:
+		return "survival"
+	return "showdown"
+
+
+def _arena_equipos(i: int, d: float, rnd: random.Random, modo: str) -> list[str]:
+	"""Campo de equipo (balon o torretas): simetrico de arriba a abajo y de izquierda a derecha,
+	tu equipo abajo (P y dos A) y el rival arriba (tres R). Balon: porterias de 3 en la primera y
+	la ultima fila (G la suya, g la tuya) y el balon (O) en el centro. Torretas: t arriba y T abajo."""
+	ancho = 13 + 2 * int(d * 1.0)
+	alto = 17 + 2 * int(d * 2.0)
+	mitad = ancho // 2
+	medio = alto // 2
+	abajo = {(alto - 2, mitad): "P", (alto - 3, mitad - 3): "A", (alto - 3, mitad + 3): "A"}
+	arriba = {(1, mitad): "R", (2, mitad - 3): "R", (2, mitad + 3): "R"}
+	if modo == "turrets":
+		abajo = {(alto - 2, mitad): "T", (alto - 4, mitad): "P", (alto - 3, mitad - 3): "A", (alto - 3, mitad + 3): "A"}
+		arriba = {(1, mitad): "t", (3, mitad): "R", (2, mitad - 3): "R", (2, mitad + 3): "R"}
+	fijo = dict(abajo)
+	fijo.update(arriba)
+	reservado = set()
+	for (y, x) in fijo:
+		for dy in (-1, 0, 1):
+			for dx in (-1, 0, 1):
+				reservado.add((y + dy, x + dx))
+	for dy in (-1, 0, 1):
+		for dx in (-1, 0, 1):
+			reservado.add((medio + dy, mitad + dx))
+	formas = [[(0, 0), (0, 1)], [(0, 0), (1, 0)], [(0, 0), (0, 1), (1, 0), (1, 1)], [(0, 0), (0, 1), (0, 2)], [(0, 0), (1, 0), (1, 1)]]
+	for _ in range(300):
+		g = [["." for _ in range(ancho)] for _ in range(alto)]
+		if modo == "ball":
+			for x in range(ancho):
+				g[0][x] = g[alto - 1][x] = "#"
+			for x in range(mitad - 1, mitad + 2):
+				g[0][x] = "G"
+				g[alto - 1][x] = "g"
+			g[0][mitad - 2] = g[0][mitad + 2] = g[alto - 1][mitad - 2] = g[alto - 1][mitad + 2] = "."
+
+		def poner(y: int, x: int, ch: str) -> bool:
+			"""Pone ch en (y, x) y en sus tres espejos."""
+			sitios = {(y, x), (y, ancho - 1 - x), (alto - 1 - y, x), (alto - 1 - y, ancho - 1 - x)}
+			for (yy, xx) in sitios:
+				if not (1 <= yy < alto - 1 and 0 <= xx < ancho) or (yy, xx) in reservado or g[yy][xx] != ".":
+					return False
+			for (yy, xx) in sitios:
+				g[yy][xx] = ch
+			return True
+
+		for _m in range(int(3 + 3 * d + i % 2)):
+			f = rnd.choice(formas)
+			y0, x0 = rnd.randint(2, medio - 1), rnd.randint(0, mitad - 1)
+			if all((y0 + dy, x0 + dx) not in reservado and 0 <= x0 + dx < mitad and y0 + dy < medio for dy, dx in f):
+				for dy, dx in f:
+					poner(y0 + dy, x0 + dx, "#")
+		for _a in range(2 + int(2 * d)):
+			y0, x0 = rnd.randint(2, medio - 1), rnd.randint(0, mitad - 2)
+			for dy in range(2):
+				for dx in range(2):
+					poner(y0 + dy, x0 + dx, "*")
+		for (y, x), ch in fijo.items():
+			g[y][x] = ch
+		if modo == "ball":
+			g[medio][mitad] = "O"
+		filas = ["".join(f) for f in g]
+		inicio = next((y, x) for (y, x), ch in fijo.items() if ch == "P")
+		visto = {inicio}
+		cola = [inicio]
+		while cola:
+			y, x = cola.pop()
+			for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+				ny, nx = y + dy, x + dx
+				if 0 <= ny < alto and 0 <= nx < ancho and (ny, nx) not in visto and filas[ny][nx] not in "#B":
+					visto.add((ny, nx))
+					cola.append((ny, nx))
+		marcas = [(y, x) for y in range(alto) for x in range(ancho) if filas[y][x] in "RAGgOTt"]
+		if all(m in visto for m in marcas) and len(visto) >= ancho * alto * 0.55:
+			return filas
+	return filas
+
+
+def _arena_supervivencia(filas: list[str]) -> list[str]:
+	"""Supervivencia: la arena normal con dos aliados (A) junto a tu salida; las R son de donde salen
+	las oleadas (como mucho 4, arriba)."""
+	g = [list(f) for f in filas]
+	alto, ancho = len(g), len(g[0])
+	py = next(y for y in range(alto) if "P" in filas[y])
+	px = filas[py].index("P")
+	puestos = 0
+	for (y, x) in [(py, px - 3), (py, px + 3), (py - 1, px - 2), (py - 1, px + 2), (py + 1, px - 2), (py + 1, px + 2)]:
+		if puestos < 2 and 0 <= y < alto and 0 <= x < ancho and g[y][x] in ".*":
+			g[y][x] = "A"
+			puestos += 1
+	rs = [(y, x) for y in range(alto) for x in range(ancho) if g[y][x] == "R"]
+	for (y, x) in sorted(rs, key=lambda p: p[0])[4:]:
+		g[y][x] = "."
+	return ["".join(f) for f in g]
 ## << genero arena
 
 

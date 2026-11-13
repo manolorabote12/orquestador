@@ -60,6 +60,7 @@ func _ready() -> void:
 	await _test_turns_party()
 	await _test_jumper()
 	await _test_brawl()
+	await _test_brawl_modes()
 	await _test_arena_live()
 	await _test_coop()
 	await _test_village()
@@ -2601,6 +2602,114 @@ func _test_brawl() -> void:
 	walled[1] = "##....R......"
 	check("arena: rival encerrado detectado", (MapRules.analyze(brawl_config(walled, {})["levels"][0])["issues"] as Array).has("brawl_unreachable"))
 	check("arena: rivales infalibles detectados", (MapRules.analyze(brawl_config(brawl_arena(), {"aim": 0.0})["levels"][0])["issues"] as Array).has("brawl_aim_perfect"))
+
+
+func brawl_ball_map() -> Array:
+	return ["####.GGG.####", "......R......", "...R.....R...", ".............", "..**.....**..", "..**.###.**..",
+		".............", "..#.......#..", "..#...O...#..", "..#.......#..", ".............", "..**.###.**..",
+		"..**.....**..", ".............", "...A.....A...", "......P......", "####.ggg.####"]
+
+
+func brawl_turret_map() -> Array:
+	return [".............", "......t......", "...R..R..R...", ".............", "..**.....**..", "..**..#..**..",
+		"...#.....#...", ".............", "...#.....#...", "..**..#..**..", "..**.....**..", ".............",
+		"...A..P..A...", "......T......", "............."]
+
+
+## Arena, modos y personajes: catalogo y desbloqueo, formas de disparar, supers, supervivencia,
+## balon 3 contra 3, torretas 3 contra 3, reaparecer y analizador.
+func _test_brawl_modes() -> void:
+	print("- Arena: modos y personajes")
+	var cat: Array[Dictionary] = Brawlers.catalog()
+	check("personajes: 8 con nombre, disparo y super", cat.size() == 8 and str(cat[2]["attack"]) == "franco" and str(cat[1]["super"]) == "escudo")
+	var t0: int = Chests.trophies()
+	check("personajes: los dos primeros libres, el resto por trofeos", Brawlers.unlocked(cat[0]) and Brawlers.unlocked(cat[1]) and (t0 >= 1200 or not Brawlers.unlocked(cat[7])))
+	check("personajes: no se elige uno bloqueado", t0 >= 1200 or not Brawlers.choose("rey"))
+	check("personajes: se elige uno libre", Brawlers.choose("coraza") and str(Brawlers.chosen()["id"]) == "coraza")
+	var duel: Array = [".........", ".........", "....R....", ".........", ".........", ".........", ".........", "....P....", ".........", ".........", "........."]
+	var game: Node = await start_game(brawl_config(duel, {"reaction": 99.0}), 0)
+	var me: BrawlFighter = game.get("player")
+	check("personajes: el elegido cambia vida y velocidad", me.max_hp > 3200.0 * 1.3 and me.speed < 330.0, "%.0f %.0f" % [me.max_hp, me.speed])
+	game.call("shoot", me, Vector2.UP)
+	check("personajes: la escopeta lanza 5 balas", (game.get("bullets") as Array).size() == 5)
+	(game.get("bullets") as Array).clear()
+	## Escudo: casi sin dano 3 s.
+	me.super_charge = 1.0
+	game.call("use_super")
+	var hp0: float = me.hp
+	game.call("_hit_fighter", me, 1000.0, null, Color.WHITE)
+	check("super escudo: el golpe hace un cuarto", absf((hp0 - me.hp) - 250.0) < 1.0, "%.0f" % (hp0 - me.hp))
+	await stop_game(game)
+	## Francotiradora y bomba.
+	Save.meta()["brawler"] = "aguja"
+	game = await start_game(brawl_config(duel, {"reaction": 99.0}), 0)
+	me = game.get("player")
+	var foe: BrawlFighter = (game.get("fighters") as Array)[1]
+	if str(Brawlers.chosen()["id"]) == "aguja":
+		game.call("shoot", me, Vector2.UP)
+		check("personajes: la francotiradora lanza 1 bala fuerte", (game.get("bullets") as Array).size() == 1 and float((game.get("bullets") as Array)[0]["dmg"]) > 600.0)
+		(game.get("bullets") as Array).clear()
+		await frames(2)
+		var fh: float = foe.hp
+		me.super_charge = 1.0
+		game.call("use_super")
+		for k: int in 60:
+			await get_tree().physics_frame
+		check("super bomba: explota donde esta el rival", foe.hp < fh, "%.0f -> %.0f" % [fh, foe.hp])
+	await stop_game(game)
+	Save.meta()["brawler"] = "tenaza"
+	## Supervivencia: oleadas y el bot (piloto automatico) aguanta.
+	var surv: Array = [".............", "..R.......R..", ".............", "..**.....**..", ".............", "....#...#....",
+		".............", ".............", "..**.....**..", ".............", "...A.......A.", "......P......", "............."]
+	game = await start_game(brawl_config(surv, {"mode": "survival", "waves": 2, "rival_hp": 1800}), 0)
+	check("supervivencia: primera oleada y aliados", int(game.get("wave")) == 1 and int(game.call("rivals_left")) == 2 and (game.get("fighters") as Array).size() == 5,
+		str(game.call("bot_state")))
+	var done: bool = await QaBot.run(get_tree(), game, 60 * 120)
+	check("supervivencia: el bot aguanta todas las oleadas", done and int(game.get("wave")) == 2, str(game.call("bot_state")))
+	await stop_game(game)
+	## Balon: chutar a puerta marca.
+	game = await start_game(brawl_config(brawl_ball_map(), {"mode": "ball", "reaction": 99.0}), 0)
+	me = game.get("player")
+	check("balon: 3 contra 3 con balon", (game.get("fighters") as Array).size() == 6 and not (game.get("ball") as Dictionary).is_empty())
+	var ball: Dictionary = game.get("ball")
+	ball["pos"] = me.position + Vector2(0, -40)
+	await frames(3)
+	check("balon: quien lo toca lo lleva", (game.get("ball") as Dictionary).get("holder") == me)
+	me.position = game.call("center_of", Vector2i(6, 4))
+	for o: BrawlFighter in game.get("fighters"):
+		if o.team == 1:
+			o.position = game.call("center_of", Vector2i(1, 10))
+	await frames(1)
+	check("balon: el ataque chuta", bool(game.call("attack")))
+	for k: int in 60:
+		await get_tree().physics_frame
+	check("balon: gol en su porteria", (game.get("goals_score") as Array)[0] == 1, str(game.call("bot_state")))
+	await stop_game(game)
+	game = await start_game(brawl_config(brawl_ball_map(), {"mode": "ball", "time": 150}), 0)
+	done = await QaBot.run(get_tree(), game, 60 * 200)
+	check("balon: el bot gana el partido", done, str(game.call("bot_state")))
+	await stop_game(game)
+	## Torretas: reaparecer y ganar.
+	game = await start_game(brawl_config(brawl_turret_map(), {"mode": "turrets"}), 0)
+	me = game.get("player")
+	var turrets: Array = game.get("turrets")
+	check("torretas: una por equipo", turrets[0] != null and turrets[1] != null and (turrets[1] as BrawlFighter).team == 1)
+	me.hit(99999.0)
+	game.call("_on_death", me, null)
+	check("torretas: al caer no pierdes", not bool(game.get("failed")))
+	for k: int in 200:
+		await get_tree().physics_frame
+	check("torretas: vuelves a tu salida", me.alive and me.hp == me.max_hp)
+	await stop_game(game)
+	game = await start_game(brawl_config(brawl_turret_map(), {"mode": "turrets", "time": 180}), 0)
+	done = await QaBot.run(get_tree(), game, 60 * 230)
+	check("torretas: el bot derriba la torreta rival", done, str(game.call("bot_state")))
+	await stop_game(game)
+	var MapRules: GDScript = load("res://kit/brawl/brawl_map.gd")
+	check("arena: analizador acepta balon y torretas",
+		bool(MapRules.analyze(brawl_config(brawl_ball_map(), {"mode": "ball"})["levels"][0])["completable"]) and bool(MapRules.analyze(brawl_config(brawl_turret_map(), {"mode": "turrets"})["levels"][0])["completable"]),
+		str(MapRules.analyze(brawl_config(brawl_ball_map(), {"mode": "ball"})["levels"][0])["issues"]) + str(MapRules.analyze(brawl_config(brawl_turret_map(), {"mode": "turrets"})["levels"][0])["issues"]))
+	check("arena: balon sin porteria detectado", (MapRules.analyze(brawl_config(duel, {"mode": "ball"})["levels"][0])["issues"] as Array).has("brawl_ball_missing"))
 
 
 func village_config(map: Array, extra: Dictionary) -> Dictionary:

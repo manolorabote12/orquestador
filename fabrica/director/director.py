@@ -668,6 +668,19 @@ def a_game(d: dict, niveles: list[list[str]]) -> dict:
 	textos.update(generos.de(d)["textos"])
 	if es_carreras(d):
 		textos["rivals"] = [e["nombre"] for e in d["enemigos"]]
+	## Arena: personajes con nombres del tema y lo que cierra la arena (marea, niebla, lava...).
+	brawl: dict = {}
+	if d.get("genero") == "arena" and isinstance(d.get("contenido"), dict):
+		ct = d["contenido"]
+		if ct.get("brawlers"):
+			brawl["brawlers"] = json.loads(json.dumps(ct["brawlers"]))
+		hz = ct.get("hazard") or {}
+		if hz.get("name"):
+			nombre = str(hz["name"])
+			textos["brawl_gas_in"] = nombre[:1].upper() + nombre[1:] + " en {t}"
+			textos["brawl_gas"] = "¡Llega " + ("la " if nombre.lower().endswith("a") else "el ") + nombre.lower() + "!"
+		if hz.get("color"):
+			brawl["brawl_gas_color"] = hz["color"]
 	return {
 		"title": d["titulo"],
 		"tile_size": 64,
@@ -680,6 +693,7 @@ def a_game(d: dict, niveles: list[list[str]]) -> dict:
 		"boss_name": (d.get("jefe") or {}).get("nombre", "") if _con_jefe(d) else "",
 		"texts": textos,
 		"levels": _niveles_game(d, niveles),
+		**brawl,
 		## Album de personajes (kit/album.gd): el kit solo usa las cartas cuyo sprite exista.
 		"album": album(d),
 		**_ab_game(d, niveles),
@@ -771,7 +785,7 @@ def _nivel(d: dict, i: int, nombre: str, mapa: list[str]) -> dict:
 	n = len(d["niveles"])
 	if g["parametros"]:
 		extra = {"hielo": any("I" in fila for fila in mapa)} if g["parametros"] == "parametros_puzle" else {}
-		if g["parametros"] in ("parametros_cajas", "parametros_golf", "parametros_pesca", "parametros_fusion", "parametros_tubos", "parametros_burbujas", "parametros_mazmorras", "parametros_mazo", "parametros_cocina", "parametros_mahjong", "parametros_aparcamiento", "parametros_sudoku", "parametros_nonograma", "parametros_cortar", "parametros_penaltis", "parametros_agujero", "parametros_ciudad", "parametros_espiral", "parametros_canasta", "parametros_buscaminas", "parametros_conecta", "parametros_damas", "parametros_billar", "parametros_solitario", "parametros_parchis", "parametros_caida", "parametros_bolos", "parametros_mundo", "parametros_royale", "parametros_cruzar", "parametros_arco", "parametros_cubos", "parametros_parkour", "parametros_tienda", "parametros_futbol", "parametros_terror", "parametros_conduccion", "parametros_zombis", "parametros_baloncesto", "parametros_tenis", "parametros_karts", "parametros_multitud", "parametros_pedidos", "parametros_poder", "parametros_diferencias", "parametros_rompecabezas", "parametros_pintar", "parametros_cuchillos", "parametros_arquero", "parametros_flechas", "parametros_numeros", "parametros_cartas_locas", "parametros_domino", "parametros_bloques_colores", "parametros_tuberias", "parametros_ajedrez", "parametros_reversi", "parametros_buscar", "parametros_deslizar", "parametros_ahorcado", "parametros_flota", "parametros_simon", "parametros_estrategia", "parametros_autobatalla", "parametros_gemas", "parametros_coleccionables", "parametros_roguelike", "parametros_bombas", "parametros_artilleria", "parametros_comecocos", "parametros_cadena", "parametros_lucha", "parametros_sandia", "parametros_pinball", "parametros_metroidvania", "parametros_sigilo"):
+		if g["parametros"] in ("parametros_cajas", "parametros_golf", "parametros_pesca", "parametros_fusion", "parametros_tubos", "parametros_burbujas", "parametros_mazmorras", "parametros_mazo", "parametros_cocina", "parametros_mahjong", "parametros_aparcamiento", "parametros_sudoku", "parametros_nonograma", "parametros_cortar", "parametros_penaltis", "parametros_agujero", "parametros_ciudad", "parametros_espiral", "parametros_canasta", "parametros_buscaminas", "parametros_conecta", "parametros_damas", "parametros_billar", "parametros_solitario", "parametros_parchis", "parametros_caida", "parametros_bolos", "parametros_mundo", "parametros_royale", "parametros_cruzar", "parametros_arco", "parametros_cubos", "parametros_parkour", "parametros_tienda", "parametros_futbol", "parametros_terror", "parametros_conduccion", "parametros_zombis", "parametros_baloncesto", "parametros_tenis", "parametros_karts", "parametros_multitud", "parametros_pedidos", "parametros_poder", "parametros_diferencias", "parametros_rompecabezas", "parametros_pintar", "parametros_cuchillos", "parametros_arquero", "parametros_flechas", "parametros_numeros", "parametros_cartas_locas", "parametros_domino", "parametros_bloques_colores", "parametros_tuberias", "parametros_ajedrez", "parametros_reversi", "parametros_buscar", "parametros_deslizar", "parametros_ahorcado", "parametros_flota", "parametros_simon", "parametros_estrategia", "parametros_autobatalla", "parametros_gemas", "parametros_coleccionables", "parametros_roguelike", "parametros_bombas", "parametros_artilleria", "parametros_comecocos", "parametros_cadena", "parametros_lucha", "parametros_sandia", "parametros_pinball", "parametros_metroidvania", "parametros_sigilo", "parametros_arena"):
 			extra = {"mapa": mapa}
 		## Giros que cambian los parametros del nivel (el viento del hoyo, la tormenta).
 		gs = d.get("giros") or []
@@ -942,6 +956,7 @@ def opciones_niveles(d: dict) -> dict:
 		"piedras": "piedras" in (d.get("giros") or []),
 		"hielo": "hielo" in (d.get("giros") or []),
 		"tuneles": "tuneles" in (d.get("giros") or []),
+		"modos": "modos" in (d.get("giros") or []),
 		"estilos_superv": [x for x in (d.get("giros") or []) if x in ("apocalipsis", "invierno", "caza")],
 		"estilos_rpg": estilos_rpg(d),
 		"contenido_rpg": d.get("contenido") if d.get("genero") == "rpg" else None,

@@ -17,7 +17,8 @@ import re
 import giros
 from niveles import rpg_equipo
 
-GENEROS = ("rpg", "supervivencia", "horda", "zombis", "imperio", "karts", "tycoon", "tragaperras", "reino")
+GENEROS = ("rpg", "supervivencia", "horda", "zombis", "imperio", "karts", "tycoon", "tragaperras", "reino", "arena")
+BRAWLERS = ("tenaza", "coraza", "aguja", "rapida", "alga", "tinta", "perla", "rey")
 PATRONES = ("shot", "fan", "orbit", "aura", "nova", "chain", "bomb", "whip")
 STATS_HORDA = {"speed": (0.03, 0.2), "hp": (1, 1), "magnet": (0.1, 0.6), "power": (0.05, 0.25), "haste": (0.03, 0.12), "area": (0.05, 0.2), "count": (1, 1)}
 NUMEROS_ARMA = {"cd": (0.15, 4.0), "count": (1, 16), "dmg": (0.5, 12.0), "pierce": (1, 5), "range": (200, 900), "radius": (40, 260),
@@ -653,6 +654,43 @@ def _reino(c: dict, err) -> dict:
 	return out
 
 
+# ------------------------------------------------------------------ arena
+
+def _arena(c: dict, err) -> dict:
+	"""Personajes de la arena (8 papeles fijos: kit/brawl/brawlers.gd) con nombres y color del tema, y
+	el nombre y color de lo que cierra la arena (el gas: marea, niebla, lava...)."""
+	out: dict = {}
+	bs = []
+	for k, b in _dic(err, "brawlers", c.get("brawlers", {}), 8).items():
+		if k not in BRAWLERS:
+			err(f"contenido/brawlers/{k}: ids {', '.join(BRAWLERS)}")
+			continue
+		if not isinstance(b, dict):
+			err(f"contenido/brawlers/{k}: objeto con name")
+			continue
+		x = {"id": k, "name": _nombre(err, f"brawlers/{k}/name", b.get("name", ""), 16)}
+		if "tint" in b:
+			if isinstance(b["tint"], str) and COLOR.match(b["tint"]):
+				x["tint"] = b["tint"]
+			else:
+				err(f"contenido/brawlers/{k}/tint: color #rrggbb")
+		bs.append(x)
+	if bs:
+		out["brawlers"] = bs
+	hz = c.get("hazard")
+	if hz is not None:
+		if not isinstance(hz, dict):
+			err("contenido/hazard: objeto con name y color")
+		else:
+			out["hazard"] = {"name": _nombre(err, "hazard/name", hz.get("name", ""), 14)}
+			col = hz.get("color", "")
+			if isinstance(col, str) and COLOR.match(col):
+				out["hazard"]["color"] = col
+			elif col:
+				err("contenido/hazard/color: color #rrggbb")
+	return out
+
+
 def validar(genero: str, c) -> tuple[dict, list[str]]:
 	"""(contenido limpio, errores). Sin errores, el limpio es lo que va al juego."""
 	err = _Err()
@@ -660,7 +698,7 @@ def validar(genero: str, c) -> tuple[dict, list[str]]:
 		return {}, ["contenido: tiene que ser un objeto"]
 	if genero not in GENEROS:
 		return {}, [f"contenido: solo para {', '.join(GENEROS)} (este juego es {genero})"]
-	limpio = {"rpg": _rpg, "supervivencia": _supervivencia, "horda": _horda, "zombis": _fps, "imperio": _imperio, "karts": _karts, "tycoon": _tycoon, "tragaperras": _tragaperras, "reino": _reino}[genero](c, err)
+	limpio = {"rpg": _rpg, "supervivencia": _supervivencia, "horda": _horda, "zombis": _fps, "imperio": _imperio, "karts": _karts, "tycoon": _tycoon, "tragaperras": _tragaperras, "reino": _reino, "arena": _arena}[genero](c, err)
 	return copy.deepcopy(limpio), list(err)
 
 
@@ -695,6 +733,8 @@ def guia(genero: str | None = None) -> str:
 		partes.append(GUIA_TRAGAPERRAS)
 	if genero in (None, "reino") and fiable("reino"):
 		partes.append(GUIA_REINO)
+	if genero in (None, "arena") and fiable("arena"):
+		partes.append(GUIA_ARENA)
 	if not partes:
 		return ""
 	return ("CONTENIDO PROPIO (opcional, campo «contenido», solo en los generos de abajo): inventa el contenido de ESTE "
@@ -719,3 +759,5 @@ GUIA_TYCOON = """- tycoon: {"cur": "$" (o €, £, ¥ o hasta 3 letras), "biz": 
 GUIA_TRAGAPERRAS = """- tragaperras: {"village": nombre de la aldea, "symbols": {coin/bag/star/chest/energy/hammer/pig: {"name", "look" (coin, bag, chest, energy, hammer, pig, star, cherry, bell, seven, gem, crown)}}, "buildings": {casa/molino/pozo/torre/estatua: {"name", "look" (house, tower, mill, statue, ship, tree, castle, well, tent, bridge)}}}. Los papeles no cambian (energy da tiradas, hammer abre cofres, pig es el asalto); cambia nombres y dibujos al tema. Monedas de mentira: nada de dinero real. Ejemplo: isla pirata con doblones, cofres y loros; puerto, barco, faro y fortaleza."""
 
 GUIA_REINO = """- reino: {"realm": nombre del reino, "res": {food/wood/stone: {"name"}}, "buildings": {castillo/granja/aserradero/cantera/cuartel/establo/arqueria: {"name", "look" (castle, farm, mill, quarry, barracks, stable, range)}}, "troops": {infantry/cavalry/archer: {"name", "hp", "atk"}}, "heroes": {amadea/jabel/saul: {"name"}}, "camp_names": [2-6 nombres de campamentos enemigos, el ultimo el jefe]}. Los papeles no cambian (infanteria gana a caballeria, caballeria a arqueros, arqueros a infanteria); cambia los nombres al tema y la vida y el ataque como mucho un 30 % (de serie: lanceros 12 y 3, jinetes 14 y 4, arqueros 7 y 5). Ejemplo: un reino helado con iglu-castillo, pescaderia, leñera y mina de hielo; cazadores, trineos de lobos y lanzanieves; campamentos de yetis."""
+
+GUIA_ARENA = """- arena: {"brawlers": {tenaza/coraza/aguja/rapida/alga/tinta/perla/rey: {"name", "tint" "#rrggbb"}}, "hazard": {"name", "color"}}. Los papeles no cambian (tenaza: rafaga y onda; coraza: escopeta y escudo, mucha vida; aguja: francotiradora con bomba; rapida: veloz con embestida; alga: cura al equipo; tinta: escopeta con bomba; perla: tiro largo y onda; rey: el mas fuerte, se gana el ultimo); pon nombres del tema (cortos, 16 letras como mucho) y un tinte claro distinto a cada uno. hazard es lo que cierra la arena (de serie, gas verde). Ejemplo: cangrejos en una playa con Pinzas, Caparazon, Arponera, Corre-Corre, Anemona, Calamar, Perla y Rey Cangrejo; la marea azul (#3fa9f5) que sube."""
