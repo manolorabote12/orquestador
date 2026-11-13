@@ -91,7 +91,14 @@ export function vistaGaleria(app: App): VistaHecha {
   function poster(j: JuegoEscaparate, grande = false): HTMLElement {
     const f = app.api.archivosEscaparate(j);
     const img = h("img", { class: "gal-portada", alt: "", loading: "lazy", src: f.portada });
-    img.addEventListener("error", () => { img.src = f.icono; img.classList.add("solo-icono"); });
+    // Sin portada: el icono; sin icono tampoco (o en la demostración), la portada ilustrada de su género.
+    img.addEventListener("error", () => {
+      if (img.dataset.paso === "2") return;
+      if (!img.dataset.paso && f.icono) { img.dataset.paso = "1"; img.src = f.icono; img.classList.add("solo-icono"); return; }
+      img.dataset.paso = "2";
+      img.classList.remove("solo-icono");
+      img.src = `generos_arte/${j.genero}.webp`;
+    });
     const corazon = h("button", { class: "gal-megusta", type: "button", "aria-label": `Me gusta (${j.megusta})` }, `♥ ${j.megusta}`);
     corazon.addEventListener("click", async (e) => {
       e.stopPropagation();

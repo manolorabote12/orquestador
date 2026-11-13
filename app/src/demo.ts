@@ -367,8 +367,8 @@ export class Demo implements Backend {
     return base + (l.has(proyectoId) ? 1 : 0);
   }
 
-  archivosEscaparate(_j: JuegoEscaparate) {
-    return { icono: ARCHIVOS["demo/icono.png"], portada: ARCHIVOS["demo/capturas/3_juego.jpg"], pck: null };
+  archivosEscaparate(j: JuegoEscaparate) {
+    return { icono: ARCHIVOS["demo/icono.png"], portada: `generos_arte/${j.genero}.webp`, pck: null };
   }
 
   async anuncioGaleria(_proyectoId: string, _tipo: "intersticial" | "premio") {

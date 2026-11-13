@@ -16,7 +16,7 @@ import { pasosLanzamiento, siguientePaso, type AccionPaso } from "../lanzamiento
 import { seccionGanancias } from "./ganancias";
 import { botonReto } from "./reto";
 import qrcode from "qrcode-generator";
-import { ICONOS, abrir, aviso, avisoError, bloqueError, h, hace, svg, type VistaHecha } from "../ui";
+import { ICONOS, abrir, aviso, avisoError, bloqueError, h, hace, svg, type VistaHecha, fotoGenero } from "../ui";
 import { abrirClip, abrirJugador } from "../jugador";
 import { mensajeError } from "../errores";
 import { ALTO, ANCHO, dibujarCartel, modulosQr } from "../cartel";
@@ -27,7 +27,6 @@ import { OCASIONES, estadoRegalo, validarRegalo, type RegaloJuego } from "../reg
 import { IDEAS_PREMIO, codigoValido, resumenPremio, textoCanje, validarPremio, type PremioReal } from "../premio";
 
 // Pantalla vacía: el plano de un móvil a medio dibujar (líneas de trazos que avanzan).
-const PLANO_VACIO = `<svg viewBox="0 0 148 148" class="empty-plano" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect class="trazo" x="44" y="14" width="60" height="120" rx="9" stroke="#e8b04b" stroke-width="2.2"/><path class="trazo" d="M52 104h44M52 92h14v-12h16v12h14" stroke="#9fb4cc" stroke-width="1.8"/><circle cx="74" cy="56" r="11" stroke="#f6cf7a" stroke-width="2.2"/><circle cx="74" cy="56" r="3.4" fill="#f6cf7a"/><path d="M74 45v-7M70 38h8" stroke="#f6cf7a" stroke-width="2"/><path d="M18 30h14M25 23v14M116 112h14M123 105v14" stroke="#8aa3bf" stroke-width="1.6"/><path class="trazo" d="M30 134h88" stroke="#8aa3bf" stroke-width="1.4"/></svg>`;
 
 const ESTADOS: Record<Trabajo["status"], string> = {
   queued: "en cola", running: "fabricando", done: "listo", failed: "no salió",
@@ -142,8 +141,9 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       }
     }
     const cuerpo = entradas.length ? tarjetas : h("div", { class: "empty" },
-      svg(PLANO_VACIO),
-      h("p", {}, "Todavía no has fabricado ningún juego."), h("div", { style: "height:12px" }),
+      h("p", {}, "Todavía no has fabricado ningún juego."),
+      h("div", { class: "vacio-ideas", "aria-hidden": "true" }, ...["plataformas", "puzle", "horda"].map((id) => fotoGenero(id, { width: "96", height: "170" }))),
+      h("div", { style: "height:12px" }),
       h("button", { class: "btn btn-brass", onclick: () => app.ir("taller") }, "Ir al taller"));
     // 2 - Con juegos ya hechos: invitar al siguiente (lo que más hace volver a la app).
     const siguiente = entradas.length ? h("section", { class: "sheet siguiente" },

@@ -7,7 +7,7 @@ import { seccionEscaparate, tarjetaBienvenida } from "./escaparate";
 import { seccionReto } from "./reto";
 import { abrirJugador } from "../jugador";
 import { GENERO_NOMBRE, GIROS, PLANTILLAS, type Plantilla } from "../plantillas-datos";
-import { ICONOS, abrir, aviso, crearChispa, h, svg, type VistaHecha } from "../ui";
+import { ICONOS, abrir, aviso, crearChispa, h, svg, type VistaHecha, fotoGenero } from "../ui";
 import { mensajeError } from "../errores";
 import { encaja, nuevos, type Tipo } from "../catalogo";
 import { USOS, infoUso, type Uso } from "../usos";
@@ -191,6 +191,11 @@ const CATALOGO: [string, string, string][] = [
 // Género de cada entrada del catálogo (mismo orden): su captura real está en public/generos/<id>.webp.
 const CATALOGO_ID: string[] = ["plataformas", "runner", "volador", "saltos", "corredor", "carreras", "naves", "horda", "torres", "rompebloques", "puzle", "bloques", "cajas", "serpiente", "memoria", "preguntas", "apilar", "topos", "arena", "aldea", "ritmo", "clicker", "cartas", "rpg", "laberinto", "golf", "pesca", "fusion", "tubos", "burbujas", "imperio", "minas", "mazmorras", "granja", "mazo", "aventura", "cocina", "mahjong", "aparcamiento", "sopa", "sudoku", "nonograma", "cortar", "penaltis", "agujero", "ciudad", "espiral", "canasta", "buscaminas", "conecta", "damas", "billar", "solitario", "parchis", "caida", "bolos", "mundo", "royale", "cruzar", "arco", "cubos", "parkour", "tienda", "futbol", "terror", "conduccion", "zombis", "baloncesto", "tenis", "karts", "supervivencia", "triple", "tornillos", "hexas", "autobus", "duelo", "escalada", "tirachinas", "plantas", "palabra", "letras", "tycoon", "tragaperras", "reino", "multitud", "pedidos", "poder", "diferencias", "rompecabezas", "pintar", "cuchillos", "arquero", "flechas", "numeros", "cartas_locas", "domino", "bloques_colores", "tuberias", "ajedrez", "reversi", "buscar", "deslizar", "ahorcado", "flota", "simon", "estrategia", "autobatalla", "gemas", "coleccionables", "roguelike", "bombas", "artilleria", "comecocos", "cadena", "lucha", "sandia", "pinball", "metroidvania", "sigilo"];
 
+// Carrusel de arriba del taller: los tipos que más se piden, en grande.
+const DESTACADOS: [string, string][] = [["plataformas", "Plataformas"], ["rpg", "RPG de batallas"], ["reino", "Reino y conquista"],
+  ["royale", "Battle royale"], ["supervivencia", "Supervivencia"], ["horda", "Hordas"], ["carreras", "Carreras"],
+  ["puzle", "Puzle de combinar"], ["torres", "Defensa de torres"], ["tycoon", "Tycoon"], ["fusion", "Fusión"], ["runner", "Runner"]];
+
 const PASOS: [string, string][] = [
   ["diseno", "Diseño del juego"],
   ["niveles", "Niveles"],
@@ -244,7 +249,7 @@ export function vistaTaller(app: App): VistaHecha {
   const recientes = nuevos(CATALOGO_ID);
   CATALOGO.forEach(([nombre, que, arranque], i) => {
     const id = CATALOGO_ID[i];
-    const foto = id ? h("img", { class: "genero-foto", src: `generos/${id}.webp`, alt: "", loading: "lazy", width: "90", height: "160" }) : "";
+    const foto = id ? fotoGenero(id, { class: "genero-foto", width: "90", height: "160" }) : "";
     const elegir = h("button", { class: "genero con-foto", type: "button", onclick: () => {
       idea.value = arranque;
       soltarPlantilla();
@@ -412,8 +417,24 @@ export function vistaTaller(app: App): VistaHecha {
       idea.focus();
       idea.setSelectionRange(idea.value.length, idea.value.length);
       idea.scrollIntoView({ behavior: "smooth", block: "center" });
-    } }, h("img", { src: `generos/${id}.webp`, alt: "", loading: "lazy", width: "84", height: "112" }), h("span", {}, nombre)));
+    } }, fotoGenero(id, { width: "84", height: "112" }), h("span", {}, nombre)));
   });
+  // Carrusel grande: «Haz un juego como...» con las portadas ilustradas; un toque deja la frase empezada.
+  const carrusel = h("div", { class: "carrusel", role: "list", "aria-label": "Tipos de juego destacados" });
+  for (const [id, titulo] of DESTACADOS) {
+    const i = CATALOGO_ID.indexOf(id);
+    if (i < 0) continue;
+    const [, que, arranque] = CATALOGO[i];
+    carrusel.append(h("button", { class: "carrusel-item", type: "button", role: "listitem", onclick: () => {
+      idea.value = arranque;
+      soltarPlantilla();
+      actualizar();
+      idea.focus();
+      idea.setSelectionRange(idea.value.length, idea.value.length);
+      idea.scrollIntoView({ behavior: "smooth", block: "center" });
+    } }, fotoGenero(id, { width: "180", height: "320" }), h("span", { class: "carrusel-texto" }, h("strong", {}, titulo), h("small", {}, que))));
+  }
+  const destacados = h("section", { class: "destacados" }, h("h2", { class: "destacados-titulo" }, "Haz un juego como…"), carrusel);
   (tipos.querySelector("summary") as HTMLElement).textContent = `Ver los ${CATALOGO.length} tipos de juego`;
   const mas = h("details", { class: "tipos mas-formas" }, h("summary", {}, "Más formas de empezar: plantillas, ideas originales, género nuevo"),
     ganchos, plantillas, aMedidaFila);
@@ -622,6 +643,7 @@ export function vistaTaller(app: App): VistaHecha {
 
   function pintar(t: Trabajo) {
     form.hidden = true;
+    destacados.hidden = true;
     banco.hidden = false;
     titulo.textContent = t.titulo ? t.titulo : "Fabricando";
     const hechos = new Set(t.progress.filter((e) => e.estado === "ok").map((e) => e.paso));
@@ -746,6 +768,7 @@ export function vistaTaller(app: App): VistaHecha {
   function seguir(id: string) {
     dejarDeSeguir?.();
     form.hidden = true;
+    destacados.hidden = true;
     banco.hidden = false;
     resultado.hidden = true;
     const inicio = Date.now();
@@ -770,6 +793,7 @@ export function vistaTaller(app: App): VistaHecha {
     resultado.hidden = true;
     banco.hidden = true;
     form.hidden = false;
+    destacados.hidden = false;
     chispa.decir("¿Qué fabricamos ahora?");
     actualizar();
     idea.focus();
@@ -785,7 +809,7 @@ export function vistaTaller(app: App): VistaHecha {
     idea.focus();
     idea.scrollIntoView({ behavior: "smooth", block: "center" });
   });
-  raiz.append(form, banco, resultado, reto, comunidad);
+  raiz.append(destacados, form, banco, resultado, reto, comunidad);
   actualizar();
   // 2 - Primera vez (sin juegos): un juego de la comunidad para jugar ya, antes de la idea.
   void app.api.juegos().then(async (js) => {

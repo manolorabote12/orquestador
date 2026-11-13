@@ -103,7 +103,7 @@ export async function tarjetaBienvenida(app: App): Promise<HTMLElement | null> {
   const juego = j;
   const f = app.api.archivosEscaparate(juego);
   const img = h("img", { class: "bienvenida-portada", alt: `Captura de ${juego.titulo}`, src: f.portada });
-  img.addEventListener("error", () => { img.src = f.icono; });
+  img.addEventListener("error", () => { if (img.src.includes("generos_arte")) return; img.src = img.src === f.icono ? `generos_arte/${juego.genero}.webp` : f.icono; });
   const jugar = h("button", { class: "btn btn-brass", type: "button" }, "▶ Jugar ahora");
   const caja = h("section", { class: "sheet bienvenida", "aria-label": "Prueba un juego hecho con Orquestador" },
     h("div", { class: "sheet-head" }, h("h2", {}, "Juega antes de crear")),

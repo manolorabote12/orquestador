@@ -136,3 +136,11 @@ export interface VistaHecha {
   el: HTMLElement;
   limpiar?: () => void;
 }
+
+// Portada ilustrada del tipo de juego (public/generos_arte, hecha con IA: fabrica/arte_app.py); si
+// falta, la captura de partida de siempre.
+export function fotoGenero(id: string, attrs: Record<string, string> = {}): HTMLImageElement {
+  const img = h("img", { src: `generos_arte/${id}.webp`, alt: "", loading: "lazy", decoding: "async", ...attrs }) as HTMLImageElement;
+  img.addEventListener("error", () => { if (!img.src.includes("/generos/")) img.src = `generos/${id}.webp`; }, { once: true });
+  return img;
+}
