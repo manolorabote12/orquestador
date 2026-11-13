@@ -277,6 +277,26 @@ func _color_of(v: int) -> Color:
 	return base
 
 
+var _tier_tex: Dictionary = {}
+
+
+## Objeto dibujado por la fabrica para el valor v (fusion_1..fusion_8) o null.
+func tier_texture(v: int) -> Texture2D:
+	if v < 1 or v > 8:
+		return null
+	if not _tier_tex.has(v):
+		var tex: Texture2D = null
+		var entry: Dictionary = Kit.sprite_entry("fusion_%d" % v)
+		if not entry.is_empty():
+			var sf: SpriteFrames = SpriteKit.frames_de(entry)
+			for an: String in sf.get_animation_names():
+				if sf.get_frame_count(an) > 0:
+					tex = sf.get_frame_texture(an, 0)
+					break
+		_tier_tex[v] = tex
+	return _tier_tex[v] as Texture2D
+
+
 func _draw_board() -> void:
 	var font: Font = UI.theme.default_font if UI.theme and UI.theme.default_font else ThemeDB.fallback_font
 	var cell_bg: Color = Kit.color("sky", Color("#20203a")).lightened(0.08)
@@ -285,7 +305,11 @@ func _draw_board() -> void:
 	var now: int = current_piece()
 	var nc: Vector2 = Vector2(float(w) * CELL * 0.5, CELL * 0.5)
 	_board.draw_circle(nc, CELL * 0.36, _color_of(now))
-	_board.draw_string(font, nc + Vector2(-CELL * 0.35, 14.0), label_of(now), HORIZONTAL_ALIGNMENT_CENTER, CELL * 0.7, 38, Color.WHITE)
+	var now_art: Texture2D = tier_texture(now)
+	if now_art != null:
+		_board.draw_texture_rect(now_art, Rect2(nc - Vector2.ONE * CELL * 0.3, Vector2.ONE * CELL * 0.6), false)
+	else:
+		_board.draw_string(font, nc + Vector2(-CELL * 0.35, 14.0), label_of(now), HORIZONTAL_ALIGNMENT_CENTER, CELL * 0.7, 38, Color.WHITE)
 	for y: int in h:
 		for x: int in w:
 			var r: Rect2 = Rect2(Vector2(float(x) * CELL, top + float(y) * CELL), Vector2(CELL, CELL)).grow(-5.0)
@@ -304,8 +328,17 @@ func _draw_board() -> void:
 			var pr: Rect2 = r.grow(grow_by - 4.0)
 			_board.draw_rect(pr, _color_of(v))
 			_board.draw_rect(Rect2(pr.position, Vector2(pr.size.x, 8.0)), _color_of(v).lightened(0.25))
-			var size: int = 44 if v < 7 else (36 if v < 10 else 28)
-			_board.draw_string(font, Vector2(pr.position.x, pr.get_center().y + float(size) * 0.36), label_of(v),
-				HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, size, Color.WHITE)
+			var art: Texture2D = tier_texture(v)
+			if art != null:
+				## Con arte: el objeto dibujado y su valor pequeno en la esquina.
+				var side: float = pr.size.x * 0.86
+				var asp: float = float(art.get_width()) / maxf(1.0, float(art.get_height()))
+				var sz2: Vector2 = Vector2(side, side / asp) if asp >= 1.0 else Vector2(side * asp, side)
+				_board.draw_texture_rect(art, Rect2(pr.get_center() - sz2 * 0.5, sz2), false)
+				_board.draw_string(font, pr.position + Vector2(6, pr.size.y - 8), label_of(v), HORIZONTAL_ALIGNMENT_LEFT, pr.size.x - 8, 20, Color(1, 1, 1, 0.9))
+			else:
+				var size: int = 44 if v < 7 else (36 if v < 10 else 28)
+				_board.draw_string(font, Vector2(pr.position.x, pr.get_center().y + float(size) * 0.36), label_of(v),
+					HORIZONTAL_ALIGNMENT_CENTER, pr.size.x, size, Color.WHITE)
 			if v >= goal:
 				_board.draw_rect(pr, Color("#ffffff"), false, 4.0)

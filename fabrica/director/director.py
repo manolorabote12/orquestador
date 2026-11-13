@@ -539,6 +539,20 @@ def a_biblia(d: dict) -> dict:
 				"tamano": [celda // 2, celda // 2], "mira_a": "frente", "libre_paleta": True,
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
+	## Fusion: los 8 primeros niveles de la cadena dibujados (13 nov: eran numeros 2, 4, 8...). Cada nivel
+	## con su color para distinguirlos de un vistazo; el kit los busca como fusion_<n>.
+	if d.get("genero") == "fusion":
+		cosa = d.get("coleccionable", {}).get("descripcion") or d["escenario"]["descripcion"]
+		tonos = ["pale yellow", "light green", "sky blue", "orange", "pink", "purple", "red", "shining gold"]
+		for n in range(1, 9):
+			objetos.append({
+				"id": f"fusion_{n}", "nombre": f"Nivel {n}", "rol": "objeto",
+				"descripcion": (f"single game item icon, level {n} of 8 in a growing evolution chain inspired by {cosa}: "
+					f"level 1 is tiny and simple, level 8 is big, precious and legendary; mainly {tonos[n - 1]}, "
+					"bold outline, centered, no text, no numbers")[:300],
+				"tamano": [celda // 2, celda // 2], "mira_a": "frente", "libre_paleta": True,
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
 	if d.get("genero") == "reino":
 		mundo = d["escenario"]["descripcion"]
 		for look, forma in REINO_ARTE.items():
