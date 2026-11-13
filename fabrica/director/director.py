@@ -214,7 +214,8 @@ def _oscurecer(h: str, objetivo: float = 0.06) -> str:
 def _arreglar_paleta(d: dict) -> None:
 	"""Una paleta toda clara (juegos infantiles, 13 nov) no tumba el diseno: se le anaden los oscuros
 	que pide el kit (cielo/fondo primero y un segundo oscuro), del mismo tono que sus colores."""
-	pal = ((d.get("estilo") or {}).get("paleta"))
+	est = d.get("estilo")
+	pal = est.get("paleta") if isinstance(est, dict) else None
 	if not isinstance(pal, list) or len(pal) < 2 or not all(isinstance(c, str) and re.fullmatch(r"#[0-9a-fA-F]{6}", c) for c in pal):
 		return
 	if _lum(pal[0]) > 0.12:
@@ -409,7 +410,11 @@ def disenar(idea: str, simular: bool, gasto: llm.Gasto) -> tuple[dict, str]:
 		try:
 			return validar(normalizar(fijar(copy.deepcopy(x))))
 		except Exception as e:  # noqa: BLE001 - cualquier forma rara se le devuelve a la IA como error
-			return [f"el diseno tiene un campo con forma inesperada ({e.__class__.__name__}: {str(e)[:120]}); respeta el esquema"]
+			## Donde fallo (13 nov: «'str' object has no attribute 'get'» sin pista de que campo era).
+			import traceback
+			pila = traceback.extract_tb(e.__traceback__)
+			donde = " < ".join(f"{fr.name}:{fr.lineno}" for fr in reversed(pila[-3:]))
+			return [f"el diseno tiene un campo con forma inesperada ({e.__class__.__name__}: {str(e)[:120]} @ {donde}); respeta el esquema"]
 	d, modelo = llm.con_router(PROMPT, usuario, HERRAMIENTA, _validar_seguro, gasto,
 		primero_superior=os.environ.get("ORQ_DISENO_SUPERIOR", "1") != "0")
 	## Contenido propio que no pasa el control: se apunta la leccion (la directora la lee) y se sigue sin el.
@@ -467,6 +472,14 @@ REINO_ARTE = {
 	"stable": "a horse stable with hay bales and a fence",
 	"range": "an archery range hall with round straw targets",
 }
+
+
+def _materiales(d: dict) -> str:
+	"""Pura: pocas palabras del mundo para colorear objetos sueltos. Con la descripcion entera del
+	escenario la IA pintaba el escenario detras (13 nov: piezas sobre suelo de templo, granja y establo
+	con un cuadro de ruido alrededor)."""
+	t = str((d.get("escenario") or {}).get("descripcion", ""))
+	return re.split(r"[,.;:]", t)[0][:70].strip()
 
 
 ## Puzle de combinar 3: las 6 piezas dibujadas con el tema del juego (13 nov: eran formas geometricas).
@@ -530,13 +543,13 @@ def a_biblia(d: dict) -> dict:
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
 	if d.get("genero") == "puzle":
-		mundo = d["escenario"]["descripcion"]
+		mundo = _materiales(d)
 		for n, (color, forma) in enumerate(PIEZAS_PUZLE):
 			objetos.append({
 				"id": f"pieza_{n}", "nombre": f"Pieza {n}", "rol": "objeto",
-				"descripcion": (f"single match-3 puzzle piece icon, a {forma} {color} glossy piece like a jewel or candy, "
-					f"bold dark outline, bright highlight, no face, themed after this world: {mundo}")[:300],
-				"tamano": [celda // 2, celda // 2], "mira_a": "frente", "libre_paleta": True,
+				"descripcion": (f"a single floating {forma} {color} glossy gem, like a jewel or candy, bold dark outline, "
+					f"bright highlight, no face, no pedestal, no tile or floor under it, colors inspired by {mundo}")[:300],
+				"tamano": [celda, celda], "mira_a": "frente", "libre_paleta": True,
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
 	## Fusion: los 8 primeros niveles de la cadena dibujados (13 nov: eran numeros 2, 4, 8...). Cada nivel
@@ -549,17 +562,17 @@ def a_biblia(d: dict) -> dict:
 				"id": f"fusion_{n}", "nombre": f"Nivel {n}", "rol": "objeto",
 				"descripcion": (f"single game item icon, level {n} of 8 in a growing evolution chain inspired by {cosa}: "
 					f"level 1 is tiny and simple, level 8 is big, precious and legendary; mainly {tonos[n - 1]}, "
-					"bold outline, centered, no text, no numbers")[:300],
-				"tamano": [celda // 2, celda // 2], "mira_a": "frente", "libre_paleta": True,
+					"bold outline, centered, floating with no pedestal and no floor, no text, no numbers")[:300],
+				"tamano": [celda, celda], "mira_a": "frente", "libre_paleta": True,
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
 	if d.get("genero") == "reino":
-		mundo = d["escenario"]["descripcion"]
+		mundo = _materiales(d)
 		for look, forma in REINO_ARTE.items():
 			objetos.append({
 				"id": "edif_" + look, "nombre": "Edificio " + look, "rol": "objeto",
-				"descripcion": (f"single strategy game building seen from a 3/4 top-down view, {forma}, no characters, "
-					f"no ground around it, made of the materials of this world: {mundo}")[:300],
+				"descripcion": (f"a single strategy game building seen from a 3/4 top-down view, {forma}, no characters, "
+					f"floating alone with no ground, no grass and no terrain around it, materials inspired by {mundo}")[:300],
 				"tamano": [celda, celda], "mira_a": "frente",
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})

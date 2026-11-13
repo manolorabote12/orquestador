@@ -374,10 +374,49 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _draw_city() -> void:
 	var sz: Vector2 = _city.size
-	_city.draw_rect(Rect2(Vector2.ZERO, sz), Color("#4f8a3c"))
-	## Camino y muralla.
-	_city.draw_rect(Rect2(Vector2(sz.x * 0.47, 0), Vector2(sz.x * 0.06, sz.y)), Color("#c9b083"))
-	_city.draw_rect(Rect2(Vector2(6, 6), sz - Vector2(12, 12)), Color("#8c96a8"), false, 8.0)
+	## Cesped con manchas, la losa del juego muy suave, arboles en los bordes, camino empedrado con
+	## gente que va y viene y muralla almenada (13 nov: «verde liso, parece una hoja de calculo»).
+	var grass: Color = Color("#4f8a3c").lerp(Kit.color("solid", Color("#4f8a3c")), 0.25)
+	_city.draw_rect(Rect2(Vector2.ZERO, sz), grass)
+	var ltex: Texture2D = Kit.first_tile_texture()
+	if ltex != null:
+		var k: float = 96.0 / maxf(float(ltex.get_width()), 1.0)
+		_city.draw_set_transform(Vector2.ZERO, 0.0, Vector2(k, k))
+		_city.draw_texture_rect(ltex, Rect2(Vector2.ZERO, sz / k), true, Color(1, 1, 1, 0.07))
+		_city.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 7
+	for i: int in 26:
+		var p: Vector2 = Vector2(rng.randf() * sz.x, rng.randf() * sz.y)
+		_city.draw_circle(p, rng.randf_range(18.0, 42.0), grass.darkened(0.08) if i % 2 == 0 else grass.lightened(0.06))
+	var path_x: float = sz.x * 0.5
+	var pw: float = sz.x * 0.07
+	_city.draw_rect(Rect2(Vector2(path_x - pw * 0.5 - 4.0, 0), Vector2(pw + 8.0, sz.y)), Color("#8f7a55"))
+	_city.draw_rect(Rect2(Vector2(path_x - pw * 0.5, 0), Vector2(pw, sz.y)), Color("#c9b083"))
+	for y: int in int(sz.y / 22.0):
+		_city.draw_line(Vector2(path_x - pw * 0.5, float(y) * 22.0), Vector2(path_x + pw * 0.5, float(y) * 22.0), Color("#b39c70"), 2.0)
+	## Gente por el camino (la ciudad esta viva).
+	for w: int in 4:
+		var wy: float = fposmod(_anim_t * (26.0 + float(w) * 7.0) + float(w) * sz.y * 0.27, sz.y)
+		var wx: float = path_x + (pw * 0.22 if w % 2 == 0 else -pw * 0.22)
+		_city.draw_circle(Vector2(wx, wy + 4.0), 6.0, Color(0, 0, 0, 0.2))
+		_city.draw_circle(Vector2(wx, wy), 6.0, [Color("#3f6fd8"), Color("#d8433f"), Color("#e8b04b"), Color("#6b4fa0")][w])
+		_city.draw_circle(Vector2(wx, wy - 7.0), 4.0, Color("#f1c27d"))
+	## Arboles en los bordes.
+	rng.seed = 11
+	for i: int in 18:
+		var side: bool = i % 2 == 0
+		var tp: Vector2 = Vector2(rng.randf_range(16.0, 46.0) if side else sz.x - rng.randf_range(16.0, 46.0), rng.randf() * sz.y)
+		_city.draw_circle(tp + Vector2(4, 8), 15.0, Color(0, 0, 0, 0.18))
+		_city.draw_circle(tp, 15.0, grass.darkened(0.35))
+		_city.draw_circle(tp + Vector2(-4, -4), 8.0, grass.lightened(0.12))
+	## Muralla con almenas.
+	var wall: Color = Color("#8c96a8")
+	_city.draw_rect(Rect2(Vector2(6, 6), sz - Vector2(12, 12)), wall.darkened(0.25), false, 12.0)
+	_city.draw_rect(Rect2(Vector2(6, 6), sz - Vector2(12, 12)), wall, false, 7.0)
+	for x: int in int(sz.x / 28.0):
+		_city.draw_rect(Rect2(Vector2(float(x) * 28.0 + 4.0, 0), Vector2(14, 10)), wall)
+		_city.draw_rect(Rect2(Vector2(float(x) * 28.0 + 4.0, sz.y - 10.0), Vector2(14, 10)), wall)
 	var ids: Array[String] = M.building_ids(st["cat"])
 	var c: String = M.center_id(st["cat"])
 	_rects.clear()

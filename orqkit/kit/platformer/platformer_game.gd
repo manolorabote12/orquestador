@@ -193,6 +193,12 @@ func _build_camera() -> void:
 		## Corredor: algo mas cerca tambien (heroe diminuto y media pantalla de cielo, 12 nov); sigue
 		## viendo de sobra lo que viene porque la camara va adelantada.
 		camera.zoom = Vector2(1.4, 1.4) * tz  ## 12 nov: a 1,2 el pinguino seguia siendo pequeno (critica 6/10)
+	else:
+		## Volador: tan cerca como deje la altura del nivel (todo el hueco a la vista). A 1,0 el pajaro
+		## era una mota en un cielo enorme (13 nov).
+		var lvl_h: float = maxf(1.0, (info["size"] as Vector2).y + tile * 2.0)
+		var zf: float = clampf(get_viewport_rect().size.y * 0.86 / lvl_h, 1.0, 1.6)
+		camera.zoom = Vector2(zf, zf)
 	add_child(camera)
 	camera.make_current()
 	Juice.register_camera(camera)
