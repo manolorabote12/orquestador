@@ -219,8 +219,9 @@ OBJETOS = {
 	"regalo": "a cute gift box with a golden ribbon and golden hexagonal nuts popping out",
 	"anuncio": "a small golden film clapperboard with a golden hexagonal nut coin, reward",
 }
-OBJ_FIN = (", single object, centered, premium polished 3D game icon render, soft studio lighting, rim light, "
-	"plain solid flat magenta background (#FF00FF), no shadow, no text, no letters, no logo")
+OBJ_FIN = (", single object floating in the air, isolated, centered, premium polished 3D game icon render, soft studio lighting, "
+	"rim light, plain solid flat pure magenta background (#FF00FF) everywhere, no floor, no ground, no table, no cast shadow, "
+	"no reflection, no text, no letters, no logo")
 
 
 def cliente():
