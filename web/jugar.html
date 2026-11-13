@@ -39,9 +39,11 @@
   <p id="sub" class="dim"></p>
   <p id="reto" hidden></p>
   <button class="btn" id="jugar" disabled>▶ Jugar</button>
+  <a class="btn" id="gp" hidden target="_blank" rel="noopener" style="background:#01875f;color:#fff">Descárgalo en Google Play</a>
   <div id="barra"><i></i></div>
   <p id="msg" class="msg" role="status"></p>
-  <p class="crea dim">Hecho con <b>Orquestador</b>: describe un juego y juégalo en minutos.<br><a id="version" href="./">Crea el tuyo gratis</a></p>
+  <p class="crea dim">Hecho con <b>Orquestador</b>: describe un juego y juégalo en minutos.<br><a id="version" href="./">Crea el tuyo gratis</a>
+    · <a href="escaparate.html">Más juegos gratis</a></p>
 </div>
 <a id="hecho" href="./" target="_blank" rel="noopener">⚙ Hecho con Orquestador</a>
 <script>
@@ -91,6 +93,14 @@
       v.href = h2.href = "app/?remix=" + j;
       v.textContent = "Haz tu propia versión de este juego";
       h2.textContent = "⚙ Haz tu versión con Orquestador";
+      // Si el autor lo ha publicado en Google Play (produccion), enlace directo a su ficha.
+      rpc("portal_play", { p_project: j }).then(json).then(function (pq) {
+        if (typeof pq === "string" && /^[a-zA-Z0-9_.]+$/.test(pq)) {
+          var gp = $("gp");
+          gp.href = "https://play.google.com/store/apps/details?id=" + encodeURIComponent(pq);
+          gp.hidden = false;
+        }
+      }).catch(function () {});
     }
     var base = pub + "escaparate/" + j + "/";
     var icono = $("icono");

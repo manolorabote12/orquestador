@@ -9,7 +9,7 @@
   top.innerHTML = '<a href="./">' + logo + '</a><a href="./">ORQUESTADOR</a>';
   document.body.prepend(top);
   var pie = document.createElement("footer");
-  pie.innerHTML = '<a href="escaparate.html">Escaparate</a><a href="privacidad.html">Privacidad</a><a href="terminos.html">Términos</a>' +
+  pie.innerHTML = '<a href="escaparate.html">Juegos</a><a href="privacidad.html">Privacidad</a><a href="terminos.html">Términos</a>' +
     '<a href="borrar-cuenta.html">Borrar mi cuenta</a>' + (correo ? '<a href="mailto:' + correo + '">' + correo + "</a>" : "") +
     "<span>© " + new Date().getFullYear() + " Orquestador</span>";
   document.body.append(pie);

@@ -3,58 +3,202 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Escaparate · Orquestador</title>
-<meta name="description" content="Juegos creados por la comunidad de Orquestador. Juégalos gratis en el navegador.">
+<title>Juegos gratis · Orquestador</title>
+<meta name="description" content="Cientos de juegos gratis creados por la comunidad de Orquestador. Juégalos al instante en el navegador, sin instalar nada, o descárgalos de Google Play.">
+<meta property="og:title" content="Juegos gratis en el navegador · Orquestador">
+<meta property="og:description" content="Juega al instante, sin instalar nada. Y si te gusta uno, haz tu propia versión.">
 <meta property="og:image" content="og.png">
 <link rel="icon" href="icono.svg" type="image/svg+xml">
 <link rel="stylesheet" href="estilo.css">
 <script src="config.js"></script>
+<style>
+  /* Portal de juegos (13 nov), tipo Poki / CrazyGames. */
+  html { background: #070f1f; }
+  body { background-color: #070f1f; background-image: linear-gradient(180deg, rgba(7,15,31,.55), rgba(7,15,31,.95) 60%), url("app/fondo_app.webp");
+    background-size: cover; background-attachment: fixed; }
+  main.portal { max-width: 1180px; padding: 0 16px 64px; }
+  header.top { max-width: 1180px; }
+  .barra { position: sticky; top: 0; z-index: 10; display: flex; gap: 10px; align-items: center; padding: 10px 0 12px;
+    background: linear-gradient(180deg, rgba(7,15,31,.96), rgba(7,15,31,.85)); backdrop-filter: blur(8px); }
+  .barra input { margin: 0; flex: 1; border-radius: 999px; padding: 12px 18px; background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.14); }
+  .barra .btn { white-space: nowrap; border-radius: 999px; }
+  .heroe { position: relative; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 12px; min-height: 260px; margin: 6px 0 22px;
+    padding: 22px; border-radius: 22px; overflow: hidden; isolation: isolate; text-decoration: none; color: var(--ink);
+    box-shadow: 0 18px 40px rgba(0,0,0,.5), inset 0 0 0 1px rgba(246,207,122,.25); }
+  .heroe .fondo { position: absolute; inset: 0; z-index: -2; background-size: cover; background-position: center 30%; transform: scale(1.05); }
+  .heroe::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(7,15,31,.95) 20%, rgba(7,15,31,.25)); }
+  .heroe small { color: var(--brass-hi); font-weight: 700; letter-spacing: .04em; }
+  .heroe h1 { margin: 6px 0; font-size: clamp(34px, 6vw, 60px); }
+  .heroe .btn { font-size: 19px; padding: 14px 30px; margin-top: 10px; }
+  .heroe .chispa { width: clamp(90px, 18vw, 170px); align-self: end; filter: drop-shadow(0 10px 16px rgba(0,0,0,.6)); }
+  .cats { display: flex; gap: 12px; overflow-x: auto; padding: 4px 2px 12px; scrollbar-width: none; }
+  .cats::-webkit-scrollbar { display: none; }
+  .cat { flex: 0 0 auto; display: grid; justify-items: center; gap: 6px; width: 84px; background: none; border: 0; color: var(--ink); cursor: pointer; font: 700 13px system-ui; }
+  .cat img, .cat span.todo { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 3px rgba(255,255,255,.1); }
+  .cat span.todo { display: grid; place-items: center; background: var(--paper-lift); font-size: 26px; }
+  .cat[aria-pressed="true"] img, .cat[aria-pressed="true"] span.todo { box-shadow: 0 0 0 3px var(--brass); }
+  .fila { margin: 18px 0 8px; }
+  .fila h2 { margin: 0 0 10px; font: 800 26px/1 "Big Shoulders Stencil Display", Impact, sans-serif; color: var(--ink); letter-spacing: .02em; }
+  .carril { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(150px, 180px); gap: 12px; overflow-x: auto; padding-bottom: 8px; scrollbar-width: thin; }
+  .rejilla { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+  .tile { position: relative; display: block; aspect-ratio: 3 / 4; border-radius: 16px; overflow: hidden; text-decoration: none; color: var(--ink);
+    background: var(--paper-lift); box-shadow: 0 8px 18px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,255,255,.08); transition: transform .15s ease; }
+  .tile:hover, .tile:focus-visible { transform: translateY(-3px) scale(1.02); box-shadow: 0 12px 26px rgba(0,0,0,.5), inset 0 0 0 2px var(--brass); }
+  .tile img.p { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .tile .info { position: absolute; left: 0; right: 0; bottom: 0; padding: 36px 10px 10px; background: linear-gradient(transparent, rgba(7,15,31,.95)); }
+  .tile .info img { width: 34px; height: 34px; border-radius: 9px; float: left; margin-right: 8px; }
+  .tile b { display: block; font-size: 15px; line-height: 1.15; }
+  .tile small { display: block; font-size: 12px; }
+  .tile .gp { position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 999px; font: 700 11px system-ui; background: #01875f; color: #fff; }
+  .crea { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; margin-top: 34px; padding: 22px; border-radius: 22px;
+    background: linear-gradient(110deg, rgba(246,207,122,.18), rgba(246,207,122,.04)); box-shadow: inset 0 0 0 1px rgba(246,207,122,.35); }
+  .crea img { width: 120px; }
+  .crea h2 { margin: 0 0 6px; color: var(--brass-hi); font: 800 30px/1 "Big Shoulders Stencil Display", Impact, sans-serif; }
+  @media (max-width: 560px) { .barra .btn { padding: 10px 14px; font-size: 14px; } .crea { grid-template-columns: 1fr; text-align: center; } .crea img { margin: 0 auto; } }
+</style>
 </head>
 <body>
-<main>
-  <h1>Escaparate</h1>
-  <p class="dim">Juegos que la comunidad ha creado describiéndolos con palabras. Tócalos para jugar en el navegador.</p>
-  <div class="pestanas" role="group" aria-label="Orden">
-    <button type="button" data-orden="top" aria-pressed="true">Lo mejor</button>
-    <button type="button" data-orden="nuevos" aria-pressed="false">Lo nuevo</button>
+<main class="portal">
+  <div class="barra">
+    <input id="buscar" type="search" placeholder="Busca un juego, un tipo o un autor..." aria-label="Buscar juegos">
+    <a class="btn" href="app/">Crea tu juego</a>
   </div>
-  <div class="galeria" id="galeria"><p class="dim">Cargando...</p></div>
+  <a class="heroe" id="heroe" hidden><div class="fondo"></div>
+    <div><small>DESTACADO</small><h1 id="h-titulo"></h1><p class="dim" id="h-sub"></p><span class="btn">▶ Jugar ahora</span></div>
+    <img class="chispa" src="app/mascota/jugando.webp" alt="">
+  </a>
+  <div class="cats" id="cats" role="group" aria-label="Tipos de juego"></div>
+  <div id="contenido"><p class="dim">Cargando juegos...</p></div>
+  <section class="crea">
+    <img src="app/mascota/trabajando.webp" alt="">
+    <div><h2>¿Y si haces el tuyo?</h2>
+      <p class="dim">Describe tu juego con palabras y Chispa lo fabrica en minutos: niveles, arte, música, y listo para Google Play.</p>
+      <a class="btn" href="app/">Crear mi juego gratis</a></div>
+  </section>
 </main>
 <script src="comun.js"></script>
 <script>
 (function () {
   var c = window.ORQ || {};
-  var g = document.getElementById("galeria");
-  function cargar(orden) {
-    g.innerHTML = '<p class="dim">Cargando...</p>';
-    fetch(c.supabase + "/rest/v1/rpc/escaparate_lista", { method: "POST",
-      headers: { apikey: c.anon, "Content-Type": "application/json" }, body: JSON.stringify({ p_orden: orden }) })
-      .then(function (r) { return r.json(); })
-      .then(function (lista) {
-        g.replaceChildren();
-        if (!Array.isArray(lista) || !lista.length) { g.innerHTML = '<p class="dim">Aún no hay juegos. ¡Sé el primero!</p>'; return; }
-        lista.forEach(function (f) {
-          var a = document.createElement("a");
-          a.href = "jugar.html?j=" + encodeURIComponent(f.project_id);
-          var img = document.createElement("img");
-          img.loading = "lazy"; img.alt = "";
-          img.src = c.supabase + "/storage/v1/object/public/escaparate/" + f.project_id + "/icono.png?v=" + f.version;
-          var t = document.createElement("b"); t.textContent = f.titulo;
-          var s = document.createElement("small"); s.className = "dim";
-          s.textContent = (f.autor ? f.autor + " · " : "") + "▶ " + f.jugadas + " · ♥ " + f.megusta;
-          a.append(img, t, s);
-          g.append(a);
-        });
-      })
-      .catch(function () { g.innerHTML = '<p class="msg error">Sin conexión.</p>'; });
+  var $ = function (id) { return document.getElementById(id); };
+  var NOMBRES = { plataformas: "Plataformas", runner: "Runner", volador: "Volador", horda: "Hordas", puzle: "Puzle", torres: "Torres",
+    carreras: "Carreras", naves: "Naves", rpg: "RPG", reino: "Reino", royale: "Battle royale", supervivencia: "Supervivencia",
+    fusion: "Fusión", tubos: "Tubos", tycoon: "Tycoon", arena: "Arena", aldea: "Aldea", karts: "Karts", zombis: "Zombis",
+    cocina: "Cocina", granja: "Granja", golf: "Golf", saltos: "Saltos", corredor: "Corredor 3D", laberinto: "Laberinto",
+    preguntas: "Preguntas", sudoku: "Sudoku", palabra: "Palabras", sandia: "Fusión de frutas", multitud: "Multitud" };
+  var nombre = function (g) { return NOMBRES[g] || (g ? g.charAt(0).toUpperCase() + g.slice(1).replace(/_/g, " ") : "Juego"); };
+  var pub = c.supabase + "/storage/v1/object/public/escaparate/";
+  var rpc = function (fn, body) {
+    return fetch(c.supabase + "/rest/v1/rpc/" + fn, { method: "POST", headers: { apikey: c.anon, "Content-Type": "application/json" },
+      body: JSON.stringify(body) }).then(function (r) { return r.json(); }).then(function (x) { return Array.isArray(x) ? x : []; });
+  };
+  var listas = { top: [], semana: [], nuevos: [] };
+  var genero = null;
+
+  function tile(f) {
+    var a = document.createElement("a");
+    a.className = "tile";
+    a.href = "jugar.html?j=" + f.project_id;
+    var p = document.createElement("img");
+    p.className = "p"; p.alt = ""; p.loading = "lazy";
+    p.src = pub + f.project_id + "/portada.png?v=" + f.version;
+    p.onerror = function () { p.onerror = null; p.src = "app/generos_arte/" + f.genero + ".webp"; };
+    var info = document.createElement("div");
+    info.className = "info";
+    var ic = document.createElement("img");
+    ic.alt = ""; ic.loading = "lazy"; ic.src = pub + f.project_id + "/icono.png?v=" + f.version;
+    ic.onerror = function () { ic.remove(); };
+    var t = document.createElement("b"); t.textContent = f.titulo;
+    var s = document.createElement("small"); s.className = "dim";
+    s.textContent = nombre(f.genero) + " · ▶ " + Number(f.jugadas || 0).toLocaleString("es-ES");
+    info.append(ic, t, s);
+    a.append(p, info);
+    if (f.play) { var gp = document.createElement("span"); gp.className = "gp"; gp.textContent = "Google Play"; a.append(gp); }
+    return a;
   }
-  document.querySelectorAll(".pestanas button").forEach(function (b) {
-    b.addEventListener("click", function () {
-      document.querySelectorAll(".pestanas button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-      cargar(b.dataset.orden);
-    });
-  });
-  cargar("top");
+  function fila(titulo, juegos) {
+    if (!juegos.length) return null;
+    var s = document.createElement("section"); s.className = "fila";
+    var h = document.createElement("h2"); h.textContent = titulo;
+    var r = document.createElement("div"); r.className = "carril";
+    juegos.forEach(function (f) { r.append(tile(f)); });
+    s.append(h, r);
+    return s;
+  }
+  function rejilla(titulo, juegos) {
+    var s = document.createElement("section"); s.className = "fila";
+    var h = document.createElement("h2"); h.textContent = titulo;
+    var r = document.createElement("div"); r.className = "rejilla";
+    juegos.forEach(function (f) { r.append(tile(f)); });
+    if (!juegos.length) { var p = document.createElement("p"); p.className = "dim"; p.textContent = "Ningún juego encaja. Prueba con otra palabra o crea tú el primero."; s.append(h, p); return s; }
+    s.append(h, r);
+    return s;
+  }
+  function todos() {
+    var vistos = {}, out = [];
+    [].concat(listas.top, listas.semana, listas.nuevos).forEach(function (f) { if (!vistos[f.project_id]) { vistos[f.project_id] = 1; out.push(f); } });
+    return out;
+  }
+  function pintar() {
+    var cont = $("contenido");
+    cont.innerHTML = "";
+    var q = $("buscar").value.trim().toLowerCase();
+    if (q || genero) {
+      var lista = todos().filter(function (f) {
+        var txt = (f.titulo + " " + (f.autor || "") + " " + nombre(f.genero) + " " + (f.resumen || "")).toLowerCase();
+        return (!genero || f.genero === genero) && (!q || txt.indexOf(q) >= 0);
+      });
+      cont.append(rejilla(genero && !q ? nombre(genero) : "Resultados", lista));
+      $("heroe").hidden = true;
+      return;
+    }
+    $("heroe").hidden = !listas.top.length;
+    [fila("Lo más jugado", listas.top.slice(1, 20)), fila("Triunfando esta semana", listas.semana),
+     fila("Recién salidos de la fábrica", listas.nuevos.slice(0, 20))].forEach(function (s) { if (s) cont.append(s); });
+    // Una fila por cada tipo con al menos 3 juegos.
+    var por = {};
+    todos().forEach(function (f) { (por[f.genero] = por[f.genero] || []).push(f); });
+    Object.keys(por).filter(function (g) { return por[g].length >= 3; }).slice(0, 6)
+      .forEach(function (g) { cont.append(fila(nombre(g), por[g])); });
+    if (!cont.children.length) cont.innerHTML = '<p class="dim">Todavía no hay juegos publicados. ¡Sé el primero!</p>';
+  }
+  function categorias() {
+    var gs = {}, box = $("cats");
+    todos().forEach(function (f) { if (f.genero) gs[f.genero] = (gs[f.genero] || 0) + 1; });
+    var orden = Object.keys(gs).sort(function (a, b) { return gs[b] - gs[a]; });
+    box.innerHTML = "";
+    var mk = function (g) {
+      var b = document.createElement("button");
+      b.className = "cat"; b.type = "button"; b.setAttribute("aria-pressed", String(genero === g));
+      if (g) { var i = document.createElement("img"); i.alt = ""; i.loading = "lazy"; i.src = "app/generos_arte/" + g + ".webp"; b.append(i); }
+      else { var t = document.createElement("span"); t.className = "todo"; t.textContent = "★"; b.append(t); }
+      b.append(document.createTextNode(g ? nombre(g) : "Todos"));
+      b.onclick = function () { genero = g; categorias(); pintar(); };
+      box.append(b);
+    };
+    mk(null);
+    orden.forEach(mk);
+  }
+  function heroe() {
+    var f = listas.top[0];
+    if (!f) return;
+    var h = $("heroe");
+    h.href = "jugar.html?j=" + f.project_id;
+    $("h-titulo").textContent = f.titulo;
+    $("h-sub").textContent = nombre(f.genero) + (f.autor ? " · de " + f.autor : "") + " · ▶ " + Number(f.jugadas || 0).toLocaleString("es-ES") + " partidas";
+    var img = new Image();
+    img.onload = function () { h.querySelector(".fondo").style.backgroundImage = "url('" + img.src + "')"; };
+    img.onerror = function () { h.querySelector(".fondo").style.backgroundImage = "url('app/generos_arte/" + f.genero + ".webp')"; };
+    img.src = pub + f.project_id + "/portada.png?v=" + f.version;
+  }
+  Promise.all([rpc("portal_lista", { p_orden: "top" }), rpc("portal_lista", { p_orden: "semana" }), rpc("portal_lista", { p_orden: "nuevos" })])
+    .then(function (r) {
+      listas = { top: r[0], semana: r[1], nuevos: r[2] };
+      heroe(); categorias(); pintar();
+    })
+    .catch(function () { $("contenido").innerHTML = '<p class="msg error">Sin conexión.</p>'; });
+  var espera = null;
+  $("buscar").addEventListener("input", function () { clearTimeout(espera); espera = setTimeout(pintar, 150); });
 })();
 </script>
 </body>
