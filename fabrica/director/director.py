@@ -680,6 +680,8 @@ def a_game(d: dict, niveles: list[list[str]]) -> dict:
 		"boss_name": (d.get("jefe") or {}).get("nombre", "") if _con_jefe(d) else "",
 		"texts": textos,
 		"levels": _niveles_game(d, niveles),
+		## Album de personajes (kit/album.gd): el kit solo usa las cartas cuyo sprite exista.
+		"album": album(d),
 		**_ab_game(d, niveles),
 		## Carreras nacen en 3D; plataformas, runner y volador en 2D salvo que el diseno pida 3D.
 		"view": generos.vista(d),
@@ -716,6 +718,23 @@ def bioma(d: dict) -> str:
 		if any(c in t for c in claves):
 			return b
 	return "pradera"
+
+
+RAREZAS_ENEMIGO = ["comun", "comun", "raro", "epico"]
+
+
+def album(d: dict) -> list[dict]:
+	"""Cartas del album: heroe, enemigos (de comun a epico), jefe (legendario) y el coleccionable."""
+	out = [{"sprite": "heroe", "name": str(d["heroe"]["nombre"])[:24], "rarity": "raro"}]
+	for k, e in enumerate(d.get("enemigos") or []):
+		out.append({"sprite": "enemigo_" + str(e["tipo"]), "name": str(e["nombre"])[:24],
+			"rarity": RAREZAS_ENEMIGO[min(k, len(RAREZAS_ENEMIGO) - 1)]})
+	if d.get("jefe"):
+		out.append({"sprite": "jefe", "name": str(d["jefe"]["nombre"])[:24], "rarity": "legendario"})
+	col = d.get("coleccionable") or {}
+	if col.get("nombre"):
+		out.append({"sprite": "moneda", "name": str(col["nombre"])[:24].capitalize(), "rarity": "comun"})
+	return out
 
 
 def _niveles_game(d: dict, mapas: list) -> list[dict]:

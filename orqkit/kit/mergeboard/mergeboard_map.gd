@@ -65,7 +65,8 @@ static func new_state(level: Dictionary) -> Dictionary:
 	## Un par listo para fusionar de cada cadena (13 nov: el tablero empezaba vacio y la primera foto
 	## era un damero sin nada; en los juegos de este tipo se empieza con objetos a mano).
 	var spots: Array[Vector2i] = [Vector2i(1, 2), Vector2i(2, 2), Vector2i(4, 3), Vector2i(5, 3), Vector2i(1, 5), Vector2i(2, 5), Vector2i(4, 6), Vector2i(5, 6)]
-	for i2: int in mini(chains.size() * 2, spots.size()):
+	## "starter": false en el nivel lo quita (las pruebas de reglas parten de un tablero limpio).
+	for i2: int in (mini(chains.size() * 2, spots.size()) if bool(level.get("starter", true)) else 0):
 		grid[spots[i2]] = {"c": chains[i2 / 2], "l": 1}
 	var orders: Array = []
 	for o: Variant in level.get("orders", []):

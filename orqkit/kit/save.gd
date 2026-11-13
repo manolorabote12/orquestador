@@ -231,7 +231,7 @@ const UPGRADES: Dictionary = {"heart": {"max": 2, "prices": [300, 700]}, "fortun
 
 ## Monedas de un nivel ganado con la mejora «fortuna».
 func with_fortune(coins: int) -> int:
-	return int(round(float(coins) * (1.0 + FORTUNE_STEP * float(upgrade_level("fortuna")))))
+	return int(round(float(coins) * (1.0 + FORTUNE_STEP * float(upgrade_level("fortuna")) + Album.bonus())))
 
 
 func upgrade_level(id: String) -> int:

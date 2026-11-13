@@ -161,6 +161,14 @@ func _ready() -> void:
 		reto.pressed.connect(func() -> void:
 			if Twist.start_daily():
 				UI.goto(UI.game_scene()))
+	## Album: los personajes del juego para coleccionar y subir de nivel (13 nov).
+	if Album.available():
+		var alb: Button = _side_button(left, "BtnAlbum", Kit.text("album", "\u00c1lbum"), "grid")
+		if Album.upgradable() > 0:
+			_dot(alb)
+		alb.pressed.connect(func() -> void:
+			var ap: AlbumPanel = AlbumPanel.open(self)
+			ap.changed.connect(_refresh_meta))
 	var shop: Button = _side_button(right, "BtnShop", Kit.text("shop", "Tienda"), "coin")
 	shop.pressed.connect(_open_shop)
 	## Arena: partidas en directo contra otros jugadores.
@@ -485,7 +493,7 @@ func _side_button(parent: VBoxContainer, node_name: String, label: String, icon:
 	## critica «interfaz_sosa» repetida, 12 nov). Va dentro del marco, asi respeta la piel del juego.
 	var tonos: Dictionary = {"BtnSeason": 0.78, "BtnDaily": 0.02, "BtnTorneo": 0.02, "BtnRoad": 0.12, "BtnShop": 0.36,
 		"BtnCross": 0.58, "BtnSettings": -1.0, "BtnArenaLive": 0.92, "BtnGear": 0.08, "BtnDeck": 0.68, "BtnHome": 0.3,
-		"BtnMarathon": 0.5, "BtnVersus": 0.95, "BtnGiftMenu": 0.9, "BtnPrizeMenu": 0.14}
+		"BtnMarathon": 0.5, "BtnAlbum": 0.45, "BtnVersus": 0.95, "BtnGiftMenu": 0.9, "BtnPrizeMenu": 0.14}
 	var h: float = float(tonos.get(node_name, -1.0))
 	if h >= 0.0:
 		var medal: Control = Control.new()

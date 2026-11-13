@@ -1655,7 +1655,15 @@
 			"lg_platinum": "Platinum",
 			"lg_diamond": "Diamond",
 			"lg_master": "Master",
-			"lg_legend": "Legend"
+			"lg_legend": "Legend",
+			"album": "Album",
+			"album_info": "%d of %d cards  ·  +%d %% coins",
+			"album_hint": "They come in chests. Duplicates level a card up.",
+			"album_level": "Level %d",
+			"album_locked": "Not found yet",
+			"album_max": "Maxed out!",
+			"album_card": "Card %d",
+			"chest_cards": "Album cards: %s"
 		},
 		"pt": {
 			"a_friend": "um amigo",
@@ -3296,7 +3304,15 @@
 			"lg_platinum": "Platina",
 			"lg_diamond": "Diamante",
 			"lg_master": "Mestre",
-			"lg_legend": "Lenda"
+			"lg_legend": "Lenda",
+			"album": "Álbum",
+			"album_info": "%d de %d cartas  ·  +%d %% de moedas",
+			"album_hint": "Saem nos baús. As repetidas sobem a carta de nível.",
+			"album_level": "Nível %d",
+			"album_locked": "Por descobrir",
+			"album_max": "No máximo!",
+			"album_card": "Carta %d",
+			"chest_cards": "Cartas do álbum: %s"
 		},
 		"fr": {
 			"a_friend": "un ami",
@@ -4937,7 +4953,15 @@
 			"lg_platinum": "Platine",
 			"lg_diamond": "Diamant",
 			"lg_master": "Maître",
-			"lg_legend": "Légende"
+			"lg_legend": "Légende",
+			"album": "Album",
+			"album_info": "%d sur %d cartes  ·  +%d %% de pièces",
+			"album_hint": "Elles sortent des coffres. Les doubles font monter la carte de niveau.",
+			"album_level": "Niveau %d",
+			"album_locked": "Pas encore trouvée",
+			"album_max": "Au maximum !",
+			"album_card": "Carte %d",
+			"chest_cards": "Cartes de l'album : %s"
 		},
 		"de": {
 			"a_friend": "ein Freund",
@@ -6578,7 +6602,15 @@
 			"lg_platinum": "Platin",
 			"lg_diamond": "Diamant",
 			"lg_master": "Meister",
-			"lg_legend": "Legende"
+			"lg_legend": "Legende",
+			"album": "Album",
+			"album_info": "%d von %d Karten  ·  +%d %% Münzen",
+			"album_hint": "Sie kommen aus Truhen. Doppelte steigern die Stufe der Karte.",
+			"album_level": "Stufe %d",
+			"album_locked": "Noch nicht entdeckt",
+			"album_max": "Maximal!",
+			"album_card": "Karte %d",
+			"chest_cards": "Albumkarten: %s"
 		},
 		"it": {
 			"a_friend": "un amico",
@@ -8219,7 +8251,15 @@
 			"lg_platinum": "Platino",
 			"lg_diamond": "Diamante",
 			"lg_master": "Maestro",
-			"lg_legend": "Leggenda"
+			"lg_legend": "Leggenda",
+			"album": "Album",
+			"album_info": "%d di %d carte  ·  +%d %% di monete",
+			"album_hint": "Escono dai forzieri. I doppioni fanno salire di livello la carta.",
+			"album_level": "Livello %d",
+			"album_locked": "Da scoprire",
+			"album_max": "Al massimo!",
+			"album_card": "Carta %d",
+			"chest_cards": "Carte dell'album: %s"
 		}
 	},
 	"generos": {

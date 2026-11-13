@@ -129,6 +129,22 @@ func _open() -> void:
 		body.add_child(sk)
 		body.move_child(sk, _info.get_index() + 1)
 		UI.pop_in(sk, 0.3)
+	var got: Array = r.get("cards", [])
+	if not got.is_empty():
+		var cl: Label = Label.new()
+		cl.name = "ChestCards"
+		var names: Dictionary = {}
+		for id: Variant in got:
+			names[Album.card_name(str(id))] = int(names.get(Album.card_name(str(id)), 0)) + 1
+		var parts: PackedStringArray = PackedStringArray()
+		for nm: String in names.keys():
+			parts.append("%s x%d" % [nm, int(names[nm])])
+		cl.text = Kit.text("chest_cards", "Cartas del álbum: %s") % ", ".join(parts)
+		cl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		body.add_child(cl)
+		body.move_child(cl, _info.get_index() + 1)
+		UI.pop_in(cl, 0.4)
 	opened.emit(r)
 	for c2: Node in body.get_children():
 		if c2 is Button and c2.name == "BtnCloseChest":

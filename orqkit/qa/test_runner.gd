@@ -207,6 +207,7 @@ func _ready() -> void:
 	await _test_lobby_feel()
 	await _test_ui_icons()
 	await _test_chests()
+	await _test_album()
 	await _test_twists()
 	await _test_torneo()
 	await _test_i18n()
@@ -7618,7 +7619,7 @@ func _test_crowd() -> void:
 func _test_mergeboard() -> void:
 	print("- Fusion con pedidos")
 	var M: GDScript = load("res://kit/mergeboard/mergeboard_map.gd")
-	var lv: Dictionary = {"chains": ["bread", "tea"], "energy": 6, "regen": 5, "par": 120, "orders": [{"who": "A", "need": [["bread", 2]], "reward": 10}, {"who": "B", "need": [["tea", 1], ["bread", 1]], "reward": 5}]}
+	var lv: Dictionary = {"starter": false, "chains": ["bread", "tea"], "energy": 6, "regen": 5, "par": 120, "orders": [{"who": "A", "need": [["bread", 2]], "reward": 10}, {"who": "B", "need": [["tea", 1], ["bread", 1]], "reward": 5}]}
 	var st: Dictionary = M.new_state(lv)
 	check("pedidos: dos generadores abajo", (st["grid"] as Dictionary).size() == 2 and (st["grid"][Vector2i(0, 8)] as Dictionary).get("gen", "") == "bread")
 	var a: Vector2i = M.tap(st, Vector2i(0, 8))
@@ -7632,7 +7633,7 @@ func _test_mergeboard() -> void:
 	M.tap(st, Vector2i(1, 8))
 	M.tap(st, Vector2i(0, 8))
 	check("pedidos: el ultimo pedido gana", M.deliver(st, 1) and bool(st["won"]))
-	var e: Dictionary = M.new_state({"chains": ["bread"], "energy": 0, "regen": 5, "orders": [{"need": [["bread", 1]]}]})
+	var e: Dictionary = M.new_state({"starter": false, "chains": ["bread"], "energy": 0, "regen": 5, "orders": [{"need": [["bread", 1]]}]})
 	check("pedidos: sin energia no saca nada", M.tap(e, Vector2i(0, 8)).x < 0)
 	M.tick(e, 11.0)
 	check("pedidos: la energia se recarga", int(e["energy"]) == 2)
@@ -9692,6 +9693,45 @@ func _test_chests() -> void:
 	await frames(2)
 
 
+## Album: cartas de los cofres, subir de nivel con repetidas y monedas, bonus de monedas.
+func _test_album() -> void:
+	print("- Album de personajes")
+	var old_album: Variant = Kit.config.get("album", null)
+	Kit.config["album"] = [{"sprite": "heroe", "name": "Remache", "rarity": "raro"},
+		{"sprite": "chatarrilla", "name": "Chatarrilla", "rarity": "comun"}, {"sprite": "moneda", "name": "Tuerca", "rarity": "comun"},
+		{"sprite": "no_existe", "name": "Fantasma", "rarity": "epico"}]
+	Save.meta().erase("album")
+	check("album: solo las cartas con sprite", Album.cards().size() == 3 and Album.available())
+	check("album: el heroe se tiene desde el principio", Album.owned("heroe") and not Album.owned("moneda") and Album.count_owned() == 1)
+	check("album: precios y copias por nivel", Album.need(1) == 2 and Album.cost(1) == 50 and Album.need(Album.MAX_LEVEL) == -1)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 7
+	var got: Array[String] = Album.drop(rng, 40)
+	check("album: los cofres dan cartas y descubren las nuevas", got.size() == 40 and Album.count_owned() == 3)
+	var b0: float = Album.bonus()
+	check("album completo: +5 % de monedas", is_equal_approx(b0, 0.05))
+	Save.add_wallet(2000)
+	var w: int = Save.wallet()
+	var lvl0: int = int(Album.entry("chatarrilla")["lvl"])
+	check("album: subir con repetidas cuesta monedas", Album.upgrade("chatarrilla") and int(Album.entry("chatarrilla")["lvl"]) == lvl0 + 1 and Save.wallet() == w - Album.cost(lvl0))
+	check("album: cada nivel da +1 % de monedas", is_equal_approx(Album.bonus(), b0 + 0.01) and Save.with_fortune(100) == 106)
+	Save.meta()["album"]["moneda"] = {"n": 0, "lvl": 1}
+	check("album: sin repetidas no se sube", not Album.can_upgrade("moneda") and not Album.upgrade("moneda"))
+	var host: Control = Control.new()
+	add_child(host)
+	var p: AlbumPanel = AlbumPanel.open(host)
+	await frames(3)
+	check("album: la ventana ensena las cartas", p.find_child("Card_heroe", true, false) != null and p.find_child("Card_moneda", true, false) != null
+		and p.find_child("Card_no_existe", true, false) == null)
+	host.queue_free()
+	Save.meta().erase("album")
+	if old_album == null:
+		Kit.config.erase("album")
+	else:
+		Kit.config["album"] = old_album
+	await frames(2)
+
+
 ## Iconos de interfaz dibujados por la IA: se cargan los que existen y UiIcon los usa.
 func _test_ui_icons() -> void:
 	print("- Iconos de interfaz con arte")
@@ -11222,7 +11262,10 @@ func _test_dungeon_gear() -> void:
 	check("talentos: sin monedas no se compra", DungeonGearPanel.buy("vida") and not DungeonGearPanel.buy("vida") and DungeonGearPanel.level_of("vida") == 2)
 	var tm: bool = UI.test_mode
 	UI.test_mode = false
+	var qa_on: bool = QA.enabled
+	QA.enabled = false
 	var m: float = DungeonGearPanel.mult("vida")
+	QA.enabled = qa_on
 	UI.test_mode = true
 	check("talentos: dan su extra, pero no a bots y pruebas", is_equal_approx(m, 1.1) and is_equal_approx(DungeonGearPanel.mult("vida"), 1.0))
 	UI.test_mode = tm
@@ -11286,8 +11329,11 @@ func _test_howto() -> void:
 	check("como se juega: no sale con los bots ni en las pruebas", host.get_node_or_null("HowToPanel") == null and not HowTo.seen("tactics"))
 	UI.test_mode = false
 	HowTo.enabled = true
+	var qa_on2: bool = QA.enabled
+	QA.enabled = false
 	HowTo.maybe_show(host)
 	await frames(2)
+	QA.enabled = qa_on2
 	var auto: Node = host.get_node_or_null("HowToPanel")
 	check("como se juega: la primera vez sale sola y queda vista", auto != null and HowTo.seen("tactics"))
 	if auto != null:

@@ -58,8 +58,17 @@ static func decide(game: Node) -> Vector2:
 	var b: Variant = game.get("boss")
 	if float(game.get("time_left")) <= 0.0 and b != null and is_instance_valid(b) and (b as HordeEnemy).alive:
 		var to_boss: Vector2 = (b as HordeEnemy).position - pos
-		if to_boss.length() > 480.0:
-			dir += to_boss.normalized() * 1.2
+		## Con armas de corto alcance (latigo, ajo) desde 480 no le llega nada: si el jefe lleva 3 s
+		## sin perder vida, se acerca mas (hasta 140 px) y vuelve a alejarse cuando le da.
+		var hp_now: float = float((b as HordeEnemy).hp)
+		if not game.has_meta("bot_boss_hp") or hp_now < float(game.get_meta("bot_boss_hp")) - 0.01:
+			game.set_meta("bot_boss_hp", hp_now)
+			game.set_meta("bot_boss_f", 0)
+		game.set_meta("bot_boss_f", int(game.get_meta("bot_boss_f", 0)) + 1)
+		var stuck: bool = int(game.get_meta("bot_boss_f", 0)) > 180
+		var want: float = 140.0 if stuck else 480.0
+		if to_boss.length() > want:
+			dir += to_boss.normalized() * (2.6 if stuck else 1.2)
 	var center: Vector2 = arena * 0.5
 	var off: Vector2 = (pos - center) / (arena * 0.5)
 	dir += (center - pos).normalized() * pow(maxf(absf(off.x), absf(off.y)), 3.0) * 1.6
