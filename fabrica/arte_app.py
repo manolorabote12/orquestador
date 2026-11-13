@@ -209,6 +209,20 @@ MUSICA_APP = {
 }
 
 
+## Objetos sueltos de la interfaz (fondo magenta que se recorta): packs de la tienda, planes...
+OBJETOS = {
+	"pack_1": "a small leather pouch spilling a few shiny golden hexagonal nuts",
+	"pack_2": "an open wooden treasure chest full of shiny golden hexagonal nuts, glowing",
+	"pack_3": "a huge overflowing golden treasure chest with a mountain of shiny golden hexagonal nuts and sparkling gems, epic glow",
+	"plan_taller": "a golden wrench and a glowing blueprint scroll crossed, premium badge",
+	"plan_pro": "a golden crown on top of a glowing golden wrench, premium royal badge, sparkles",
+	"regalo": "a cute gift box with a golden ribbon and golden hexagonal nuts popping out",
+	"anuncio": "a small golden film clapperboard with a golden hexagonal nut coin, reward",
+}
+OBJ_FIN = (", single object, centered, premium polished 3D game icon render, soft studio lighting, rim light, "
+	"plain solid flat magenta background (#FF00FF), no shadow, no text, no letters, no logo")
+
+
 def cliente():
 	from arte import runpod
 	return runpod.cliente(os.environ["ORQ_COMFY"])
@@ -296,6 +310,23 @@ def main(argv: list[str]) -> int:
 				hechos.append(pid)
 			except Exception as e:  # noqa: BLE001
 				fallos.append(f"{pid}: {str(e)[:120]}")
+	elif que == "objetos":
+		from arte import post
+		destino = RAIZ / "app" / "public" / "objetos"
+		destino.mkdir(parents=True, exist_ok=True)
+		ids = argv[1].split(",") if len(argv) > 1 and argv[1] else list(OBJETOS)
+		for k, oid in enumerate(ids):
+			try:
+				img = generar(cli, OBJETOS[oid] + OBJ_FIN, 1024, 1024, 6100 + k * 23).convert("RGBA")
+				img = post.quitar_fondo_seguro(img, (255, 0, 255))
+				caja = img.getbbox()
+				if caja:
+					img = img.crop(caja)
+				img.thumbnail((320, 320), Image.LANCZOS)
+				img.save(destino / f"{oid}.webp", "WEBP", quality=86, method=6)
+				hechos.append(oid)
+			except Exception as e:  # noqa: BLE001
+				fallos.append(f"{oid}: {str(e)[:120]}")
 	elif que == "fondos":
 		destino = RAIZ / "app" / "public" / "fondos"
 		for k, (fid, (w, h, sujeto)) in enumerate(FONDOS.items()):

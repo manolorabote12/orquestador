@@ -8,7 +8,7 @@ on:
       que:
         description: "generos o carteles"
         type: choice
-        options: [generos, carteles, mascota, poses, fondos, musica]
+        options: [generos, carteles, mascota, poses, fondos, musica, objetos]
         default: generos
       ids:
         description: "generos/poses: solo estos (separados por comas); mascota: cuantos candidatos"
