@@ -1,0 +1,231 @@
+"""Arte de la app (13 nov 2026): portadas ilustradas de los tipos de juego y carteles del taller.
+
+Las tarjetas de los tipos de juego eran capturas de partida con arte simulado (cuadritos y formas):
+la app parecia basica. Aqui se genera una portada ilustrada por genero con Z-Image en la GPU de
+RunPod (el mismo endpoint de imagenes de la fabrica), todas con el mismo estilo de casa para que
+el catalogo se vea como un conjunto.
+
+	python arte_app.py generos [id1,id2...]   -> app/public/generos_arte/<id>.webp (360x640)
+	python arte_app.py carteles                -> app/public/carteles/<id>.webp (720x400 / 720x1280)
+
+Necesita RUNPOD_API_KEY y ORQ_COMFY=runpod://<endpoint de imagenes>. Tope: ORQ_ARTE_APP_USD
+(por defecto 2 $): al llegar se para y deja lo que ya tenga. Lo corre el workflow «Arte de la app».
+"""
+
+import io
+import json
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent))
+
+from PIL import Image  # noqa: E402
+
+RAIZ = Path(__file__).resolve().parent.parent
+FLUJO = Path(__file__).parent / "plantillas" / "runpod" / "crear_zimage.json"
+
+ESTILO = ("polished stylized 3D cartoon mobile game key art, vibrant saturated colors, soft global illumination, "
+	"rim light, cinematic composition, high detail, cute appealing characters with big expressive eyes, "
+	"vertical poster composition, clear focal point in the center, depth of field background, "
+	"no text, no letters, no words, no logo, no watermark, no user interface, no frame, no border")
+
+## Lo que sale en cada portada (en ingles, el modelo lo entiende mejor). Personajes genericos y
+## originales: nada de marcas ni personajes conocidos.
+SUJETOS = {
+	"plataformas": "a brave little fox hero leaping between floating grassy platforms over a sunny valley, golden coins in the air",
+	"runner": "a cheerful kid running at full speed along a rooftop path at sunset, coins trailing, motion blur",
+	"volador": "a tiny round bird flapping through a gap between green pipes in a bright sky with clouds",
+	"horda": "a young wizard surrounded by a swarm of cute bats and slimes, glowing magic circle and orbiting fireballs, night meadow",
+	"puzle": "a board of shiny colorful gems and candies exploding in a sparkling combo, magical glow",
+	"torres": "cute cannon and crystal towers defending a winding path against a line of goofy goblins, fantasy valley",
+	"carreras": "three cartoon race cars drifting around a sunny curve, dust and speed lines",
+	"naves": "a small heroic spaceship firing lasers at colorful alien invaders, nebula and stars",
+	"rompebloques": "a glowing ball smashing a wall of neon bricks, sparks and particles, retro arcade",
+	"bloques": "colorful falling block pieces clearing a line with a bright flash, clean neon grid",
+	"corredor": "a hero running down a three-lane jungle temple road jumping over a log, coins ahead",
+	"serpiente": "a long friendly green snake slithering across a garden grid eating glowing apples",
+	"memoria": "rows of face-down cards with a few flipped showing cute animal pairs, magical table",
+	"cajas": "a little warehouse robot pushing wooden crates onto glowing target tiles, cozy puzzle room",
+	"preguntas": "a cheerful quiz show stage with big colorful answer buttons and confetti, spotlight",
+	"apilar": "a tall tower of perfectly stacked colorful blocks reaching the clouds, one block swinging above",
+	"topos": "cute moles popping out of holes in a lush garden, a wooden mallet mid-swing",
+	"saltos": "a bouncy jelly creature jumping upward on floating platforms into the sky",
+	"arena": "four cartoon brawlers clashing in a colorful circular arena, energetic action poses",
+	"aldea": "a lively fortified village with walls and towers under attack by cartoon barbarians, isometric view",
+	"ritmo": "glowing musical notes flying down neon lanes toward a stage, concert lights",
+	"clicker": "a giant shiny golden cookie surrounded by coins and upgrades, sparkles, warm light",
+	"cartas": "playing cards fanned on a green felt table, golden glow, cozy lamp",
+	"rpg": "a young knight and a mage facing a big friendly-scary dragon in a turn-based battle, fantasy ruins",
+	"laberinto": "a tiny explorer with a lantern in a stone maze, keys and doors, glowing coins",
+	"golf": "a golf ball flying toward a flag on a floating island green, bright blue sky",
+	"pesca": "a kid in a little boat casting a fishing line into a sparkling lake full of colorful fish",
+	"fusion": "cute round creatures of growing sizes merging together in a glass jar with a burst of light",
+	"tubos": "glass test tubes filled with layers of bright colored liquids being sorted, sparkling lab",
+	"burbujas": "a cannon shooting colorful bubbles at a cluster of bubbles popping in a chain, fantasy forest",
+	"imperio": "a growing empire across ages, from stone huts to castles to a modern city, epic overview",
+	"minas": "cute dwarf miners digging tunnels full of gems and gold, mine carts, cross-section view",
+	"mazmorras": "a hero with a sword and shield entering a torchlit dungeon full of treasure chests and skeletons",
+	"granja": "a cozy farm with crops, chickens, cows and a red barn, sunny morning",
+	"mazo": "magical battle cards glowing above a wooden table with a hero card in front, fantasy duel",
+	"aventura": "a young explorer at a crossroads in an enchanted forest, two glowing paths, storybook mood",
+	"cocina": "a busy cartoon diner kitchen with a chef flipping burgers and happy customers waiting",
+	"mahjong": "stacked ivory mahjong tiles with colorful symbols in a calm zen garden",
+	"aparcamiento": "a cramped parking lot with colorful toy cars trying to get out, top-down view",
+	"sopa": "a letter grid with highlighted hidden words glowing, cozy desk with a magnifying glass",
+	"sudoku": "an elegant number grid on old paper with a pencil and a warm cup of tea",
+	"nonograma": "a pixel picture of a cat being revealed on a grid with number clues, cozy",
+	"cortar": "juicy fruits flying in the air being sliced by a blade swipe, splash of juice",
+	"penaltis": "a soccer player taking a penalty kick, goalkeeper diving, stadium lights",
+	"agujero": "a giant black hole in a toy city swallowing cars, trees and buildings",
+	"ciudad": "a growing cartoon city with skyscrapers, parks and cranes, isometric",
+	"canasta": "a basketball swishing through a hoop with sparkles, outdoor court at sunset",
+	"espiral": "a bouncing ball falling down a twisting colorful helix tower",
+	"buscaminas": "a grid field with numbered tiles and a cute flag, a hidden mine glowing",
+	"conecta": "a vertical board with red and yellow discs about to connect four in a row",
+	"damas": "a checkers board with glossy pieces mid-game, warm library light",
+	"billar": "a pool table with colorful balls breaking from the triangle, dramatic overhead lamp",
+	"solitario": "solitaire cards cascading on a green table with a golden victory sparkle",
+	"parchis": "a colorful ludo board with tokens racing home and dice rolling",
+	"caida": "colorful pieces falling into a well and fitting perfectly, clean bright puzzle",
+	"bolos": "a bowling ball striking pins that explode in all directions, neon alley",
+	"mundo": "a blocky voxel world with a hero chopping trees and building a house at dawn",
+	"royale": "cute rubber-duck heroes parachuting onto a tropical island battleground, storm circle in the distance",
+	"cruzar": "a chicken hopping across roads with cars, rivers with logs and train tracks, voxel style",
+	"arco": "an archer aiming at a distant target with flags showing wind, golden hour",
+	"cubos": "a first-person view of hands building with colorful cubes in a voxel landscape",
+	"parkour": "a runner leaping between rooftops and floating platforms high in the sky",
+	"tienda": "a cute 3D shop with shelves, a cash register and happy customers",
+	"futbol": "two cartoon soccer teams playing in a bright stadium, ball in the air",
+	"terror": "a spooky but not gory haunted house hallway with a flashlight beam and glowing eyes in the dark",
+	"conduccion": "a delivery van driving through colorful city streets, packages on the roof",
+	"zombis": "a first-person view of a hero with a toy blaster facing silly green cartoon zombies at night",
+	"baloncesto": "a street basketball game on an urban court, player dunking, graffiti walls",
+	"tenis": "a tennis player hitting a powerful forehand on a blue court, ball with motion trail",
+	"karts": "cute characters racing go-karts on a colorful circuit with ramps and item boxes",
+	"supervivencia": "a castaway building a campfire shelter on a tropical island at dusk, crafting tools",
+	"triple": "colorful 3D tiles stacked in a pile with a tray of matched triples below, cozy",
+	"tornillos": "a wooden board with colorful screws being unscrewed and metal plates falling",
+	"hexas": "stacks of colorful hexagon tiles merging on a honeycomb board, satisfying",
+	"autobus": "colorful buses waiting as matching colored passengers queue to board, top-down",
+	"duelo": "two castles facing each other with cute troops charging across a river bridge, card battle",
+	"escalada": "a cartoon off-road car climbing a steep hill with fuel cans, bumpy terrain",
+	"tirachinas": "round birds launched from a slingshot toward a wobbly wooden tower with pigs, sunny",
+	"plantas": "cheerful plants defending a garden lawn in lanes against goofy cartoon zombies",
+	"palabra": "a grid of letter tiles turning green and yellow as a word is guessed, clean",
+	"letras": "a wheel of letters connecting to fill a crossword, warm scenic background",
+	"tycoon": "a tycoon character in a suit over a growing row of shops with money flying",
+	"tragaperras": "a colorful slot machine spinning with coins bursting out and a tiny village behind",
+	"reino": "a fantasy kingdom city with castle, farms and walls, armies marching out to conquer, isometric",
+	"multitud": "a huge crowd of little blue people running through multiplier gates toward a giant boss",
+	"pedidos": "a merge board of food items with customers placing orders, cozy cafe",
+	"poder": "a small hero absorbing power from defeated monsters and growing bigger, tower of enemies",
+	"diferencias": "two almost identical colorful pictures side by side with a circle on a difference",
+	"rompecabezas": "a jigsaw picture of a sunny landscape almost complete with pieces floating",
+	"pintar": "a pixel art picture being colored by numbers, palette of paints, cozy",
+	"cuchillos": "knives stuck in a spinning wooden log target, one knife flying toward it",
+	"arquero": "a hooded archer hero shooting arrows at waves of monsters in a dungeon room",
+	"flechas": "a grid of colorful arrows sliding out one by one, clean minimal puzzle",
+	"numeros": "sliding number tiles merging into a glowing 2048 tile, clean pastel colors",
+	"cartas_locas": "colorful crazy cards with numbers and wild cards flying out of a deck",
+	"domino": "domino tiles laid in a winding line on a wooden table",
+	"bloques_colores": "colored blocks sliding to doors of matching colors on a board",
+	"tuberias": "pipes rotated to connect and water flowing through them, sparkling",
+	"ajedrez": "a dramatic chessboard with a king in checkmate under a spotlight",
+	"reversi": "a reversi board with black and white discs flipping in a wave",
+	"buscar": "a cluttered magical attic full of hidden objects with a magnifying glass",
+	"deslizar": "a sliding tile puzzle of a beautiful picture almost solved",
+	"ahorcado": "a chalkboard with a word guessing game and colorful chalk",
+	"flota": "a naval grid with little battleships and splashes from hits",
+	"simon": "four big glowing colored buttons lighting up in sequence",
+	"estrategia": "a tactical map with little armies on hex tiles, castles and banners",
+	"autobatalla": "a chessboard arena where cute units fight automatically, merge stars glowing",
+	"gemas": "heroes attacking a monster with bursts of matched gems below them",
+	"coleccionables": "glowing collectible minion cards and spells floating over a magic board",
+	"roguelike": "a hero descending stairs into a turn-based dungeon with loot and traps",
+	"bombas": "a little bomber hero in a maze of crates with a bomb exploding",
+	"artilleria": "cartoon tanks on hills firing arcing shells with wind flags",
+	"comecocos": "a round hungry character in a neon maze chased by cute ghosts",
+	"cadena": "a chain of colorful balls rolling along a spiral track toward a skull hole, shooter frog",
+	"lucha": "two cartoon fighters in a dynamic fighting stance in a street arena",
+	"sandia": "cute fruits of growing sizes stacked in a box merging into a big watermelon",
+	"pinball": "a neon pinball table with flippers, bumpers and a silver ball",
+	"metroidvania": "a lone explorer in a vast underground world of ruins and glowing crystals",
+	"sigilo": "a sneaky ninja hiding in the shadows as guards with lanterns patrol, top-down",
+}
+
+CARTELES = {
+	"bienvenida": (720, 1280, "a magical workshop where a little robot builds a video game world out of light: floating islands, "
+		"characters and castles appearing from glowing blueprints, warm and inspiring"),
+	"estudio": (720, 400, "a premium cinematic game studio scene: concept art boards, glowing screens and a dragon "
+		"and hero coming to life from sketches, golden light"),
+	"publicar": (720, 400, "a rocket launching from a phone screen into the sky with stars and trophies, celebration"),
+	"vacio": (720, 400, "an empty cozy workbench with tools and a glowing blank cartridge waiting to be filled"),
+	"comunidad": (720, 400, "a crowd of happy cartoon players holding phones and cheering around a stage with games"),
+}
+
+
+def cliente():
+	from arte import runpod
+	return runpod.cliente(os.environ["ORQ_COMFY"])
+
+
+def flujo() -> dict:
+	return json.loads(FLUJO.read_text(encoding="utf-8"))
+
+
+def generar(cli, prompt: str, w: int, h: int, semilla: int) -> Image.Image:
+	datos = cli.generar(flujo(), {"PROMPT": prompt, "SEED": semilla, "ANCHO": w, "ALTO": h})[0]
+	return Image.open(io.BytesIO(datos)).convert("RGB")
+
+
+def guardar(img: Image.Image, ruta: Path, tam: tuple[int, int]) -> None:
+	ruta.parent.mkdir(parents=True, exist_ok=True)
+	img.resize(tam, Image.LANCZOS).save(ruta, "WEBP", quality=80, method=6)
+
+
+def tope() -> float:
+	return float(os.environ.get("ORQ_ARTE_APP_USD", "2") or 2)
+
+
+def main(argv: list[str]) -> int:
+	que = argv[0] if argv else "generos"
+	cli = cliente()
+	hechos, fallos = [], []
+	if que == "generos":
+		ids = argv[1].split(",") if len(argv) > 1 and argv[1] else list(SUJETOS)
+		destino = RAIZ / "app" / "public" / "generos_arte"
+		for k, g in enumerate(ids):
+			if g not in SUJETOS:
+				fallos.append(f"{g}: no tiene sujeto")
+				continue
+			if getattr(cli, "usd", 0.0) >= tope():
+				fallos.append(f"{g}: tope de {tope():.2f} $")
+				continue
+			try:
+				img = generar(cli, f"{SUJETOS[g]}, {ESTILO}", 576, 1024, 1300 + k * 7)
+				guardar(img, destino / f"{g}.webp", (360, 640))
+				hechos.append(g)
+				print(f"ok {g} ({getattr(cli, 'usd', 0.0):.3f} $)", flush=True)
+			except Exception as e:  # noqa: BLE001 - uno que falle no para el resto
+				fallos.append(f"{g}: {str(e)[:120]}")
+				print(f"::warning::{g}: {str(e)[:160]}", flush=True)
+	elif que == "carteles":
+		destino = RAIZ / "app" / "public" / "carteles"
+		for k, (cid, (w, h, sujeto)) in enumerate(CARTELES.items()):
+			try:
+				gw, gh = (576, 1024) if h > w else (1024, 576)
+				img = generar(cli, f"{sujeto}, {ESTILO.replace('vertical poster composition', 'wide banner composition' if w > h else 'vertical poster composition')}", gw, gh, 2600 + k * 11)
+				guardar(img, destino / f"{cid}.webp", (w, h))
+				hechos.append(cid)
+				print(f"ok {cid} ({getattr(cli, 'usd', 0.0):.3f} $)", flush=True)
+			except Exception as e:  # noqa: BLE001
+				fallos.append(f"{cid}: {str(e)[:120]}")
+	print(f"::notice::Arte de la app ({que}): {len(hechos)} hechos, {len(fallos)} fallos, {getattr(cli, 'usd', 0.0):.2f} $")
+	for f in fallos[:20]:
+		print("  FALLO", f)
+	return 0 if hechos else 1
+
+
+if __name__ == "__main__":
+	sys.exit(main(sys.argv[1:]))

@@ -1,0 +1,50 @@
+name: "Arte de la app"
+# Portadas ilustradas de los tipos de juego y carteles del taller, con el endpoint de imagenes de RunPod
+# (Z-Image). Cada imagen cuesta ~0,003 $; tope por ejecucion: el campo «tope» (por defecto 2 $).
+# Las imagenes van a la rama «arte-app» (se reescribe cada vez) para revisarlas antes de meterlas en la app.
+on:
+  workflow_dispatch:
+    inputs:
+      que:
+        description: "generos o carteles"
+        type: choice
+        options: [generos, carteles]
+        default: generos
+      ids:
+        description: "Solo estos generos (separados por comas); vacio = todos"
+        required: false
+        default: ""
+      tope:
+        description: "Tope de gasto en dolares"
+        required: false
+        default: "2"
+
+jobs:
+  arte:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    env:
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      ORQ_ARTE_APP_USD: ${{ inputs.tope }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: fabrica
+      - run: pip install pillow numpy
+      - name: Generar
+        run: |
+          id=$(curl -sf -H "Authorization: Bearer $RUNPOD_API_KEY" https://rest.runpod.io/v1/endpoints \
+            | python3 -c "import json,sys; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get('data',[]); print(next((e['id'] for e in d if str(e.get('name','')).startswith('orq-imagenes')),''))")
+          if [ -z "$id" ]; then echo "::error::No encuentro el endpoint orq-imagenes"; exit 1; fi
+          ORQ_COMFY="runpod://$id" python3 fabrica/arte_app.py "${{ inputs.que }}" "${{ inputs.ids }}"
+      - name: Subir a la rama arte-app
+        if: always()
+        run: |
+          [ -d app/public ] || exit 0
+          cd app/public
+          git init -q -b arte-app && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "Arte de la app (${{ inputs.que }})"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" arte-app
+          echo "::notice::Imagenes en la rama arte-app"
