@@ -89,7 +89,8 @@ export function vistaCuenta(app: App): VistaHecha {
       h("p", { class: "small" }, `${p.juegos} juegos · ${p.jugadas} partidas · ${p.megusta} me gusta`),
       h("div", { class: "insignias", role: "list", "aria-label": "Insignias" },
         ...ins.map((x) => h("div", { class: "insignia" + (x.tiene ? " tiene" : ""), role: "listitem", title: x.como },
-          h("strong", {}, x.nombre), h("span", { class: "muted small" }, x.tiene ? "Conseguida" : x.como)))));
+          h("span", { class: "medalla", "aria-hidden": "true" }, x.tiene ? "★" : "?"),
+          h("div", {}, h("strong", {}, x.nombre), h("span", { class: "muted small" }, x.tiene ? "Conseguida" : x.como))))));
   }).catch(() => perfil.remove());
 
   return {

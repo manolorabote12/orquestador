@@ -16,7 +16,7 @@ export function vistaTuercas(app: App): VistaHecha {
     const saldo = h("strong", {}, String(app.tuercas));
     const juegos = Math.floor(app.tuercas / app.precio);
     const cabecera = h("section", { class: "sheet" },
-      h("div", { class: "sheet-head" }, h("h2", {}, "Tus tuercas")),
+      h("div", { class: "sheet-head" }, h("h2", {}, "Saldo")),
       h("div", { class: "balance" }, svg(ICONOS.tuerca), saldo),
       h("p", { class: "muted", style: "text-align:center" },
         `Un juego completo cuesta ${app.precio} tuercas. ` + (juegos > 0 ? `Te llega para ${juegos}.` : "Aún no te llega para uno.")));
@@ -30,7 +30,7 @@ export function vistaTuercas(app: App): VistaHecha {
     }
     if (!vivo) return;
     if (t.plan) cabecera.querySelector(".sheet-head")?.append(h("span", { class: "pill done" }, t.plan === "pro" ? "Taller Pro" : "Plan Taller"));
-    raiz.replaceChildren(cabecera, seccionPlanes(t), seccionGanancias(), seccionAnuncio(t, saldo), seccionInvitar(), seccionPacks(t),
+    raiz.replaceChildren(cabecera, seccionPacks(t), seccionPlanes(t), seccionAnuncio(t, saldo), seccionGanancias(), seccionInvitar(),
       h("p", { class: "muted small", style: "text-align:center" },
         "Los pagos los gestiona Google Play. Las tuercas de los packs no caducan. ¿Una compra no te llegó? Cierra y abre la app: se recupera sola."));
   }
@@ -102,8 +102,9 @@ export function vistaTuercas(app: App): VistaHecha {
         b.textContent = "Ver un anuncio (+3 tuercas)";
       }
     });
-    return h("section", { class: "sheet" },
-      h("div", { class: "sheet-head" }, h("h2", {}, "Gratis"), h("span", { class: "tag" }, "hasta 5 al día")), b);
+    return h("section", { class: "sheet gratis" },
+      h("div", { class: "sheet-head" }, h("h2", {}, "Gratis"), h("span", { class: "tag" }, "hasta 5 al día")),
+      h("div", { class: "gratis-fila" }, h("img", { src: "objetos/anuncio.webp", alt: "", loading: "lazy" }), b));
   }
 
   function botonCompra(p: ProductoTienda, texto: string, etiqueta?: string): HTMLButtonElement {
@@ -128,13 +129,21 @@ export function vistaTuercas(app: App): VistaHecha {
   function seccionPacks(t: EstadoTienda): HTMLElement {
     const s = h("section", { class: "sheet" }, h("div", { class: "sheet-head" }, h("h2", {}, "Packs")));
     if (t.aviso) s.append(h("p", { class: "muted small" }, t.aviso));
-    for (const p of t.productos.filter((x) => x.tipo === "tuercas")) {
+    // Como en los juegos grandes: cofres de más pequeño a más grande, el de en medio «más popular».
+    const packs = t.productos.filter((x) => x.tipo === "tuercas").sort((a, b) => a.tuercas - b.tuercas);
+    const rejilla = h("div", { class: "packs" });
+    packs.forEach((p, i) => {
       const juegos = Math.floor(p.tuercas / app.precio);
-      s.append(h("div", { class: "pack" },
-        h("span", {}, svg(ICONOS.tuerca), ` ${p.tuercas.toLocaleString("es-ES")} tuercas`,
-          h("small", { class: "muted" }, `  ≈ ${juegos} juego${juegos === 1 ? "" : "s"}`)),
+      const nivel = Math.min(3, Math.round(((i + 1) / Math.max(1, packs.length)) * 3));
+      const cinta = packs.length >= 3 && i === Math.floor(packs.length / 2) ? "Más popular" : packs.length >= 2 && i === packs.length - 1 ? "Mejor valor" : "";
+      rejilla.append(h("div", { class: "pack-carta" + (cinta ? " destacada" : "") },
+        cinta ? h("em", { class: "pack-cinta" }, cinta) : "",
+        h("img", { src: `objetos/pack_${nivel}.webp`, alt: "", loading: "lazy" }),
+        h("strong", {}, p.tuercas.toLocaleString("es-ES")),
+        h("span", { class: "muted small" }, `≈ ${juegos} juego${juegos === 1 ? "" : "s"}`),
         botonCompra(p, `+${p.tuercas} tuercas`)));
-    }
+    });
+    s.append(rejilla);
     return s;
   }
 
@@ -258,7 +267,8 @@ export function vistaTuercas(app: App): VistaHecha {
           precio ? `${t.plan ? "Pasar a Pro" : "Elegir"} · ${precio}${periodo === "anual" ? "/año" : "/mes"}` : undefined));
       }
       tarjetas.append(h("article", { class: "plan-card" + (pro ? " destacado" : "") + (mio ? " mio" : "") },
-        h("h3", {}, pro ? "Taller Pro" : "Taller"),
+        h("div", { class: "plan-cabeza" }, h("h3", {}, pro ? "Taller Pro" : "Taller"),
+          h("img", { class: "plan-img", src: pro ? "objetos/plan_pro.webp" : "objetos/pack_2.webp", alt: "", loading: "lazy" })),
         h("p", { class: "plan-precio" }, precio ? h("strong", {}, precio) : h("span", { class: "muted" }, "—"),
           h("span", { class: "muted small" }, precio ? (periodo === "anual" ? " al año" : " al mes") : "")),
         h("ul", { class: "plan-lista" }, ...ventajas.map((v) => h("li", {}, v))),

@@ -50,9 +50,13 @@ export function vistaLanzadera(app: App): VistaHecha {
     const demo = app.api as unknown as { lzSiguienteDia?: () => Promise<void> };
     const visible = panel.visible_si_pruebas;
     return h("section", { class: "sheet" },
-      h("div", { class: "sheet-head" }, h("h2", {}, "La Lanzadera"), h("span", { class: "tag" }, `${panel.puntos} puntos`)),
-      h("p", { class: "muted" }, "Google pide a las cuentas nuevas 12 probadores jugando 14 días seguidos antes de publicar. " +
-        "Aquí os ayudáis: pruebas juegos de otros y la comunidad prueba el tuyo."),
+      h("div", { class: "stats" },
+        h("div", { class: "stat" }, h("strong", {}, String(panel.puntos)), h("span", {}, "puntos")),
+        h("div", { class: "stat" }, h("strong", {}, String(panel.probando)), h("span", {}, "probando")),
+        h("div", { class: "stat" }, h("strong", {}, "12"), h("span", {}, "probadores que pide Google"))),
+      h("details", { class: "como" }, h("summary", {}, "¿Cómo funciona?"),
+        h("p", { class: "muted" }, "Google pide a las cuentas nuevas 12 probadores jugando 14 días seguidos antes de publicar. " +
+          "Aquí os ayudáis: pruebas juegos de otros y la comunidad prueba el tuyo.")),
       h("p", { class: "small" }, visible
         ? h("span", { class: "pill done" }, panel.premium ? "Premium: tu campaña sale primero" : "Tu campaña se ve en la Lanzadera")
         : h("span", { class: "pill queued" }, (() => { const n = panel.minimo_probando - panel.probando; return `Prueba ${n} ${n === 1 ? "juego" : "juegos"} más y tu campaña saldrá aquí`; })())),

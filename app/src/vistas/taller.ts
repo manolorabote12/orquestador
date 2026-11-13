@@ -7,7 +7,7 @@ import { seccionEscaparate, tarjetaBienvenida } from "./escaparate";
 import { seccionReto } from "./reto";
 import { abrirJugador } from "../jugador";
 import { GENERO_NOMBRE, GIROS, PLANTILLAS, type Plantilla } from "../plantillas-datos";
-import { ICONOS, abrir, aviso, crearChispa, h, svg, type VistaHecha, fotoGenero } from "../ui";
+import { ICONOS, abrir, aviso, crearChispa, h, imagenChispa, svg, type Pose, type VistaHecha, fotoGenero } from "../ui";
 import { mensajeError } from "../errores";
 import { encaja, nuevos, type Tipo } from "../catalogo";
 import { USOS, infoUso, type Uso } from "../usos";
@@ -611,7 +611,7 @@ export function vistaTaller(app: App): VistaHecha {
   const pasos = h("ul", { class: "steps" });
   const filas = new Map<string, HTMLLIElement>();
   for (const [id, nombre] of PASOS) {
-    const li = h("li", { class: "step" }, h("span", { class: "dot" }), h("span", {}, nombre), h("span", { class: "time" }));
+    const li = h("li", { class: "step", "data-paso": id }, h("span", { class: "dot" }), h("span", { class: "step-nombre" }, nombre), h("span", { class: "time" }));
     filas.set(id, li);
     pasos.append(li);
   }
@@ -636,8 +636,48 @@ export function vistaTaller(app: App): VistaHecha {
   const maquina = h("div", { class: "fab", "aria-hidden": "true" },
     svg(ENGRANAJES), h("div", { class: "fab-info" }, barra, porcentaje));
   let hechosAntes = -1;
-  const banco = h("section", { class: "sheet", hidden: true },
-    h("div", { class: "sheet-head" }, titulo, tiempo), maquina, pasos, jugarBoceto, registro);
+  // Escenario (13 nov): el momento estrella de la app. Chispa en grande trabajando dentro de un anillo
+  // que se llena, el paso de ahora en grande, la pista de pasos con iconos y curiosidades mientras espera.
+  const escChispa = imagenChispa("trabajando", "esc-chispa");
+  const anillo = svg(`<svg class="esc-anillo" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" class="esc-pista"/><circle cx="60" cy="60" r="54" class="esc-lleno" pathLength="100" stroke-dasharray="0 100"/></svg>`);
+  const escPct = h("strong", { class: "esc-pct" }, "0 %");
+  const escPaso = h("p", { class: "esc-paso", "aria-live": "polite" }, "Preparando la fábrica...");
+  const escFrase = h("p", { class: "esc-frase" });
+  const escenario = h("div", { class: "escenario" },
+    h("div", { class: "esc-centro" }, anillo, h("div", { class: "esc-halo" }), escChispa),
+    escPct, escPaso);
+  const registroPlegado = h("details", { class: "esc-registro" }, h("summary", {}, "Ver lo que hace la fábrica"), registro);
+  const banco = h("section", { class: "sheet banco", hidden: true },
+    h("div", { class: "sheet-head" }, titulo, tiempo), escenario, maquina, pasos, jugarBoceto, escFrase, registroPlegado);
+  // Curiosidades mientras se espera (rotan cada 9 s).
+  const CURIOSIDADES = [
+    "Cada nivel lo juega un bot antes de dártelo: si el bot no puede pasarlo, se rehace.",
+    "La campaña larga añade decenas de niveles más, ordenados por mundos.",
+    "El arte se dibuja solo para tu juego: héroe, enemigos, jefe y fondos.",
+    "Cuando termine, podrás cambiar lo que quieras hablando con Chispa.",
+    "Tu juego sale con tienda, cofres, logros y reto del día ya montados.",
+    "Puedes compartirlo en el escaparate y ganar con los anuncios que se vean jugándolo.",
+    "La música y los efectos también se crean para tu juego.",
+  ];
+  let curiosidad = 0;
+  let relojFrases: number | null = null;
+  function rotarFrases(on: boolean): void {
+    if (on && relojFrases === null) {
+      escFrase.replaceChildren(h("strong", {}, "¿Sabías que...?"), " ", h("span", {}, CURIOSIDADES[curiosidad % CURIOSIDADES.length]));
+      relojFrases = window.setInterval(() => {
+        curiosidad++;
+        escFrase.classList.remove("entra");
+        void escFrase.offsetWidth;
+        escFrase.replaceChildren(h("strong", {}, "¿Sabías que...?"), " ", h("span", {}, CURIOSIDADES[curiosidad % CURIOSIDADES.length]));
+        escFrase.classList.add("entra");
+      }, 9000);
+    } else if (!on && relojFrases !== null) {
+      window.clearInterval(relojFrases);
+      relojFrases = null;
+    }
+  }
+  const POSE_PASO: Record<string, Pose> = { diseno: "pensando", niveles: "trabajando", arte: "trabajando", validacion: "jugando",
+    apk: "cohete", ficha: "trabajando", clip: "jugando", subida: "cohete" };
 
   // ------------------------------------------------------------ resultado
   const resultado = h("section", { class: "sheet", hidden: true });
@@ -645,6 +685,7 @@ export function vistaTaller(app: App): VistaHecha {
   function pintar(t: Trabajo) {
     form.hidden = true;
     destacados.hidden = true;
+    raiz.classList.add("fabricando");
     banco.hidden = false;
     titulo.textContent = t.titulo ? t.titulo : "Fabricando";
     const hechos = new Set(t.progress.filter((e) => e.estado === "ok").map((e) => e.paso));
@@ -666,6 +707,27 @@ export function vistaTaller(app: App): VistaHecha {
     const pct = Math.round((nHechos / PASOS.length) * 100);
     (barra.firstElementChild as HTMLElement).style.width = `${pct}%`;
     porcentaje.textContent = `${pct} %`;
+    // Escenario: anillo, porcentaje, paso de ahora y la pose de Chispa que toca.
+    // Dentro de un paso, el anillo avanza un poco solo (para que nunca parezca parado).
+    const pctVisto = t.status === "done" ? 100 : Math.min(99, pct + (t.status === "running" ? 4 : 0));
+    anillo.querySelector(".esc-lleno")?.setAttribute("stroke-dasharray", `${pctVisto} 100`);
+    escPct.textContent = `${pctVisto} %`;
+    const activo = PASOS.find(([id]) => filas.get(id)!.classList.contains("active"));
+    escPaso.textContent = t.status === "queued" ? "En la cola de la fábrica..." : activo ? activo[1] + "..." : t.status === "done" ? "¡Terminado!" : "Arrancando las máquinas...";
+    const pose: Pose = t.status === "queued" ? "durmiendo" : activo ? (POSE_PASO[activo[0]] ?? "trabajando") : "trabajando";
+    if (escChispa.dataset.pose !== pose) {
+      escChispa.dataset.pose = pose;
+      escChispa.src = `mascota/${pose}.webp`;
+      escChispa.classList.remove("cambia");
+      void escChispa.offsetWidth;
+      escChispa.classList.add("cambia");
+    }
+    escenario.classList.toggle("parado", t.status !== "running" && t.status !== "queued");
+    rotarFrases(t.status === "running" || t.status === "queued");
+    if (hechosAntes >= 0 && nHechos > hechosAntes && t.status === "running") {
+      const r = escChispa.getBoundingClientRect();
+      chispas(r.left + r.width / 2, r.top + r.height / 3, 14);
+    }
     maquina.classList.toggle("parada", t.status !== "running" && t.status !== "queued");
     if (hechosAntes >= 0 && nHechos > hechosAntes && t.status === "running") sonar("paso");
     hechosAntes = nHechos;
@@ -684,6 +746,8 @@ export function vistaTaller(app: App): VistaHecha {
 
   function terminado(t: Trabajo) {
     pararReloj();
+    rotarFrases(false);
+    raiz.classList.remove("fabricando");
     musica(false);
     fanfarria();
     chispas(window.innerWidth / 2, window.innerHeight / 3, 40);
@@ -704,6 +768,8 @@ export function vistaTaller(app: App): VistaHecha {
     try { guardado = localStorage.getItem(`orq_uso_${t.id}`); } catch { /* nada */ }
     const siguiente = infoUso(guardado ?? uso);
     resultado.replaceChildren(
+      h("div", { class: "listo" }, imagenChispa("ganando", "listo-chispa"),
+        h("div", {}, h("strong", {}, "¡Juego terminado!"), h("span", {}, "Ha superado todas las pruebas de la fábrica"))),
       h("div", { class: "detail-head" }, icono, h("div", {}, h("h2", {}, t.titulo ?? "Tu juego"), h("p", { class: "muted small" }, t.idea))),
       h("div", { style: "height:14px" }), galeria, h("div", { style: "height:14px" }), descargar,
       h("div", { style: "height:10px" }), h("div", { class: "btn-row" }, ver, otro),
@@ -736,6 +802,8 @@ export function vistaTaller(app: App): VistaHecha {
 
   function fallido(t: Trabajo) {
     pararReloj();
+    rotarFrases(false);
+    raiz.classList.remove("fabricando");
     musica(false);
     sonar("error");
     void cancelarAvisoEspera(t.id);
@@ -771,6 +839,7 @@ export function vistaTaller(app: App): VistaHecha {
     dejarDeSeguir?.();
     form.hidden = true;
     destacados.hidden = true;
+    raiz.classList.add("fabricando");
     banco.hidden = false;
     resultado.hidden = true;
     const inicio = Date.now();
@@ -796,6 +865,7 @@ export function vistaTaller(app: App): VistaHecha {
     banco.hidden = true;
     form.hidden = false;
     destacados.hidden = false;
+    raiz.classList.remove("fabricando");
     chispa.decir("¿Qué fabricamos ahora?");
     actualizar();
     idea.focus();
@@ -818,7 +888,7 @@ export function vistaTaller(app: App): VistaHecha {
     if (js.length) return;
     const b = await tarjetaBienvenida(app);
     // Después del compositor: la idea manda; el juego para probar queda justo debajo.
-    if (b && form.isConnected) form.after(b);
+    if (b && form.isConnected) { b.classList.add("solo-sin-fabricar"); form.after(b); }
   }).catch(() => undefined);
 
   // Si hay un juego a medias (la app se cerró mientras se fabricaba), lo retomamos.

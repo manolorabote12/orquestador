@@ -748,7 +748,13 @@ a.btn { text-decoration: none; }
 /* Perfil de creador: nivel e insignias. */
 .creador-nivel { margin: 2px 0 8px; font-family: var(--display); font-weight: 800; font-size: 32px; color: var(--brass-hi); letter-spacing: 0.03em; }
 .insignias { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-top: 10px; }
-.insignia { display: grid; gap: 2px; padding: 10px; border-radius: 10px; border: 1px dashed var(--grid-strong); opacity: 0.6; }
+.insignia { display: grid; grid-template-columns: 38px 1fr; align-items: center; gap: 10px; padding: 10px; border-radius: 14px;
+  background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); opacity: 0.75; }
+.insignia > div { display: grid; gap: 2px; }
+.medalla { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; font-weight: 800; font-size: 18px;
+  color: var(--ink-faint); background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1); }
+.insignia.tiene .medalla { color: #3a2400; background: radial-gradient(circle at 35% 30%, #fff1c2, #f6cf7a 45%, #b9801f);
+  box-shadow: 0 0 12px rgba(246, 207, 122, 0.55), inset 0 -2px 0 rgba(0, 0, 0, 0.2); }
 .insignia.tiene { opacity: 1; border-style: solid; border-color: var(--brass-deep); background: rgba(232, 176, 75, 0.08); }
 .insignia strong { font-size: 14px; }
 
@@ -1195,3 +1201,71 @@ details.plegable > summary .tag { padding: 3px 8px; }
 .tab.on svg { filter: drop-shadow(0 0 6px rgba(246, 207, 122, 0.7)); animation: tab-salta 0.35s ease-out; }
 @keyframes tab-salta { 0% { transform: translateY(0) scale(1); } 45% { transform: translateY(-5px) scale(1.15); } 100% { transform: none; } }
 @media (prefers-reduced-motion: reduce) { .btn-brass:not(:disabled), .tab.on svg { animation: none; } }
+
+/* Fabricando (13 nov): escenario con Chispa en grande dentro de un anillo de progreso. */
+.fabricando > .chispa-row { grid-template-columns: 1fr; }
+.fabricando > .chispa-row .chispa-figura { display: none; }
+.banco .fab { display: none; }
+.escenario { position: relative; display: grid; justify-items: center; gap: 4px; margin: 4px -6px 14px; padding: 18px 10px 16px;
+  border-radius: 20px; overflow: hidden; isolation: isolate;
+  background: radial-gradient(circle at 50% 42%, rgba(110, 230, 255, 0.16), transparent 55%),
+    linear-gradient(rgba(8, 18, 38, 0.55), rgba(8, 18, 38, 0.85)), url("/fondo_cabecera.webp") center / cover; }
+.esc-centro { position: relative; width: 210px; height: 210px; display: grid; place-items: center; }
+.esc-anillo { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.esc-pista { fill: none; stroke: rgba(255, 255, 255, 0.08); stroke-width: 7; }
+.esc-lleno { fill: none; stroke: var(--brass-hi); stroke-width: 7; stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(246, 207, 122, 0.8)); transition: stroke-dasharray 0.9s cubic-bezier(.2,.8,.2,1); }
+.esc-halo { position: absolute; width: 150px; height: 150px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(110, 230, 255, 0.28), transparent 65%); animation: halo 2.4s ease-in-out infinite; }
+@keyframes halo { 0%, 100% { transform: scale(0.9); opacity: 0.7; } 50% { transform: scale(1.08); opacity: 1; } }
+.esc-chispa { position: relative; width: 150px; height: 150px; object-fit: contain; animation: flota 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.5)); }
+.esc-chispa.cambia { animation: salta 0.45s ease-out, flota 2.6s ease-in-out 0.45s infinite; }
+.escenario.parado .esc-halo, .escenario.parado .esc-chispa { animation: none; }
+.esc-pct { font: 800 2.6rem/1 var(--display); color: var(--brass-hi); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5); font-variant-numeric: tabular-nums; }
+.esc-paso { margin: 0; font-size: 17px; font-weight: 700; color: var(--ink); text-align: center; }
+.banco .steps { grid-template-columns: 1fr 1fr; gap: 6px 10px; margin-bottom: 12px; }
+.banco .step { grid-template-columns: 22px 1fr; padding: 7px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); font-size: 14px; }
+.banco .step .time { display: none; }
+.banco .step.active { background: rgba(246, 207, 122, 0.12); box-shadow: inset 0 0 0 1px rgba(246, 207, 122, 0.45); }
+.banco .step .dot { width: 18px; height: 18px; }
+.esc-frase { margin: 12px 0 6px; padding: 12px 14px; border-radius: 14px; background: rgba(110, 230, 255, 0.08);
+  border-left: 3px solid #6ee6ff; color: var(--ink); font-size: 14px; line-height: 1.4; }
+.esc-frase.entra { animation: frase 0.5s ease-out; }
+@keyframes frase { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.esc-registro summary { cursor: pointer; color: var(--ink-dim); font-size: 13px; padding: 6px 0; }
+@media (prefers-reduced-motion: reduce) { .esc-halo, .esc-chispa, .esc-chispa.cambia, .esc-frase.entra { animation: none; } }
+.fabricando > .solo-sin-fabricar { display: none; }
+.listo { display: grid; grid-template-columns: 96px 1fr; align-items: center; gap: 12px; margin: -6px -6px 16px; padding: 10px 14px;
+  border-radius: 18px; background: linear-gradient(110deg, rgba(246, 207, 122, 0.22), rgba(246, 207, 122, 0.04));
+  box-shadow: inset 0 0 0 1px rgba(246, 207, 122, 0.4); }
+.listo-chispa { width: 96px; height: 110px; object-fit: contain; animation: salta 0.6s ease-out, flota 3s ease-in-out 0.6s infinite; }
+.listo strong { display: block; font: 800 1.9rem/1 var(--display); color: var(--brass-hi); }
+.listo span { color: var(--ink); font-size: 14px; }
+
+/* Tienda como en un juego (13 nov): cofres de tuercas en tarjetas. */
+.packs { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 10px; }
+.pack-carta { position: relative; display: grid; justify-items: center; gap: 4px; padding: 14px 8px 10px; border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); text-align: center; }
+.pack-carta.destacada { background: linear-gradient(180deg, rgba(246, 207, 122, 0.22), rgba(246, 207, 122, 0.04));
+  box-shadow: inset 0 0 0 2px rgba(246, 207, 122, 0.7), 0 8px 20px rgba(246, 207, 122, 0.15); }
+.pack-carta img { width: 74px; height: 74px; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
+.pack-carta.destacada img { animation: flota 2.8s ease-in-out infinite; }
+.pack-carta strong { font: 800 1.6rem/1 var(--display); color: var(--brass-hi); }
+.pack-carta .btn { width: 100%; margin-top: 4px; }
+.pack-cinta { position: absolute; top: -9px; left: 50%; transform: translateX(-50%); white-space: nowrap; padding: 2px 9px; border-radius: 999px;
+  font-style: normal; font-size: 11px; font-weight: 700; color: #1b1203; background: var(--brass-hi); }
+/* Resumen en cifras (Lanzadera y otras). */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.stat { display: grid; gap: 2px; justify-items: center; padding: 12px 6px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); text-align: center; }
+.stat strong { font: 800 2rem/1 var(--display); color: var(--brass-hi); }
+.stat span { font-size: 12px; color: var(--ink-dim); line-height: 1.2; }
+details.como { margin-top: 10px; }
+details.como summary { cursor: pointer; color: var(--brass-hi); font-weight: 700; font-size: 14px; }
+.plan-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.plan-img { width: 58px; height: 58px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.45)); }
+.plan-card.destacado .plan-img { animation: flota 3s ease-in-out infinite; }
+.gratis-fila { display: grid; grid-template-columns: 64px 1fr; align-items: center; gap: 12px; }
+.gratis-fila img { width: 64px; height: 64px; object-fit: contain; }
+.pack-carta .btn { white-space: nowrap; padding-left: 4px; padding-right: 4px; font-size: 1.05rem; }

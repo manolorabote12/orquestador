@@ -2,6 +2,19 @@
 // estimación de ganancias y textos sueltos de las fichas. La clave es el texto exacto en español.
 
 export const EN2: Record<string, string> = {
+  "Saldo": "Balance", "Más popular": "Most popular", "Mejor valor": "Best value", "puntos": "points", "probando": "testing",
+  "probadores que pide Google": "testers Google asks for", "¿Cómo funciona?": "How does it work?",
+  "¿Sabías que...?": "Did you know?",
+  "Cada nivel lo juega un bot antes de dártelo: si el bot no puede pasarlo, se rehace.": "A bot plays every level before you get it: if the bot can't beat it, it gets remade.",
+  "La campaña larga añade decenas de niveles más, ordenados por mundos.": "The long campaign adds dozens more levels, sorted into worlds.",
+  "El arte se dibuja solo para tu juego: héroe, enemigos, jefe y fondos.": "The art is drawn just for your game: hero, enemies, boss and backgrounds.",
+  "Cuando termine, podrás cambiar lo que quieras hablando con Chispa.": "When it's done, you can change anything by talking to Chispa.",
+  "Tu juego sale con tienda, cofres, logros y reto del día ya montados.": "Your game comes with a shop, chests, achievements and a daily challenge built in.",
+  "Puedes compartirlo en el escaparate y ganar con los anuncios que se vean jugándolo.": "You can share it in the showcase and earn from the ads shown while people play it.",
+  "La música y los efectos también se crean para tu juego.": "The music and sound effects are made for your game too.",
+  "¡Juego terminado!": "Game finished!", "Ha superado todas las pruebas de la fábrica": "It passed every test in the factory",
+  "Preparando la fábrica...": "Getting the factory ready...", "En la cola de la fábrica...": "In the factory queue...", "¡Terminado!": "Done!",
+  "Arrancando las máquinas...": "Starting the machines...", "Ver lo que hace la fábrica": "See what the factory is doing",
   "Música": "Music", "Banda sonora de la app: tranquila en los menús y con ritmo mientras se fabrica": "App soundtrack: calm in the menus, upbeat while your game is being made",
   // 13 nov: carrusel, carteles con Chispa y portadas
   "Haz un juego como…": "Make a game like…",
