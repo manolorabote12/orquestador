@@ -22,6 +22,8 @@ const PALETTE: Array[Color] = [Color("#ff5d5d"), Color("#3fa7ff"), Color("#ffd23
 var level: Dictionary = {}
 var tubes: Array[String] = []
 var cap: int = 4
+## Tubos con pocas capas, mas altos (13 nov: una fila de tubos bajitos en media pantalla vacia).
+var unit_h: float = UNIT_H
 var par: int = 0
 var finished: bool = false
 var failed: bool = false
@@ -54,6 +56,7 @@ func _ready() -> void:
 	level = Kit.current_level()
 	_start = MapRules.parse(level)
 	cap = MapRules.cap_of(level)
+	unit_h = 66.0 if cap <= 4 else (56.0 if cap == 5 else UNIT_H)
 	par = int(level.get("par", 0))
 	RenderingServer.set_default_clear_color(Kit.color("sky", Color("#1b2a41")))
 	_board = Node2D.new()
@@ -91,7 +94,7 @@ func tube_rect(i: int) -> Rect2:
 	var in_row: int = mini(per, tubes.size() - row * per)
 	var row_w: float = float(in_row) * TUBE_W + float(in_row - 1) * GAP
 	var full_w: float = float(per) * TUBE_W + float(per - 1) * GAP
-	var h: float = float(cap) * UNIT_H + 24.0
+	var h: float = float(cap) * unit_h + 24.0
 	var x: float = (full_w - row_w) * 0.5 + float(col) * (TUBE_W + GAP)
 	var y: float = float(row) * (h + 90.0)
 	return Rect2(Vector2(x, y), Vector2(TUBE_W, h))
@@ -101,7 +104,7 @@ func _fit_camera() -> void:
 	var per: int = _per_row()
 	var rows_n: int = 1 if tubes.size() <= 6 else 2
 	var w: float = float(per) * TUBE_W + float(per - 1) * GAP
-	var h: float = float(rows_n) * (float(cap) * UNIT_H + 24.0) + float(rows_n - 1) * 90.0
+	var h: float = float(rows_n) * (float(cap) * unit_h + 24.0) + float(rows_n - 1) * 90.0
 	var vp: Vector2 = get_viewport_rect().size
 	var z: float = minf(vp.x * 0.9 / (w + 40.0), vp.y * 0.6 / (h + 120.0))
 	_camera.zoom = Vector2.ONE * clampf(z, 0.4, 1.6)
@@ -391,7 +394,7 @@ func _draw_board() -> void:
 		for k: int in tubes[i].length():
 			var ch: String = tubes[i][k]
 			var c: Color = _color_of(ch)
-			var seg: Rect2 = Rect2(Vector2(r.position.x + 6.0, r.end.y - 8.0 - float(k + 1) * UNIT_H), Vector2(TUBE_W - 12.0, UNIT_H - 2.0))
+			var seg: Rect2 = Rect2(Vector2(r.position.x + 6.0, r.end.y - 8.0 - float(k + 1) * unit_h), Vector2(TUBE_W - 12.0, unit_h - 2.0))
 			_board.draw_rect(seg, c)
 			_board.draw_rect(Rect2(seg.position + Vector2(4.0, 4.0), Vector2(8.0, seg.size.y - 8.0)), c.lightened(0.35))
 			var dots: int = MapRules.COLORS.find(ch) % 3 + 1
