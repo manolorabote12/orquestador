@@ -124,7 +124,8 @@ func _build_hero() -> void:
 	add_child(_hero)
 	var art: Dictionary = Kit.sprite_by_role("jugador")
 	if not art.is_empty():
-		var spr: AnimatedSprite2D = SpriteKit.animado(art, 72.0, "idle", true)
+		## 13 nov: a 72 px el heroe se perdia en la pantalla.
+		var spr: AnimatedSprite2D = SpriteKit.animado(art, 98.0, "idle", true)
 		_hero.add_child(spr)
 		Skins.apply(spr)
 	else:
@@ -261,12 +262,23 @@ func _add_platform(p: Vector2, kind: String) -> void:
 			col = Kit.color("solid", Color("#3e5c84")).lightened(0.15)
 		"G":
 			col = Kit.color("coin", Color("#f6cf7a"))
+	## Plataforma con cuerpo (solo se ve mas gruesa: se aterriza en la cara de arriba), sombra y borde
+	## claro arriba (13 nov: tablas finas y oscuras que no se veian sobre el cielo de noche).
+	var deep: float = PLAT_H * 0.5 + 14.0
+	var shadow: Polygon2D = Polygon2D.new()
+	shadow.polygon = PackedVector2Array([Vector2(-w * 0.5 + 8.0, deep), Vector2(w * 0.5 - 8.0, deep), Vector2(w * 0.5 - 18.0, deep + 12.0), Vector2(-w * 0.5 + 18.0, deep + 12.0)])
+	shadow.color = Color(0, 0, 0, 0.25)
+	n.add_child(shadow)
 	var body: Polygon2D = Polygon2D.new()
-	body.polygon = PackedVector2Array([Vector2(-w * 0.5, -PLAT_H * 0.5), Vector2(w * 0.5, -PLAT_H * 0.5), Vector2(w * 0.5 - 6.0, PLAT_H * 0.5), Vector2(-w * 0.5 + 6.0, PLAT_H * 0.5)])
+	body.polygon = PackedVector2Array([Vector2(-w * 0.5, -PLAT_H * 0.5), Vector2(w * 0.5, -PLAT_H * 0.5), Vector2(w * 0.5 - 10.0, deep), Vector2(-w * 0.5 + 10.0, deep)])
 	body.color = col
 	if Kit.texture_polygon(body, 48.0):
 		body.color = col.lerp(Color.WHITE, 0.5)
 	n.add_child(body)
+	var cap: Polygon2D = Polygon2D.new()
+	cap.polygon = PackedVector2Array([Vector2(-w * 0.5 - 3.0, -PLAT_H * 0.5 - 4.0), Vector2(w * 0.5 + 3.0, -PLAT_H * 0.5 - 4.0), Vector2(w * 0.5, -PLAT_H * 0.5 + 5.0), Vector2(-w * 0.5, -PLAT_H * 0.5 + 5.0)])
+	cap.color = col.lightened(0.45)
+	n.add_child(cap)
 	if kind == "x":
 		var crack: Line2D = Line2D.new()
 		crack.points = PackedVector2Array([Vector2(-10, -8), Vector2(2, 0), Vector2(-4, 8)])
