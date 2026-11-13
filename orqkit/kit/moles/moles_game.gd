@@ -197,7 +197,7 @@ func _spawn() -> void:
 	n.position = holes[h] + Vector2(0.0, CELL * 0.18)
 	var art: Dictionary = _arts.get(kind, {})
 	if not art.is_empty():
-		var spr: AnimatedSprite2D = SpriteKit.animado(art, CELL * 0.62, "idle", true)
+		var spr: AnimatedSprite2D = SpriteKit.animado(art, CELL * 0.8, "idle", true)
 		n.add_child(spr)
 		if kind == "friend":
 			Skins.apply(spr)
@@ -399,17 +399,19 @@ func capture_delays() -> Vector2:
 
 func _draw_board() -> void:
 	## Cesped: el color solido del juego tirando a verde, a cuadros; agujeros con monticulo de tierra.
-	var grass: Color = Kit.color("solid", Color("#3e5c84")).lerp(Color("#4e8a3a"), 0.55)
+	var grass: Color = Kit.color("solid", Color("#3e5c84")).lerp(Color("#4e8a3a"), 0.75)
 	var dirt: Color = Color("#6b4a32")
 	var w: float = float(rows[0].length()) * CELL
 	var h: float = float(rows.size()) * CELL
 	var ltex: Texture2D = Kit.first_tile_texture()
 	if ltex != null:
-		## El suelo del mundo del juego (lo dibuja la IA), con un toque de cesped.
+		## El suelo del mundo del juego (lo dibuja la IA), muy tenido de cesped: la losa de muchos juegos
+		## es un muro de ladrillo y llenaba la pantalla (13 nov: «fondo_distrae»).
 		## Una repeticion de la textura por casilla (a su tamano se veria diminuta).
 		var k: float = CELL / maxf(float(ltex.get_width()), 1.0)
+		_board.draw_rect(Rect2(Vector2(-CELL * 3.0, -CELL * 4.0), Vector2(w + CELL * 6.0, h + CELL * 8.0)), grass.darkened(0.08))
 		_board.draw_set_transform(Vector2.ZERO, 0.0, Vector2(k, k))
-		_board.draw_texture_rect(ltex, Rect2(Vector2(-CELL * 3.0, -CELL * 4.0) / k, Vector2(w + CELL * 6.0, h + CELL * 8.0) / k), true, Color.WHITE.lerp(grass, 0.35))
+		_board.draw_texture_rect(ltex, Rect2(Vector2(-CELL * 3.0, -CELL * 4.0) / k, Vector2(w + CELL * 6.0, h + CELL * 8.0) / k), true, Color(1, 1, 1, 0.2))
 		_board.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	else:
 		_board.draw_rect(Rect2(Vector2(-CELL * 3.0, -CELL * 4.0), Vector2(w + CELL * 6.0, h + CELL * 8.0)), grass.darkened(0.12))
