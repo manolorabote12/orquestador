@@ -28,6 +28,11 @@ var par: float = 0.0
 
 var _font: Font
 var _world: Node2D
+## Mesa y dorso de las cartas con los colores del juego, y el protagonista mirando la partida (13 nov:
+## todos los solitarios eran el mismo tapete verde con dorso azul).
+var _felt: Color = Color("#1e6a3a")
+var _back: Color = Color("#2f5ad8")
+var _emblem: Texture2D
 var _camera: Camera2D
 var _info: Label
 var _plan: Array = []
@@ -40,11 +45,25 @@ var _bot_cd: float = 0.0
 func _ready() -> void:
 	level = Kit.current_level()
 	par = float(level.get("par", 330))
-	RenderingServer.set_default_clear_color(Color("#1e6a3a"))
+	RenderingServer.set_default_clear_color(Color("#1e6a3a").lerp(Kit.color("solid", Color("#1e6a3a")).darkened(0.35), 0.45))
 	_font = UI.theme.get_font("font", "Label") if UI.theme != null else ThemeDB.fallback_font
 	_world = Node2D.new()
 	_world.name = "World"
 	_world.draw.connect(_draw_world)
+	_felt = Color("#1e6a3a").lerp(Kit.color("solid", Color("#1e6a3a")).darkened(0.35), 0.45)
+	_back = Kit.color("accent", Color("#2f5ad8")).darkened(0.1)
+	var art: Dictionary = Kit.sprite_by_role("jugador")
+	if not art.is_empty():
+		var sf: SpriteFrames = SpriteKit.frames_de(art)
+		for an: String in sf.get_animation_names():
+			if sf.get_frame_count(an) > 0:
+				_emblem = sf.get_frame_texture(an, 0)
+				break
+	var mas: Node2D = SpriteKit.mascota(230.0)
+	if mas != null:
+		mas.position = Vector2(600.0, 1230.0)
+		mas.modulate = Color(1, 1, 1, 0.92)
+		add_child(mas)
 	add_child(_world)
 	_camera = Camera2D.new()
 	add_child(_camera)
@@ -343,9 +362,12 @@ func _card(r: Rect2, card: Variant) -> void:
 	_world.draw_rect(Rect2(r.position + Vector2(2, 3), r.size), Color(0, 0, 0, 0.25))
 	if card == null or not bool(card[2]):
 		_world.draw_rect(r, Color("#f4f4f0"))
-		_world.draw_rect(r.grow(-5.0), Color("#2f5ad8"))
+		_world.draw_rect(r.grow(-5.0), _back)
 		for k: int in 4:
 			_world.draw_rect(r.grow(-12.0 - float(k) * 8.0), Color(1, 1, 1, 0.12), false, 2.0)
+		if _emblem != null and r.size.y > 60.0:
+			var e: float = minf(r.size.x, r.size.y) * 0.62
+			_world.draw_texture_rect(_emblem, Rect2(r.get_center() - Vector2(e, e) * 0.5, Vector2(e, e)), false, Color(1, 1, 1, 0.85))
 		return
 	_world.draw_rect(r, Color("#fbfaf4"))
 	_world.draw_rect(r, Color("#c8c4b8"), false, 1.5)
@@ -365,7 +387,7 @@ func _slot(r: Rect2) -> void:
 func _draw_world() -> void:
 	if st.is_empty():
 		return
-	_world.draw_rect(Rect2(-100, -100, 920, 1500), Color("#1e6a3a"))
+	## El tapete es el color de fondo (asi el protagonista, detras de las cartas, se ve).
 	for k: int in 40:
 		_world.draw_circle(Vector2(fmod(float(k * 97), 720.0), fmod(float(k * 151), 1280.0)), 60.0, Color(1, 1, 1, 0.015))
 	## Mazo, descarte y bases.
