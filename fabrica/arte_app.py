@@ -199,6 +199,16 @@ FONDOS = {
 }
 
 
+## Musica de la app (ACE-Step en RunPod): tema de los menus, la de mientras se fabrica y la fanfarria.
+MUSICA_APP = {
+	"menu": (60, 92, "D major", "epic orchestral adventure theme for a game menu, warm brass, soft strings, light percussion, "
+		"magical bells, hopeful and inspiring, calm enough to keep in the background, seamless loop, instrumental, no vocals, high quality mix"),
+	"fabrica": (48, 118, "D major", "energetic orchestral building montage, driving percussion, pizzicato strings, bold brass, "
+		"playful workshop sounds, sense of progress and anticipation, seamless loop, instrumental, no vocals, high quality mix"),
+	"victoria": (9, 120, "D major", "short triumphant orchestral fanfare, brass and timpani, celebration, victory, instrumental, no vocals"),
+}
+
+
 def cliente():
 	from arte import runpod
 	return runpod.cliente(os.environ["ORQ_COMFY"])
@@ -297,6 +307,26 @@ def main(argv: list[str]) -> int:
 					hechos.append(f"{fid}_{v}")
 			except Exception as e:  # noqa: BLE001
 				fallos.append(f"{fid}: {str(e)[:120]}")
+	elif que == "musica":
+		import subprocess
+		from arte import musica_ia
+		wf = json.loads((Path(__file__).parent / "plantillas" / "runpod" / "musica_acestep.json").read_text(encoding="utf-8"))
+		destino = RAIZ / "app" / "public" / "musica"
+		destino.mkdir(parents=True, exist_ok=True)
+		for k, (mid, (seg, bpm, clave, tags)) in enumerate(MUSICA_APP.items()):
+			for v in range(2):
+				try:
+					enc = {"etiquetas": tags + f", {bpm} BPM", "segundos": seg, "bpm": bpm, "tonalidad": clave, "semilla": 9100 + k * 31 + v * 977}
+					a = musica_ia.decodificar(cli.generar(wf, musica_ia.valores(enc, 0))[0])
+					a = musica_ia.igualar(musica_ia.cierre(a) if mid == "victoria" else musica_ia.bucle(a))
+					ruta = destino / f"{mid}_{v}.mp3"
+					r = subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y", "-f", "f32le", "-ar", str(musica_ia.SR), "-ac", "2",
+						"-i", "pipe:0", "-c:a", "libmp3lame", "-b:a", "128k", str(ruta)], input=a.astype("float32").tobytes(), capture_output=True, timeout=120)
+					if r.returncode != 0:
+						raise RuntimeError(r.stderr.decode("utf-8", "replace")[:200])
+					hechos.append(f"{mid}_{v}")
+				except Exception as e:  # noqa: BLE001
+					fallos.append(f"{mid}_{v}: {str(e)[:160]}")
 	print(f"::notice::Arte de la app ({que}): {len(hechos)} hechos, {len(fallos)} fallos, {getattr(cli, 'usd', 0.0):.2f} $")
 	for f in fallos[:20]:
 		print("  FALLO", f)

@@ -8,7 +8,7 @@ on:
       que:
         description: "generos o carteles"
         type: choice
-        options: [generos, carteles, mascota, poses, fondos]
+        options: [generos, carteles, mascota, poses, fondos, musica]
         default: generos
       ids:
         description: "generos/poses: solo estos (separados por comas); mascota: cuantos candidatos"
@@ -34,7 +34,7 @@ jobs:
           sparse-checkout: |
             fabrica
             app/public/mascota
-      - run: pip install pillow numpy
+      - run: pip install pillow numpy && sudo apt-get install -y -qq ffmpeg >/dev/null
       - name: Generar
         run: |
           id=$(curl -sf -H "Authorization: Bearer $RUNPOD_API_KEY" https://rest.runpod.io/v1/endpoints \
