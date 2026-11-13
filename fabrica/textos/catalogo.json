@@ -1645,7 +1645,17 @@
 			"howto_gemrpg_3": "When a hero glows, tap their portrait for their special. Watch the monsters' countdown.",
 			"howto_powertower_1": "Tap the rooms in a good order: you only beat those with less power than you.",
 			"howto_powertower_2": "Each win and each prize adds to your power; avoid the traps.",
-			"howto_powertower_3": "Reach the boss at the top with enough power."
+			"howto_powertower_3": "Reach the boss at the top with enough power.",
+			"upgrade_fortuna": "Fortune: +15% coins",
+			"league": "League",
+			"league_next": "%d to %s",
+			"lg_bronze": "Bronze",
+			"lg_silver": "Silver",
+			"lg_gold": "Gold",
+			"lg_platinum": "Platinum",
+			"lg_diamond": "Diamond",
+			"lg_master": "Master",
+			"lg_legend": "Legend"
 		},
 		"pt": {
 			"a_friend": "um amigo",
@@ -3276,7 +3286,17 @@
 			"howto_gemrpg_3": "Quando um herói brilha, toca no retrato para o especial. Atenção à contagem dos monstros.",
 			"howto_powertower_1": "Toca nas salas por boa ordem: só vences quem tem menos poder do que tu.",
 			"howto_powertower_2": "Cada vitória e cada prémio somam poder; evita as armadilhas.",
-			"howto_powertower_3": "Chega ao chefe lá em cima com poder suficiente."
+			"howto_powertower_3": "Chega ao chefe lá em cima com poder suficiente.",
+			"upgrade_fortuna": "Fortuna: +15% de moedas",
+			"league": "Liga",
+			"league_next": "%d para %s",
+			"lg_bronze": "Bronze",
+			"lg_silver": "Prata",
+			"lg_gold": "Ouro",
+			"lg_platinum": "Platina",
+			"lg_diamond": "Diamante",
+			"lg_master": "Mestre",
+			"lg_legend": "Lenda"
 		},
 		"fr": {
 			"a_friend": "un ami",
@@ -4907,7 +4927,17 @@
 			"howto_gemrpg_3": "Quand un héros brille, touche son portrait pour son spécial. Attention au compte à rebours des monstres.",
 			"howto_powertower_1": "Touche les salles dans le bon ordre : tu ne bats que ceux qui ont moins de puissance que toi.",
 			"howto_powertower_2": "Chaque victoire et chaque prix augmentent ta puissance ; évite les pièges.",
-			"howto_powertower_3": "Arrive au boss en haut avec assez de puissance."
+			"howto_powertower_3": "Arrive au boss en haut avec assez de puissance.",
+			"upgrade_fortuna": "Fortune : +15 % de pièces",
+			"league": "Ligue",
+			"league_next": "%d pour %s",
+			"lg_bronze": "Bronze",
+			"lg_silver": "Argent",
+			"lg_gold": "Or",
+			"lg_platinum": "Platine",
+			"lg_diamond": "Diamant",
+			"lg_master": "Maître",
+			"lg_legend": "Légende"
 		},
 		"de": {
 			"a_friend": "ein Freund",
@@ -6538,7 +6568,17 @@
 			"howto_gemrpg_3": "Wenn ein Held leuchtet, tippe sein Bild für seine Spezialattacke an. Achte auf den Countdown der Monster.",
 			"howto_powertower_1": "Tippe die Räume in guter Reihenfolge an: du besiegst nur, wer weniger Kraft hat als du.",
 			"howto_powertower_2": "Jeder Sieg und jeder Preis erhöht deine Kraft; weiche den Fallen aus.",
-			"howto_powertower_3": "Erreiche den Boss oben mit genug Kraft."
+			"howto_powertower_3": "Erreiche den Boss oben mit genug Kraft.",
+			"upgrade_fortuna": "Glück: +15 % Münzen",
+			"league": "Liga",
+			"league_next": "%d bis %s",
+			"lg_bronze": "Bronze",
+			"lg_silver": "Silber",
+			"lg_gold": "Gold",
+			"lg_platinum": "Platin",
+			"lg_diamond": "Diamant",
+			"lg_master": "Meister",
+			"lg_legend": "Legende"
 		},
 		"it": {
 			"a_friend": "un amico",
@@ -8169,7 +8209,17 @@
 			"howto_gemrpg_3": "Quando un eroe brilla, tocca il suo ritratto per la mossa speciale. Occhio al conto alla rovescia dei mostri.",
 			"howto_powertower_1": "Tocca le stanze nel giusto ordine: batti solo chi ha meno potere di te.",
 			"howto_powertower_2": "Ogni vittoria e ogni premio aumentano il tuo potere; evita le trappole.",
-			"howto_powertower_3": "Arriva al boss in cima con abbastanza potere."
+			"howto_powertower_3": "Arriva al boss in cima con abbastanza potere.",
+			"upgrade_fortuna": "Fortuna: +15% di monete",
+			"league": "Lega",
+			"league_next": "%d per %s",
+			"lg_bronze": "Bronzo",
+			"lg_silver": "Argento",
+			"lg_gold": "Oro",
+			"lg_platinum": "Platino",
+			"lg_diamond": "Diamante",
+			"lg_master": "Maestro",
+			"lg_legend": "Leggenda"
 		}
 	},
 	"generos": {

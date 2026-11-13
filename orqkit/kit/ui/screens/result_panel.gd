@@ -52,7 +52,7 @@ func _ready() -> void:
 	UI.count_up(score, int(result.get("score", 0)), "%d", 1.0)
 
 	## Monedas para la tienda: 10 por estrella y las monedas del nivel (hasta 40).
-	var earned: int = int(result.get("stars", 1)) * 10 + mini(int(result.get("coins", 0)), 40)
+	var earned: int = Save.with_fortune(int(result.get("stars", 1)) * 10 + mini(int(result.get("coins", 0)), 40))
 	## Evento del autor "monedas dobles".
 	var event_x: int = Online.coin_multiplier()
 	earned *= event_x

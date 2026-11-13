@@ -611,6 +611,147 @@ def niveles_reto(proyecto: Path, diseno: dict, semilla: int) -> int:
 	return len(buenos) if len(buenos) >= 3 else 0
 
 
+## Campana larga (13 nov): ademas de los niveles del diseno, el generador del genero hace muchos mas
+## con la dificultad subiendo por mundos; los bots juegan todos y solo se quedan los que superan.
+## Asi el juego pasa de 1 hora a muchas (la gente se cansaba en pocos dias).
+CAMPANA_EXTRA = 32
+CAMPANA_KITS = {
+	"platformer", "runner", "flyer", "match3", "blocks", "sokoban", "moles", "jumper", "maze", "golf", "sort",
+	"bubble", "mahjong", "parking", "words", "sudoku", "nonogram", "hole", "hoops", "helix", "mines", "pool",
+	"bowling", "hopper", "archery", "obby", "triple", "screw", "hexa", "bus", "climb", "sling", "lawn", "tower",
+	"breakout", "blockjam", "pipes", "hidden", "slide", "spotdiff", "jigsaw", "paintnum", "knifehit", "arrows",
+	"connect", "crowd", "shooter", "horde", "rogue", "crawl", "dungeon", "metroid", "stealth", "bomber", "chomp",
+	"chain", "artillery", "cook", "memory", "letters", "penalty", "slice",
+	## 13 nov: tambien los de batallas, carreras y supervivencia (cada nivel es una pelea, carrera o noche).
+	"turns", "race", "royale", "survival", "kart", "brawl", "lanes", "tactics", "fighter", "zombie", "horror",
+	"snake", "stack", "rhythm", "fishing", "powertower", "clash", "autochess", "gemrpg", "deck", "soccer",
+	"tennis", "basket", "drive",
+}
+CAMPANA_TANDA = 12
+
+
+def campana_segundos() -> float:
+	"""Tiempo maximo de bots para la campana larga (ORQ_CAMPANA_SEG; por defecto 8 minutos)."""
+	try:
+		return float(os.environ.get("ORQ_CAMPANA_SEG", "480"))
+	except ValueError:
+		return 480.0
+
+
+NUMERALES = ["II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"]
+
+
+def extra_campana(diseno: dict) -> int:
+	"""Cuantos niveles mas lleva la campana de este juego (0 si el genero no va por niveles)."""
+	try:
+		kit = generos.de(diseno)["kit"]
+	except Exception:  # noqa: BLE001
+		return 0
+	if kit not in CAMPANA_KITS or diseno.get("genero") == "a_medida":
+		return 0
+	try:
+		return max(0, min(200, int(os.environ.get("ORQ_CAMPANA_EXTRA", CAMPANA_EXTRA))))
+	except ValueError:
+		return CAMPANA_EXTRA
+
+
+def niveles_campana(proyecto: Path, diseno: dict, semilla: int, n_extra: int) -> list[dict]:
+	"""Genera n_extra niveles mas (y una reserva), con la dificultad subiendo por tramos; los juegan los
+	bots y devuelve los que superan, en orden y con nombre («Nombre II», «Nombre III»...)."""
+	game_p = proyecto / "game.json"
+	original = game_p.read_text(encoding="utf-8")
+	base = list(diseno.get("niveles") or [])
+	if not base or n_extra <= 0:
+		return []
+	total = n_extra + max(6, n_extra // 2)
+	d2 = dict(diseno)
+	d2.pop("prueba_ab", None)
+	## Plantilla de cada nivel nuevo: los del diseno de la mitad en adelante (los primeros son tutorial).
+	desde = min(len(base) - 1, len(base) // 2)
+	plantillas = base[desde:] or base
+	def nombre(x: object) -> str:
+		return str(x.get("nombre", "") if isinstance(x, dict) else x)[:30]
+	d2["niveles"] = [f"{nombre(plantillas[k % len(plantillas)])} {NUMERALES[min(len(NUMERALES) - 1, k // len(plantillas))]}".strip()
+		for k in range(total)]
+	d2.pop("aventura", None)
+	d2.pop("historia", None)
+	## El generador ya sube la dificultad con el indice; encima, dientes de sierra: cada 8 niveles un respiro.
+	ajustes = {k: 0.05 + 0.25 * k / max(1, total - 1) - (0.15 if k % 8 == 0 else 0.0) for k in range(total)}
+	buenos: list[dict] = []
+	try:
+		mapas = director.generar_niveles(d2, semilla + 31337, ajustes=ajustes)
+		niveles = director.a_game(d2, mapas)["levels"]
+		## El ultimo nivel generado lleva el jefe: se prueba el primero y, si pasa, cierra la campana.
+		jefe = niveles.pop() if niveles and niveles[-1].get("boss") else None
+		if jefe is not None:
+			niveles.insert(0, jefe)
+		## Los bots juegan por tandas de 12 y se para al tener bastantes o al acabar el tiempo
+		## (en los generos lentos de jugar, como el battle royale, cada nivel cuesta casi un minuto).
+		## La primera tanda es de 4 para medir cuanto tarda un nivel y que las siguientes quepan en el tiempo.
+		inicio = time.time()
+		a, probados = 0, 0
+		while a < len(niveles) and len(buenos) < n_extra:
+			pasado = time.time() - inicio
+			tam = 4 if probados == 0 else min(CAMPANA_TANDA, int((campana_segundos() - pasado) / max(1.0, pasado / probados)))
+			if tam <= 0:
+				break
+			tanda = niveles[a:a + tam]
+			a += tam
+			probados += len(tanda)
+			prueba = json.loads(original)
+			prueba["levels"] = tanda
+			prueba.pop("ab", None)
+			prueba.pop("daily_levels", None)
+			game_p.write_text(json.dumps(prueba, indent=1, ensure_ascii=False), encoding="utf-8")
+			val = validar_godot(proyecto, solo_niveles=False)
+			ok = {int(nv["nivel"]): nv for nv in val.get("niveles", []) if nivel_ok(nv, True)}
+			for i, lv in enumerate(tanda):
+				if i not in ok:
+					continue
+				nv = ok[i]
+				if "contrarreloj" in (diseno.get("giros") or []) and nv.get("bot_segundos") is not None:
+					lv["time_limit"] = float(math.ceil(float(nv["bot_segundos"]) * 3.0 + 10.0))
+				lv.pop("variant_b", None)
+				lv.pop("story", None)
+				buenos.append(lv)
+	finally:
+		game_p.write_text(original, encoding="utf-8")
+	## Nombres por mundos al estilo «Pantano 3-2» (mundo-nivel), contando con los niveles del diseno.
+	con_jefe = bool(buenos) and buenos[0] is jefe
+	if con_jefe:
+		buenos = buenos[1:n_extra] + [jefe]
+	buenos = buenos[:n_extra]
+	for j, lv in enumerate(buenos):
+		pos = len(base) + j
+		lv["name"] = f"{nombre(plantillas[j % len(plantillas)])} {pos // 5 + 1}-{pos % 5 + 1}"
+	return buenos
+
+
+def poner_campana(proyecto: Path, extra: list[dict]) -> None:
+	"""Anade los niveles extra al final de la campana del game.json ya validado."""
+	if not extra:
+		return
+	gp = proyecto / "game.json"
+	game = json.loads(gp.read_text(encoding="utf-8"))
+	levels = list(game.get("levels", []))
+	historia = (game.get("story") or {}).get("levels")
+	historia = historia if isinstance(historia, list) and len(historia) == len(levels) and historia else None
+	vacio = {"intro": [], "outro": []}
+	## La campana acaba con el jefe: si el jefe nuevo no paso a los bots, el del diseno se va al final
+	## (con sus dialogos). Si paso, el final de la historia (el outro del ultimo nivel) pasa a el.
+	if not extra[-1].get("boss") and levels and levels[-1].get("boss"):
+		extra = extra + [levels.pop()]
+		if historia is not None:
+			final = historia.pop()
+			historia += [dict(vacio) for _ in extra[:-1]] + [final]
+	elif historia is not None:
+		ultimo = historia[-1]
+		historia[-1] = {"intro": ultimo.get("intro", []), "outro": []}
+		historia += [dict(vacio) for _ in extra[:-1]] + [{"intro": [], "outro": ultimo.get("outro", [])}]
+	game["levels"] = levels + extra
+	gp.write_text(json.dumps(game, indent=1, ensure_ascii=False), encoding="utf-8")
+
+
 def poner_reto(proyecto: Path) -> None:
 	"""Pone (o quita) los niveles del reto en el game.json ya validado, sin rehacerlo (asi no se
 	pierde nada de lo que se ajusto despues de los bots, como el tiempo del contrarreloj)."""
@@ -956,6 +1097,19 @@ def _fabricar(args: argparse.Namespace) -> dict:
 		except Exception as e:  # noqa: BLE001 - el reto es un extra
 			evento("reto", "aviso", f"Sin reto del día esta vez ({str(e)[:80]})")
 		cronometro("reto", t)
+
+	## 6b2 - Campana larga: decenas de niveles mas, probados por los bots (un extra: si falla, se sigue).
+	n_extra = extra_campana(diseno) if not getattr(args, "muestra", None) else 0
+	if n_extra:
+		t = time.time()
+		evento("campana", "inicio", f"Haciendo la campaña larga: {n_extra} niveles más...")
+		try:
+			extra = niveles_campana(proyecto, diseno, args.semilla, n_extra)
+			poner_campana(proyecto, extra)
+			evento("campana", "ok", f"Campaña larga: {len(extra)} niveles más, superados por los bots", niveles=len(extra))
+		except Exception as e:  # noqa: BLE001 - la campana larga es un extra
+			evento("campana", "aviso", f"Sin campaña larga esta vez ({str(e)[:80]})")
+		cronometro("campana", t)
 
 	## 6c - Pulido (modo estudio): critica -> arreglo cosmetico o de codigo -> otra critica (pulir.py).
 	if not args.simulado and not args.arte_simulado:

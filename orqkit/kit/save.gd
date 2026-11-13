@@ -219,11 +219,19 @@ func equip_skin(id: String) -> bool:
 ## 8 - Mejoras compradas con monedas (permanentes). "heart": +1 vida por nivel de mejora.
 ## heart: corazon extra (plataformas, hordas) - tropas: +12 % de vida y dano por nivel (aldea)
 ## luchador: +8 % de vida y dano por nivel (arena).
-const UPGRADES: Dictionary = {"heart": {"max": 2, "prices": [300, 700]}, "tropas": {"max": 3, "prices": [250, 600, 1200]},
+## fortuna (todos los generos): +15 % de monedas por nivel ganado en cada mejora (13 nov: algo en que
+## gastar las monedas a largo plazo, para la campana larga).
+const FORTUNE_STEP: float = 0.15
+const UPGRADES: Dictionary = {"heart": {"max": 2, "prices": [300, 700]}, "fortuna": {"max": 5, "prices": [200, 500, 1100, 2200, 4000]}, "tropas": {"max": 3, "prices": [250, 600, 1200]},
 	"luchador": {"max": 3, "prices": [250, 600, 1200]},
 	## Escalada: el taller del coche.
 	"motor": {"max": 4, "prices": [150, 400, 900, 1800]}, "suspension": {"max": 4, "prices": [120, 350, 800, 1600]},
 	"ruedas": {"max": 4, "prices": [120, 350, 800, 1600]}, "deposito": {"max": 4, "prices": [100, 300, 700, 1400]}}
+
+
+## Monedas de un nivel ganado con la mejora «fortuna».
+func with_fortune(coins: int) -> int:
+	return int(round(float(coins) * (1.0 + FORTUNE_STEP * float(upgrade_level("fortuna")))))
 
 
 func upgrade_level(id: String) -> int:

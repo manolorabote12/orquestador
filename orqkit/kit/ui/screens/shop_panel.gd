@@ -65,7 +65,8 @@ func _refresh() -> void:
 			_offer_row("sin_anuncios", Kit.text("iap_no_ads", "Sin anuncios"), "close")
 		if not Season.premium() and Kit.feature("pase"):
 			_offer_row("pase_temporada", Kit.text("pass_premium", "Pase premium"), "star")
-	if ["platformer", "horde"].has(Genres.current()):
+	_upgrade_row("fortuna", Kit.text("upgrade_fortuna", "Fortuna: +15 % de monedas"), "coin")
+	if ["platformer", "horde", "breakout", "lanes", "shooter", "turns"].has(Genres.current()):
 		_upgrade_row("heart", Kit.text("upgrade_heart", "Corazon extra"))
 	if Genres.current() == "village":
 		_upgrade_row("tropas", Kit.text("upgrade_tropas", "Tropas m\u00e1s fuertes"), "trophy")

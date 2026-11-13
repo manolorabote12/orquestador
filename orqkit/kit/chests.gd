@@ -145,6 +145,25 @@ static func trophies() -> int:
 	return int(_data()["trophies"])
 
 
+## Ligas (13 nov): los trofeos te suben de liga; con la campana larga (40+ niveles, 3 estrellas) se
+## llega a Leyenda tras muchas horas. [umbral, clave de texto, nombre en espanol, color].
+const LEAGUES: Array = [[0, "lg_bronze", "Bronce", "#c98a4b"], [150, "lg_silver", "Plata", "#c7d0dc"],
+	[400, "lg_gold", "Oro", "#ffcf3f"], [800, "lg_platinum", "Platino", "#7fe0d4"],
+	[1300, "lg_diamond", "Diamante", "#8fb8ff"], [2000, "lg_master", "Maestro", "#c78bff"], [3000, "lg_legend", "Leyenda", "#ff6f6f"]]
+
+
+static func league_index(t: int) -> int:
+	var i: int = 0
+	for k: int in range(LEAGUES.size()):
+		if t >= int(LEAGUES[k][0]):
+			i = k
+	return i
+
+
+static func league_name(i: int) -> String:
+	return Kit.text(str(LEAGUES[i][1]), str(LEAGUES[i][2]))
+
+
 ## Premio del escalon k (1, 2, 3...): monedas, cofre o aspecto, en ese ritmo.
 static func road_reward(k: int) -> Dictionary:
 	match k % 4:

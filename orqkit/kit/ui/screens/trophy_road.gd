@@ -33,6 +33,16 @@ func _fill() -> void:
 	tl.text = str(t)
 	tl.theme_type_variation = "HeaderLabel"
 	top.add_child(tl)
+	var li: int = Chests.league_index(t)
+	var lg: Label = Label.new()
+	lg.name = "League"
+	lg.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	lg.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lg.text = Kit.text("league", "Liga") + " " + Chests.league_name(li)
+	if li + 1 < Chests.LEAGUES.size():
+		lg.text += "  \u00b7  " + Kit.text("league_next", "%d para %s") % [int(Chests.LEAGUES[li + 1][0]) - t, Chests.league_name(li + 1)]
+	lg.add_theme_color_override("font_color", Color(str(Chests.LEAGUES[li][3])))
+	body.add_child(lg)
 	var next_k: int = t / Chests.TROPHY_STEP + 1
 	var bar: ProgressBar = ProgressBar.new()
 	bar.name = "NextBar"
