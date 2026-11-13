@@ -401,8 +401,17 @@ func _draw_slot(b: Button, i: int) -> void:
 	var s: Array = Chests.slots()
 	var r: Rect2 = Rect2(Vector2.ZERO, b.size)
 	if i >= s.size():
-		b.draw_rect(r.grow(-6.0), Color(1, 1, 1, 0.08))
-		b.draw_rect(r.grow(-6.0), Color(1, 1, 1, 0.25), false, 3.0)
+		## Hueco libre: silueta de cofre en sombra y «Libre» (13 nov: la critica veia «cuadros vacios
+		## sin contenido» bajo el personaje).
+		b.draw_rect(r.grow(-6.0), Color(0, 0, 0, 0.22))
+		b.draw_rect(r.grow(-6.0), Color(1, 1, 1, 0.22), false, 3.0)
+		var g: Color = Color(1, 1, 1, 0.2)
+		var cx: float = b.size.x * 0.5
+		b.draw_rect(Rect2(Vector2(cx - 34.0, 40.0), Vector2(68.0, 34.0)), g, false, 3.0)
+		b.draw_rect(Rect2(Vector2(cx - 36.0, 24.0), Vector2(72.0, 16.0)), g, false, 3.0)
+		b.draw_rect(Rect2(Vector2(cx - 6.0, 34.0), Vector2(12.0, 14.0)), g)
+		var f0: Font = UI.font
+		b.draw_string(f0, Vector2(0, b.size.y - 14.0), Kit.text("chest_slot_free", "Libre"), HORIZONTAL_ALIGNMENT_CENTER, b.size.x, 19, Color(1, 1, 1, 0.45))
 		return
 	var typ: String = str(s[i]["type"])
 	var ready: bool = Chests.ready(i)
