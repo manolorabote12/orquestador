@@ -907,9 +907,40 @@ func _draw_order() -> void:
 		var c: Vector2 = Vector2(x + r, 32.0)
 		_order.draw_circle(c, r + 3.0, Color("#5fd35f") if str(u["side"]) == "hero" else Color("#ff5a4f"))
 		_order.draw_circle(c, r, ELEM_COL.get(str(u["element"]), Color.GRAY).darkened(0.2))
-		var ini: String = _unit_name(u).substr(0, 1).to_upper()
-		_order.draw_string(f, c + Vector2(-r, 9.0), ini, HORIZONTAL_ALIGNMENT_CENTER, r * 2.0, 24, Color.WHITE)
+		## Retrato pequeno (el dibujo de cada uno); si no tiene, su inicial.
+		var tex: Texture2D = _face(u)
+		if tex != null:
+			_order.draw_texture_rect(tex, Rect2(c - Vector2(r, r) * 0.95, Vector2(r, r) * 1.9), false)
+		else:
+			var ini: String = _unit_name(u).substr(0, 1).to_upper()
+			_order.draw_string(f, c + Vector2(-r, 9.0), ini, HORIZONTAL_ALIGNMENT_CENTER, r * 2.0, 24, Color.WHITE)
 		x += r * 2.0 + 10.0
+
+
+var _faces: Dictionary = {}
+
+
+## Primer dibujo de reposo de quien sea (para la barra de turnos).
+func _face(u: Dictionary) -> Texture2D:
+	var key: String = str(u["side"]) + ":" + str(u["id"])
+	if _faces.has(key):
+		return _faces[key]
+	var art: Dictionary = {}
+	if str(u["side"]) == "enemy":
+		art = _arts.get(str(u["id"]), _arts.get("W", {}))
+	elif not Kit.sprite_entry("heroe_" + str(u["id"])).is_empty():
+		art = Kit.sprite_entry("heroe_" + str(u["id"]))
+	elif int(u["uid"]) == 1:
+		art = Kit.sprite_by_role("jugador")
+	var tex: Texture2D = null
+	if not art.is_empty():
+		var sf: SpriteFrames = SpriteKit.frames_de(art)
+		for an: String in ["idle", "run", "walk"]:
+			if sf.has_animation(an) and sf.get_frame_count(an) > 0:
+				tex = sf.get_frame_texture(an, 0)
+				break
+	_faces[key] = tex
+	return tex
 
 
 func _draw_party_bars() -> void:
@@ -1016,6 +1047,13 @@ func _end_party_turn(u: Dictionary) -> void:
 		if TurnsParty.next_wave(state):
 			UI.float_text(self, Vector2(0.0, -200.0), Kit.text("turns_wave", "Oleada {n} de {t}").format({"n": int(state["wave"]) + 1, "t": rows.size()}), Color("#ffe066"), 40)
 			_spawn_party()
+			## Llega el jefe: su nombre en grande, temblor y musica de jefe (momento de los RPG de heroes).
+			var boss: Array = (state["enemies"] as Array).filter(func(e: Dictionary) -> bool: return bool(e["boss"]))
+			if not boss.is_empty():
+				UI.float_text(self, Vector2(0.0, -40.0), Kit.text("rpg_boss", "\u00a1Jefe!") + " " + _unit_name(boss[0]), Color("#ff5a4f"), 58)
+				Juice.shake(0.5)
+				Audio.play("stomp", 0.0, 2.0, 0.6)
+				await get_tree().create_timer(_t(0.9)).timeout
 			await get_tree().create_timer(_t(0.5)).timeout
 	else:
 		_layout_party()

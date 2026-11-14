@@ -1740,7 +1740,8 @@
 			"rpg_maldicion": "Curse",
 			"rpg_regenerar": "Regenerate",
 			"rpg_golpe_letal": "Lethal strike",
-			"rpg_aliento": "Fire breath"
+			"rpg_aliento": "Fire breath",
+			"rpg_boss": "Boss!"
 		},
 		"pt": {
 			"a_friend": "um amigo",
@@ -3466,7 +3467,8 @@
 			"rpg_maldicion": "Maldição",
 			"rpg_regenerar": "Regenerar",
 			"rpg_golpe_letal": "Golpe letal",
-			"rpg_aliento": "Sopro de fogo"
+			"rpg_aliento": "Sopro de fogo",
+			"rpg_boss": "Chefe!"
 		},
 		"fr": {
 			"a_friend": "un ami",
@@ -5192,7 +5194,8 @@
 			"rpg_maldicion": "Malédiction",
 			"rpg_regenerar": "Régénération",
 			"rpg_golpe_letal": "Coup fatal",
-			"rpg_aliento": "Souffle de feu"
+			"rpg_aliento": "Souffle de feu",
+			"rpg_boss": "Boss !"
 		},
 		"de": {
 			"a_friend": "ein Freund",
@@ -6918,7 +6921,8 @@
 			"rpg_maldicion": "Fluch",
 			"rpg_regenerar": "Regeneration",
 			"rpg_golpe_letal": "Todesstoß",
-			"rpg_aliento": "Feueratem"
+			"rpg_aliento": "Feueratem",
+			"rpg_boss": "Boss!"
 		},
 		"it": {
 			"a_friend": "un amico",
@@ -8644,7 +8648,8 @@
 			"rpg_maldicion": "Maledizione",
 			"rpg_regenerar": "Rigenera",
 			"rpg_golpe_letal": "Colpo letale",
-			"rpg_aliento": "Soffio di fuoco"
+			"rpg_aliento": "Soffio di fuoco",
+			"rpg_boss": "Boss!"
 		}
 	},
 	"generos": {
