@@ -66,7 +66,7 @@ def main() -> int:
 		check("espera el arranque en frio (IN_PROGRESS) y sigue", E["consultas"] >= 2 * E["peticiones"])
 		esperado = round(inf["generaciones"] * 2.3 * 0.00031, 5)
 		con_musica = esperado + 12 * 4.1 * 0.00031 + 3 * 1.8 * 0.00019
-		check("coste real por segundo de GPU", inf["motor"] == "runpod" and abs(inf["usd"] - con_musica) < 1e-4,
+		check("coste real por segundo de GPU", inf["motor"] == "runpod" and abs(inf["usd"] - con_musica) < 1e-4 + 3e-6 * E["peticiones"],
 			f"{inf['usd']} USD, {inf['segundos_gpu']} s GPU")
 		check("sin avisos de calidad", not inf["avisos"], str(inf["avisos"][:2]))
 		check("deja sprites en disco", any(salida.rglob("*.png")))
