@@ -2096,6 +2096,31 @@ func capture_delays() -> Vector2:
 
 func _floor_colors() -> Array[Color]:
 	var base: Color = Kit.color("sky", Color("#1b2a41")).lerp(Color("#d8c49a"), 0.62)
+	## Suelo del color del tema: el centro de la baldosa del juego (arena en la playa, nieve en el
+	## hielo...), sin dibujar la baldosa (es de plataformas y en la arena se ve como motas).
+	var tex: Texture2D = Kit.first_tile_texture()
+	if tex != null:
+		var img: Image = tex.get_image()
+		if img != null and not img.is_empty():
+			if img.is_compressed():
+				img.decompress()
+			var acc: Color = Color(0, 0, 0, 0)
+			var n: int = 0
+			var w: int = img.get_width()
+			var h: int = img.get_height()
+			for yy: int in range(int(h * 0.3), int(h * 0.7), maxi(1, h / 16)):
+				for xx: int in range(int(w * 0.3), int(w * 0.7), maxi(1, w / 16)):
+					var c: Color = img.get_pixel(xx, yy)
+					if c.a > 0.5:
+						acc += c
+						n += 1
+			if n > 0:
+				var t: Color = acc / float(n)
+				t.a = 1.0
+				## Ni muy oscuro ni deslumbrante, para que los personajes resalten.
+				t.v = clampf(t.v, 0.5, 0.82)
+				t.s = minf(t.s, 0.45)
+				base = t.lerp(base, 0.2)
 	return [base, base.darkened(0.035)]
 
 

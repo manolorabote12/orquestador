@@ -75,6 +75,13 @@ class Falso(BaseHTTPRequestHandler):
 		ENTRADAS[tid] = d.get("input") or {}
 		self._json({"id": tid, "status": "IN_QUEUE"})
 
+	def do_DELETE(self):
+		if not self._ok():
+			return
+		_, coleccion, oid = self.path.strip("/").split("/")
+		OBJ[coleccion].pop(oid, None)
+		self._json({})
+
 	def do_PATCH(self):
 		if not self._ok():
 			return
@@ -109,7 +116,7 @@ def main() -> int:
 	check("crea 3 plantillas, 3 endpoints, 1 volumen, 1 acceso al registro",
 		[len(OBJ[k]) for k in ("templates", "endpoints", "networkvolumes", "containerregistryauth")] == [3, 3, 1, 1])
 	eps = {e["name"]: e for e in OBJ["endpoints"].values()}
-	tpls = {t["name"]: t for t in OBJ["templates"].values()}
+	tpls = {t["name"].rsplit("-", 1)[0]: t for t in OBJ["templates"].values()}
 	gpu, cpu = eps["orq-imagenes"], eps["orq-fabrica"]
 	check("imagenes: GPU, escala a cero, con el volumen de modelos", gpu["computeType"] == "GPU" and gpu["workersMin"] == 0
 		and gpu["networkVolumeId"] == next(iter(OBJ["networkvolumes"])))
@@ -130,8 +137,11 @@ def main() -> int:
 
 	r = desplegar.main(["--imagen-fabrica", "ghcr.io/d/orq-fabrica:2", "--imagen-gpu", "ghcr.io/d/orq-imagenes:2", "--imagen-voces", "ghcr.io/d/orq-voces:2", "--salida", ""])
 	check("segundo despliegue actualiza sin duplicar", r == 0 and [len(OBJ[k]) for k in ("templates", "endpoints", "networkvolumes")] == [3, 3, 1])
-	tpls = {t["name"]: t for t in OBJ["templates"].values()}
+	tpls = {t["name"].rsplit("-", 1)[0]: t for t in OBJ["templates"].values()}
 	check("la nueva version de la imagen queda puesta", tpls["orq-fabrica"]["imageName"].endswith(":2"))
+	eps2 = {e["name"]: e for e in OBJ["endpoints"].values()}
+	check("el endpoint cambia a la plantilla nueva (RunPod despliega de verdad)", eps2["orq-fabrica"]["templateId"] == tpls["orq-fabrica"]["id"]
+		and tpls["orq-fabrica"]["env"].get("ORQ_IMAGEN", "").endswith(":2"))
 
 	r = desplegar.main(["--muestras-en", cpu["id"], "--muestras", "todas"])
 	check("muestras: repite tandas hasta que no falta ninguna (la primera, rehaciendo todas)", r == 0 and len(MUESTRAS) == 2

@@ -109,6 +109,28 @@ def asegurar(ruta: str, nombre: str, datos: dict, actualizar: bool = True) -> tu
 	return {**ya, **cambios}, "actualizado"
 
 
+def nombre_plantilla(base: str, imagen: str) -> str:
+	"""Una plantilla por version de imagen («orq-fabrica-h-1a2b...»). Leccion de Marea Alta (14 nov):
+	al cambiar solo la imagen de la plantilla, RunPod seguia arrancando la version anterior; con una
+	plantilla nueva el endpoint cambia de templateId y RunPod hace un despliegue de verdad."""
+	etiqueta = re.sub(r"[^A-Za-z0-9-]", "-", imagen.rsplit(":", 1)[-1])[:24] if ":" in imagen else "x"
+	return f"{base}-{etiqueta}"
+
+
+def borrar_plantillas_viejas(base: str, actual: str) -> list[str]:
+	"""Quita las plantillas antiguas de este endpoint (la de antes sin version y las de otras imagenes)."""
+	borradas = []
+	for t in lista("/templates"):
+		n = str(t.get("name", ""))
+		if t.get("id") != actual and (n == base or n.startswith(base + "-")):
+			try:
+				pedir("DELETE", f"{REST}/templates/{t['id']}")
+				borradas.append(n)
+			except ErrorRunPod:
+				pass
+	return borradas
+
+
 def borrar_volumenes_viejos(actual: str) -> list[str]:
 	borrados = []
 	for v in lista("/networkvolumes"):
@@ -154,7 +176,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		modelos = True
 
 	base_tpl = {"isServerless": True, "volumeInGb": 0, **({"containerRegistryAuthId": auth_id} if auth_id else {})}
-	tpl_gpu, estado = asegurar("/templates", "orq-imagenes", {**base_tpl, "imageName": imagen_gpu,
+	tpl_gpu, estado = asegurar("/templates", nombre_plantilla("orq-imagenes", imagen_gpu), {**base_tpl, "imageName": imagen_gpu,
 		"containerDiskInGb": 30, "category": "NVIDIA", "env": entorno(["HF_TOKEN"])})
 	ep_gpu, estado_ep = asegurar("/endpoints", "orq-imagenes", {"templateId": tpl_gpu["id"], "computeType": "GPU",
 		"gpuTypeIds": gpus, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_GPU_MAX") or "1")),
@@ -168,7 +190,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 
 	ep_voz = None
 	if imagen_voces:
-		tpl_voz, _ = asegurar("/templates", "orq-voces", {**base_tpl, "imageName": imagen_voces,
+		tpl_voz, _ = asegurar("/templates", nombre_plantilla("orq-voces", imagen_voces), {**base_tpl, "imageName": imagen_voces,
 			"containerDiskInGb": 25, "category": "NVIDIA", "env": entorno(["HF_TOKEN"])})
 		ep_voz, estado_ep = asegurar("/endpoints", "orq-voces", {"templateId": tpl_voz["id"], "computeType": "GPU",
 			"gpuTypeIds": GPUS_VOZ, "gpuCount": 1, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_VOZ_MAX") or "1")),
@@ -179,12 +201,15 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 	env_fabrica = {**entorno(SECRETOS_FABRICA), "RUNPOD_API_KEY": os.environ["RUNPOD_API_KEY"],
 		"RUNPOD_IMAGEN_ENDPOINT": ep_gpu["id"], "ORQ_RUNPOD_USD_SEG": f"{usd_hora / 3600:.6f}",
 		**({"RUNPOD_VOZ_ENDPOINT": ep_voz["id"], "ORQ_VOZ_USD_SEG": f"{USD_HORA_VOZ / 3600:.6f}"} if ep_voz else {})}
-	tpl_cpu, _ = asegurar("/templates", "orq-fabrica", {**base_tpl, "imageName": imagen_fabrica,
-		"containerDiskInGb": 30, "category": "CPU", "env": env_fabrica})
+	tpl_cpu, _ = asegurar("/templates", nombre_plantilla("orq-fabrica", imagen_fabrica), {**base_tpl, "imageName": imagen_fabrica,
+		"containerDiskInGb": 30, "category": "CPU", "env": {**env_fabrica, "ORQ_IMAGEN": imagen_fabrica}})
 	ep_cpu, estado_ep = asegurar("/endpoints", "orq-fabrica", {"templateId": tpl_cpu["id"], "computeType": "CPU",
 		"cpuFlavorIds": ["cpu5c", "cpu3c"], "vcpuCount": 4, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_FABRICA_MAX") or "2")),
 		"idleTimeout": 30, "flashboot": True, "scalerType": "REQUEST_COUNT", "scalerValue": 1, "executionTimeoutMs": 3600000})
 	informe["fabrica"] = {"id": ep_cpu["id"], "estado": estado_ep}
+	## Con los endpoints ya en las plantillas nuevas, fuera las viejas (las que aun se usen no se dejan borrar).
+	informe["plantillas_borradas"] = borrar_plantillas_viejas("orq-fabrica", tpl_cpu["id"]) + borrar_plantillas_viejas("orq-imagenes", tpl_gpu["id"]) \
+		+ (borrar_plantillas_viejas("orq-voces", tpl_voz["id"]) if imagen_voces else [])
 
 	if modelos:
 		informe["modelos"] = ejecutar(ep_gpu["id"], {"tarea": "descargar_modelos"}, espera_modelos_s)

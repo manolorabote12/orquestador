@@ -1196,7 +1196,7 @@ def _fabricar(args: argparse.Namespace) -> dict:
 		{"usd": round(gasto.usd + usd_arte, 4)})
 	informe.update({
 		"ok": True, "version": version, "titulo": diseno["titulo"], "slug": slug, "proyecto": str(proyecto),
-		"apk": str(apk) if apk else None, "web": str(web) if web else None, "capturas": capturas, "ficha": ficha_zip, "clip": clip_mp4, "marketing": marketing, "modelo_diseno": modelo, "kit": huella_kit(),
+		"apk": str(apk) if apk else None, "web": str(web) if web else None, "capturas": capturas, "ficha": ficha_zip, "clip": clip_mp4, "marketing": marketing, "modelo_diseno": modelo, "kit": huella_kit(), "imagen": os.environ.get("ORQ_IMAGEN", ""),
 		"coste_usd": {"diseno": gasto.usd, "arte_estimado": usd_arte, "total": round(gasto.usd + usd_arte, 4)},
 		"llamadas_ia": gasto.llamadas, "imagenes": inf_arte["generaciones"], "niveles_rehechos": sum(intentos.values()),
 		"tiempos_s": tiempos, "total_s": round(time.time() - t0, 1),
