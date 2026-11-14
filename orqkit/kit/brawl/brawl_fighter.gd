@@ -48,6 +48,8 @@ func setup(entry: Dictionary, col: Color, size_px: float) -> void:
 	if not entry.is_empty():
 		sprite = SpriteKit.animado(entry, size_px, "idle", true)
 		rig.add_child(sprite)
+		_sprite_y = sprite.position.y
+		_sprite_scale = sprite.scale
 	else:
 		body = Polygon2D.new()
 		body.color = col
@@ -80,6 +82,11 @@ func add_power() -> void:
 	queue_redraw()
 
 
+var _bob_t: float = 0.0
+var _sprite_y: float = 0.0
+var _sprite_scale: Vector2 = Vector2.ONE
+
+
 func remember_base() -> void:
 	ai["base_hp"] = max_hp
 	ai["base_dmg"] = damage
@@ -93,6 +100,18 @@ func animate(moving: bool) -> void:
 		sprite.play(want)
 	if absf(facing.x) > 0.2:
 		sprite.flip_h = facing.x < 0.0
+	## Vida al moverse (como los personajes de los juegos de arena): saltito al andar, balanceo y
+	## respiracion quieto. Va en el sprite, asi no toca la sombra ni las barras.
+	_bob_t += get_process_delta_time() * (13.0 if moving else 3.0)
+	if moving:
+		sprite.position.y = _sprite_y - absf(sin(_bob_t)) * 7.0
+		sprite.rotation = sin(_bob_t) * 0.07
+		sprite.scale = _sprite_scale
+	else:
+		sprite.position.y = _sprite_y
+		sprite.rotation = 0.0
+		var k: float = 1.0 + sin(_bob_t) * 0.025
+		sprite.scale = Vector2(_sprite_scale.x * (2.0 - k), _sprite_scale.y * k)
 
 
 func _draw() -> void:
@@ -104,7 +123,11 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	## Aro de equipo bajo los pies (verde el jugador, rojo los rivales).
 	draw_set_transform(Vector2(0.0, 4.0), 0.0, Vector2(1.0, 0.42))
-	draw_arc(Vector2.ZERO, RADIUS * 1.1, 0.0, TAU, 32, Color(bar_color, 0.85), 5.0, true)
+	draw_arc(Vector2.ZERO, RADIUS * 1.1, 0.0, TAU, 32, Color(bar_color, 0.85), 8.0 if is_player else 5.0, true)
+	if is_player:
+		## El tuyo se reconoce al instante: segundo aro que late.
+		var k: float = 1.25 + 0.08 * sin(float(Time.get_ticks_msec()) * 0.006)
+		draw_arc(Vector2.ZERO, RADIUS * k, 0.0, TAU, 32, Color(bar_color, 0.45), 4.0, true)
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 

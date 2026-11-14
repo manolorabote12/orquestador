@@ -140,6 +140,8 @@ def main() -> int:
 	tpls = {t["name"].rsplit("-", 1)[0]: t for t in OBJ["templates"].values()}
 	check("la nueva version de la imagen queda puesta", tpls["orq-fabrica"]["imageName"].endswith(":2"))
 	eps2 = {e["name"]: e for e in OBJ["endpoints"].values()}
+	check("los servidores de la fabrica se renuevan y el maximo vuelve", eps2["orq-fabrica"]["workersMax"] == 2
+		and LLAMADAS.count(("PATCH", f"/v1/endpoints/{eps2['orq-fabrica']['id']}")) >= 3)
 	check("el endpoint cambia a la plantilla nueva (RunPod despliega de verdad)", eps2["orq-fabrica"]["templateId"] == tpls["orq-fabrica"]["id"]
 		and tpls["orq-fabrica"]["env"].get("ORQ_IMAGEN", "").endswith(":2"))
 

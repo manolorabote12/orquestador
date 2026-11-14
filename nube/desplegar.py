@@ -131,6 +131,30 @@ def borrar_plantillas_viejas(base: str, actual: str) -> list[str]:
 	return borradas
 
 
+def renovar_trabajadores(endpoint: str, maximo: int, espera_s: float = 25.0) -> bool:
+	## Si hay algo fabricandose no se toca (bajar a 0 podria cortarlo): esos servidores se iran solos.
+	try:
+		salud = pedir("GET", f"{SERVERLESS}/{endpoint}/health")
+		if int(((salud or {}).get("jobs") or {}).get("inProgress", 0)) > 0:
+			print("::warning::Fabrica ocupada: no se renuevan los servidores (espera unos minutos antes de encargar)")
+			return False
+	except ErrorRunPod:
+		pass
+	try:
+		pedir("PATCH", f"{REST}/endpoints/{endpoint}", {"workersMin": 0, "workersMax": 0})
+		time.sleep(espera_s)
+		pedir("PATCH", f"{REST}/endpoints/{endpoint}", {"workersMax": maximo})
+		return True
+	except ErrorRunPod as e:
+		print(f"::warning::No se pudieron renovar los servidores de la fabrica: {str(e)[:200]}")
+		## Pase lo que pase, el maximo vuelve a su sitio.
+		try:
+			pedir("PATCH", f"{REST}/endpoints/{endpoint}", {"workersMax": maximo})
+		except ErrorRunPod:
+			pass
+		return False
+
+
 def borrar_volumenes_viejos(actual: str) -> list[str]:
 	borrados = []
 	for v in lista("/networkvolumes"):
@@ -207,6 +231,11 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		"cpuFlavorIds": ["cpu5c", "cpu3c"], "vcpuCount": 4, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_FABRICA_MAX") or "2")),
 		"idleTimeout": 30, "flashboot": True, "scalerType": "REQUEST_COUNT", "scalerValue": 1, "executionTimeoutMs": 3600000})
 	informe["fabrica"] = {"id": ep_cpu["id"], "estado": estado_ep}
+	## Fuera los servidores encendidos con la imagen anterior (14 nov, Marea Alta v6: un minuto despues
+	## de desplegar, la fabrica aun arrancaba con la imagen vieja): se baja el maximo a 0 un momento y se
+	## vuelve a poner. Lo que este fabricando termina; los nuevos ya salen con la imagen nueva.
+	if estado_ep == "actualizado":
+		informe["fabrica"]["renovada"] = renovar_trabajadores(ep_cpu["id"], int((os.environ.get("ORQ_FABRICA_MAX") or "2")))
 	## Con los endpoints ya en las plantillas nuevas, fuera las viejas (las que aun se usen no se dejan borrar).
 	informe["plantillas_borradas"] = borrar_plantillas_viejas("orq-fabrica", tpl_cpu["id"]) + borrar_plantillas_viejas("orq-imagenes", tpl_gpu["id"]) \
 		+ (borrar_plantillas_viejas("orq-voces", tpl_voz["id"]) if imagen_voces else [])

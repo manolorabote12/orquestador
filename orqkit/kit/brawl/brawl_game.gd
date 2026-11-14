@@ -401,6 +401,9 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 116.0)
 		if f.sprite != null and str(b.get("tint", "")) != "":
 			f.sprite.self_modulate = Brawlers.tint(b)
+	## Nombre del personaje encima de la barra (como en los juegos de arena): tu nombre en verde.
+	if online.is_empty() and f.fighter_name == "":
+		f.fighter_name = str(b.get("name", ""))
 	f.ai = {"think": 0.1 * float(i), "aim": 0.0, "strafe": 1.0 if i % 2 == 0 else -1.0, "flip": 1.5, "goal": at,
 		"atk": Brawlers.attack_of(b), "super": str(b.get("super", "ola")), "brawler": str(b.get("id", "")), "home": at}
 	f.hp = f.max_hp
@@ -911,6 +914,14 @@ func fire_super(f: BrawlFighter) -> bool:
 func _spawn_super(f: BrawlFighter, origin: Vector2) -> void:
 	f.reveal = 1.0
 	var col: Color = Color("#ffe066") if f.is_player else Color("#ff9a3c")
+	## Momento estrella: destello dorado, temblor y estiron del personaje al lanzar el super.
+	if f.rig != null:
+		Juice.squash(f.rig, Vector2(0.8, 1.25), 0.16)
+	Juice.ring(_fx, origin + Vector2(0, -30), col, 120.0, 0.25)
+	if f.is_player:
+		Juice.shake(0.22)
+		Juice.vibrate(40)
+		Juice.sparkle(_fx, origin + Vector2(0, -60), col, 14, 260.0)
 	match str(f.ai.get("super", "ola")):
 		"escudo":
 			f.ai["shield"] = 3.0
