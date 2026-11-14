@@ -39,6 +39,8 @@ var remote: bool = false
 var team: int = -1
 var net_pos: Vector2 = Vector2.ZERO
 var last_seen: float = 0.0
+## Cuanto se sube su barra para no pisar la de otro luchador pegado (lo calcula el juego al dibujar).
+var overlay_lift: float = 0.0
 
 
 func setup(entry: Dictionary, col: Color, size_px: float) -> void:
@@ -162,7 +164,7 @@ func _draw() -> void:
 func draw_overlay(n: CanvasItem) -> void:
 	if not alive or modulate.a < 0.1:
 		return
-	var o: Vector2 = position
+	var o: Vector2 = position - Vector2(0.0, overlay_lift)
 	var w: float = 110.0
 	## Encima de la cabeza segun lo grande que sea el dibujo (no a una altura fija).
 	var top: float = -RADIUS * 3.2 if sprite == null else minf(-RADIUS * 3.2, _sprite_y * 1.75)

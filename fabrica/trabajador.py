@@ -338,9 +338,13 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 			animar = bool(detalle.get("animar")) and bool(detalle.get("semilla"))
 			if animar:
 				os.environ["ORQ_TOPE_GPU_DURO"] = str(min(float(detalle.get("tope_usd") or 2.0), 3.0))
+			## Piezas de arte que salieron mal y se piden otra vez (solo encargos del escaparate).
+			if detalle.get("semilla") and detalle.get("redibujar"):
+				os.environ["ORQ_REDIBUJAR"] = ",".join(str(x) for x in detalle["redibujar"])[:200]
 			try:
 				inf = cambio.actualizar(argparse.Namespace(animar=animar, **comunes))
 			finally:
+				os.environ.pop("ORQ_REDIBUJAR", None)
 				if tope_antes is None:
 					os.environ.pop("ORQ_TOPE_GPU_DURO", None)
 				else:

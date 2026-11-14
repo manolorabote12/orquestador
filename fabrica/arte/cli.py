@@ -382,6 +382,8 @@ def fabricar(args: argparse.Namespace) -> dict:
 		man_prev = Path(args.godot) / "assets" / "manifest.json" if args.godot else None
 		if solo is not None and man_prev is not None and man_prev.exists():
 			ya = extras.ya_hechos(json.loads(man_prev.read_text(encoding="utf-8")))
+			## Piezas que se piden de nuevo aunque ya esten (ORQ_REDIBUJAR="roca,arbusto": salieron mal).
+			ya -= {f"{g}/{k.strip()}" for k in os.environ.get("ORQ_REDIBUJAR", "").split(",") if k.strip() for g in ("efectos", "iconos", "eventos")}
 		ext, inf_x = extras.generar(biblia, salida / "interfaz", cliente, wf_crear, prompts.semilla(biblia["juego"]["titulo"], "extras"),
 			ilustrar=(ilustrar, wf_ilustrar),
 			arena=biblia["juego"].get("genero") == "arena", ya=ya)

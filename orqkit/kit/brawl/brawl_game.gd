@@ -2870,8 +2870,24 @@ func _draw_fx() -> void:
 			_fx.draw_arc(f.position + Vector2(0, -34), 62.0, 0.0, TAU, 40, Color(0.6, 0.95, 1.0, 0.8 * a), 4.0, true)
 	if mode == "ball" and not ball.is_empty():
 		_draw_ball()
-	## Vida, cubos y municion por encima de todo.
-	for f: BrawlFighter in fighters:
+	## Vida, cubos y municion por encima de todo. Si dos luchadores estan pegados, sus barras se apilan
+	## (15 nov: los nombres y la vida se pisaban); la del jugador siempre en su sitio.
+	var placed_bars: Array[Vector2] = []
+	var order: Array = fighters.filter(func(x: BrawlFighter) -> bool: return x.alive and x.modulate.a >= 0.1)
+	order.sort_custom(func(a1: BrawlFighter, b1: BrawlFighter) -> bool: return a1.is_player and not b1.is_player)
+	for f: BrawlFighter in order:
+		var lift: float = 0.0
+		for k: int in 4:
+			var hit: bool = false
+			for pb: Vector2 in placed_bars:
+				if absf(pb.x - f.position.x) < 125.0 and absf(pb.y - (f.position.y - lift)) < 58.0:
+					hit = true
+					break
+			if not hit:
+				break
+			lift += 58.0
+		f.overlay_lift = lift
+		placed_bars.append(f.position - Vector2(0.0, lift))
 		f.draw_overlay(_fx)
 
 

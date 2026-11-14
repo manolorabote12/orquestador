@@ -311,7 +311,7 @@ def actualizar(titulo: str, animar: bool = False) -> int:
 		if t in str(p.get("title", "")).lower() and (p.get("files") or {}).get("proyecto"):
 			rest("POST", "jobs", [{"user_id": u, "kind": "game_change", "project_id": p["id"], "cost": 0, "est_cost_usd": 0.1, "status": "queued",
 				"detail": {"actualizar": True, "instruccion": "Actualizar al kit de hoy", "semilla": True,
-					**({"animar": True, "tope_usd": 2.0} if animar else {})}}], {"Prefer": "return=minimal"})
+					**({"animar": True, "tope_usd": 2.0, "redibujar": ["roca", "arbusto"]} if animar else {})}}], {"Prefer": "return=minimal"})
 			despertar()
 			print(f"::notice::Actualizando «{p['title']}» al kit de hoy (mismo arte; solo se dibuja lo nuevo)")
 			return 0

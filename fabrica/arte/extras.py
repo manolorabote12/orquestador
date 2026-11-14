@@ -50,8 +50,8 @@ EFECTOS = {
 ## Decorado de la arena dibujado por la GPU (antes rectangulos y circulos de codigo): con el material del
 ## escenario de cada juego (rocas de coral en el mar, piedra en el castillo...).
 PROPS = {
-	"roca": "a single chunky square rock block obstacle seen from a three quarter top-down view, flat top, made of {mat}",
-	"arbusto": "a single dense round leafy bush clump seen from a three quarter top-down view, made of plants from {mat}",
+	"roca": "a single chunky square rock block obstacle seen from a three quarter top-down view, flat top, made of {mat}, isolated object only, no ground, no sand, no water and no base around it",
+	"arbusto": "a single dense round leafy bush clump seen from a three quarter top-down view, made of plants from {mat}, isolated object only, no ground, no sand, no water and no base around it",
 	"caja": "a single wooden supply crate with metal corners seen from a three quarter top-down view",
 	"cubo": "a single glowing purple power cube crystal, three quarter view",
 }

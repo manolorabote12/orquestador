@@ -404,7 +404,9 @@ func _wolf_node(id: int, kind: String = "wolf") -> Node3D:
 	var hostile: bool = bool(cdef.get("hostile", true))
 	var lk: String = str(cdef.get("look", "wolf"))
 	var id_art: String = str(Kit.param("art.enemies.walker", "")) if hostile else ""
-	var entry: Dictionary = Kit.sprite_entry(id_art) if id_art != "" else {}
+	var entry: Dictionary = Kit.sprite_entry("criatura_" + kind)
+	if entry.is_empty():
+		entry = Kit.sprite_entry(id_art) if id_art != "" else {}
 	if entry.is_empty():
 		entry = Kit.sprite_by_role("enemigo" if hostile else "presa")
 	var col: Color = Color.from_string(str(cdef.get("color", "#5b6270")), Color("#5b6270"))
