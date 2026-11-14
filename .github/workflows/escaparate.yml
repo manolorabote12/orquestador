@@ -58,7 +58,7 @@ jobs:
           if [ "$ACCION" = encargar_idea ] || [ "$ACCION" = apk ]; then python3 nube/escaparate_semilla.py "$ACCION" "$IDEA"
           else python3 nube/escaparate_semilla.py "$ACCION" "$CANTIDAD"; fi
       - name: Despertar la fabrica
-        if: inputs.accion == 'encargar'
+        if: inputs.accion == 'encargar' || inputs.accion == 'encargar_idea'
         run: |
           id=$(curl -sf -H "Authorization: Bearer $RUNPOD_API_KEY" https://rest.runpod.io/v1/endpoints \
             | python3 -c "import json,sys; d=json.load(sys.stdin); d=d if isinstance(d,list) else d.get('data',[]); print(next((e['id'] for e in d if e.get('name')=='orq-fabrica'),''))")
