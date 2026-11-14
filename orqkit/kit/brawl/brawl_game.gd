@@ -2167,6 +2167,28 @@ func _draw_floor() -> void:
 		if _floor_theme == null:
 			_floor_theme = Look.soft_texture(Look.level_texture())
 		_floor.draw_texture_rect(_floor_theme, Rect2(Vector2.ZERO, w), false, Color(1, 1, 1, 0.3))
+	## Detalles sueltos en el suelo (critica: «suelo casi liso, falta detalle»): piedrecitas y ondas en
+	## una de cada siete casillas libres, fijas por casilla, del color del suelo (no distraen).
+	var base: Color = cols[0]
+	for y2: int in _size.y:
+		for x2: int in _size.x:
+			var c2: Vector2i = Vector2i(x2, y2)
+			var h: int = absi(x2 * 73856093 ^ y2 * 19349663) % 7
+			if h != 0 or _walls.has(c2) or _bush.has(c2):
+				continue
+			var o2: Vector2 = Vector2(c2) * TILE
+			var k2: int = (x2 * 13 + y2 * 7) % 3
+			if k2 == 0:
+				for q: int in 3:
+					var pp: Vector2 = o2 + Vector2(24.0 + float((x2 * 17 + q * 23) % 48), 30.0 + float((y2 * 11 + q * 19) % 40))
+					_floor.draw_set_transform(pp, 0.0, Vector2(1.0, 0.7))
+					_floor.draw_circle(Vector2.ZERO, 5.0 + float(q * 2), base.darkened(0.18))
+					_floor.draw_circle(Vector2(-1.5, -1.5), 2.5 + float(q), base.lightened(0.15))
+					_floor.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			else:
+				var cpos: Vector2 = o2 + Vector2(TILE * 0.5, TILE * 0.55)
+				_floor.draw_arc(cpos, 26.0, PI * 1.15, PI * 1.85, 10, Color(base.darkened(0.12), 0.8), 3.0, true)
+				_floor.draw_arc(cpos + Vector2(10, 14), 20.0, PI * 1.15, PI * 1.85, 10, Color(base.lightened(0.12), 0.8), 3.0, true)
 	## Suelo limpio (la critica visual lo veia ruidoso con texturas encima): solo un oscurecido suave
 	## hacia los bordes para que los personajes resalten en el centro.
 	for k: int in 6:
