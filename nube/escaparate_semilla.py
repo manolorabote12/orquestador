@@ -184,7 +184,8 @@ def mejor_proyecto(js: list[dict], idea: str) -> str | None:
 	notas = notas_visuales(js)
 	mejor, clave = None, (-1, "")
 	for j in js:
-		if j["status"] != "done" or not j.get("project_id") or str((j.get("detail") or {}).get("idea") or "") != idea:
+		## Se compara el principio: la idea se guarda recortada a 400 letras (y la marca la alarga).
+		if j["status"] != "done" or not j.get("project_id") or str((j.get("detail") or {}).get("idea") or "")[:300] != idea[:300]:
 			continue
 		k = (notas.get(j["project_id"], 0), str(j.get("created_at") or ""))
 		if k > clave:
