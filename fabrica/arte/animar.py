@@ -38,28 +38,34 @@ ANIMACIONES: dict[str, dict] = {
 		"frames": 8, "bucle": True, "desde": 8, "hasta": 24},
 	"attack": {"que": "snaps its big claw forward to the right and fires a burst of water, strong recoil, then returns to its pose", "frames": 8, "bucle": False},
 	"super": {"que": "jumps up, spins and slams down releasing a powerful glowing water wave all around it, energetic special attack",
-		"frames": 12, "bucle": False},
+		"frames": 12, "bucle": False, "hasta": 24},
 	"hurt": {"que": "gets hit hard, flinches backward with a pained squint, shakes, then recovers", "frames": 6, "bucle": False, "hasta": 16},
 	"death": {"que": "gets knocked out, spins, falls on its back with dizzy swirly eyes and stays lying still", "frames": 12, "bucle": False},
 	"victory": {"que": "celebrates a victory, jumps happily raising both claws in the air, cheerful and proud", "frames": 12, "bucle": True},
 }
 
 
-def _chroma(estilo: dict) -> tuple[str, tuple[int, int, int]]:
+MORADOS = ("purple", "violet", "magenta", "pink", "lilac", "lavender", "fuchsia", "mauve")
+
+
+def _chroma(estilo: dict, descripcion: str = "") -> tuple[str, tuple[int, int, int]]:
 	hexa = str(estilo.get("fondo_chroma") or "#FF00FF").upper()
+	## Un personaje morado o rosa sobre fondo magenta se recortaria mal: para el, fondo verde.
+	if hexa == "#FF00FF" and any(w in (descripcion or "").lower() for w in MORADOS):
+		hexa = "#00FF00"
 	nombre = {"#FF00FF": "pure magenta", "#00FF00": "pure green"}.get(hexa, hexa)
 	return nombre, tuple(int(hexa[i:i + 2], 16) for i in (1, 3, 5))
 
 
 def prompt_ficha(p: dict) -> str:
-	nombre, _ = _chroma(p["estilo"])
+	nombre, _ = _chroma(p["estilo"], p["descripcion"])
 	return (f"{prompts.estilo_dibujo(p['estilo'])}. Mobile game hero character: {p['descripcion']}. Full body, three quarter view "
-		f"facing right, standing in a ready pose, centered, the character fills about 60% of the image, plain solid flat {nombre} "
+		f"facing right, standing in a ready pose, clear readable face with eyes and mouth, centered, the character fills about 60% of the image, plain solid flat {nombre} "
 		"background, no text, no shadow, no other characters, crisp clean outlines, high quality")
 
 
 def prompt_video(p: dict, anim: str) -> str:
-	nombre, _ = _chroma(p["estilo"])
+	nombre, _ = _chroma(p["estilo"], p["descripcion"])
 	return (f"A cartoon mobile game character ({p['descripcion'][:160]}) {ANIMACIONES[anim]['que']}. Smooth fluid animation, "
 		f"the character keeps exactly the same design and colors, static camera, the plain flat {nombre} background never changes, "
 		"no other objects, 2D game sprite animation")
@@ -81,10 +87,30 @@ def elegir(frames: list, n: int, desde: int = 0, hasta: int | None = None) -> li
 	return [tramo[round(i * (len(tramo) - 1) / max(n - 1, 1))] for i in range(n)]
 
 
+def recortar_fondo(img: Image.Image) -> Image.Image:
+	"""Fondo y sombra fuera, conservando el contorno: el color del fondo se mide en el borde (el modelo no
+	siempre pinta el croma puro) y se quita todo pixel que sea ese color o una version mas oscura de el
+	(la sombra en el suelo). Mismo «color direccion» = fondo; asi el contorno negro y la piel se quedan."""
+	a = np.asarray(img.convert("RGBA")).astype(np.float32)
+	rgb = a[..., :3]
+	borde = np.concatenate([rgb[0], rgb[-1], rgb[:, 0], rgb[:, -1]])
+	fondo = np.median(borde, axis=0)
+	nf = float(np.linalg.norm(fondo)) or 1.0
+	n = np.linalg.norm(rgb, axis=-1)
+	cos = (rgb @ fondo) / np.maximum(n * nf, 1e-5)
+	k = n / nf
+	es_fondo = (cos > 0.985) & (k > 0.3)
+	## Borde suave: medio transparente lo que casi es fondo (halo del antialias).
+	casi = (cos > 0.965) & (k > 0.3) & ~es_fondo
+	alfa = np.where(es_fondo, 0.0, np.where(casi, 110.0, a[..., 3]))
+	a[..., 3] = alfa
+	return Image.fromarray(a.clip(0, 255).astype(np.uint8), "RGBA")
+
+
 def recortar(frames: list[Image.Image], chroma: tuple[int, int, int], ref_alto: int | None = None) -> tuple[list[Image.Image], int]:
 	"""Quita el fondo y encaja todos los fotogramas en la misma celda, con la misma escala y los pies
 	abajo. ref_alto: alto del personaje en la ficha (la escala comun de todas las animaciones)."""
-	limpios = [post.quitar_fondo_seguro(f.convert("RGBA"), chroma) for f in frames]
+	limpios = [recortar_fondo(f) for f in frames]
 	cajas = [post.caja(f) for f in limpios]
 	cajas = [c for c in cajas if c]
 	if not cajas:
@@ -118,7 +144,7 @@ def gif(frames: list[Image.Image], ruta: Path, fondo=(232, 201, 135)) -> None:
 
 def animar(p: dict, carpeta: Path, cli) -> dict:
 	carpeta.mkdir(parents=True, exist_ok=True)
-	_, chroma = _chroma(p["estilo"])
+	_, chroma = _chroma(p["estilo"], p["descripcion"])
 	informe: dict = {"personaje": p["id"], "animaciones": {}, "errores": {}}
 	t0 = time.time()
 	crear = json.loads((RAIZ / "plantillas" / "runpod" / "crear_zimage.json").read_text(encoding="utf-8"))
@@ -128,7 +154,7 @@ def animar(p: dict, carpeta: Path, cli) -> dict:
 	datos = cli.generar(crear, {"PROMPT": prompt_ficha(p), "SEED": semilla, "ANCHO": 1024, "ALTO": 1024})[0]
 	ficha = Image.open(io.BytesIO(datos)).convert("RGB")
 	ficha.save(carpeta / "ficha_croma.png")
-	limpia = post.quitar_fondo_seguro(ficha.convert("RGBA"), chroma)
+	limpia = recortar_fondo(ficha)
 	bb = post.caja(limpia)
 	## Alto del personaje en la ficha, medido a la escala del video (480 px).
 	ref_alto = round((bb[3] - bb[1]) * 480 / ficha.height) if bb else None

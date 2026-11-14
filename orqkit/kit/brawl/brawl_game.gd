@@ -1002,6 +1002,7 @@ func _spawn_super(f: BrawlFighter, origin: Vector2) -> void:
 	## Momento estrella: destello dorado, temblor y estiron del personaje al lanzar el super.
 	if f.rig != null:
 		Juice.squash(f.rig, Vector2(0.8, 1.25), 0.16)
+	f.play_pose("super", 0.6)
 	Juice.ring(_fx, origin + Vector2(0, -30), col, 120.0, 0.25)
 	if f.is_player:
 		Juice.shake(0.22)
@@ -1139,6 +1140,7 @@ func _hit_fighter(f: BrawlFighter, dmg: float, by: BrawlFighter, col: Color) -> 
 			f.position = kb
 		if f.rig != null:
 			Juice.squash(f.rig, Vector2(1.14, 0.86), 0.1)
+		f.play_pose("hurt", 0.25)
 	if (f.is_player or (by != null and is_instance_valid(by) and by.is_player)) and dmg >= f.max_hp * 0.12:
 		Juice.hitstop(0.04)
 	## Quien lleva el balon lo suelta al recibir un golpe fuerte.
@@ -1207,6 +1209,7 @@ func _hit_box(cell: Vector2i, dmg: float, by: BrawlFighter) -> void:
 func _on_death(f: BrawlFighter, by: BrawlFighter) -> void:
 	f.alive = false
 	f.visible = false
+	_death_ghost(f)
 	## Locutor: eliminado / doble eliminacion (dos en menos de 4 s).
 	if by != null and is_instance_valid(by) and by.is_player and not f.ai.has("turret") and not f.is_player:
 		_voice("loc_doble" if time_in_level - _last_kill < 4.0 else "loc_eliminado")
@@ -2407,6 +2410,30 @@ func _intro_tick() -> void:
 
 
 ## Locutor: un unico cartel grande en el centro (uno sustituye al anterior: nunca se pisan).
+## Muerte animada (fabrica: Wan 2.2): una copia del personaje cae en su sitio y se desvanece.
+func _death_ghost(f: BrawlFighter) -> void:
+	if f.sprite == null or _fx == null or not f.sprite.sprite_frames.has_animation("death") or f.ai.has("turret"):
+		return
+	if player != null and f.position.distance_to(player.position) > 1100.0:
+		return
+	var g: AnimatedSprite2D = AnimatedSprite2D.new()
+	g.sprite_frames = f.sprite.sprite_frames
+	g.scale = f.sprite.scale
+	g.texture_filter = f.sprite.texture_filter
+	g.flip_h = f.sprite.flip_h
+	g.self_modulate = f.sprite.self_modulate
+	g.position = f.position + Vector2(0.0, f.sprite.position.y)
+	g.sprite_frames.set_animation_loop("death", false)
+	_fx.add_child(g)
+	g.play("death")
+	var n: int = g.sprite_frames.get_frame_count("death")
+	var secs: float = float(n) / maxf(g.sprite_frames.get_animation_speed("death"), 1.0)
+	var tw: Tween = g.create_tween()
+	tw.tween_interval(secs + 0.5)
+	tw.tween_property(g, "modulate:a", 0.0, 0.5)
+	tw.tween_callback(g.queue_free)
+
+
 ## Voz del locutor (assets/manifest.json -> voces "loc_..."; Qwen3-TTS). Sin ella, nada.
 func _voice(key: String) -> void:
 	if Kit.assets.get("voces", {}).has(key):

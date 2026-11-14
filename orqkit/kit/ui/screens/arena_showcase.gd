@@ -27,9 +27,11 @@ static func make(b: Dictionary, title: String, sub: String, won: bool) -> ArenaS
 func _ready() -> void:
 	var entry: Dictionary = Brawlers.sprite_entry(brawler) if not brawler.is_empty() else Kit.sprite_by_role("jugador")
 	if not entry.is_empty():
-		_spr = SpriteKit.animado(entry, 200.0, "idle", true)
+		## Animado por la fabrica (Wan 2.2): celebra si ganas y sale abatido si pierdes.
+		var pose: String = "victory" if victory else "death"
+		_spr = SpriteKit.animado(entry, 200.0, pose if SpriteKit.frames_de(entry).has_animation(pose) else "idle", true)
 		_spr.self_modulate = Brawlers.tint(brawler) if not brawler.is_empty() else Color.WHITE
-		_spr.position = Vector2(240.0, 250.0)
+		_spr.position = Vector2(240.0, 225.0 if bool(entry.get("animado", false)) else 250.0)
 		if not victory:
 			_spr.modulate = Color(0.75, 0.75, 0.85)
 		add_child(_spr)

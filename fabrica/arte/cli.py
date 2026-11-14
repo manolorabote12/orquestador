@@ -389,6 +389,34 @@ def fabricar(args: argparse.Namespace) -> dict:
 		informe["generaciones"] += int(inf_x.get("generaciones", 0))
 		fondos["extras"] = ext
 
+	## 16 - Personajes de la arena animados con Wan 2.2 (arte/animar.py): quieto, correr, disparar, super,
+	## golpe, muerte y victoria. Solo si se pide ("animar"): ~0,15 $ por personaje.
+	if solo is not None and "animar" in solo and args.godot:
+		from . import animar as animar_mod
+		from .runpod import TopeGPU
+		animados: dict = {}
+		quien = [s for s in biblia["personajes"] if s["id"] == "heroe" or s["id"].startswith("brawler_")]
+		for i, s in enumerate(quien):
+			desc = s["descripcion"].replace("arena hero character seen from a 3/4 top-down view, same art style as the hero, ", "")
+			desc = desc.replace(", seen from above", "").replace(" seen from above", "")
+			p = {"id": s["id"], "descripcion": desc, "estilo": biblia["estilo"],
+				"semilla": prompts.semilla(biblia["juego"]["titulo"], "animar") + 977 * i}
+			print(f"[arte] animando {s['id']}")
+			try:
+				inf_a = animar_mod.animar(p, salida / "animado" / s["id"], cliente)
+			except TopeGPU as e:
+				informe.setdefault("animar_aviso", str(e)[:160])
+				break
+			except Exception as e:  # noqa: BLE001 - ese personaje se queda con su dibujo de antes
+				informe.setdefault("animar_fallidos", {})[s["id"]] = str(e)[:160]
+				continue
+			if {"idle", "run", "attack"} <= set(inf_a["animaciones"]):
+				animados[s["id"]] = {"carpeta": str(salida / "animado" / s["id"]), "animaciones": inf_a["animaciones"]}
+			else:
+				informe.setdefault("animar_fallidos", {})[s["id"]] = inf_a.get("errores")
+		informe["animados"] = sorted(animados)
+		fondos["animados"] = animados
+
 	if args.godot:
 		m = godot_export.exportar(Path(args.godot), biblia, hojas, tiles, efectos, fusionar=solo is not None,
 			quitar=getattr(args, "quitar", None) or [], pistas=pistas, voces=voces, fondos=fondos)

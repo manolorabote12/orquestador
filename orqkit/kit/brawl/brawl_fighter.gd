@@ -97,10 +97,20 @@ var _attack_t: float = 0.0
 
 
 func play_attack() -> void:
-	if sprite == null or not sprite.sprite_frames.has_animation("attack"):
+	play_pose("attack", 0.28)
+
+
+## Pose de un momento (ataque, golpe recibido, super) si el personaje la tiene animada; despues vuelve
+## a andar o a estar quieto. Las animadas de verdad (muchos fotogramas) duran lo que su animacion.
+func play_pose(anim: String, secs: float) -> void:
+	if sprite == null or not sprite.sprite_frames.has_animation(anim):
 		return
-	_attack_t = 0.28
-	sprite.play("attack")
+	if anim == "hurt" and _attack_t > 0.0:
+		return
+	var n: int = sprite.sprite_frames.get_frame_count(anim)
+	var fps: float = maxf(sprite.sprite_frames.get_animation_speed(anim), 1.0)
+	_attack_t = maxf(secs, float(n) / fps) if n > 2 else secs
+	sprite.play(anim)
 
 
 func animate(moving: bool) -> void:

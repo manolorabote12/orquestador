@@ -99,6 +99,16 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 			shutil.copyfile(piel[k], base / "ui" / f"{k}.png")
 			skin[k] = f"res://assets/ui/{k}.png"
 		manifest["ui"]["skin"] = skin
+	## Personajes animados con video (arte/animar.py): sus hojas de 256 px sustituyen a las de antes.
+	for sid, a in sorted(((fondos or {}).get("animados") or {}).items()):
+		previo_s = manifest["sprites"].get(sid) or {}
+		entrada = {"rol": previo_s.get("rol", "npc"), "celda": [animar_celda(), animar_celda()], "animaciones": {}, "animado": True}
+		(base / sid).mkdir(parents=True, exist_ok=True)
+		for anim, cfg in a["animaciones"].items():
+			shutil.copyfile(Path(a["carpeta"]) / f"{anim}.png", base / sid / f"{anim}.png")
+			entrada["animaciones"][anim] = {"sheet": f"res://assets/{sid}/{anim}.png", "frames": int(cfg["frames"]),
+				"fps": float(cfg["fps"]), "bucle": bool(cfg["bucle"])}
+		manifest["sprites"][sid] = entrada
 	ico = (fondos or {}).get("iconos") or {}
 	if ico:
 		## Iconos de interfaz dibujados por la IA (el kit usa los vectoriales para los que falten).
@@ -123,6 +133,11 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 	ruta_m = base / "manifest.json"
 	ruta_m.write_text(json.dumps(manifest, indent=1, ensure_ascii=False), encoding="utf-8")
 	return ruta_m
+
+
+def animar_celda() -> int:
+	from . import animar
+	return int(animar.CELDA)
 
 
 def _voz_ogg(origen: Path, carpeta: Path, evento: str) -> Path:

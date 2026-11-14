@@ -292,6 +292,9 @@ def actualizar(args: argparse.Namespace) -> dict:
 	## Marcos de panel y botones dibujados (menus que no parezcan de codigo), si no los tiene.
 	if man.exists() and not ui_prev.get("skin"):
 		dibujar.append("piel")
+	## Personajes animados con video (Wan 2.2): solo si se pide (cuesta ~0,15 $ por personaje).
+	if man.exists() and getattr(args, "animar", False) and biblia["juego"].get("genero") == "arena":
+		dibujar.append("animar")
 	## Locutor de la arena (Qwen3-TTS), si aun no lo tiene.
 	if man.exists() and biblia["juego"].get("genero") == "arena" and "loc_victoria" not in (_leer(man).get("voces") or {}):
 		dibujar.append("locutor")
@@ -303,6 +306,9 @@ def actualizar(args: argparse.Namespace) -> dict:
 		evento("arte", "inicio", "Dibujando solo lo nuevo: " + (", ".join(dibujar) or "limpieza"))
 		inf = _arte_parcial(args, proyecto, ruta_biblia, dibujar, sobran)
 		usd_arte = round(inf["generaciones"] * (0.0 if args.arte_simulado else cadena.USD_POR_IMAGEN), 4)
+		## Con RunPod el coste es el real (los videos cuestan mas que una imagen).
+		if not args.arte_simulado and float(inf.get("usd") or 0.0) > usd_arte:
+			usd_arte = round(float(inf["usd"]), 4)
 		evento("arte", "ok", f"Arte nuevo: {inf['generaciones']} imágenes", imagenes=inf["generaciones"], usd=usd_arte)
 	else:
 		evento("arte", "ok", "El arte ya estaba: no se dibuja nada")

@@ -333,7 +333,18 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 			inf = cambio.volver(argparse.Namespace(volver=int(detalle["version"]), **comunes))
 		elif detalle.get("actualizar"):
 			## Arreglar sin rehacer: mismo juego con el kit de hoy; solo se dibuja lo nuevo.
-			inf = cambio.actualizar(argparse.Namespace(**comunes))
+			## Animar los personajes con video (solo encargos del escaparate, con el tope que se pida, max 3 $).
+			tope_antes = os.environ.get("ORQ_TOPE_GPU_DURO")
+			animar = bool(detalle.get("animar")) and bool(detalle.get("semilla"))
+			if animar:
+				os.environ["ORQ_TOPE_GPU_DURO"] = str(min(float(detalle.get("tope_usd") or 2.0), 3.0))
+			try:
+				inf = cambio.actualizar(argparse.Namespace(animar=animar, **comunes))
+			finally:
+				if tope_antes is None:
+					os.environ.pop("ORQ_TOPE_GPU_DURO", None)
+				else:
+					os.environ["ORQ_TOPE_GPU_DURO"] = tope_antes
 			usd = float(inf.get("coste_usd", {}).get("total", 0.0))
 		elif trabajo["kind"] == "game_mod":
 			inf = cambio.programar(argparse.Namespace(instruccion=detalle.get("instruccion", ""), **comunes))
