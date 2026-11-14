@@ -18,11 +18,11 @@ begin
   for n in 1..12 loop perform public.galeria_anuncio(p1); end loop;
   assert (select count(*) from public.galeria_anuncios where project_id = p1 and valido) = 10, 'tope por juego y dia';
   for n in 1..5 loop perform public.galeria_anuncio(p2, 'premio'); end loop;
-  -- 2 - Reparto del mes: 50 % de 9,00 EUR = 450 centimos entre 10 y 5 anuncios.
+  -- 2 - Reparto del mes: 80 % de 9,00 EUR = 720 centimos entre 10 y 5 anuncios.
   r := public.galeria_reparto(current_date, 900);
-  assert (r ->> 'anuncios')::int = 15 and (r ->> 'repartido_cent')::int = 450, r::text;
-  assert (select saldo_cent from public.creador_saldo where user_id = autor) = 300, 'Ana: 10/15 de 450';
-  assert (select saldo_cent from public.creador_saldo where user_id = otro) = 150, 'Bea: 5/15 de 450';
+  assert (r ->> 'anuncios')::int = 15 and (r ->> 'repartido_cent')::int = 720, r::text;
+  assert (select saldo_cent from public.creador_saldo where user_id = autor) = 480, 'Ana: 10/15 de 720';
+  assert (select saldo_cent from public.creador_saldo where user_id = otro) = 240, 'Bea: 5/15 de 720';
   begin
     perform public.galeria_reparto(current_date, 900);
     raise exception 'debia fallar';
@@ -30,7 +30,7 @@ begin
   -- 3 - Ana ve sus ganancias y pasa 1 EUR a tuercas (150).
   perform set_config('request.jwt.claim.sub', autor::text, true);
   r := public.mis_ganancias();
-  assert (r ->> 'saldo_cent')::int = 300 and not (r ->> 'cobro_activo')::boolean, r::text;
+  assert (r ->> 'saldo_cent')::int = 480 and not (r ->> 'cobro_activo')::boolean, r::text;
   update public.profiles set credits = 0 where id = autor;
   r := public.ganancias_a_tuercas(100);
   assert (r ->> 'tuercas')::int = 150 and (select credits from public.profiles where id = autor) = 150, r::text;
