@@ -67,13 +67,16 @@ jobs:
               -d '{"input": {"despertar": "escaparate"}}' "https://api.runpod.ai/v2/$id/run" && echo "::notice::Fabrica despierta"
           fi
       ## apk: el .apk de un juego (idea = parte de su titulo) como artefacto para descargar.
+      ## Tambien en la rama «apk» (solo ese archivo, se reescribe): se baja con git aunque la red no
+      ## deje llegar a los artefactos de GitHub.
       - name: Guardar el apk
         if: inputs.accion == 'apk'
-        uses: actions/upload-artifact@v4
-        with:
-          name: apk
-          path: apk_muestra/
-          retention-days: 7
+        run: |
+          cd apk_muestra
+          git init -q -b apk && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "APK para probar"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" apk
+          echo "::notice::APK en la rama apk"
       ## Las capturas van a la rama «revision» (solo esa carpeta, se reescribe cada vez): se ven en GitHub desde el movil.
       - name: Subir capturas a la rama revision
         if: inputs.accion == 'capturas'
