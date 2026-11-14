@@ -285,8 +285,12 @@ def actualizar(args: argparse.Namespace) -> dict:
 	dibujar, sobran = sprites_cambiados(vieja, biblia)
 	## Arte de GPU de lo que antes era codigo (iconos, efectos, eventos): si el juego aun no lo tiene.
 	man = proyecto / "assets" / "manifest.json"
-	if man.exists() and "efectos" not in (_leer(man).get("ui") or {}):
+	ui_prev = (_leer(man).get("ui") or {}) if man.exists() else {}
+	if man.exists() and "efectos" not in ui_prev:
 		dibujar.append("extras")
+	## Marcos de panel y botones dibujados (menus que no parezcan de codigo), si no los tiene.
+	if man.exists() and not ui_prev.get("skin"):
+		dibujar.append("piel")
 	_escribir(ruta_biblia, biblia)
 	cadena.ajustar_proyecto(proyecto, diseno["titulo"], slug, version_nueva)
 	cadena.escribir_game(proyecto, diseno, mapas)

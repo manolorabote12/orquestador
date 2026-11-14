@@ -322,6 +322,13 @@ def fabricar(args: argparse.Namespace) -> dict:
 		informe["iconos"] = inf_i
 		informe["generaciones"] += int(inf_i.get("generaciones", 0))
 		fondos["iconos"] = ico
+	## 13b - Al actualizar un juego que no tiene la interfaz dibujada: solo los marcos ("piel").
+	if solo is not None and "piel" in solo:
+		print("[arte] interfaz dibujada (actualizar)")
+		piel, inf_p = skin.generar(biblia, salida / "interfaz", cliente, wf_crear, prompts.semilla(biblia["juego"]["titulo"], "interfaz"))
+		informe["interfaz"] = inf_p
+		informe["generaciones"] += int(inf_p.get("generaciones", 0))
+		fondos["piel"] = piel
 	## 15 - Arte de GPU para lo que era codigo: mas iconos, efectos (proyectiles, impactos,
 	## explosiones) y las ilustraciones de los modos de la arena. Al fabricar o si se pide ("extras").
 	if (getattr(args, "fondos", False) and solo is None) or (solo is not None and "extras" in solo):
