@@ -1603,6 +1603,62 @@ func _test_store() -> void:
 	Save.add_wallet(w0 - Save.wallet())
 	check("tienda: sin plugin ni pruebas no hay tienda", not Store.available())
 	await frames(2)
+	await _test_store_custom()
+
+
+## Compras a medida (game.json -> "store"): moneda propia, packs, VIP y la galeria web.
+func _test_store_custom() -> void:
+	print("- Compras a medida")
+	var w0: int = Save.wallet()
+	var old_store: Variant = Kit.config.get("store", null)
+	Kit.config["store"] = {"currency": {"name": "Perlas", "icon": "gem"}, "products": [
+		{"id": "perlas_100", "kind": "coins", "coins": 100, "price": "0,99 \u20ac"},
+		{"id": "cofre_rey", "kind": "bundle", "coins": 5000, "price": "9,99 \u20ac", "name": "Cofre del rey"},
+		{"id": "vip_mes", "kind": "vip", "price": "4,99 \u20ac", "bonus_pct": 50, "daily": 30},
+		{"id": "MAL id", "kind": "coins", "coins": 5}, {"id": "raro_1", "kind": "nada"}]}
+	Store.reset_catalog()
+	check("a medida: catalogo propio (sin los ids malos)", Store.custom() and Store.products().size() == 3 and Store.products().has("vip_mes"))
+	check("a medida: moneda propia", Store.currency_name() == "Perlas" and Store.currency_icon() == "gem" and Store.label("perlas_100") == "100 Perlas")
+	Store.fake = true
+	var host: Control = Control.new()
+	add_child(host)
+	var shop: ShopPanel = ShopPanel.open(host)
+	await frames(2)
+	check("a medida: la tienda ensena los del creador", shop.find_child("Iap_perlas_100", true, false) != null
+		and shop.find_child("Iap_cofre_rey", true, false) != null and shop.find_child("Iap_monedas_500", true, false) == null)
+	shop.queue_free()
+	Store.buy("cofre_rey")
+	await frames(3)
+	check("a medida: pack con moneda y sin anuncios", Save.wallet() == w0 + 5000 and Store.no_ads() and Store.owns("cofre_rey"))
+	Save.set_setting("no_ads", false)
+	Store.buy("vip_mes")
+	await frames(3)
+	check("a medida: VIP sin anuncios, +50 % y regalo diario", Store.vip() and Store.no_ads() and is_equal_approx(Store.coin_bonus(), 1.5)
+		and Save.wallet() == w0 + 5030)
+	check("a medida: el regalo del VIP solo una vez al dia", Store.daily_gift() == 0)
+	Store.sync_subs([])
+	check("a medida: VIP caducado se quita", not Store.vip() and not Store.no_ads() and is_equal_approx(Store.coin_bonus(), 1.0))
+	Store.fake = false
+	Store.fake_web = true
+	var fails: Array = []
+	var on_fail: Callable = func(id: String, why: String) -> void: fails.append([id, why])
+	Store.failed.connect(on_fail)
+	Store.buy("perlas_100")
+	await frames(2)
+	check("a medida: en la web se apunta el intento y no se cobra", Store.showcase() and fails.size() == 1 and str(fails[0][1]) == "soon"
+		and Save.wallet() == w0 + 5030)
+	Store.failed.disconnect(on_fail)
+	Store.fake_web = false
+	host.queue_free()
+	Save.set_setting("own_cofre_rey", false)
+	Save.set_setting("vip_daily", "")
+	if old_store == null:
+		Kit.config.erase("store")
+	else:
+		Kit.config["store"] = old_store
+	Store.reset_catalog()
+	Save.add_wallet(w0 - Save.wallet())
+	check("a medida: sin store vuelve el catalogo del kit", not Store.custom() and Store.products().has("monedas_500"))
 
 
 ## Avisos y buzon: plan de avisos segun la hora, misiones y eventos; apagarlos; buzon con ataques.

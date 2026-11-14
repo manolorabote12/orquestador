@@ -5,6 +5,7 @@ import type { NivelesJuego } from "../editor";
 import { ErrorApp } from "../errores";
 import type { Conexion } from "./conexion";
 import type { AdmobIds, EstadoPlay, Marketing, Publicar } from "./publicar";
+import type { TiendaJuego } from "./compras-juego";
 
 export interface Evento {
   paso: string;
@@ -78,6 +79,8 @@ export interface Proyecto {
   genero?: string;
   /** Ids de AdMob del juego (null = se publica sin anuncios). */
   admob?: AdmobIds | null;
+  /** Compras a medida del creador (null = las del kit). */
+  tienda?: TiendaJuego | null;
   /** Qué lleva el juego publicado (del diseño; lo que falta va encendido). */
   funciones?: Partial<Record<Funcion, boolean>>;
   /** "infantil" = para menores de 13 (sin compras, avisos ni nada online). */
@@ -291,7 +294,7 @@ export function supaJuegos(con: Conexion): ApiJuegos {
 
     async proyecto(id: string): Promise<Proyecto> {
       const [{ data: p, error }, { data: vs }, { data: js }] = await Promise.all([
-        con.sb.from("projects").select("id,title,version,files,updated_at,play,admob,ios,spec->niveles,spec->>genero,spec->funciones,spec->>publico,spec->prueba_ab,spec->giros,spec->originalidad").eq("id", id).maybeSingle(),
+        con.sb.from("projects").select("id,title,version,files,updated_at,play,admob,tienda,ios,spec->niveles,spec->>genero,spec->funciones,spec->>publico,spec->prueba_ab,spec->giros,spec->originalidad").eq("id", id).maybeSingle(),
         con.sb.from("project_versions").select("version,prompt,created_at,files").eq("project_id", id).order("version"),
         con.sb.from("jobs").select(COLUMNAS).eq("project_id", id).in("status", ["queued", "running"]).limit(1),
       ]);
@@ -302,6 +305,7 @@ export function supaJuegos(con: Conexion): ApiJuegos {
         niveles: Array.isArray((p as { niveles?: unknown }).niveles) ? (p as { niveles: string[] }).niveles : [],
         genero: String((p as { genero?: unknown }).genero ?? "plataformas"),
         admob: ((p as { admob?: AdmobIds | null }).admob) ?? null,
+        tienda: ((p as { tienda?: TiendaJuego | null }).tienda) ?? null,
         funciones: ((p as { funciones?: Proyecto["funciones"] }).funciones) ?? {},
         publico: (p as { publico?: string }).publico === "infantil" ? "infantil" : "todos",
         prueba_ab: ((p as { prueba_ab?: Proyecto["prueba_ab"] }).prueba_ab) ?? null,

@@ -56,15 +56,21 @@ func _refresh() -> void:
 	_wallet.text = str(Save.wallet())
 	for c: Node in _list.get_children():
 		c.queue_free()
-	if Store.available():
-		if not Store.no_ads() and not Store.owns("pack_inicio") and (Monetize.p("iap") as Array).has("pack_inicio"):
-			_offer_row("pack_inicio", Kit.text("starter_short", "Pack de inicio: {n} monedas + sin anuncios").format({"n": 2000}), "star")
-		_offer_row("monedas_500", Kit.text("iap_coins", "{n} monedas").format({"n": 500}), "coin")
-		_offer_row("monedas_3000", Kit.text("iap_coins", "{n} monedas").format({"n": 3000}), "coin")
-		if not Store.no_ads():
-			_offer_row("sin_anuncios", Kit.text("iap_no_ads", "Sin anuncios"), "close")
-		if not Season.premium() and Kit.feature("pase"):
-			_offer_row("pase_temporada", Kit.text("pass_premium", "Pase premium"), "star")
+	if Store.available() or Store.showcase():
+		if Store.custom():
+			## Compras a medida del creador, en su orden.
+			for id: String in Store.products().keys():
+				if _offer_visible(id):
+					_offer_row(id, Store.label(id), _offer_icon(id))
+		else:
+			if not Store.no_ads() and not Store.owns("pack_inicio") and (Monetize.p("iap") as Array).has("pack_inicio"):
+				_offer_row("pack_inicio", Kit.text("starter_short", "Pack de inicio: {n} monedas + sin anuncios").format({"n": 2000}), "star")
+			_offer_row("monedas_500", Kit.text("iap_coins", "{n} monedas").format({"n": 500}), "coin")
+			_offer_row("monedas_3000", Kit.text("iap_coins", "{n} monedas").format({"n": 3000}), "coin")
+			if not Store.no_ads():
+				_offer_row("sin_anuncios", Kit.text("iap_no_ads", "Sin anuncios"), "close")
+			if not Season.premium() and Kit.feature("pase"):
+				_offer_row("pase_temporada", Kit.text("pass_premium", "Pase premium"), "star")
 	_upgrade_row("fortuna", Kit.text("upgrade_fortuna", "Fortuna: +15 % de monedas"), "coin")
 	if ["platformer", "horde", "breakout", "lanes", "shooter", "turns"].has(Genres.current()):
 		_upgrade_row("heart", Kit.text("upgrade_heart", "Corazon extra"))
@@ -156,6 +162,29 @@ func _upgrade_row(id: String, label: String, icon: String = "heart") -> void:
 	row.add_child(b)
 
 
+## Lo ya comprado no se vuelve a ofrecer (sin anuncios, pack, pase, VIP activo).
+func _offer_visible(id: String) -> bool:
+	match str((Store.products()[id] as Dictionary)["kind"]):
+		"no_ads":
+			return not Store.no_ads()
+		"bundle":
+			return not Store.owns(id)
+		"pass":
+			return not Season.premium() and Kit.feature("pase")
+		"vip":
+			return not Store.vip_active().has(id)
+	return true
+
+
+func _offer_icon(id: String) -> String:
+	match str((Store.products()[id] as Dictionary)["kind"]):
+		"no_ads":
+			return "close"
+		"pass", "bundle", "vip":
+			return "star"
+	return Store.currency_icon()
+
+
 func _offer_row(id: String, label: String, icon: String) -> void:
 	var row: HBoxContainer = HBoxContainer.new()
 	row.add_theme_constant_override("separation", 14)
@@ -168,5 +197,10 @@ func _offer_row(id: String, label: String, icon: String) -> void:
 	var b: Button = UI.make_button(Store.price(id), true, "")
 	b.name = "Iap_" + id
 	b.custom_minimum_size = Vector2(190.0, 96.0)
-	b.pressed.connect(func() -> void: Store.buy(id))
+	b.pressed.connect(func() -> void:
+		Store.buy(id)
+		if Store.showcase():
+			## Galeria web: aun no se cobra (se apunta el intento).
+			b.text = Kit.text("iap_soon", "Pronto en la web")
+			b.disabled = true)
 	row.add_child(b)

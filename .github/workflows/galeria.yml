@@ -13,7 +13,7 @@ on:
     inputs:
       accion:
         type: choice
-        options: [estado, repartir, pagado, rechazado]
+        options: [estado, repartir, intentos, pagado, rechazado]
         default: estado
       mes:
         description: "repartir: mes AAAA-MM (el que se reparte)"
@@ -55,6 +55,7 @@ jobs:
         run: |
           case "$ACCION" in
             repartir) python3 nube/galeria.py repartir "$MES" "$EUROS" "$COSTES" ;;
+            intentos) python3 nube/galeria.py intentos "$MES" ;;
             pagado|rechazado) python3 nube/galeria.py "$ACCION" "$COBRO" $NOTA ;;
             *) python3 nube/galeria.py estado ;;
           esac

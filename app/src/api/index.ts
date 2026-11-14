@@ -17,6 +17,7 @@ export * from "./juegos";
 export * from "./publicar";
 export * from "./jugadores";
 export * from "./tienda";
+export * from "./compras-juego";
 export * from "./lanzadera";
 export { ErrorApp } from "../errores";
 

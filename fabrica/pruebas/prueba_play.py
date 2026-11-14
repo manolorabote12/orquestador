@@ -69,6 +69,22 @@ class Falso(BaseHTTPRequestHandler):
 			c = json.loads(cuerpo)
 			assert c["defaultPrice"]["currency"] == "EUR" and c["status"] == "active" and "es-ES" in c["listings"]
 			return self._responder(200, c)
+		if resto == "pricing:convertRegionPrices":
+			pr = json.loads(cuerpo)["price"]
+			assert pr["currencyCode"] == "EUR"
+			ESTADO["precio_vip"] = pr
+			return self._responder(200, {"convertedRegionPrices": {"ES": {"regionCode": "ES", "price": pr}, "MX": {"regionCode": "MX",
+				"price": {"currencyCode": "MXN", "units": "99"}}}, "convertedOtherRegionsPrice": {"usdPrice": {"currencyCode": "USD", "units": "5"},
+				"eurPrice": pr}})
+		if resto.startswith("subscriptions/"):
+			if metodo == "PATCH":
+				c = json.loads(cuerpo)
+				bp = c["basePlans"][0]
+				assert bp["autoRenewingBasePlanType"]["billingPeriodDuration"] == "P1M" and len(bp["regionalConfigs"]) == 2
+				assert c["listings"][0]["languageCode"] == "es-ES" and c["listings"][0]["title"]
+				ESTADO["suscripcion"] = c
+				return self._responder(200, c)
+			return self._responder(400 if ESTADO.get("vip_activo") else 200, {"error": {"message": "already active"}} if ESTADO.get("vip_activo") else {})
 		if metodo == "POST" and resto == "edits":
 			return self._responder(200, {"id": "edicion-1"})
 		if subida and resto.endswith("/bundles"):
@@ -145,6 +161,31 @@ def main() -> int:
 		check("textos en es-ES y en-US", "PUT edits/edicion-1/listings/en-US" in ll)
 		check("crea los 5 productos de la tienda del juego", r["productos"] == 5 and "PUT inappproducts/sin_anuncios" in ll and "PUT inappproducts/pack_inicio" in ll
 			and ll.index("PUT inappproducts/monedas_500") > ll.index("POST edits/edicion-1:commit"), str(r.get("aviso_productos")))
+		## Compras a medida: moneda propia, packs con su precio y VIP como suscripcion.
+		from play import tienda
+		propia = {"moneda": {"nombre": "Perlas", "icono": "gem"}, "productos": [
+			{"id": "perlas_100", "tipo": "monedas", "cantidad": 100, "precio_cent": 99},
+			{"id": "cofre_rey", "tipo": "pack", "cantidad": 5000, "precio_cent": 999, "nombre": "Cofre del rey"},
+			{"id": "vip_mes", "tipo": "vip", "precio_cent": 499, "periodo": "mes", "extra_pct": 50, "diario": 30}]}
+		check("tienda propia valida", tienda.validar(propia) == [], str(tienda.validar(propia)))
+		ESTADO["llamadas"].clear()
+		ESTADO["vip_activo"] = True
+		r = api.publicar(cuenta, "com.danielstudio.bigotes", aab, ficha, "internal", aviso=lambda m: None, tienda_propia=propia)
+		ll = ESTADO["llamadas"]
+		check("tienda propia: sus productos y no los del kit", r["productos"] == 3 and "PUT inappproducts/perlas_100" in ll
+			and "PUT inappproducts/cofre_rey" in ll and "PUT inappproducts/monedas_500" not in ll, str(r.get("aviso_productos")) + str(ll))
+		check("tienda propia: VIP como suscripcion de 4,99 EUR al mes, activada", "PATCH subscriptions/vip_mes" in ll
+			and "POST subscriptions/vip_mes/basePlans/mes:activate" in ll and ESTADO["precio_vip"] == {"currencyCode": "EUR", "units": "4", "nanos": 990000000})
+		ESTADO["vip_activo"] = False
+		malos = [tienda.validar({"moneda": {"nombre": ""}, "productos": [{"id": "X", "tipo": "monedas", "precio_cent": 5}]}),
+			tienda.validar({"moneda": {"nombre": "Oro"}, "productos": [{"id": "abc", "tipo": "vip", "precio_cent": 100}] * 3}),
+			tienda.validar({"moneda": {"nombre": "Oro"}, "productos": [{"id": "caro", "tipo": "sin_anuncios", "precio_cent": 50000}]})]
+		check("tienda propia: rechaza nombre vacio, codigos malos, precios fuera de 0,10-99,99, repetidos y 3 VIP",
+			len(malos[0]) >= 3 and any("repetido" in e for e in malos[1]) and any("2 suscripciones" in e for e in malos[1]) and any("99,99" in e for e in malos[2]), str(malos))
+		g = tienda.a_game(propia)
+		check("tienda propia: lo que lee el juego", g["currency"] == {"name": "Perlas", "icon": "gem"} and g["products"][0]["price"] == "0,99 \u20ac"
+			and g["products"][2]["kind"] == "vip" and g["products"][2]["bonus_pct"] == 50)
+		check("tienda propia: cierres para el servidor", tienda.cierres(propia) == {"perlas_100": "consumir", "cofre_rey": "reconocer", "vip_mes": "suscripcion"})
 		ESTADO["sin_pagos"] = True
 		ESTADO["llamadas"].clear()
 		r = api.publicar(cuenta, "com.danielstudio.bigotes", aab, ficha, "internal", aviso=lambda m: None)

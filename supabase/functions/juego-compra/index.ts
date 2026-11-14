@@ -7,7 +7,7 @@
 
 import { adminClient, CORS, reply } from "../_shared/http.ts";
 import { tokenGoogle, type CuentaServicio } from "../_shared/google.ts";
-import { api, cerrarJuego, validarJuego, verificarProducto } from "../_shared/compras.ts";
+import { api, cerrarJuego, cierreDe, validarJuego, verificarProducto, verificarSuscripcion } from "../_shared/compras.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -18,21 +18,27 @@ Deno.serve(async (req) => {
   if (typeof pt === "string") return reply(400, { error: pt });
   const admin = adminClient();
   const { data: p } = await admin.from("projects").select("play").eq("telemetria_id", pt.juego).maybeSingle();
-  const paquete = String((p?.play as Record<string, unknown> | null)?.paquete ?? "");
+  const play = (p?.play ?? null) as Record<string, unknown> | null;
+  const paquete = String(play?.paquete ?? "");
   if (!paquete) return reply(404, { error: "unknown_game" });
+  // Producto del kit o de la tienda del creador (compras a medida, guardadas al publicar).
+  const cierre = cierreDe(play, pt.producto);
+  if (!cierre) return reply(400, { error: "unknown_product" });
   const cuentaJson = Deno.env.get("ORQ_PLAY_CUENTA") ?? "";
   if (!cuentaJson) return reply(503, { error: "store_not_configured" });
   try {
     const base = api(Deno.env.get("ORQ_GOOGLE_API") ?? "https://androidpublisher.googleapis.com", paquete);
     const token = await tokenGoogle(JSON.parse(cuentaJson) as CuentaServicio, "https://www.googleapis.com/auth/androidpublisher");
     // Sin id de usuario: los juegos no tienen cuentas (el token de Google ya es unico por compra).
-    const v = await verificarProducto(fetch, base, token, pt.producto, pt.token, "");
+    const v = cierre === "suscripcion"
+      ? await verificarSuscripcion(fetch, base, token, pt.producto, pt.token)
+      : await verificarProducto(fetch, base, token, pt.producto, pt.token, "");
     if (!v.ok) return reply(402, { error: v.motivo ?? "not_verified" });
     const { data: nueva, error } = await admin.rpc("juego_compra_anotar", {
       p_juego: pt.juego, p_sesion: pt.sesion, p_producto: pt.producto, p_token: pt.token, p_orden: v.orderId ?? null,
     });
     if (error) return reply(500, { error: "grant_failed" });
-    await cerrarJuego(fetch, base, token, pt.producto, pt.token);
+    if (cierre !== "suscripcion" || v.pendienteReconocer) await cerrarJuego(fetch, base, token, pt.producto, pt.token, cierre);
     return reply(200, { ok: true, nueva: nueva === true });
   } catch (e) {
     console.error("juego-compra", String(e));

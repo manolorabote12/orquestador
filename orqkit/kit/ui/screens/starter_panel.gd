@@ -7,9 +7,14 @@ extends UiModal
 const AFTER_LEVELS: int = 3
 
 
+## El pack de la oferta: el del kit o el primero de tipo "bundle" de las compras a medida.
+static func pack_id() -> String:
+	return Store.first_of("bundle") if Store.custom() else "pack_inicio"
+
+
 static func should_offer() -> bool:
-	return Store.available() and not Store.no_ads() and not Gift.active() and not Store.owns("pack_inicio") and not UI.test_mode \
-		and (Monetize.p("iap") as Array).has("pack_inicio") and Save.unlocked_count() > AFTER_LEVELS \
+	return Store.available() and not Store.no_ads() and not Gift.active() and pack_id() != "" and not Store.owns(pack_id()) and not UI.test_mode \
+		and (Store.custom() or (Monetize.p("iap") as Array).has("pack_inicio")) and Save.unlocked_count() > AFTER_LEVELS \
 		and not bool(Save.get_setting("pack_inicio_visto", false))
 
 
@@ -26,7 +31,7 @@ func _ready() -> void:
 	build_frame(Kit.text("starter_title", "\u00a1Oferta de bienvenida!"), 600.0)
 	var what: Label = Label.new()
 	what.name = "What"
-	what.text = Kit.text("starter_what", "{n} monedas + sin anuncios para siempre").format({"n": int(Store.PRODUCTS["pack_inicio"]["coins"])})
+	what.text = Kit.text("starter_what", "{n} monedas + sin anuncios para siempre").format({"n": int(Store.products()[pack_id()]["coins"])}).replace(Kit.text("ex_coins", "monedas"), Store.currency_name())
 	what.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	what.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	what.theme_type_variation = "HeaderLabel"
@@ -36,10 +41,10 @@ func _ready() -> void:
 	note.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	note.add_theme_color_override("font_color", UI.colors["acento"])
 	body.add_child(note)
-	var buy: Button = UI.make_button(Store.price("pack_inicio"), true, "coin")
+	var buy: Button = UI.make_button(Store.price(pack_id()), true, Store.currency_icon())
 	buy.name = "BtnStarterBuy"
 	buy.pressed.connect(func() -> void:
-		Store.buy("pack_inicio")
+		Store.buy(pack_id())
 		close())
 	body.add_child(buy)
 	var later: Button = UI.make_button(Kit.text("not_now", "Ahora no"), false, "")

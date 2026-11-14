@@ -1,7 +1,7 @@
 // Prueba de la verificacion de compras (sin Google): node pruebas/compras.mjs (tras compilar con esbuild).
 import { generateKeyPairSync, createVerify } from "node:crypto";
 import { firmarJwt, tokenGoogle } from "./.google.mjs";
-import { api, cerrar, cerrarJuego, validarJuego, verificarProducto, verificarSuscripcion } from "./.compras.mjs";
+import { api, cerrar, cerrarJuego, cierreDe, validarJuego, verificarProducto, verificarSuscripcion } from "./.compras.mjs";
 
 let fallos = 0;
 const check = (n, ok, d = "") => { console.log((ok ? "  OK   " : "  FAIL ") + n + (d ? `  (${d})` : "")); if (!ok) fallos++; };
@@ -63,7 +63,11 @@ check("reconoce la suscripcion (si no, Google la reembolsa a los 3 dias)", llama
 console.log("== Compras dentro de los juegos ==");
 const ok = { juego: "0f0e0d0c-0b0a-4908-8706-050403020100", sesion: "aaaaaaaaaaaaaaa1", producto: "monedas_500", token: "tok-1234567890" };
 check("peticion valida del juego", typeof validarJuego(ok) === "object");
-check("producto que no es del kit -> no", validarJuego({ ...ok, producto: "gemas_9999" }) === "unknown_product");
+check("codigo de producto raro -> no", validarJuego({ ...ok, producto: "Gemas 9999" }) === "unknown_product");
+check("sin tienda propia: solo los del kit", cierreDe({ paquete: "x" }, "monedas_500") === "consumir" && cierreDe({ paquete: "x" }, "gemas_9999") === null);
+const propia = { paquete: "x", productos: { perlas_100: "consumir", vip_mes: "suscripcion" } };
+check("tienda propia: sus productos y no los del kit", cierreDe(propia, "vip_mes") === "suscripcion" && cierreDe(propia, "perlas_100") === "consumir"
+  && cierreDe(propia, "monedas_500") === null);
 check("sesion rara -> no", validarJuego({ ...ok, sesion: "x" }) === "bad_session");
 check("juego que no es un id -> no", validarJuego({ ...ok, juego: "1 or 1=1" }) === "bad_game");
 respuestas[":consume"] = { cuerpo: {} };
@@ -71,5 +75,7 @@ await cerrarJuego(falso, base, "t", "monedas_500", "tok-a");
 check("las monedas se consumen (se pueden volver a comprar)", llamadas.some((l) => l.url.endsWith("/products/monedas_500/tokens/tok-a:consume")));
 await cerrarJuego(falso, base, "t", "sin_anuncios", "tok-b");
 check("quitar anuncios se reconoce (es para siempre)", llamadas.some((l) => l.url.endsWith("/products/sin_anuncios/tokens/tok-b:acknowledge")));
+await cerrarJuego(falso, base, "t", "vip_mes", "tok-c", "suscripcion");
+check("el VIP se reconoce como suscripcion", llamadas.some((l) => l.url.endsWith("/subscriptions/vip_mes/tokens/tok-c:acknowledge")));
 console.log(`== ${fallos} fallos ==`);
 process.exit(fallos ? 1 : 0);

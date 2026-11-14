@@ -515,13 +515,17 @@ def atender_publicar(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) 
 		paquete = d.get("paquete") or cuestionarios.paquete_para(d["estudio"], diseno)
 		url_priv = url_privacidad(sb.url, trabajo["project_id"])
 		prep = publicador.preparar(proyecto, d["estudio"], d["correo"], llave, codigo, paquete, url_privacidad=url_priv,
-			admob=d.get("admob"))
+			admob=d.get("admob"), tienda=d.get("tienda"))
 		sb.subir(f"{trabajo['project_id']}/privacidad.html", Path(prep["privacidad"]), bucket="legal")
 		sb.subir(f"{trabajo['project_id']}/privacidad.json", Path(prep["privacidad_json"]), bucket="legal")
 		carpeta = f"{usuario}/{trabajo['project_id']}/v{version}/play"
 		archivos = {"guia": prep["guia"], "privacidad_url": url_priv, "paquete": paquete, "huella_llave": prep["huella_llave"],
 			"version_code": codigo, "aab": sb.subir(f"{carpeta}/{Path(prep['aab']).name}", Path(prep["aab"]))}
 		play = {"paquete": paquete, "version_code": codigo, "huella_llave": prep["huella_llave"], "anuncios": bool(prep.get("anuncios"))}
+		## Que hace el servidor con cada compra a medida (consumir, reconocer o suscripcion).
+		from play import tienda as tienda_mod
+		if prep.get("tienda"):
+			play["productos"] = tienda_mod.cierres(prep["tienda"])
 		if d.get("modo") == "subir":
 			ultimo = (versiones.memoria(proyecto).get("historial") or [{}])[-1]
 			nota = str(ultimo.get("resumen") or "Mejoras y correcciones.")[:450]

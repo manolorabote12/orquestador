@@ -110,6 +110,12 @@ func _draw() -> void:
 			draw_circle(c + Vector2(s * 0.12, -s * 0.06), s * 0.09, color.darkened(0.75))
 			for k: int in 3:
 				_poly(_rect(o + Vector2(s * (0.37 + 0.1 * float(k)), s * 0.66), Vector2(s * 0.05, s * 0.12)), color.darkened(0.75))
+		"gem":
+			## Gema tallada (moneda propia de las compras a medida).
+			_poly(PackedVector2Array([c + Vector2(-s * 0.4, -s * 0.12), c + Vector2(-s * 0.2, -s * 0.36), c + Vector2(s * 0.2, -s * 0.36),
+				c + Vector2(s * 0.4, -s * 0.12), c + Vector2(0, s * 0.42)]), color)
+			_poly(PackedVector2Array([c + Vector2(-s * 0.4, -s * 0.12), c + Vector2(s * 0.4, -s * 0.12), c + Vector2(0, s * 0.42)]), color.darkened(0.25))
+			_poly(PackedVector2Array([c + Vector2(-s * 0.2, -s * 0.36), c + Vector2(s * 0.2, -s * 0.36), c + Vector2(s * 0.1, -s * 0.12), c + Vector2(-s * 0.1, -s * 0.12)]), color.lightened(0.4))
 		"cube":
 			var top: PackedVector2Array = PackedVector2Array([c + Vector2(0, -s * 0.4), c + Vector2(s * 0.36, -s * 0.2), c + Vector2(0, 0), c + Vector2(-s * 0.36, -s * 0.2)])
 			_poly(top, color.lightened(0.35))

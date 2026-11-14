@@ -2,6 +2,7 @@
 
 import { ErrorApp } from "../errores";
 import type { Conexion } from "./conexion";
+import { errorTienda, validarTiendaJuego, type TiendaJuego } from "./compras-juego";
 
 /** Texto para publicar en un idioma (lo escribe la IA). */
 export interface Publicacion {
@@ -123,6 +124,8 @@ export interface ApiPublicar {
   publicarIOS(proyectoId: string): Promise<{ job_id: string }>;
   /** Guarda (o quita, con todo vacío) los ids de AdMob del juego para la versión de tienda. */
   guardarAdmob(proyectoId: string, ids: AdmobIds | null): Promise<AdmobIds | null>;
+  /** Guarda (o quita, con null) las compras a medida del juego para la versión de tienda. */
+  guardarTienda(proyectoId: string, t: TiendaJuego | null): Promise<TiendaJuego | null>;
 }
 
 /** Servidor real (Supabase). */
@@ -154,6 +157,16 @@ export function supaPublicar(con: Conexion): ApiPublicar {
         throw new ErrorApp(codigo ? ERRORES_ADMOB[codigo] : "No se pudieron guardar los anuncios.");
       }
       return (data as AdmobIds | null) ?? null;
+    },
+
+    async guardarTienda(proyectoId: string, t: TiendaJuego | null) {
+      if (t) {
+        const err = validarTiendaJuego(t);
+        if (err) throw new ErrorApp(err);
+      }
+      const { data, error } = await con.sb.rpc("set_project_tienda", { p_project: proyectoId, p_tienda: t });
+      if (error) throw new ErrorApp(errorTienda(error.message));
+      return (data as TiendaJuego | null) ?? null;
     },
 
     async precioMarketing() {

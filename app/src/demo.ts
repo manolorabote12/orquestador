@@ -9,7 +9,7 @@ import guiaPlay from "./demo/guia_play.json";
 import nivelesDemo from "./demo/niveles.json";
 import type { NivelesJuego } from "./editor";
 import type { FilaInforme } from "./aprendizaje";
-import { ErrorApp, mensajeEvento, mensajeInvitacion, validarAdmob } from "./api";
+import { ErrorApp, mensajeEvento, mensajeInvitacion, validarAdmob, validarTiendaJuego, type TiendaJuego } from "./api";
 import { codigoValido, limpiarCodigo, validarPremio, type Canje, type PremioReal } from "./premio";
 import { mensajeRegalo, validarRegalo, type RegaloJuego } from "./regalo";
 import { mensajeClase, type Clase } from "./clase";
@@ -159,6 +159,7 @@ interface ProyectoDemo {
   versiones: { version: number; prompt: string; created_at: string; files: Resultado; titulo: string }[];
   play?: EstadoPlay | null;
   admob?: AdmobIds | null;
+  tienda?: TiendaJuego | null;
   ios?: { bundle?: string; build?: number; estado?: string; subido_en?: number } | null;
 }
 
@@ -749,6 +750,19 @@ export class Demo implements Backend {
       ...(ids.perfil?.trim() ? { perfil: ids.perfil.trim() } : {}) } : null;
     this.guardar();
     return p.admob;
+  }
+
+  async guardarTienda(proyectoId: string, t: TiendaJuego | null): Promise<TiendaJuego | null> {
+    await espera(300);
+    const p = this.s.proyectos.find((x) => x.id === proyectoId);
+    if (!p) throw new ErrorApp("Ese juego no existe.");
+    if (t) {
+      const err = validarTiendaJuego(t);
+      if (err) throw new ErrorApp(err);
+    }
+    p.tienda = t ? JSON.parse(JSON.stringify(t)) as TiendaJuego : null;
+    this.guardar();
+    return p.tienda;
   }
 
   private lzEstado(): LzDemo {

@@ -5,7 +5,7 @@
 import { abrirEditor } from "./editor";
 import { botonDenuncia } from "../denuncia";
 import type { App } from "../main";
-import { type Funcion, type CuentaPlay, type ModoYoutube, type Entrada, type Marketing, type PasoGuia, type Propuesta, type Proyecto, type Resena, type Trabajo } from "../api";
+import { ICONOS_MONEDA, PERIODOS_VIP, PLANTILLAS_TIENDA, TIPOS_COMPRA, codigoCompra, euros as eurosCent, type CompraJuego, type PeriodoVip, type TiendaJuego, type TipoCompra, type Funcion, type CuentaPlay, type ModoYoutube, type Entrada, type Marketing, type PasoGuia, type Propuesta, type Proyecto, type Resena, type Trabajo } from "../api";
 import { compartir, compartirEnlace, enlaceConTarjeta } from "../compartir";
 import { diagnosticar, MIN_INTENTOS } from "../aprendizaje";
 import { aconsejar, type Accion } from "../asesor";
@@ -1445,6 +1445,126 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       h("p", { class: "muted small" }, "Sin ids, la versión de tienda va sin anuncios (y así se declara en Play Console). Para quitarlos, borra los tres campos y guarda."));
   }
 
+  /** Compras a medida: la moneda y lo que el creador quiera vender, con sus precios. */
+  function seccionCompras(p: Proyecto): HTMLElement {
+    const cab = h("div", { class: "sheet-head" }, h("h2", {}, "Compras dentro del juego"));
+    if (p.publico === "infantil") {
+      return h("section", { class: "sheet", "data-seccion": "compras" }, cab,
+        h("p", { class: "muted small" }, "Los juegos para niños no llevan compras (política de familias de Google)."));
+    }
+    const copia = (t: TiendaJuego): TiendaJuego => JSON.parse(JSON.stringify(t)) as TiendaJuego;
+    let t: TiendaJuego = copia(p.tienda ?? PLANTILLAS_TIENDA.gemas.tienda);
+    const estado = h("span", {}, p.tienda ? h("span", { class: "pill done" }, "a medida") : h("span", { class: "pill queued" }, "las del kit"));
+    const plantilla = h("select", { "aria-label": "Tienda de partida" },
+      h("option", { value: "" }, "Empezar desde una plantilla…"),
+      ...Object.entries(PLANTILLAS_TIENDA).map(([k, v]) => h("option", { value: k }, v.nombre))) as HTMLSelectElement;
+    plantilla.addEventListener("change", () => {
+      if (!plantilla.value) return;
+      t = copia(PLANTILLAS_TIENDA[plantilla.value].tienda);
+      plantilla.value = "";
+      pintar();
+    });
+    const monedaNombre = h("input", { type: "text", maxlength: "20", placeholder: "Gemas, Perlas, Rubíes…", "aria-label": "Nombre de tu moneda" });
+    const monedaIcono = h("select", { "aria-label": "Dibujo de la moneda" },
+      ...Object.entries(ICONOS_MONEDA).map(([k, v]) => h("option", { value: k }, v))) as HTMLSelectElement;
+    monedaNombre.addEventListener("input", () => { t.moneda.nombre = monedaNombre.value; });
+    monedaIcono.addEventListener("change", () => { t.moneda.icono = monedaIcono.value; });
+    const filas = h("div", { class: "form-col" });
+    const aCent = (s: string) => Math.round(parseFloat(s.replace(",", ".").replace(/[^0-9.]/g, "")) * 100);
+    const numero = (valor: number | undefined, etiqueta: string, alCambiar: (n: number) => void, max = 1_000_000) => {
+      const i = h("input", { type: "number", min: "0", max: String(max), step: "1", "aria-label": etiqueta, placeholder: etiqueta });
+      i.value = valor === undefined ? "" : String(valor);
+      i.addEventListener("input", () => alCambiar(parseInt(i.value || "0", 10)));
+      return i;
+    };
+    function fila(c: CompraJuego, i: number): HTMLElement {
+      const tipo = h("select", { "aria-label": "Tipo" }, ...Object.entries(TIPOS_COMPRA).map(([k, v]) => h("option", { value: k }, v))) as HTMLSelectElement;
+      tipo.value = c.tipo;
+      tipo.addEventListener("change", () => {
+        c.tipo = tipo.value as TipoCompra;
+        if ((c.tipo === "monedas" || c.tipo === "pack") && !c.cantidad) c.cantidad = 500;
+        if (c.tipo === "vip") Object.assign(c, { periodo: c.periodo ?? "mes", extra_pct: c.extra_pct ?? 50, diario: c.diario ?? 20, sin_anuncios: true });
+        pintar();
+      });
+      const nombre = h("input", { type: "text", maxlength: "40", placeholder: "Nombre (opcional)", "aria-label": "Nombre del producto" });
+      nombre.value = c.nombre ?? "";
+      nombre.addEventListener("input", () => { c.nombre = nombre.value.trim() || undefined; });
+      const precio = h("input", { type: "text", inputmode: "decimal", maxlength: "6", "aria-label": "Precio en euros", placeholder: "0,99" });
+      precio.value = eurosCent(c.precio_cent).replace(" €", "");
+      precio.addEventListener("input", () => { c.precio_cent = aCent(precio.value); });
+      const quitar = h("button", { class: "btn btn-line btn-small", type: "button", "aria-label": "Quitar producto" }, "Quitar");
+      quitar.addEventListener("click", () => { t.productos.splice(i, 1); pintar(); });
+      const extra: HTMLElement[] = [];
+      if (c.tipo === "monedas" || c.tipo === "pack") {
+        extra.push(numero(c.cantidad, `Cuántas ${t.moneda.nombre || "monedas"}`, (n) => { c.cantidad = n; }));
+      }
+      if (c.tipo === "vip") {
+        const per = h("select", { "aria-label": "Cada cuánto se cobra" },
+          ...Object.entries(PERIODOS_VIP).map(([k, v]) => h("option", { value: k }, v))) as HTMLSelectElement;
+        per.value = c.periodo ?? "mes";
+        per.addEventListener("change", () => { c.periodo = per.value as PeriodoVip; });
+        extra.push(per, numero(c.extra_pct, "% extra de moneda por partida", (n) => { c.extra_pct = n; }, 300),
+          numero(c.diario, "Regalo diario de moneda", (n) => { c.diario = n; }, 100_000));
+      }
+      return h("div", { class: "paso" }, h("div", { class: "form-row" }, tipo, precio, quitar), nombre, ...extra);
+    }
+    function pintar() {
+      monedaNombre.value = t.moneda.nombre;
+      monedaIcono.value = t.moneda.icono;
+      filas.replaceChildren(...t.productos.map(fila));
+      anadir.disabled = t.productos.length >= 12;
+    }
+    const anadir = h("button", { class: "btn btn-line", type: "button" }, "Añadir producto");
+    anadir.addEventListener("click", () => {
+      t.productos.push({ id: "", tipo: "monedas", cantidad: 500, precio_cent: 99 });
+      pintar();
+    });
+    const guardar = h("button", { class: "btn btn-brass" }, "Guardar la tienda");
+    guardar.addEventListener("click", async () => {
+      guardar.disabled = true;
+      try {
+        // Códigos de producto automáticos (los ya publicados se mantienen: Google no deja cambiarlos).
+        const usados = new Set<string>();
+        for (const c of t.productos) {
+          let id = c.id && /^[a-z][a-z0-9_]{2,39}$/.test(c.id) ? c.id : codigoCompra(c, t.moneda.nombre);
+          for (let n = 2; usados.has(id); n++) id = `${id.slice(0, 36)}_${n}`;
+          c.id = id;
+          usados.add(id);
+        }
+        p.tienda = await app.api.guardarTienda(p.id, t);
+        estado.replaceChildren(h("span", { class: "pill done" }, "a medida"));
+        aviso("Tienda guardada: irá en la próxima versión que subas a Google Play");
+      } catch (e) {
+        aviso(mensajeError(e, "No se pudo guardar la tienda."));
+      } finally {
+        guardar.disabled = false;
+      }
+    });
+    const quitarTodo = h("button", { class: "btn btn-line", type: "button" }, "Usar las del kit");
+    quitarTodo.addEventListener("click", async () => {
+      try {
+        p.tienda = await app.api.guardarTienda(p.id, null);
+        t = copia(PLANTILLAS_TIENDA.gemas.tienda);
+        pintar();
+        estado.replaceChildren(h("span", { class: "pill queued" }, "las del kit"));
+        aviso("Vuelve la tienda del kit");
+      } catch (e) {
+        aviso(mensajeError(e, "No se pudo cambiar la tienda."));
+      }
+    });
+    pintar();
+    return h("section", { class: "sheet", "data-seccion": "compras" },
+      h("div", { class: "sheet-head" }, h("h2", {}, "Compras dentro del juego"), estado),
+      h("p", { class: "muted small" }, "Tú decides qué se vende y a qué precio: tu moneda (gemas, perlas…), packs, quitar anuncios, pase premium y un VIP de suscripción " +
+        "(sin anuncios, más moneda en cada partida y regalo diario)."),
+      plantilla,
+      h("div", { class: "form-row" }, monedaNombre, monedaIcono),
+      filas, anadir,
+      h("div", { class: "form-col" }, guardar, quitarTodo),
+      h("p", { class: "muted small" }, "En Google Play todo lo que vendas es tuyo (Google se queda su comisión, normalmente el 15 %). Necesitas el perfil de pagos en Play Console. " +
+        "En la web aún no se cobra: verás cuánta gente quiso comprar."));
+  }
+
   function pillAnuncios(p: Proyecto): HTMLElement {
     return p.admob ? h("span", { class: "pill done" }, "activos") : h("span", { class: "pill queued" }, "sin anuncios");
   }
@@ -1746,7 +1866,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
         plegable(seccionGiros(p, alPlan), (p.giros?.length ? p.giros.map((g) => GIROS.find((x) => x.id === g)?.nombre ?? g).join(" + ") : "hazlo único")
           + (typeof p.originalidad === "number" ? `, originalidad ${p.originalidad}%` : "")),
         plegable(seccionDibujo(p, alPlan), ""), plegable(funciones, ""), denuncia),
-      publicar: h("div", { class: "panel-juego", role: "tabpanel" }, publicacion, apple, anuncios, seccionGanancias(p, app.api.ingresos(p.id))),
+      publicar: h("div", { class: "panel-juego", role: "tabpanel" }, publicacion, apple, anuncios, seccionCompras(p), seccionGanancias(p, app.api.ingresos(p.id))),
       compartir: h("div", { class: "panel-juego", role: "tabpanel" }, compartirSec, seccionRegalo(p), seccionItch(p), videos, seccionPlanRedes(p)),
       jugadores: h("div", { class: "panel-juego", role: "tabpanel" }, jugadores, seccionAb(p, alPlan), seccionClasificacion(p), ...(p.genero === "aldea" ? [seccionLiga(p)] : []), seccionIngresos(p), seccionOpiniones(p, (instruccion) => { entrada.value = instruccion; void pedir(); mostrar("taller"); }), seccionResenas(p), seccionEventos(p), seccionPremio(p), seccionClase(p), seccionCharla(p)),
     };

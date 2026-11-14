@@ -12,7 +12,7 @@ begin
     'liga_repeticion,liga_defensas,liga_repeticion_subir,liga_top,liga_rival,liga_publicar,liga_resultado,clan_top,clan_crear,' ||
     'clan_unir,clan_salir,clan_info,clan_guerra,clan_guerra_cobrar,amigo_codigo,amigo_anadir,amigo_quitar,amigos_top,' ||
     'charla_activa,torneo_info,torneo_enviar,torneo_top,torneo_reclamar,evento_actual,premio_actual,premio_ganado,regalo_ficha,regalo_abierto,regalo_juego,regalo_leido,opinion_enviar,clase_unirse,clase_progreso,evento_regalo_cobrar,fantasma_subir,' ||
-    'fantasma_bajar,nube_guardar,nube_restaurar,reto_actual,reto_ranking', false);
+    'fantasma_bajar,nube_guardar,nube_restaurar,reto_actual,reto_ranking,portal_play,portal_lista,tienda_intento', false);
   -- 1 - Todas las tablas de public con seguridad por filas.
   for r in select c.relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
             where n.nspname = 'public' and c.relkind = 'r' and not c.relrowsecurity loop

@@ -25,6 +25,7 @@ from cryptography.hazmat.primitives.asymmetric import padding
 API = os.environ.get("ORQ_PLAY_API", "https://androidpublisher.googleapis.com")
 ALCANCE = "https://www.googleapis.com/auth/androidpublisher"
 from textos import idiomas as _idiomas
+from play import tienda  # noqa: E402
 ## Idioma de la app -> idioma de la ficha de Google Play (los 6 de siempre y los extra de idiomas.py).
 IDIOMAS = {k: v["play"] for k, v in _idiomas.LENGUAS.items()}
 
@@ -171,8 +172,11 @@ TEXTOS_PRODUCTOS = {
 }
 
 
-def crear_productos(play: "Play", idiomas: list[str]) -> int:
-	"""Crea o actualiza los 4 productos del kit (fuera de la edicion). Devuelve cuantos."""
+def crear_productos(play: "Play", idiomas: list[str], tienda_propia: dict | None = None) -> int:
+	"""Crea o actualiza los productos del juego (fuera de la edicion): los del kit o, si el creador
+	hizo su tienda (play/tienda.py), los suyos con sus precios, y el VIP como suscripcion."""
+	if tienda_propia and not tienda.validar(tienda_propia):
+		return _crear_propios(play, idiomas, tienda_propia)
 	n = 0
 	langs = [i for i in idiomas if i in TEXTOS_PRODUCTOS] or ["es"]
 	for sku, micros in PRODUCTOS.items():
@@ -185,6 +189,55 @@ def crear_productos(play: "Play", idiomas: list[str]) -> int:
 		play._pedir("PUT", f"/inappproducts/{sku}?allowMissing=true&autoConvertMissingPrices=true", cuerpo)
 		n += 1
 	return n
+
+
+def _crear_propios(play: "Play", idiomas: list[str], t: dict) -> int:
+	langs = [i for i in idiomas if i in IDIOMAS] or ["es"]
+	moneda = str(t["moneda"]["nombre"]).strip()
+	n = 0
+	for p in t["productos"]:
+		if p["tipo"] == "vip":
+			crear_suscripcion(play, p, moneda, langs)
+		else:
+			cuerpo = {
+				"packageName": play.paquete, "sku": p["id"], "status": "active", "purchaseType": "managedUser",
+				"defaultLanguage": IDIOMAS[langs[0]],
+				"defaultPrice": {"priceMicros": str(int(p["precio_cent"]) * 10000), "currency": "EUR"},
+				"listings": {IDIOMAS[i]: dict(zip(("title", "description"), tienda.ficha(p, moneda, i))) for i in langs},
+			}
+			play._pedir("PUT", f"/inappproducts/{p['id']}?allowMissing=true&autoConvertMissingPrices=true", cuerpo)
+		n += 1
+	return n
+
+
+def crear_suscripcion(play: "Play", p: dict, moneda: str, langs: list[str]) -> None:
+	"""VIP: suscripcion con un plan base (semana, mes o año) en euros, convertida por Google a cada
+	pais, y activada. Si ya existia, se actualiza (allowMissing)."""
+	cent = int(p["precio_cent"])
+	precio = {"currencyCode": "EUR", "units": str(cent // 100), "nanos": (cent % 100) * 10_000_000}
+	conv = play._pedir("POST", "/pricing:convertRegionPrices", {"price": precio})
+	regiones = [{"regionCode": r, "price": v["price"], "newSubscriberAvailability": True}
+		for r, v in (conv.get("convertedRegionPrices") or {}).items()]
+	plan = str(p.get("periodo", "mes"))
+	otras = conv.get("convertedOtherRegionsPrice") or {}
+	base = {"basePlanId": plan, "autoRenewingBasePlanType": {"billingPeriodDuration": tienda.PERIODOS[plan],
+		"resubscribeState": "RESUBSCRIBE_STATE_ACTIVE", "prorationMode": "SUBSCRIPTION_PRORATION_MODE_CHARGE_ON_NEXT_BILLING_DATE"},
+		"regionalConfigs": regiones}
+	if otras:
+		base["otherRegionsConfig"] = {"usdPrice": otras.get("usdPrice"), "eurPrice": otras.get("eurPrice"), "newSubscriberAvailability": True}
+	cuerpo = {"packageName": play.paquete, "productId": p["id"], "basePlans": [base],
+		"listings": [dict(zip(("title", "description"), tienda.ficha(p, moneda, i)), languageCode=IDIOMAS[i]) for i in langs]}
+	for l in cuerpo["listings"]:
+		l["benefits"] = [l.pop("description")[:40]]
+	play._pedir("PATCH", f"/subscriptions/{p['id']}?allowMissing=true&updateMask=listings,basePlans"
+		"&regionsVersion.version=2022/02&latencyTolerance=PRODUCT_UPDATE_LATENCY_TOLERANCE_LATENCY_SENSITIVE", cuerpo)
+	try:
+		play._pedir("POST", f"/subscriptions/{p['id']}/basePlans/{plan}:activate", {"packageName": play.paquete,
+			"productId": p["id"], "basePlanId": plan})
+	except ErrorPlay as e:
+		## Ya activo: Google contesta 400/409 y no pasa nada.
+		if e.codigo not in (400, 409):
+			raise
 
 
 def traducir(codigo: int, cuerpo: str) -> str:
@@ -208,7 +261,7 @@ def traducir(codigo: int, cuerpo: str) -> str:
 
 
 def publicar(cuenta: dict, paquete: str, aab: Path, ficha_dir: Path, pista: str = "internal",
-		notas: dict[str, str] | None = None, correo: str = "", aviso=print) -> dict:
+		notas: dict[str, str] | None = None, correo: str = "", aviso=print, tienda_propia: dict | None = None) -> dict:
 	"""Todo de una vez: .aab a la pista + textos e imagenes de la ficha en todos sus idiomas."""
 	play = Play(cuenta, paquete)
 	notas = notas or {"es": "Primera versión.", "en": "First release."}
@@ -244,7 +297,7 @@ def publicar(cuenta: dict, paquete: str, aab: Path, ficha_dir: Path, pista: str 
 		## Compras dentro del juego: si falla (sin perfil de pagos...), el juego sale igual sin tienda.
 		productos, aviso_productos = 0, ""
 		try:
-			productos = crear_productos(play, [i for i in textos if i in IDIOMAS and i in TEXTOS_PRODUCTOS])
+			productos = crear_productos(play, [i for i in textos if i in IDIOMAS and i in TEXTOS_PRODUCTOS], tienda_propia)
 		except ErrorPlay as e:
 			aviso_productos = str(e)
 			aviso("Las compras dentro del juego no se pudieron crear: " + aviso_productos)

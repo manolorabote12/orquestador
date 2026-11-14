@@ -24,7 +24,7 @@ import ficha  # noqa: E402
 import recursos  # noqa: E402
 import versiones  # noqa: E402
 from play import anuncios as anuncios_mod  # noqa: E402
-from play import aab, api, cuestionarios, firma  # noqa: E402
+from play import aab, api, cuestionarios, firma, tienda as tienda_mod  # noqa: E402
 
 PISTAS = ("internal", "alpha", "beta", "production")
 
@@ -59,8 +59,11 @@ def asegurar_capturas(proyecto: Path) -> None:
 
 
 def preparar(proyecto: Path, estudio: str, correo: str, llave: dict, codigo_version: int, paquete: str = "",
-		anuncios: bool | None = None, telemetria: bool | None = None, url_privacidad: str = "", admob: dict | None = None) -> dict:
+		anuncios: bool | None = None, telemetria: bool | None = None, url_privacidad: str = "", admob: dict | None = None,
+		tienda: dict | None = None) -> dict:
 	diseno = json.loads((proyecto / "fabrica" / "diseno.json").read_text(encoding="utf-8"))
+	## Compras a medida del creador (moneda propia, packs, VIP...): van en game.json; sin ellas, las del kit.
+	tienda_mod.aplicar(proyecto, None if diseno.get("publico") == "infantil" else tienda)
 	## Anuncios reales solo con los ids de AdMob del usuario; si no, la version de tienda va sin anuncios.
 	## Juego para ninos: anuncios marcados para menores (contenido apto y sin personalizar).
 	con_anuncios = anuncios_mod.aplicar(proyecto, admob, para_ninos=diseno.get("publico") == "infantil")
@@ -89,7 +92,8 @@ def preparar(proyecto: Path, estudio: str, correo: str, llave: dict, codigo_vers
 	g = cuestionarios.guia(diseno, paquete, correo, url_privacidad or "(se rellena al subir la política)", anuncios, telemetria)
 	texto = json.dumps(g, ensure_ascii=False).replace("{CUENTA_SERVICIO}", correo_servicio())
 	(carpeta / "guia.json").write_text(texto, encoding="utf-8")
-	return {"anuncios": anuncios, "paquete": paquete, "aab": str(salida), "ficha": f["carpeta"], "guia": json.loads(texto),
+	return {"tienda": tienda if tienda and not tienda_mod.validar(tienda) and diseno.get("publico") != "infantil" else None,
+		"anuncios": anuncios, "paquete": paquete, "aab": str(salida), "ficha": f["carpeta"], "guia": json.loads(texto),
 		"privacidad": str(carpeta / "privacidad.html"), "privacidad_json": str(carpeta / "privacidad.json"), "huella_llave": llave.get("huella_sha256", ""), "version_code": codigo_version}
 
 
@@ -98,7 +102,7 @@ def subir(prep: dict, pista: str, notas: dict[str, str], correo: str = "") -> di
 		raise ErrorPublicar(f"Pista desconocida: {pista}")
 	cadena.evento("subida_play", "inicio", "Subiendo a Google Play...")
 	r = api.publicar(cuenta_servicio(), prep["paquete"], Path(prep["aab"]), Path(prep["ficha"]), pista, notas, correo,
-		aviso=lambda m: cadena.evento("subida_play", "inicio", m))
+		aviso=lambda m: cadena.evento("subida_play", "inicio", m), tienda_propia=prep.get("tienda"))
 	cadena.evento("subida_play", "ok", "En Google Play" + (" como borrador: envíalo a revisión en Play Console" if r["borrador"] else ""))
 	return r
 

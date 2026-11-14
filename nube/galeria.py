@@ -3,6 +3,8 @@
 	python3 nube/galeria.py estado                       -> anuncios del mes, repartos hechos y cobros pendientes
 	python3 nube/galeria.py repartir 2026-11 12.34 [3,10] -> reparte el 60 % de 12,34 EUR (lo que pago Google ese mes)
 	                                                        menos 3,10 EUR de costes de servir los juegos (opcional)
+	python3 nube/galeria.py intentos [2026-11]             -> compras que la gente quiso hacer en la web (aun sin cobrar)
+	                                                        y lo que habrias ganado con tu comision
 	python3 nube/galeria.py pagado 17 [nota]             -> el cobro 17 ya esta pagado por PayPal
 	python3 nube/galeria.py rechazado 17 [motivo]        -> el cobro 17 no se pudo pagar: el dinero vuelve al creador
 
@@ -73,6 +75,17 @@ def main(a: list[str]) -> int:
 			costes = centimos(a[3]) if len(a) > 3 and a[3].strip() else 0
 			r = rest("POST", "rpc/galeria_reparto", {"p_mes": mes_valido(a[1]), "p_ingresos_cent": centimos(a[2]), "p_costes_cent": costes})
 			print(f"::notice::Reparto hecho: {json.dumps(r, ensure_ascii=False)}")
+		elif accion == "intentos":
+			import datetime
+			mes = mes_valido(a[1]) if len(a) > 1 and a[1].strip() else datetime.date.today().strftime("%Y-%m-01")
+			r = rest("POST", "rpc/tienda_intentos_mes", {"p_mes": mes}) or {}
+			bruto = float(r.get("euros") or 0)
+			print(f"::notice::Web {r.get('mes')}: {r.get('intentos', 0)} intentos de compra de {r.get('jugadores', 0)} jugadores "
+				f"en {r.get('juegos', 0)} juegos = {bruto:.2f} EUR. Tu {r.get('comision_pct')} %: {float(r.get('comision_euros') or 0):.2f} EUR "
+				f"(la pasarela, {float(r.get('pasarela_euros') or 0):.2f} EUR, sale de la parte del creador)")
+			for x in r.get("productos") or []:
+				print(f"::notice::  {x['producto']}: {x['intentos']} intentos, {float(x['euros']):.2f} EUR")
+			return 0
 		elif accion in ("pagado", "rechazado"):
 			r = rest("POST", "rpc/cobro_cerrar", {"p_id": int(a[1]), "p_estado": accion, "p_nota": " ".join(a[2:]) or None})
 			print(f"::notice::Cobro {a[1]}: {r}")

@@ -56,6 +56,8 @@ func _ready() -> void:
 	## Evento del autor "monedas dobles".
 	var event_x: int = Online.coin_multiplier()
 	earned *= event_x
+	## VIP del juego (compras a medida): +X % de moneda.
+	earned = int(round(float(earned) * Store.coin_bonus()))
 	if not bool(result.get("no_reward", false)):
 		Save.add_wallet(earned)
 	## Modo experto: medalla del nivel y el doble de monedas.
