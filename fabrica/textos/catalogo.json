@@ -1752,7 +1752,16 @@
 			"ev_turrets": "Siege",
 			"ev_turrets_desc": "3 vs 3: take down their turret before they take yours.",
 			"event_map": "Map: {m}",
-			"event_brawler": "Playing as {x}"
+			"event_brawler": "Playing as {x}",
+			"brawl_victory": "VICTORY!",
+			"brawl_defeat": "DEFEAT",
+			"brawl_fight": "FIGHT!",
+			"play_again": "Play again",
+			"exit": "Exit",
+			"brawl_turret_down": "Enemy turret destroyed",
+			"brawl_turret_lost": "They destroyed your turret",
+			"brawl_waves": "Wave {n} of {max}",
+			"brawl_kills": "{n} takedowns"
 		},
 		"pt": {
 			"a_friend": "um amigo",
@@ -3490,7 +3499,16 @@
 			"ev_turrets": "Cerco",
 			"ev_turrets_desc": "3 contra 3: derrube a torre deles antes que derrubem a sua.",
 			"event_map": "Mapa: {m}",
-			"event_brawler": "Joga com {x}"
+			"event_brawler": "Joga com {x}",
+			"brawl_victory": "VITÓRIA!",
+			"brawl_defeat": "DERROTA",
+			"brawl_fight": "LUTEM!",
+			"play_again": "Jogar de novo",
+			"exit": "Sair",
+			"brawl_turret_down": "Torre rival derrubada",
+			"brawl_turret_lost": "Derrubaram a sua torre",
+			"brawl_waves": "Onda {n} de {max}",
+			"brawl_kills": "{n} eliminações"
 		},
 		"fr": {
 			"a_friend": "un ami",
@@ -5228,7 +5246,16 @@
 			"ev_turrets": "Siège",
 			"ev_turrets_desc": "3 contre 3 : détruis leur tourelle avant qu'ils ne détruisent la tienne.",
 			"event_map": "Carte : {m}",
-			"event_brawler": "Tu joues avec {x}"
+			"event_brawler": "Tu joues avec {x}",
+			"brawl_victory": "VICTOIRE !",
+			"brawl_defeat": "DÉFAITE",
+			"brawl_fight": "COMBATTEZ !",
+			"play_again": "Rejouer",
+			"exit": "Quitter",
+			"brawl_turret_down": "Tourelle adverse détruite",
+			"brawl_turret_lost": "Ils ont détruit ta tourelle",
+			"brawl_waves": "Vague {n} sur {max}",
+			"brawl_kills": "{n} éliminations"
 		},
 		"de": {
 			"a_friend": "ein Freund",
@@ -6966,7 +6993,16 @@
 			"ev_turrets": "Belagerung",
 			"ev_turrets_desc": "3 gegen 3: Zerstöre ihren Turm, bevor sie deinen zerstören.",
 			"event_map": "Karte: {m}",
-			"event_brawler": "Du spielst mit {x}"
+			"event_brawler": "Du spielst mit {x}",
+			"brawl_victory": "SIEG!",
+			"brawl_defeat": "NIEDERLAGE",
+			"brawl_fight": "KÄMPFT!",
+			"play_again": "Nochmal spielen",
+			"exit": "Verlassen",
+			"brawl_turret_down": "Gegnerischer Turm zerstört",
+			"brawl_turret_lost": "Sie haben deinen Turm zerstört",
+			"brawl_waves": "Welle {n} von {max}",
+			"brawl_kills": "{n} K.-o."
 		},
 		"it": {
 			"a_friend": "un amico",
@@ -8704,7 +8740,16 @@
 			"ev_turrets": "Assedio",
 			"ev_turrets_desc": "3 contro 3: abbatti la loro torretta prima che abbattano la tua.",
 			"event_map": "Mappa: {m}",
-			"event_brawler": "Giochi con {x}"
+			"event_brawler": "Giochi con {x}",
+			"brawl_victory": "VITTORIA!",
+			"brawl_defeat": "SCONFITTA",
+			"brawl_fight": "COMBATTETE!",
+			"play_again": "Gioca ancora",
+			"exit": "Esci",
+			"brawl_turret_down": "Torretta nemica abbattuta",
+			"brawl_turret_lost": "Hanno abbattuto la tua torretta",
+			"brawl_waves": "Ondata {n} di {max}",
+			"brawl_kills": "{n} eliminazioni"
 		}
 	},
 	"generos": {

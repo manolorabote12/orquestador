@@ -98,9 +98,13 @@ static func choose(id: String) -> bool:
 
 
 ## Personaje de un bot (aliado o rival) por su numero: variado y estable entre partidas.
-static func for_bot(i: int) -> Dictionary:
+static func for_bot(i: int, exclude: String = "") -> Dictionary:
 	var cs: Array[Dictionary] = catalog()
-	return cs[(i * 3 + 1) % cs.size()]
+	## Nunca el mismo que el jugador (14 nov: salian dos Pinzas en tu equipo).
+	var pool: Array[Dictionary] = cs.filter(func(b: Dictionary) -> bool: return str(b["id"]) != exclude) if exclude != "" else cs
+	if pool.is_empty():
+		pool = cs
+	return pool[(i * 3 + 1) % pool.size()]
 
 
 static func attack_of(b: Dictionary) -> Dictionary:

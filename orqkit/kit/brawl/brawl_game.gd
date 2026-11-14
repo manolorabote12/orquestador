@@ -223,8 +223,9 @@ func _ready() -> void:
 	if not online.is_empty():
 		_net_open()
 	Audio.play_track("nivel")
-	UI.float_text(_fx, player.position + Vector2(0.0, -150.0), Kit.text("coop_hint", "\u00a1Juntos contra {n} oleadas!").format({"n": COOP_WAVES}) if coop
-		else _mode_hint(), UI.colors["acento"], 36)
+	if _intro <= 0.0:
+		UI.float_text(_fx, player.position + Vector2(0.0, -150.0), Kit.text("coop_hint", "\u00a1Juntos contra {n} oleadas!").format({"n": COOP_WAVES}) if coop
+			else _mode_hint(), UI.colors["acento"], 36)
 	QA.log_event("level_start", {"level": Kit.level_index, "genre": "brawl", "rivals": _spawns.size()})
 
 
@@ -246,6 +247,7 @@ func _mode_hint() -> String:
 # ------------------------------------------------------------------ montaje
 
 func _reset() -> void:
+	_bot_ids.clear()
 	for c: Node in _actors.get_children():
 		_actors.remove_child(c)
 		c.queue_free()
@@ -367,13 +369,14 @@ func _reset() -> void:
 		_left_icon.color = Color("#ffd166") if team_score else Color("#ff8a80")
 		_left_icon.queue_redraw()
 	_update_hud()
+	_start_intro()
 
 
 func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 	var f: BrawlFighter = BrawlFighter.new()
 	f.is_player = is_player
 	f.position = at
-	var b: Dictionary = Brawlers.catalog()[0] if not online.is_empty() else (Brawlers.chosen() if is_player else Brawlers.for_bot(i))
+	var b: Dictionary = Brawlers.catalog()[0] if not online.is_empty() else (Brawlers.chosen() if is_player else _bot_brawler(i))
 	if is_player:
 		f.name = "Player"
 		## Mejora de la tienda: +8 % de vida y dano por nivel.
@@ -413,6 +416,22 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 	_actors.add_child(f)
 	fighters.append(f)
 	return f
+
+
+## Personajes de los bots de esta partida: todos distintos entre si y distintos del tuyo.
+var _bot_ids: Dictionary = {}
+
+
+func _bot_brawler(i: int) -> Dictionary:
+	var mine: String = str(Brawlers.chosen()["id"])
+	var taken: Array = _bot_ids.values()
+	var cs: Array[Dictionary] = Brawlers.catalog()
+	for k: int in cs.size():
+		var b: Dictionary = Brawlers.for_bot(i + k, mine)
+		if not taken.has(str(b["id"])) or taken.size() >= cs.size() - 1:
+			_bot_ids[i] = str(b["id"])
+			return b
+	return Brawlers.for_bot(i, mine)
 
 
 func _build_hud() -> void:
@@ -629,6 +648,10 @@ func _physics_process(delta: float) -> void:
 		_show_countdown(t)
 		time_in_level = t
 	elif get_tree().paused:
+		return
+	elif _intro > 0.0:
+		_intro -= delta
+		_intro_tick()
 		return
 	else:
 		time_in_level += delta
@@ -1321,7 +1344,7 @@ func spawn_wave(n: int) -> void:
 		f.last_seen = time_in_level
 		by_id[f.net_id] = f
 	if player != null:
-		UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("coop_wave", "Oleada {n} de {max}").format({"n": n, "max": COOP_WAVES}), Color("#ffe066"), 42)
+		announce(Kit.text("coop_wave", "Oleada {n} de {max}").format({"n": n, "max": COOP_WAVES}), Color("#ffe066"))
 	QA.log_event("coop_wave", {"wave": n})
 
 
@@ -1474,7 +1497,7 @@ func spawn_survival(n: int) -> void:
 		f.remember_base()
 		f.ai["think"] = 0.5 + 0.1 * float(k)
 	if player != null and n > 1:
-		UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("coop_wave", "Oleada {n} de {max}").format({"n": n, "max": waves}), Color("#ffe066"), 42)
+		announce(Kit.text("coop_wave", "Oleada {n} de {max}").format({"n": n, "max": waves}), Color("#ffe066"))
 		Audio.play("powerup")
 	QA.log_event("survival_wave", {"wave": n})
 
@@ -1526,7 +1549,7 @@ func _time_up() -> void:
 				b = v
 	if absf(a - b) < 0.001:
 		overtime = true
-		UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("brawl_overtime", "\u00a1Pr\u00f3rroga! El siguiente golpe gana"), Color("#ffe066"), 40)
+		announce(Kit.text("brawl_overtime", "\u00a1Pr\u00f3rroga! El siguiente golpe gana"), Color("#ffe066"))
 		QA.log_event("overtime", {"mode": mode})
 		return
 	if a > b:
@@ -1790,8 +1813,8 @@ func _goal_scored(team: int) -> void:
 	Juice.burst(_fx, bp, Color("#ffe066"), 36, 420.0)
 	Juice.shake(0.4)
 	Audio.play("win" if team == 0 else "hurt")
-	UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("brawl_goal", "\u00a1GOL!") if team == 0 else Kit.text("brawl_goal_them", "\u00a1Gol de ellos!"),
-		Color("#ffe066") if team == 0 else UI.colors["peligro"], 52)
+	announce(Kit.text("brawl_goal", "\u00a1GOL!") if team == 0 else Kit.text("brawl_goal_them", "\u00a1Gol de ellos!"),
+		Color("#ffe066") if team == 0 else UI.colors["peligro"], 96)
 	QA.log_event("goal", {"team": team, "score": goals_score.duplicate()})
 	if goals_score[team] >= BALL_GOALS or overtime:
 		if team == 0:
@@ -1849,9 +1872,21 @@ func _win() -> void:
 	QA.log_event("level_complete", {"level": Kit.level_index, "kills": kills, "cubes": coins, "hp": int(player.hp), "time": snappedf(time_in_level, 0.1), "stars": stars})
 	Audio.play("win")
 	Audio.play_track("victoria", false)
-	UI.float_text(_fx, player.position + Vector2(0, -170), Kit.text("brawl_win", "\u00a1\u00daltimo en pie!"), Color("#ffe066"), 44)
-	result_panel = ResultPanel.open(self, {"stars": stars, "coins": coins, "coins_total": maxi(coins_total, coins), "score": score, "record": record})
+	result_panel = ResultPanel.open(self, {"stars": stars, "coins": coins, "coins_total": maxi(coins_total, coins), "score": score, "record": record,
+		"arena": {"title": Kit.text("brawl_victory", "\u00a1VICTORIA!"), "sub": _result_line(true), "brawler": Brawlers.chosen(), "mode": mode}})
 	await Ads.show_interstitial("level_end")
+
+
+## La linea bajo VICTORIA / DERROTA: marcador, eliminaciones u oleadas segun el modo.
+func _result_line(won: bool) -> String:
+	match mode:
+		"ball":
+			return "%d - %d" % [goals_score[0], goals_score[1]]
+		"turrets":
+			return Kit.text("brawl_turret_down", "Torreta rival derribada") if won else Kit.text("brawl_turret_lost", "Han derribado tu torreta")
+		"survival":
+			return Kit.text("brawl_waves", "Oleada {n} de {max}").format({"n": mini(wave, waves), "max": waves})
+	return Kit.text("brawl_kills", "{n} eliminaciones").format({"n": kills}) + ("" if won else "  \u00b7  #%d" % placed)
 
 
 ## 3 estrellas ganando rapido y entero; 2 si llegas con vida de sobra o a tiempo; 1 por ganar.
@@ -1898,6 +1933,8 @@ func _lose() -> void:
 			sub = Kit.text("brawl_lose_turrets_sub", "Protege la tuya y ataca la suya. \u00a1Otra vez!")
 		"survival":
 			sub = Kit.text("brawl_lose_survival", "Has llegado a la oleada {n} de {max}. \u00a1Otra vez!").format({"n": wave, "max": waves})
+	FailPanel.arena_next = {"title": Kit.text("brawl_defeat", "DERROTA") if mode != "showdown" else "#%d" % placed, "sub": _result_line(false),
+		"brawler": Brawlers.chosen()}
 	var p: FailPanel = FailPanel.open(self, title, sub)
 	p.closed.connect(retry)
 
@@ -2042,6 +2079,153 @@ func _on_net(event: String, d: Dictionary) -> void:
 				f3.hp = 0.0
 				var killer: BrawlFighter = by_id.get(str(d.get("by", ""))) as BrawlFighter
 				_on_death(f3, killer)
+
+
+# ------------------------------------------------------------------ presentacion y locutor
+
+## Presentacion (sin conexion, como los juegos de arena): los equipos cara a cara (VS) y despues
+## 3, 2, 1, ¡A luchar! El mundo espera quieto. Las pruebas y los bots no la ven (QA).
+const INTRO_VS: float = 1.6
+const INTRO: float = 3.4
+var _intro: float = 0.0
+var _vs: Control = null
+var _announcer: Label = null
+
+
+func _start_intro() -> void:
+	if not online.is_empty() or UI.test_mode or QA.enabled or auto_retry or Kit.config.has("muestra"):
+		return
+	_intro = INTRO
+	_build_vs()
+	Audio.play("powerup", 0.0, -4.0, 0.8)
+
+
+func _build_vs() -> void:
+	if _vs != null:
+		_vs.queue_free()
+	var hud: CanvasLayer = $Hud as CanvasLayer
+	_vs = Control.new()
+	_vs.name = "Versus"
+	_vs.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_vs.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hud.add_child(_vs)
+	var vp: Vector2 = get_viewport_rect().size
+	var mine: Array = fighters.filter(func(f: BrawlFighter) -> bool: return f == player or (teams and f.team == player.team))
+	var them: Array = fighters.filter(func(f: BrawlFighter) -> bool: return not mine.has(f) and not f.ai.has("turret"))
+	_vs.draw.connect(func() -> void:
+		## Dos franjas en diagonal: azul (los tuyos) arriba y roja (rivales) abajo.
+		_vs.draw_colored_polygon(PackedVector2Array([Vector2(0, 0), Vector2(vp.x, 0), Vector2(vp.x, vp.y * 0.44), Vector2(0, vp.y * 0.52)]), Color(0.12, 0.35, 0.85, 0.88))
+		_vs.draw_colored_polygon(PackedVector2Array([Vector2(0, vp.y * 0.52), Vector2(vp.x, vp.y * 0.44), Vector2(vp.x, vp.y), Vector2(0, vp.y)]), Color(0.85, 0.16, 0.2, 0.88))
+		_vs.draw_line(Vector2(0, vp.y * 0.52), Vector2(vp.x, vp.y * 0.44), Color(1, 1, 1, 0.9), 8.0))
+	_vs_row(mine.slice(0, 3), vp.y * 0.27, vp)
+	_vs_row(them.slice(0, 5), vp.y * 0.75, vp)
+	var vs: Label = Label.new()
+	vs.text = "VS"
+	vs.add_theme_font_size_override("font_size", 120)
+	vs.add_theme_color_override("font_color", Color("#ffd447"))
+	vs.add_theme_color_override("font_outline_color", Color(0.05, 0.03, 0.12))
+	vs.add_theme_constant_override("outline_size", 18)
+	vs.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	vs.size = Vector2(vp.x, 140.0)
+	vs.position = Vector2(0.0, vp.y * 0.48 - 70.0)
+	vs.pivot_offset = vs.size * 0.5
+	vs.scale = Vector2(3.0, 3.0)
+	_vs.add_child(vs)
+	vs.create_tween().tween_property(vs, "scale", Vector2.ONE, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	var md: Label = Label.new()
+	md.text = BrawlEvents.mode_name(mode).to_upper() if BrawlEvents.INFO.has(mode) else ""
+	md.add_theme_font_size_override("font_size", 40)
+	md.add_theme_color_override("font_outline_color", Color(0.05, 0.03, 0.12))
+	md.add_theme_constant_override("outline_size", 10)
+	md.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	md.size = Vector2(vp.x, 60.0)
+	md.position = Vector2(0.0, vp.y * 0.06)
+	_vs.add_child(md)
+
+
+func _vs_row(list: Array, y: float, vp: Vector2) -> void:
+	var n: int = list.size()
+	for k: int in n:
+		var f: BrawlFighter = list[k]
+		var x: float = vp.x * (float(k) + 0.5) / float(maxi(n, 1))
+		var b: Dictionary = Brawlers.find(str(f.ai.get("brawler", "")))
+		var holder: Node2D = Node2D.new()
+		holder.position = Vector2(x, y + 40.0)
+		_vs.add_child(holder)
+		var e: Dictionary = Brawlers.sprite_entry(b) if f != player and not b.get("own_art", false) and f.sprite == null else {}
+		if f.sprite != null:
+			var spr: AnimatedSprite2D = AnimatedSprite2D.new()
+			spr.sprite_frames = f.sprite.sprite_frames
+			spr.play(f.sprite.animation)
+			spr.self_modulate = f.sprite.self_modulate
+			var sc: float = (190.0 if n <= 3 else 130.0) / maxf(1.0, spr.sprite_frames.get_frame_texture(spr.animation, 0).get_height())
+			spr.scale = Vector2(sc, sc)
+			spr.position = Vector2(0.0, -spr.sprite_frames.get_frame_texture(spr.animation, 0).get_height() * sc * 0.5)
+			holder.add_child(spr)
+		elif not e.is_empty():
+			holder.add_child(SpriteKit.animado(e, 140.0, "idle", true))
+		var nm: Label = Label.new()
+		nm.text = f.fighter_name if f.fighter_name != "" else str(b.get("name", ""))
+		nm.add_theme_font_size_override("font_size", 24)
+		nm.add_theme_color_override("font_outline_color", Color(0.05, 0.03, 0.12))
+		nm.add_theme_constant_override("outline_size", 8)
+		nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nm.size = Vector2(180.0, 34.0)
+		nm.position = Vector2(-90.0, 8.0)
+		holder.add_child(nm)
+		## Entran de lado, uno detras de otro.
+		holder.position.x += (-1.0 if y < vp.y * 0.5 else 1.0) * vp.x
+		holder.create_tween().tween_property(holder, "position:x", x, 0.3).set_delay(0.08 * float(k)).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+
+func _intro_tick() -> void:
+	var el: float = INTRO - _intro
+	if el >= INTRO_VS and _vs != null:
+		_vs.queue_free()
+		_vs = null
+	if el >= INTRO_VS:
+		var n: int = int(ceil((INTRO - el) / ((INTRO - INTRO_VS) / 3.0)))
+		var txt: String = str(clampi(n, 1, 3))
+		if _announcer == null or _announcer.text != txt:
+			announce(txt, Color.WHITE, 140, 0.55)
+			Audio.play("click", 0.0, 0.0, 1.0 + 0.1 * float(3 - n))
+	if _intro <= 0.0:
+		announce(Kit.text("brawl_fight", "\u00a1A LUCHAR!"), Color("#ffd447"), 96, 0.9)
+		Audio.play("powerup")
+		UI.float_text(_fx, player.position + Vector2(0.0, -190.0), _mode_hint(), UI.colors["acento"], 34)
+
+
+## Locutor: un unico cartel grande en el centro (uno sustituye al anterior: nunca se pisan).
+func announce(text: String, col: Color, size: int = 72, secs: float = 1.3) -> void:
+	if not has_node("Hud"):
+		return
+	if _announcer != null and is_instance_valid(_announcer):
+		_announcer.queue_free()
+	var vp: Vector2 = get_viewport_rect().size
+	var l: Label = Label.new()
+	l.name = "Announcer"
+	l.text = text
+	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	l.add_theme_font_size_override("font_size", size)
+	l.add_theme_color_override("font_color", col)
+	l.add_theme_color_override("font_outline_color", Color(0.05, 0.03, 0.12))
+	l.add_theme_constant_override("outline_size", maxi(10, size / 7))
+	l.size = Vector2(vp.x - 40.0, float(size) * 2.4)
+	l.position = Vector2(20.0, vp.y * 0.34 - l.size.y * 0.5)
+	l.pivot_offset = l.size * 0.5
+	l.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	($Hud as CanvasLayer).add_child(l)
+	_announcer = l
+	l.scale = Vector2(1.8, 1.8)
+	l.modulate.a = 0.0
+	var tw: Tween = l.create_tween()
+	tw.set_pause_mode(Tween.TWEEN_PAUSE_PROCESS)
+	tw.tween_property(l, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.parallel().tween_property(l, "modulate:a", 1.0, 0.12)
+	tw.tween_interval(secs)
+	tw.tween_property(l, "modulate:a", 0.0, 0.25)
+	tw.tween_callback(l.queue_free)
 
 
 func _show_countdown(t: float) -> void:

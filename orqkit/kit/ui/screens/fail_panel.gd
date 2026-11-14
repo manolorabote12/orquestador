@@ -12,6 +12,8 @@ var title_text: String = ""
 var info_text: String = ""
 ## Maraton sin vidas: el panel solo ofrece volver (y ensena el resumen).
 var marathon_over: bool = false
+## Arena: cabecera de fin de partida (personaje y DERROTA); se pone antes de open().
+static var arena_next: Dictionary = {}
 
 
 static func open(host: Node, title: String, info: String) -> FailPanel:
@@ -38,7 +40,11 @@ static func open(host: Node, title: String, info: String) -> FailPanel:
 
 
 func _ready() -> void:
-	build_frame(title_text)
+	var arena: Dictionary = arena_next
+	arena_next = {}
+	build_frame("" if not arena.is_empty() else title_text)
+	if not arena.is_empty():
+		body.add_child(ArenaShowcase.make(arena.get("brawler", {}), str(arena.get("title", title_text)), str(arena.get("sub", "")), false))
 	Audio.play_voice("derrota")
 	var info: Label = Label.new()
 	info.name = "Info"
@@ -46,6 +52,7 @@ func _ready() -> void:
 	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	body.add_child(info)
+	info.visible = arena.is_empty()
 	if marathon_over:
 		var back: Button = UI.make_button(Kit.text("mar_back", "Volver"), true, "back")
 		back.name = "BtnMarathonBack"
@@ -68,6 +75,19 @@ func _ready() -> void:
 		rv.name = "BtnRevive"
 		rv.pressed.connect(_on_revive.bind(rv))
 		body.add_child(rv)
+	if not arena.is_empty():
+		var again: Button = UI.make_button(Kit.text("play_again", "Jugar otra vez"), not can_revive(), "play")
+		again.name = "BtnRetry"
+		again.pressed.connect(func() -> void:
+			closed.emit()
+			queue_free())
+		var out: Button = UI.make_button(Kit.text("exit", "Salir"), false, "back")
+		out.name = "BtnExit"
+		out.pressed.connect(func() -> void:
+			get_tree().paused = false
+			UI.goto(UI.SCREEN_TITLE))
+		button_row([again, out])
+		return
 	var retry: Button = UI.make_button(Kit.text("retry", "Repetir"), not can_revive(), "retry")
 	retry.name = "BtnRetry"
 	retry.pressed.connect(func() -> void:

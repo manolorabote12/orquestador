@@ -33,6 +33,13 @@ func player() -> Node2D:
 
 ## 2 - Texto grande que sube y se desvanece (sobre la pantalla, no sobre el mundo).
 func toast(text: String, col: Color = Color.WHITE) -> void:
+	## Juegos con locutor propio (la arena): un solo cartel a la vez y nada durante la presentacion
+	## (14 nov: los carteles de los mods se pisaban con el GOL y con el VS).
+	if game != null and is_instance_valid(game) and game.has_method("announce"):
+		if float(game.get("_intro") if game.get("_intro") != null else 0.0) > 0.0:
+			return
+		game.call("announce", text.left(40), col, 54, 1.0)
+		return
 	if _layer == null or not is_instance_valid(_layer):
 		_layer = CanvasLayer.new()
 		_layer.layer = 50

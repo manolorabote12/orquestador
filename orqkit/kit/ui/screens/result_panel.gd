@@ -26,11 +26,17 @@ static func open(host: Node, data: Dictionary) -> ResultPanel:
 
 
 func _ready() -> void:
-	build_frame(Kit.text("level_complete", "Nivel completado"))
+	## Arena: fin de partida como los juegos de arena (personaje, VICTORIA y marcador), sin estrellas
+	## ni puntos de nivel.
+	var arena: Dictionary = result.get("arena", {})
+	build_frame("" if not arena.is_empty() else Kit.text("level_complete", "Nivel completado"))
+	if not arena.is_empty():
+		body.add_child(ArenaShowcase.make(arena.get("brawler", {}), str(arena.get("title", "")), str(arena.get("sub", "")), true))
 	stars = StarRow.make(3, 0, 104.0)
 	stars.name = "Stars"
 	body.add_child(stars)
 	stars.animate_fill(int(result.get("stars", 1)), 0.45)
+	stars.visible = arena.is_empty()
 	Audio.play_voice("victoria")
 
 	var coins_row: HBoxContainer = HBoxContainer.new()
@@ -43,6 +49,7 @@ func _ready() -> void:
 	coins_row.add_child(coins)
 	var total: int = int(result.get("coins_total", 0))
 	UI.count_up(coins, int(result.get("coins", 0)), "%d/" + str(total), 0.7)
+	coins_row.visible = arena.is_empty()
 
 	var score: Label = Label.new()
 	score.name = "ScoreValue"
@@ -50,6 +57,7 @@ func _ready() -> void:
 	score.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	body.add_child(score)
 	UI.count_up(score, int(result.get("score", 0)), "%d", 1.0)
+	score.visible = arena.is_empty()
 
 	## Monedas para la tienda: 10 por estrella y las monedas del nivel (hasta 40).
 	var earned: int = Save.with_fortune(int(result.get("stars", 1)) * 10 + mini(int(result.get("coins", 0)), 40))
@@ -119,6 +127,9 @@ func _ready() -> void:
 			loot.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			loot.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			loot.add_theme_color_override("font_color", UI.colors["exito"])
+			if not arena.is_empty():
+				loot.add_theme_font_size_override("font_size", 34)
+				loot.add_theme_color_override("font_color", Color("#ffd447"))
 			body.add_child(loot)
 			UI.pop_in(loot, 0.9)
 
@@ -145,7 +156,7 @@ func _ready() -> void:
 	if Gift.reveal_now(Kit.level_index):
 		(func() -> void: GiftPanel.open(self, "reveal")).call_deferred()
 	## Buen momento para preguntar si le gusta (opinion privada antes que valoracion publica).
-	elif not Prize.earned_now(Kit.level_index) and RatePrompt.should_ask(int(result.get("stars", 1))):
+	elif not Prize.earned_now(Kit.level_index) and arena.is_empty() and RatePrompt.should_ask(int(result.get("stars", 1))):
 		(func() -> void: RatePanel.open(self)).call_deferred()
 
 	## Premio real del autor (juegos para negocios): se gana al superar el nivel N.
@@ -158,6 +169,9 @@ func _ready() -> void:
 		body.add_child(prize)
 		UI.pop_in(prize, 0.8)
 
+	if not arena.is_empty():
+		_arena_buttons(str(arena.get("mode", "")))
+		return
 	_online_section()
 
 	var has_next: bool = Kit.level_index + 1 < Kit.level_count()
@@ -186,6 +200,19 @@ func _ready() -> void:
 		button_row([lap_b, levels])
 	else:
 		button_row([retry, levels])
+
+
+## Arena: jugar otra vez el mismo modo (con su mapa de ahora) o volver a la portada.
+func _arena_buttons(mode: String) -> void:
+	var again: Button = UI.make_button(Kit.text("play_again", "Jugar otra vez"), true, "play")
+	again.name = "BtnPlayAgain"
+	again.pressed.connect(func() -> void:
+		if not BrawlEvents.play(mode):
+			UI.goto(UI.game_scene()))
+	var out: Button = UI.make_button(Kit.text("exit", "Salir"), false, "back")
+	out.name = "BtnExit"
+	out.pressed.connect(func() -> void: UI.goto(UI.SCREEN_TITLE))
+	button_row([again, out])
 
 
 ## Reto de un amigo, clasificacion online y boton para retar (ver kit/online.gd).
