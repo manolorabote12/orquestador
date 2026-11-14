@@ -117,7 +117,7 @@ func _tile(r: Dictionary, i: int) -> Control:
 	fig.position = Vector2(50.0, 82.0)
 	pic.add_child(fig)
 	var l: Label = Label.new()
-	l.text = str(Heroes.hero(id).get("name", id)) + ("\n" + Kit.text("summon_new", "\u00a1Nuevo!") if bool(r["new"]) else "\n" + "\u2605".repeat(int(r["stars"])))
+	l.text = Heroes.display_name(id) + ("\n" + Kit.text("summon_new", "\u00a1Nuevo!") if bool(r["new"]) else "\n" + "\u2605".repeat(int(r["stars"])))
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.add_theme_font_size_override("font_size", 15)
 	v.add_child(l)

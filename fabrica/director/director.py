@@ -489,6 +489,24 @@ PIEZAS_PUZLE = [("red", "round"), ("orange", "diamond-shaped"), ("yellow", "squa
 	("blue", "star-shaped"), ("purple", "hexagonal")]
 
 
+## Heroes del RPG de equipo del kit (kit/turns/party_catalog.json y kit/turns/heroes.gd): el primero
+## (guerrero) es el protagonista; estos se dibujan aparte como heroe_<id>.
+HEROES_KIT = {
+	"maga": ("Maga", "young ice mage woman in flowing blue robes holding a crystal-topped staff"),
+	"sanadora": ("Sanadora", "healer priestess in white and gold robes holding a glowing holy symbol"),
+	"arquero": ("Arquero", "elf ranger archer in a green hood with a longbow and quiver"),
+	"escudero": ("Escudero", "young squire in leather armor with a round wooden shield and short sword"),
+	"ballestero": ("Ballestero", "crossbowman in a blue tabard aiming a heavy crossbow"),
+	"berserker": ("Berserker", "fierce red-haired berserker with two axes and a fur cloak"),
+	"monje": ("Monje", "bald martial arts monk in orange robes with prayer beads and glowing fists"),
+	"paladina": ("Paladina", "paladin woman in shining white and gold plate armor with a warhammer and shield"),
+	"nigromante": ("Nigromante", "dark necromancer in a purple hooded robe with a skull staff and green soul flames"),
+	"druida": ("Druida", "forest druid with an antler crown, leaf cloak and gnarled wooden staff"),
+	"asesina": ("Asesina", "shadow assassin woman in black leather with twin daggers and purple smoke"),
+	"dragona": ("Dragona", "small fierce red dragon with golden horns and fiery wings, standing"),
+}
+
+
 def a_biblia(d: dict) -> dict:
 	"""6 - Diseno -> Biblia v1 (lo que necesita la cadena de arte)."""
 	fam = d["estilo"]["familia"]
@@ -602,6 +620,18 @@ def a_biblia(d: dict) -> dict:
 				"descripcion": ("fantasy RPG hero character, full body, side view facing right, same art style as the hero, "
 					+ ("legendary, ornate and glowing, " if hh.get("rarity") == "legendario" else "epic, detailed, " if hh.get("rarity") == "epico" else "")
 					+ hh["desc"])[:280],
+				"tamano": [celda, celda], "mira_a": "derecha",
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True},
+					"hurt": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
+	## RPG de equipo sin heroes propios: se dibujan los del kit (los de serie y los de coleccion), con
+	## el estilo del juego (14 nov: «Grieta en Cadena» salio con munecos de formas al lado del heroe).
+	if d.get("genero") == "rpg" and "criaturas" not in (d.get("giros") or []) \
+			and not any(h.get("desc") for h in ((d.get("contenido") or {}).get("heroes") or {}).values()):
+		for hid, (nombre, desc) in HEROES_KIT.items():
+			personajes.append({
+				"id": "heroe_" + hid, "nombre": nombre, "rol": "npc",
+				"descripcion": ("fantasy RPG hero character, full body, side view facing right, same art style as the hero, " + desc)[:280],
 				"tamano": [celda, celda], "mira_a": "derecha",
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True},
 					"hurt": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},

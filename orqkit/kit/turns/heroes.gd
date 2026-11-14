@@ -97,6 +97,16 @@ static func skill_names(id: String) -> Array[String]:
 	return out
 
 
+## Nombre a ensenar: traducido si es de serie (del kit), tal cual si lo invento el juego.
+static func display_name(id: String) -> String:
+	var nm: String = str(hero(id).get("name", id))
+	var stock: bool = str((EXTRA.get(id, {}) as Dictionary).get("name", "")) == nm
+	if not stock:
+		var data: Dictionary = TurnsParty.data()
+		stock = str((data["default"]["heroes"] as Dictionary).get(id, {}).get("name", "")) == nm
+	return Kit.text("rpg_" + id, nm) if stock else nm
+
+
 static func hero(id: String) -> Dictionary:
 	return roster().get(id, {})
 

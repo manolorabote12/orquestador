@@ -10,7 +10,9 @@ REGLAS
 2. Originalidad obligatoria: nunca marcas, personajes, nombres ni estilos protegidos (Mario, Sonic,
    Pokemon, Disney...). Si la idea los pide, crea un equivalente original claramente distinto.
    Nada sexual, de odio ni violencia grafica: los enemigos se aplastan, no sangran.
-3. Textos para el jugador (titulo, lema, nombres, niveles) en ESPANOL, cortos y con gancho.
+3. Textos para el jugador (titulo, lema, nombres, niveles) en ESPANOL, cortos y con gancho. El
+   titulo y el lema prometen solo lo que el juego hace de verdad con su genero (nada de cadenas,
+   combos o reacciones que no existen).
 4. Descripciones visuales (estilo.descripcion, heroe, enemigos, coleccionable, escenario, musica)
    en INGLES, concretas y fijas: forma, colores, rasgos unicos. Un personaje por descripcion.
    El heroe y los enemigos deben distinguirse a simple vista (silueta y color distintos).
@@ -184,6 +186,8 @@ REGLAS
     pocion cura. autobatalla: 1 comprar en la tienda, 2 colocar en tu mitad, 3 Luchar.
     coleccionables: 1 jugar una carta, 2 atacar con tus esbirros, 3 Fin del turno.
     En los demas generos, 2 a 4 frases que expliquen como se juega (avanzan con un toque).
+    NUNCA expliques mecanicas que el juego no tiene (arrastrar, cadenas, combos, reacciones...):
+    solo lo que hace su genero. En rpg no pongas tutorial (el juego trae el suyo).
     Ejemplo para torres piratas: ["Toca la arena libre para montar un canon.", "Elige: el canon
     rapido es barato.", "Cuando quieras, que zarpen los barcos enemigos.", "Toca un canon para
     mejorarlo."]. Si no aporta nada al tema, no lo pongas: sale el tutorial normal del genero.

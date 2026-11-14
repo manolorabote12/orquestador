@@ -349,6 +349,10 @@ def escribir_game(proyecto: Path, diseno: dict, mapas: list) -> dict:
 	(proyecto / "fabrica").mkdir(parents=True, exist_ok=True)
 	(proyecto / "fabrica" / "monetizacion.json").write_text(json.dumps(inf_mon, indent=1, ensure_ascii=False), encoding="utf-8")
 	## Tutorial con el tema del juego (textos del director; los pasos, del genero).
+	## RPG de equipo: ni tutorial inventado (14 nov, «Grieta en Cadena» explicaba arrastrar retratos y
+	## combos que el juego no tiene); salen sus reglas de serie (kit/howto.gd, turns_party).
+	if diseno.get("genero") == "rpg" and "criaturas" not in (diseno.get("giros") or []):
+		diseno.pop("tutorial", None)
 	if diseno.get("tutorial"):
 		game["tutorial"] = [{"text": str(t).strip()[:120]} for t in diseno["tutorial"][:6] if str(t).strip()]
 	## Datos anonimos de partida: el juego sabe a donde mandarlos (fabrica/telemetria.json) y su version.

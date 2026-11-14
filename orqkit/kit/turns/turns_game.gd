@@ -58,6 +58,8 @@ var _skill_btns: Array[Button] = []
 var _potion_btn: Button
 var _auto_btn: Button
 var _who: Label
+var _portraits: HBoxContainer
+var _pcards: Dictionary = {}
 
 
 func _ready() -> void:
@@ -481,6 +483,11 @@ func capture_delays() -> Vector2:
 
 const ELEM_COL: Dictionary = {"fire": Color("#ff7043"), "water": Color("#42a5f5"), "nature": Color("#66bb6a"),
 	"light": Color("#ffe082"), "dark": Color("#9575cd"), "": Color("#b0bec5")}
+## Sitios de cada lado (x desde el centro, y de los pies): fila de delante y fila de detras.
+const SLOTS: Array[Vector2] = [Vector2(195.0, 165.0), Vector2(62.0, 150.0), Vector2(262.0, -25.0), Vector2(122.0, -45.0),
+	Vector2(300.0, 70.0), Vector2(40.0, -10.0)]
+const STATUS_TAG: Dictionary = {"poison": "VEN", "burn": "FUE", "regen": "+HP", "stun": "ZZ", "taunt": "!", "atk_up": "A+",
+	"atk_down": "A-", "def_up": "D+", "def_down": "D-"}
 const STATUS_COL: Dictionary = {"poison": Color("#9ccc65"), "burn": Color("#ff7043"), "regen": Color("#81c784"), "stun": Color("#ffee58"),
 	"taunt": Color("#ef5350"), "atk_up": Color("#ffa726"), "atk_down": Color("#8d6e63"), "def_up": Color("#42a5f5"), "def_down": Color("#ab47bc")}
 const STATUS_NAME: Dictionary = {"poison": "Veneno", "burn": "Quemado", "regen": "Regenera", "stun": "Aturdido", "taunt": "Provoca",
@@ -531,8 +538,15 @@ func _party_ready(lv: Dictionary) -> void:
 	_camera.make_current()
 	Juice.register_camera(_camera)
 	var vp: Vector2 = get_viewport_rect().size
-	_camera.zoom = Vector2.ONE * minf(vp.x / 820.0, 1.5)
-	_camera.position = Vector2(0.0, 20.0)
+	_camera.zoom = Vector2.ONE * minf(vp.x / 760.0, 1.5)
+	_camera.position = Vector2(0.0, 90.0)
+	## El fondo pintado no compite con los personajes: velo oscuro encima (critica: fondo_distrae).
+	var veil: Polygon2D = Polygon2D.new()
+	veil.name = "Veil"
+	veil.polygon = PackedVector2Array([Vector2(-2000, -2000), Vector2(2000, -2000), Vector2(2000, 2000), Vector2(-2000, 2000)])
+	veil.color = Color(0.02, 0.02, 0.06, 0.38)
+	veil.z_index = 5
+	add_child(veil)
 	_build_party_hud()
 	_party_reset()
 	Audio.play_track("nivel")
@@ -578,6 +592,13 @@ func _build_party_hud() -> void:
 	grow.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	grow.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	col.add_child(grow)
+	## Fichas de tus heroes abajo, siempre a la vista (como los RPG de heroes): retrato, vida y
+	## quien actua (critica 14 nov: la mitad de abajo era un panel vacio en AUTO).
+	_portraits = HBoxContainer.new()
+	_portraits.name = "Portraits"
+	_portraits.alignment = BoxContainer.ALIGNMENT_CENTER
+	_portraits.add_theme_constant_override("separation", 10)
+	col.add_child(_portraits)
 	_who = Label.new()
 	_who.name = "Who"
 	_who.add_theme_font_size_override("font_size", 30)
@@ -646,6 +667,7 @@ func _party_reset() -> void:
 	_nodes.clear()
 	TurnsParty.next_wave(state)
 	_spawn_party()
+	_build_portraits()
 	active = {}
 	phase = "busy"
 	_party_hud()
@@ -665,6 +687,9 @@ func _skill_name(sid: String) -> String:
 
 ## El nombre es el de serie (tiene traduccion) o lo invento el juego (se usa tal cual)?
 func _stock_name(sec: String, id: String, nm: String) -> bool:
+	if (sec == "heroes" and str((Heroes.EXTRA.get(id, {}) as Dictionary).get("name", "")) == nm) \
+			or (sec == "skills" and str((Heroes.EXTRA_SKILLS.get(id, {}) as Dictionary).get("name", "")) == nm):
+		return true
 	var data: Dictionary = TurnsParty.data()
 	if str((data["default"][sec] as Dictionary).get(id, {}).get("name", "")) == nm:
 		return true
@@ -697,9 +722,12 @@ func _layout_party(instant: bool = false) -> void:
 		var front: Array = TurnsParty.fighters(state, arr)
 		var bench: Array = TurnsParty.living(arr).filter(func(x: Dictionary) -> bool: return not front.has(x))
 		var sx: float = -1.0 if sd == "hero" else 1.0
+		## Dos filas como en los RPG de heroes: delante (abajo, mas grandes) y detras, sin taparse.
 		for i: int in front.size():
-			var y: float = 160.0 if front.size() == 1 else lerpf(-200.0, 270.0, float(i) / float(front.size() - 1))
-			_place(front[i], Vector2(sx * (190.0 + 90.0 * float(i % 2)), y), 1.0, instant)
+			var at: Vector2 = Vector2(160.0, 120.0) if front.size() == 1 else SLOTS[mini(i, SLOTS.size() - 1)]
+			if bool(front[i]["boss"]):
+				at = Vector2(190.0, 150.0)
+			_place(front[i], Vector2(sx * at.x, at.y), 1.0, instant)
 		for j: int in bench.size():
 			_place(bench[j], Vector2(sx * 320.0, -160.0 + 110.0 * float(j)), 0.6, instant)
 	_bars.queue_redraw()
@@ -721,7 +749,8 @@ func _place(u: Dictionary, at: Vector2, sc: float, instant: bool) -> void:
 
 func _party_actor(u: Dictionary) -> Node2D:
 	var enemy: bool = str(u["side"]) == "enemy"
-	var h: float = (220.0 if bool(u["boss"]) else 130.0) if enemy else 140.0
+	## Mas grandes que antes (critica 14 nov: heroes y enemigos diminutos y dispersos).
+	var h: float = (270.0 if bool(u["boss"]) else 160.0) if enemy else 170.0
 	var art: Dictionary = {}
 	if enemy:
 		art = _arts.get(str(u["id"]), _arts.get("W", {}))
@@ -798,6 +827,70 @@ func _party_hud() -> void:
 	_potion_btn.disabled = not mine or int(state["potions"]) <= 0
 	_order.queue_redraw()
 	_bars.queue_redraw()
+	_update_portraits()
+
+
+func _build_portraits() -> void:
+	if _portraits == null:
+		return
+	for c: Node in _portraits.get_children():
+		c.queue_free()
+	_pcards.clear()
+	for u: Dictionary in state["heroes"]:
+		var card: Panel = Panel.new()
+		card.name = "Portrait%d" % int(u["uid"])
+		card.custom_minimum_size = Vector2(158.0, 176.0)
+		card.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var sb: StyleBoxFlat = StyleBoxFlat.new()
+		var ec: Color = ELEM_COL.get(str(u["element"]), Color.GRAY)
+		sb.bg_color = Color(0.06, 0.06, 0.1, 0.82)
+		sb.border_color = ec
+		sb.set_border_width_all(3)
+		sb.set_corner_radius_all(14)
+		card.add_theme_stylebox_override("panel", sb)
+		_portraits.add_child(card)
+		var clip: Control = Control.new()
+		clip.clip_contents = true
+		clip.position = Vector2(6.0, 6.0)
+		clip.size = Vector2(146.0, 108.0)
+		clip.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		card.add_child(clip)
+		var fig: Node2D = Heroes.figure(str(u["id"]), 150.0) if Heroes.enabled() else _party_actor(u)
+		fig.position = Vector2(73.0, 150.0)
+		clip.add_child(fig)
+		var nm: Label = Label.new()
+		nm.text = _unit_name(u)
+		nm.position = Vector2(4.0, 112.0)
+		nm.size = Vector2(150.0, 28.0)
+		nm.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nm.clip_text = true
+		nm.add_theme_font_size_override("font_size", 20)
+		card.add_child(nm)
+		var hp: ProgressBar = ProgressBar.new()
+		hp.name = "Hp"
+		hp.show_percentage = false
+		hp.position = Vector2(10.0, 146.0)
+		hp.size = Vector2(138.0, 18.0)
+		hp.max_value = 1.0
+		var fill: StyleBoxFlat = StyleBoxFlat.new()
+		fill.bg_color = Color("#5fd35f")
+		fill.set_corner_radius_all(6)
+		hp.add_theme_stylebox_override("fill", fill)
+		card.add_child(hp)
+		_pcards[int(u["uid"])] = {"card": card, "hp": hp, "sb": sb, "ec": ec}
+	_update_portraits()
+
+
+func _update_portraits() -> void:
+	for u: Dictionary in state.get("heroes", []):
+		var c: Dictionary = _pcards.get(int(u["uid"]), {})
+		if c.is_empty():
+			continue
+		(c["hp"] as ProgressBar).value = float(u["hp"]) / maxf(1.0, float(u["max_hp"]))
+		var now: bool = not active.is_empty() and int(active["uid"]) == int(u["uid"])
+		(c["sb"] as StyleBoxFlat).border_color = Color("#ffd447") if now else (c["ec"] as Color)
+		(c["sb"] as StyleBoxFlat).set_border_width_all(6 if now else 3)
+		(c["card"] as Panel).modulate = Color(1, 1, 1, 1) if bool(u["alive"]) else Color(0.4, 0.4, 0.45, 0.8)
 
 
 func _draw_order() -> void:
@@ -825,17 +918,21 @@ func _draw_party_bars() -> void:
 		if n == null or not bool(u["alive"]):
 			continue
 		var big: bool = bool(u["boss"])
-		var w: float = (150.0 if big else 120.0) * n.scale.x
-		var p: Vector2 = n.position + Vector2(0.0, (-260.0 if big else -175.0) * n.scale.y)
+		var w: float = (170.0 if big else 130.0) * n.scale.x
+		var p: Vector2 = n.position + Vector2(0.0, (-305.0 if big else -205.0) * n.scale.y)
 		var enemy: bool = str(u["side"]) == "enemy"
 		_bar(p, float(u["hp"]) / float(u["max_hp"]), Color("#ff5a4f") if enemy else Color("#5fd35f"), w)
 		if float(u["shield"]) > 0.0:
 			_bars.draw_rect(Rect2(p - Vector2(w * 0.5, 0.0), Vector2(w * clampf(float(u["shield"]) / float(u["max_hp"]), 0.0, 1.0), 6.0)), Color("#90caf9"))
 		_bars.draw_circle(p + Vector2(-w * 0.5 - 16.0, 7.0), 10.0, ELEM_COL.get(str(u["element"]), Color.GRAY))
 		var sx: float = -w * 0.5
+		## Estados en fichas legibles (letra y color), no cuadraditos.
 		for s: String in u["status"]:
-			_bars.draw_rect(Rect2(p + Vector2(sx, 22.0), Vector2(16.0, 16.0)), STATUS_COL.get(s, Color.WHITE))
-			sx += 20.0
+			var chip: Rect2 = Rect2(p + Vector2(sx, 20.0), Vector2(34.0, 26.0))
+			_bars.draw_rect(chip, (STATUS_COL.get(s, Color.WHITE) as Color).darkened(0.35))
+			_bars.draw_rect(chip, STATUS_COL.get(s, Color.WHITE), false, 2.0)
+			_bars.draw_string(UI.font, chip.position + Vector2(0.0, 20.0), str(STATUS_TAG.get(s, "?")), HORIZONTAL_ALIGNMENT_CENTER, 34.0, 17, Color.WHITE)
+			sx += 38.0
 		if str(u["warn"]) != "":
 			_bars.draw_string(UI.font, p + Vector2(-w * 0.5, -14.0), "!", HORIZONTAL_ALIGNMENT_LEFT, -1, 40, Color("#ff9f43"))
 		if phase == "player" and not active.is_empty() and int(u["uid"]) == int(active["uid"]):
@@ -970,8 +1067,9 @@ func _show_party(ev: Array) -> void:
 		var at: Vector2 = (n.position if n != null else Vector2.ZERO) + Vector2(randf_range(-20.0, 20.0), -200.0 * (n.scale.y if n != null else 1.0))
 		match str(d["type"]):
 			"skill":
-				UI.float_text(self, at + Vector2(0, -40), _skill_name(str(d["skill"])), Color("#ffe066"), 30)
+				UI.float_text(self, at + Vector2(0, -40), _skill_name(str(d["skill"])), Color("#ffe066"), 34)
 				if n != null:
+					Juice.ring(self, n.position + Vector2(0, -90), ELEM_COL.get(str(u.get("element", "")), Color.WHITE), 110.0, _t(0.35))
 					var dir: float = 1.0 if str(u["side"]) == "hero" else -1.0
 					var home: Vector2 = n.position
 					var tw: Tween = n.create_tween()
@@ -981,9 +1079,14 @@ func _show_party(ev: Array) -> void:
 				await get_tree().create_timer(_t(0.2)).timeout
 			"hit", "poison", "burn", "thorns":
 				var col: Color = {"poison": Color("#9ccc65"), "burn": Color("#ff7043"), "thorns": Color("#ef9a9a")}.get(str(d["type"]), Color("#ff5a4f"))
-				UI.float_text(self, at, "-%d" % int(round(float(d["amount"]))), col, 34)
+				UI.float_text(self, at, "-%d" % int(round(float(d["amount"]))), col, 44)
 				if n != null:
 					Juice.squash(n, Vector2(1.15, 0.85))
+					## Impacto con el color del elemento de quien pega (critica: efectos_pobres).
+					var from: Dictionary = d.get("from", {})
+					var hc: Color = ELEM_COL.get(str(from.get("element", "")), col) if not from.is_empty() else col
+					Juice.burst(self, n.position + Vector2(0, -90), hc, 16, 320.0)
+					Juice.flash(n)
 				if str(d["type"]) == "hit":
 					Audio.play("stomp", 0.1, -6.0)
 					Juice.shake(0.12)

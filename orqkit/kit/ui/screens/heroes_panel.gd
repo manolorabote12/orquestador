@@ -114,7 +114,7 @@ func _card(id: String, in_team: bool) -> Control:
 	if not mine:
 		fig.modulate = Color(0, 0, 0, 0.7)
 	pic.add_child(fig)
-	v.add_child(_lab(str(d.get("name", id)), 22, Color.WHITE))
+	v.add_child(_lab(Heroes.display_name(id), 22, Color.WHITE))
 	v.add_child(_lab(Heroes.elem_name(str(d.get("element", ""))) + "  \u00b7  " + ", ".join(Heroes.skill_names(id)), 13,
 		Heroes.ELEM_COL.get(str(d.get("element", "")), Color(0.8, 0.8, 0.85)).lightened(0.3)))
 	if mine:
