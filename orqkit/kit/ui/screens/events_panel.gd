@@ -54,6 +54,27 @@ func _card(mode: String) -> Control:
 		b.add_theme_stylebox_override(st, sb)
 	for st2: String in ["hover", "pressed"]:
 		b.add_theme_stylebox_override(st2, hov)
+	## Ilustracion del modo dibujada por la GPU (assets/ui/eventos) de fondo, con un velo para leer.
+	var art: Texture2D = UI.event_art(mode)
+	if art != null:
+		b.custom_minimum_size = Vector2(600.0, 190.0)
+		var pic: TextureRect = TextureRect.new()
+		pic.name = "Art"
+		pic.texture = art
+		pic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		pic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+		pic.set_anchors_preset(Control.PRESET_FULL_RECT)
+		pic.offset_left = 4.0
+		pic.offset_top = 4.0
+		pic.offset_right = -4.0
+		pic.offset_bottom = -4.0
+		pic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(pic)
+		var veil: ColorRect = ColorRect.new()
+		veil.set_anchors_preset(Control.PRESET_FULL_RECT)
+		veil.color = Color(col.darkened(0.7), 0.45)
+		veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(veil)
 	var h: HBoxContainer = HBoxContainer.new()
 	h.set_anchors_preset(Control.PRESET_FULL_RECT)
 	h.offset_left = 16.0

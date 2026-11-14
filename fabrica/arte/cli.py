@@ -20,7 +20,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from . import biblia as bib
+from . import extras, biblia as bib
 from . import godot_export, iconos, musica, musica_ia, portada, post, prompts, qa_arte, revision_ia, sfx, sfx_ia, skin, voces_ia
 from .comfy import ComfyError
 from . import runpod
@@ -322,6 +322,15 @@ def fabricar(args: argparse.Namespace) -> dict:
 		informe["iconos"] = inf_i
 		informe["generaciones"] += int(inf_i.get("generaciones", 0))
 		fondos["iconos"] = ico
+	## 15 - Arte de GPU para lo que era codigo: mas iconos, efectos (proyectiles, impactos,
+	## explosiones) y las ilustraciones de los modos de la arena. Al fabricar o si se pide ("extras").
+	if (getattr(args, "fondos", False) and solo is None) or (solo is not None and "extras" in solo):
+		print("[arte] iconos, efectos e ilustraciones")
+		ext, inf_x = extras.generar(biblia, salida / "interfaz", cliente, wf_crear, prompts.semilla(biblia["juego"]["titulo"], "extras"),
+			arena=biblia["juego"].get("genero") == "arena")
+		informe["extras"] = inf_x
+		informe["generaciones"] += int(inf_x.get("generaciones", 0))
+		fondos["extras"] = ext
 
 	if args.godot:
 		m = godot_export.exportar(Path(args.godot), biblia, hojas, tiles, efectos, fusionar=solo is not None,

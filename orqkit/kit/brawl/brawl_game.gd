@@ -92,6 +92,7 @@ var _floor: Node2D
 var _actors: Node2D
 var _bushes: Node2D
 var _fx: Node2D
+var _sea: bool = false
 var _gas: Node2D
 var _camera: Camera2D
 var stick: HordeStick
@@ -178,10 +179,27 @@ func _ready() -> void:
 		var e: Dictionary = Kit.sprite_by_role("enemigo")
 		if not e.is_empty():
 			_arts.append(e)
+	## Tema de mar: el agua de alrededor y los reflejos del suelo los pinta la GPU (sombreadores).
+	_sea = GpuFx.sea_theme()
+	var arena_rect: Rect2 = Rect2(Vector2.ZERO, Vector2(_size) * TILE)
+	if _sea:
+		var water: Polygon2D = Polygon2D.new()
+		water.name = "Sea"
+		var big: Rect2 = arena_rect.grow(TILE * 14.0)
+		water.polygon = PackedVector2Array([big.position, Vector2(big.end.x, big.position.y), big.end, Vector2(big.position.x, big.end.y)])
+		var gc: Color = Color(str(Kit.param("brawl_gas_color", "#3fa9f5")))
+		water.material = GpuFx.water(arena_rect.grow(6.0), gc.darkened(0.6), gc.lerp(Color("#5fe0e8"), 0.4))
+		add_child(water)
 	_floor = Node2D.new()
 	_floor.name = "Floor"
 	_floor.draw.connect(_draw_floor)
 	add_child(_floor)
+	if _sea:
+		var shine: Polygon2D = Polygon2D.new()
+		shine.name = "Caustics"
+		shine.polygon = PackedVector2Array([arena_rect.position, Vector2(arena_rect.end.x, 0.0), arena_rect.end, Vector2(0.0, arena_rect.end.y)])
+		shine.material = GpuFx.caustics(0.09)
+		add_child(shine)
 	_actors = Node2D.new()
 	_actors.name = "Actors"
 	_actors.y_sort_enabled = true
@@ -385,11 +403,14 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		f.damage = PLAYER_DMG * up * float(b.get("dmg", 1.0))
 		f.speed = float(Kit.param("player.brawl_speed", 330.0)) * float(b.get("speed", 1.0))
 		f.bar_color = Color("#5fd35f")
-		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 136.0)
+		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 168.0)
 		if f.sprite != null:
 			Skins.apply(f.sprite)
 			if str(b.get("tint", "")) != "":
 				f.sprite.self_modulate = Brawlers.tint(b)
+			## Contorno y luz de borde en la GPU (se lee sobre cualquier suelo), si no lleva aspecto.
+			if f.sprite.material == null:
+				f.sprite.material = GpuFx.outline(Color(0.04, 0.06, 0.16), 3.0)
 	else:
 		f.name = "Rival%d" % i
 		f.max_hp = rival_hp * float(b.get("hp", 1.0))
@@ -402,9 +423,11 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		## Si cada personaje tiene su dibujo, aliados y rivales salen con el suyo (como en los juegos de arena).
 		if b.get("own_art", false) or (i >= 20 and str(b.get("sprite", "")) == "heroe"):
 			art = Brawlers.sprite_entry(b)
-		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 128.0)
+		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 160.0)
 		if f.sprite != null and str(b.get("tint", "")) != "":
 			f.sprite.self_modulate = Brawlers.tint(b)
+		if f.sprite != null:
+			f.sprite.material = GpuFx.outline(Color(0.12, 0.02, 0.04) if i < 20 else Color(0.04, 0.06, 0.16), 3.0)
 	## Nombre del personaje encima de la barra (como en los juegos de arena): tu nombre en verde.
 	if online.is_empty() and f.fighter_name == "":
 		f.fighter_name = str(b.get("name", ""))
@@ -926,7 +949,8 @@ func _spawn_shot(f: BrawlFighter, origin: Vector2, dir: Vector2) -> void:
 			"dmg": f.damage * float(atk.get("dmg", 1.0)), "left": range_of(f), "col": col, "w": w})
 	## Fogonazo en la boca del arma (mas grande en el tiro largo y la escopeta).
 	if _fx != null and (f.is_player or player == null or f.position.distance_to(player.position) < 900.0):
-		Juice.burst(_fx, origin + dir * 40.0 + Vector2(0, -26), col.lerp(Color.WHITE, 0.5), 4 if n == 3 else 7, 160.0)
+		if not _fx_sprite("fogonazo", origin + dir * 46.0 + Vector2(0, -26), 64.0 if n == 3 else 96.0, 0.12, dir.angle()):
+			Juice.burst(_fx, origin + dir * 40.0 + Vector2(0, -26), col.lerp(Color.WHITE, 0.5), 4 if n == 3 else 7, 160.0)
 
 
 func fire_super(f: BrawlFighter) -> bool:
@@ -986,7 +1010,8 @@ func _spawn_super(f: BrawlFighter, origin: Vector2) -> void:
 	for k: int in 16:
 		var d: Vector2 = Vector2.RIGHT.rotated(TAU * float(k) / 16.0)
 		bullets.append({"pos": origin + Vector2(0, -26), "vel": d * SHOT_SPEED * 0.85, "owner": f, "dmg": f.damage * 1.5, "left": SUPER_RANGE, "col": col, "w": 13.0})
-	Juice.ring(_fx, origin + Vector2(0, -26), col, SUPER_RANGE * 0.6, 0.35)
+	if not _fx_sprite("onda", origin + Vector2(0, -26), SUPER_RANGE * 1.2, 0.4, 0.0, col.lerp(Color.WHITE, 0.4), 1.0, 0.15):
+		Juice.ring(_fx, origin + Vector2(0, -26), col, SUPER_RANGE * 0.6, 0.35)
 	Juice.shake(0.3)
 	Audio.play("powerup")
 	QA.log_event("super", {"player": f.is_player})
@@ -1058,7 +1083,10 @@ func _hit_fighter(f: BrawlFighter, dmg: float, by: BrawlFighter, col: Color) -> 
 	if f.is_player:
 		Juice.shake(0.12)
 		Juice.vibrate(20)
-	Juice.burst(_fx, f.position + Vector2(0, -30), col, 12, 260.0)
+	if not _fx_sprite("impacto", f.position + Vector2(_rng.randf_range(-14, 14), -50), 92.0, 0.2, _rng.randf() * TAU):
+		Juice.burst(_fx, f.position + Vector2(0, -30), col, 12, 260.0)
+	else:
+		Juice.burst(_fx, f.position + Vector2(0, -30), col, 6, 220.0)
 	if by != null and is_instance_valid(by) and by.is_player:
 		Juice.shake(0.06)
 	Juice.ring(_fx, f.position + Vector2(0, -30), col.lerp(Color.WHITE, 0.4), 46.0, 0.16)
@@ -1091,6 +1119,7 @@ func _hit_box(cell: Vector2i, dmg: float, by: BrawlFighter) -> void:
 		node.queue_free()
 	_box_nodes.erase(cell)
 	var at: Vector2 = center_of(cell)
+	_fx_sprite("humo", at + Vector2(0, -20), 150.0, 0.45)
 	Juice.burst(_fx, at, Color("#c98a3c"), 16, 300.0)
 	cubes.append({"pos": at, "t": 0.0})
 	Audio.play("stomp")
@@ -1464,9 +1493,35 @@ func _dash(f: BrawlFighter, col: Color) -> void:
 
 
 ## Explosion de la bomba: dana a los rivales y rompe cajas alrededor.
+## Efecto dibujado por la GPU (assets/ui/efectos): aparece, crece y se desvanece. false si el juego no
+## lo tiene (entonces se usa el de siempre).
+func _fx_sprite(name: String, at: Vector2, size: float, secs: float, rot: float = 0.0, tint: Color = Color.WHITE,
+		grow: float = 1.5, start: float = 0.55) -> bool:
+	var tex: Texture2D = UI.fx_art(name)
+	if tex == null or _fx == null:
+		return false
+	var s: Sprite2D = Sprite2D.new()
+	s.texture = tex
+	s.position = at
+	s.rotation = rot
+	s.modulate = tint
+	s.z_index = 5
+	var k: float = size / float(maxi(tex.get_width(), 1))
+	s.scale = Vector2(k, k) * start
+	_fx.add_child(s)
+	var tw: Tween = s.create_tween().set_parallel(true)
+	tw.tween_property(s, "scale", Vector2(k, k) * grow, secs).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tw.tween_property(s, "modulate:a", 0.0, secs).set_delay(secs * 0.35)
+	tw.chain().tween_callback(s.queue_free)
+	return true
+
+
 func _explode(at: Vector2, dmg: float, by: BrawlFighter) -> void:
 	var owner_ok: bool = by != null and is_instance_valid(by)
-	Juice.ring(_fx, at + Vector2(0, -26), Color("#ff7a2f"), 170.0, 0.35)
+	if _fx_sprite("explosion", at + Vector2(0, -40), 260.0, 0.45):
+		_fx_sprite("humo", at + Vector2(0, -60), 220.0, 0.8)
+	else:
+		Juice.ring(_fx, at + Vector2(0, -26), Color("#ff7a2f"), 170.0, 0.35)
 	Juice.burst(_fx, at + Vector2(0, -26), Color("#ffb347"), 22, 360.0)
 	Juice.shake(0.35)
 	Audio.play("stomp")
@@ -1667,7 +1722,10 @@ func _turret_think(f: BrawlFighter, delta: float) -> void:
 
 func _turret_down(f: BrawlFighter) -> void:
 	Juice.burst(_fx, f.position + Vector2(0, -40), Color("#ffb347"), 40, 460.0)
-	Juice.ring(_fx, f.position + Vector2(0, -40), Color("#ff7a2f"), 220.0, 0.45)
+	if _fx_sprite("explosion", f.position + Vector2(0, -60), 380.0, 0.6):
+		_fx_sprite("humo", f.position + Vector2(0, -90), 320.0, 1.0)
+	else:
+		Juice.ring(_fx, f.position + Vector2(0, -40), Color("#ff7a2f"), 220.0, 0.45)
 	Juice.shake(0.5)
 	Audio.play("stomp")
 	QA.log_event("turret_down", {"team": f.team})
@@ -2339,8 +2397,9 @@ func _floor_colors() -> Array[Color]:
 func _draw_floor() -> void:
 	var cols: Array[Color] = _floor_colors()
 	var w: Vector2 = Vector2(_size) * TILE
-	## Borde de la arena: agua oscura alrededor.
-	_floor.draw_rect(Rect2(Vector2(-TILE * 6.0, -TILE * 6.0), w + Vector2(TILE * 12.0, TILE * 12.0)), Kit.color("sky", Color("#1b2a41")).darkened(0.25))
+	## Borde de la arena: agua oscura alrededor (en el mar la pinta la GPU con olas).
+	if not _sea:
+		_floor.draw_rect(Rect2(Vector2(-TILE * 6.0, -TILE * 6.0), w + Vector2(TILE * 12.0, TILE * 12.0)), Kit.color("sky", Color("#1b2a41")).darkened(0.25))
 	_floor.draw_rect(Rect2(Vector2(-10, -10), w + Vector2(20, 20)), cols[1].darkened(0.4))
 	for y: int in _size.y:
 		for x: int in _size.x:
@@ -2398,6 +2457,18 @@ func _draw_floor() -> void:
 
 
 func _draw_wall(n: Node2D, cell: Vector2i) -> void:
+	## Roca dibujada por la GPU con el material del escenario (si el juego la tiene).
+	var rock: Texture2D = UI.fx_art("roca")
+	if rock != null:
+		n.draw_set_transform(Vector2(TILE * 0.5, 8.0), 0.0, Vector2(1.0, 0.35))
+		n.draw_circle(Vector2.ZERO, TILE * 0.55, Color(0, 0, 0, 0.22))
+		n.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		var flip: bool = (cell.x * 7 + cell.y * 3) % 2 == 0
+		var sz: float = TILE * 1.32
+		n.draw_set_transform(Vector2(TILE * 0.5, -TILE * 0.5 - WALL_H * 0.5), 0.0, Vector2(-1.0 if flip else 1.0, 1.0))
+		n.draw_texture_rect(rock, Rect2(Vector2(-sz * 0.5, -sz * 0.55), Vector2(sz, sz)), false)
+		n.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		return
 	var top_col: Color = _wall_color()
 	## Muros con forma de roca (critica v9: «bloques de hormigon que no pegan con la playa»): esquinas
 	## redondeadas donde el muro acaba, cara delantera mas oscura y una veta de luz. Los muros seguidos
@@ -2448,6 +2519,13 @@ func _wall_color() -> Color:
 func _draw_box(n: Node2D, cell: Vector2i) -> void:
 	if not boxes.has(cell):
 		return
+	## Caja dibujada por la GPU (si el juego la tiene), con su sombra.
+	var ctex: Texture2D = UI.fx_art("caja")
+	if ctex != null:
+		n.draw_rect(Rect2(Vector2(10.0, -8.0), Vector2(TILE - 20.0, 14.0)), Color(0, 0, 0, 0.22))
+		var sz: float = TILE * 1.08
+		n.draw_texture_rect(ctex, Rect2(Vector2(TILE * 0.5 - sz * 0.5, -sz - WALL_H * 0.25), Vector2(sz, sz)), false)
+		return
 	var wood: Color = Color("#b8793a")
 	var m: float = 10.0
 	var body: Rect2 = Rect2(Vector2(m, -TILE - WALL_H * 0.6 + m), Vector2(TILE - 2.0 * m, TILE - 2.0 * m))
@@ -2473,6 +2551,18 @@ func _draw_box(n: Node2D, cell: Vector2i) -> void:
 func _draw_bushes() -> void:
 	var leaf: Color = Kit.color("solid", Color("#3e5c84")).lerp(Color("#3fae49"), 0.7)
 	var t: float = time_in_level
+	## Arbusto dibujado por la GPU: se mece un poco con el viento (escala) y cada uno girado distinto.
+	var bt: Texture2D = UI.fx_art("arbusto")
+	if bt != null:
+		for cell: Vector2i in _bush.keys():
+			var c: Vector2 = Vector2(cell) * TILE + Vector2(TILE * 0.5, TILE * 0.45)
+			var sv: int = cell.x * 31 + cell.y * 17
+			var sway: float = 1.0 + sin(t * 1.6 + float(sv)) * 0.03
+			var sz: float = TILE * 1.45
+			_bushes.draw_set_transform(c, sin(t * 1.2 + float(sv)) * 0.03, Vector2((-1.0 if sv % 2 == 0 else 1.0) * sway, 1.0 / sway))
+			_bushes.draw_texture_rect(bt, Rect2(Vector2(-sz * 0.5, -sz * 0.55), Vector2(sz, sz)), false)
+		_bushes.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		return
 	for cell: Vector2i in _bush.keys():
 		var o: Vector2 = Vector2(cell) * TILE
 		var seed_v: int = cell.x * 31 + cell.y * 17
@@ -2488,8 +2578,16 @@ func _draw_bushes() -> void:
 
 func _draw_fx() -> void:
 	## Cubos de poder sueltos (flotan y brillan).
+	var ct: Texture2D = UI.fx_art("cubo")
 	for c: Dictionary in cubes:
 		var p: Vector2 = (c["pos"] as Vector2) + Vector2(0, -24.0 + sin(float(c["t"]) * 4.0) * 6.0)
+		if ct != null:
+			_fx.draw_set_transform(c["pos"] as Vector2 + Vector2(0, 6), 0.0, Vector2(1.0, 0.4))
+			_fx.draw_circle(Vector2.ZERO, 20.0, Color(0, 0, 0, 0.25))
+			_fx.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			_fx.draw_circle(p, 34.0, Color(0.75, 0.4, 1.0, 0.18 + 0.08 * sin(float(c["t"]) * 6.0)))
+			_fx.draw_texture_rect(ct, Rect2(p - Vector2(30, 34), Vector2(60, 60)), false)
+			continue
 		_fx.draw_set_transform(c["pos"] as Vector2 + Vector2(0, 6), 0.0, Vector2(1.0, 0.4))
 		_fx.draw_circle(Vector2.ZERO, 20.0, Color(0, 0, 0, 0.25))
 		_fx.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
@@ -2521,6 +2619,15 @@ func _draw_fx() -> void:
 			_fx.draw_circle(bp + Vector2(-6, -6), 6.0, Color(1, 1, 1, 0.35))
 			_fx.draw_line(bp + Vector2(8, -14), bp + Vector2(16, -24), Color("#c9a26b"), 4.0)
 			_fx.draw_circle(bp + Vector2(16, -26), 6.0 + sin(time_in_level * 30.0) * 2.0, Color("#ffd23f"))
+			continue
+		## Proyectil dibujado por la GPU (arte del juego) con su estela; si no hay, el de siempre.
+		var ptex: Texture2D = UI.fx_art("proyectil_largo" if w >= 16.0 else ("perdigon" if w <= 9.0 else "proyectil"))
+		if ptex != null:
+			_fx.draw_line(p - v * (90.0 if w >= 16.0 else 40.0), p, Color(col, 0.35), w * 1.1, true)
+			var sz: float = w * (5.0 if w >= 16.0 else 3.6)
+			_fx.draw_set_transform(p, v.angle(), Vector2.ONE)
+			_fx.draw_texture_rect(ptex, Rect2(Vector2(-sz * 0.5, -sz * 0.5), Vector2(sz, sz)), false, col.lerp(Color.WHITE, 0.55))
+			_fx.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 			continue
 		## Halo de luz suave alrededor de cada bala.
 		_fx.draw_circle(p, w * 1.9, Color(col, 0.16))

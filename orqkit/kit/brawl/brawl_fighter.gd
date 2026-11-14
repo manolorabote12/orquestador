@@ -154,7 +154,8 @@ func draw_overlay(n: CanvasItem) -> void:
 		return
 	var o: Vector2 = position
 	var w: float = 110.0
-	var top: float = -RADIUS * 3.2
+	## Encima de la cabeza segun lo grande que sea el dibujo (no a una altura fija).
+	var top: float = -RADIUS * 3.2 if sprite == null else minf(-RADIUS * 3.2, _sprite_y * 1.75)
 	## Nombre (en la arena en directo) encima de la barra.
 	if fighter_name != "" and UI.font != null:
 		var nw: float = UI.font.get_string_size(fighter_name, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x

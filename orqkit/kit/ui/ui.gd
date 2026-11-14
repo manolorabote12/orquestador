@@ -61,6 +61,9 @@ func rebuild(force_profile: String) -> void:
 	if skin is Dictionary and not (skin as Dictionary).is_empty() and force_profile == "":
 		skin_used = UiTheme.apply_skin(theme, skin, colors, UiTheme.params(profile))
 	load_icons(cfg.get("iconos", {}) if force_profile == "" else {})
+	fx_paths = cfg.get("efectos", {}) if force_profile == "" and cfg.get("efectos", {}) is Dictionary else {}
+	event_paths = cfg.get("eventos", {}) if force_profile == "" and cfg.get("eventos", {}) is Dictionary else {}
+	_fx_cache.clear()
 
 
 ## Carga los iconos del juego (solo los que existen y se pueden leer; los demas, vectoriales).
@@ -68,10 +71,31 @@ func load_icons(paths: Variant) -> void:
 	icons = {}
 	if not paths is Dictionary:
 		return
-	for k: String in ["heart", "star", "trophy"]:
+	## Los de mando (pausa, atras, jugar, cerrar, ajustes) siguen vectoriales: se entienden a la primera.
+	for k: String in ["heart", "star", "trophy", "skull", "cube", "gem", "sword", "chest", "ball", "shield", "bolt"]:
 		var tex: Texture2D = Kit.load_texture(str((paths as Dictionary).get(k, "")))
 		if tex != null:
 			icons[k] = tex
+
+
+## Arte de GPU de efectos (proyectil, impacto, explosion, fogonazo, humo, onda) y de las tarjetas de
+## eventos de la arena (assets/ui/efectos y eventos). null si el juego no lo tiene: se dibuja como siempre.
+var fx_paths: Dictionary = {}
+var event_paths: Dictionary = {}
+var _fx_cache: Dictionary = {}
+
+
+func fx_art(name: String) -> Texture2D:
+	if not _fx_cache.has(name):
+		_fx_cache[name] = Kit.load_texture(str(fx_paths.get(name, ""))) if fx_paths.has(name) else null
+	return _fx_cache[name]
+
+
+func event_art(mode: String) -> Texture2D:
+	var k: String = "ev:" + mode
+	if not _fx_cache.has(k):
+		_fx_cache[k] = Kit.load_texture(str(event_paths.get(mode, ""))) if event_paths.has(mode) else null
+	return _fx_cache[k]
 
 
 ## Textura del icono (el corazon vacio es el mismo corazon apagado) o null si no hay arte.

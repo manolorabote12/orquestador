@@ -283,6 +283,10 @@ def actualizar(args: argparse.Namespace) -> dict:
 	biblia = director.a_biblia(diseno)
 	bib.validar(biblia)
 	dibujar, sobran = sprites_cambiados(vieja, biblia)
+	## Arte de GPU de lo que antes era codigo (iconos, efectos, eventos): si el juego aun no lo tiene.
+	man = proyecto / "assets" / "manifest.json"
+	if man.exists() and "efectos" not in (_leer(man).get("ui") or {}):
+		dibujar.append("extras")
 	_escribir(ruta_biblia, biblia)
 	cadena.ajustar_proyecto(proyecto, diseno["titulo"], slug, version_nueva)
 	cadena.escribir_game(proyecto, diseno, mapas)

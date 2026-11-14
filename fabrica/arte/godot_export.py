@@ -31,7 +31,7 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 		for clave in ("sprites", "tiles", "sfx", "musica", "voces"):
 			if clave in previo:
 				manifest[clave] = previo[clave]
-		for k in ("fondo", "fondo_nivel", "skin", "iconos"):
+		for k in ("fondo", "fondo_nivel", "skin", "iconos", "efectos", "eventos"):
 			if previo.get("ui", {}).get(k):
 				manifest["ui"][k] = previo["ui"][k]
 	for sid in quitar or []:
@@ -107,6 +107,19 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 		for k, ruta in sorted(ico.items()):
 			shutil.copyfile(ruta, base / "ui" / "iconos" / f"{k}.png")
 			manifest["ui"]["iconos"][k] = f"res://assets/ui/iconos/{k}.png"
+	## Arte de GPU para lo que era codigo (arte/extras.py): iconos de mas, efectos y eventos.
+	ext = (fondos or {}).get("extras") or {}
+	for k, ruta in sorted((ext.get("iconos") or {}).items()):
+		(base / "ui" / "iconos").mkdir(parents=True, exist_ok=True)
+		shutil.copyfile(ruta, base / "ui" / "iconos" / f"{k}.png")
+		manifest["ui"].setdefault("iconos", {})[k] = f"res://assets/ui/iconos/{k}.png"
+	for grupo, ext_f in (("efectos", "png"), ("eventos", "jpg")):
+		if ext.get(grupo):
+			(base / "ui" / grupo).mkdir(parents=True, exist_ok=True)
+			manifest["ui"].setdefault(grupo, {})
+			for k, ruta in sorted(ext[grupo].items()):
+				shutil.copyfile(ruta, base / "ui" / grupo / f"{k}.{ext_f}")
+				manifest["ui"][grupo][k] = f"res://assets/ui/{grupo}/{k}.{ext_f}"
 	ruta_m = base / "manifest.json"
 	ruta_m.write_text(json.dumps(manifest, indent=1, ensure_ascii=False), encoding="utf-8")
 	return ruta_m
