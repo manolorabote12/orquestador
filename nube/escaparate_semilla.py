@@ -178,6 +178,20 @@ def diseno_con_arte(js: list[dict], idea: str) -> dict | None:
 	return None
 
 
+def mejor_proyecto(js: list[dict], idea: str) -> str | None:
+	"""Pura: el proyecto terminado de esta idea con mejor nota visual (el mas nuevo si empatan). Para
+	rehacer un juego con el kit nuevo sin volver a dibujar el arte (la cache lo recupera)."""
+	notas = notas_visuales(js)
+	mejor, clave = None, (-1, "")
+	for j in js:
+		if j["status"] != "done" or not j.get("project_id") or str((j.get("detail") or {}).get("idea") or "") != idea:
+			continue
+		k = (notas.get(j["project_id"], 0), str(j.get("created_at") or ""))
+		if k > clave:
+			mejor, clave = j["project_id"], k
+	return mejor
+
+
 def despertar() -> bool:
 	"""Despierta la fabrica de RunPod para que coja la cola ya. Sin esto, un juego encargado por el Reloj
 	esperaba al siguiente Reloj (que GitHub retrasa a veces mas de media hora: 12 nov)."""
@@ -267,8 +281,17 @@ def encargar_idea(idea: str) -> int:
 		print(f"::error::Saldo de RunPod {saldo if saldo is not None else '?'} $ (reserva {reserva:.2f} $): no se encarga")
 		return 1
 	u = crear_cuenta()
-	encolar(u, idea)
-	print(f"::notice::Juego encargado: {idea}")
+	## «[rehacer] idea»: mismo diseno (y arte) que la mejor version ya hecha de esa idea, con el kit de hoy.
+	previo = None
+	if idea.startswith("[rehacer]"):
+		idea = idea[len("[rehacer]"):].strip()
+		pid = mejor_proyecto(trabajos(u), idea)
+		filas = rest("GET", f"projects?select=spec&id=eq.{pid}") if pid else []
+		previo = filas[0]["spec"] if filas and isinstance(filas[0].get("spec"), dict) else None
+		if previo is None:
+			print("::warning::No hay una version terminada de esa idea con diseno: se hace de cero")
+	encolar(u, idea, previo)
+	print(f"::notice::Juego encargado{' (rehecho con el diseno y el arte de la mejor version)' if previo else ''}: {idea}")
 	return 0
 
 
