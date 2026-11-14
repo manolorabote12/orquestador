@@ -37,6 +37,16 @@ func _ready() -> void:
 	body.add_child(stars)
 	stars.animate_fill(int(result.get("stars", 1)), 0.45)
 	stars.visible = arena.is_empty()
+	## Texto del modo (torre o arena del RPG): premio, piso, puntos de liga.
+	if str(result.get("note", "")) != "":
+		var nt: Label = Label.new()
+		nt.name = "ModeNote"
+		nt.text = str(result["note"])
+		nt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		nt.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		nt.add_theme_color_override("font_color", UI.colors["acento"])
+		nt.add_theme_font_size_override("font_size", 26)
+		body.add_child(nt)
 	Audio.play_voice("victoria")
 
 	var coins_row: HBoxContainer = HBoxContainer.new()

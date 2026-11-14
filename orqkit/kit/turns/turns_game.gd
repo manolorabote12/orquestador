@@ -431,7 +431,12 @@ func _finish() -> void:
 		"kills": coins, "coins": coins, "stars": stars})
 	Audio.play("win")
 	Audio.play_track("victoria", false)
-	result_panel = ResultPanel.open(self, {"stars": stars, "coins": coins, "coins_total": coins_total, "score": score, "record": record})
+	var data: Dictionary = {"stars": stars, "coins": coins, "coins_total": coins_total, "score": score, "record": record}
+	## Torre y arena del RPG: su progreso, su premio y su texto en el cartel.
+	var note: String = RpgModes.on_end(true)
+	if note != "":
+		data["note"] = note
+	result_panel = ResultPanel.open(self, data)
 	await Ads.show_interstitial("level_end")
 
 
@@ -442,11 +447,12 @@ func _lose() -> void:
 	if _hero != null:
 		_hero.create_tween().tween_property(_hero, "modulate:a", 0.3, _t(0.4))
 	QA.log_event("death", {"cause": "turns", "wave": int(state["wave"]), "deaths": deaths})
+	var note: String = RpgModes.on_end(false)
 	Audio.play("hurt")
 	if auto_retry:
 		retry()
 		return
-	var p: FailPanel = FailPanel.open(self, Kit.text("turns_lose", "\u00a1Derrota!"),
+	var p: FailPanel = FailPanel.open(self, Kit.text("turns_lose", "\u00a1Derrota!"), note if note != "" else
 		Kit.text("turns_fail_hint", "Caiste en la oleada {n}. Usa las pociones y defi\u00e9ndete del jefe. \u00a1Otra vez!").format({"n": int(state["wave"]) + 1}))
 	p.closed.connect(retry)
 
@@ -752,7 +758,10 @@ func _party_actor(u: Dictionary) -> Node2D:
 	## Mas grandes que antes (critica 14 nov: heroes y enemigos diminutos y dispersos).
 	var h: float = (270.0 if bool(u["boss"]) else 160.0) if enemy else 170.0
 	var art: Dictionary = {}
-	if enemy:
+	if enemy and str(u.get("ref", "")) != "" and not Kit.sprite_entry("heroe_" + str(u["ref"])).is_empty():
+		## Arena del RPG: el rival pelea con heroes de la coleccion (su dibujo, mirando hacia ti).
+		art = Kit.sprite_entry("heroe_" + str(u["ref"]))
+	elif enemy:
 		art = _arts.get(str(u["id"]), _arts.get("W", {}))
 	elif not Kit.sprite_entry("heroe_" + str(u["id"])).is_empty():
 		## Cada heroe con su dibujo de la fabrica (heroe_<id>).

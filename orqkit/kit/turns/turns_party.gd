@@ -106,7 +106,7 @@ static func _unit(d: Dictionary, id: String, side: String, m: float) -> Dictiona
 		"def": float(d.get("def", 10.0)), "spd": float(d.get("spd", 100.0)), "element": str(d.get("element", "")),
 		"thorns": float(d.get("thorns", 0.0)), "boss": bool(d.get("boss", false)), "look": str(d.get("look", "")),
 		"skills": (d.get("skills", []) as Array).duplicate(), "cd": cds, "status": {}, "shield": 0.0, "meter": 0.0,
-		"alive": true, "warn": ""}
+		"alive": true, "warn": "", "ref": str(d.get("ref", ""))}
 
 
 ## Saca la siguiente oleada. false si no quedan (has ganado).

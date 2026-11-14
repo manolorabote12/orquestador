@@ -29,6 +29,7 @@ static var _sample_started: bool = false
 
 func _ready() -> void:
 	Versus.stop()
+	RpgModes.stop()
 	Marathon.stop()
 	TimeAttack.stop()
 	Expert.stop()
@@ -279,6 +280,8 @@ func _ready() -> void:
 		if BrawlEvents.available():
 			var ep: EventsPanel = EventsPanel.open(self)
 			ep.changed.connect(_refresh_meta)
+		elif Genres.current() == "turns" and RpgModes.enabled():
+			RpgHubPanel.open(self)
 		else:
 			UI.goto(UI.SCREEN_LEVELS))
 	col.add_child(_play)

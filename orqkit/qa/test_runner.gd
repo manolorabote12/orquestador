@@ -59,6 +59,7 @@ func _ready() -> void:
 	await _test_turns()
 	await _test_turns_party()
 	await _test_heroes()
+	await _test_rpg_modes()
 	await _test_jumper()
 	await _test_brawl()
 	await _test_brawl_modes()
@@ -6592,6 +6593,82 @@ func _test_turns_party() -> void:
 
 
 ## Coleccion de heroes del RPG (kit/turns/heroes.gd): invocar, estrellas, nivel, equipo y botin.
+func _test_rpg_modes() -> void:
+	print("- RPG: torre, arena y ligas")
+	var keep: Dictionary = Kit.config.duplicate(true)
+	var m: Dictionary = Save.meta()
+	for k: String in ["heroes", "team", "pity", "idle_t", "rpg_modes"]:
+		m.erase(k)
+	var w0: int = Save.wallet()
+	Kit.config["genre"] = "turns"
+	Kit.config["rpg"] = {"preset": "equipo"}
+	Kit.config["levels"] = [{"map": ["WW", "WF"], "mult": 1.0, "potions": 2, "hero_level": 1}, {"map": ["WWF"], "mult": 1.1, "potions": 2, "hero_level": 2}]
+	Kit.level_index = 0
+	check("rpg modos: activos con la coleccion", RpgModes.enabled() and RpgModes.floor_n() == 1 and RpgModes.rating() == RpgModes.START_RATING)
+	var t5: Dictionary = RpgModes.tower_level(5)
+	check("rpg modos: torre mas dura cada piso y cofre cada 5", float(RpgModes.tower_level(2)["mult"]) > float(RpgModes.tower_level(1)["mult"])
+		and RpgModes.tower_reward(5) == RpgModes.tower_reward(4) * 5 + (10 * 5 * 5 - 10 * 4 * 5) and int(t5["potions"]) <= 1)
+	## Ganar un piso de la torre: sube de piso y paga.
+	RpgModes.active = "tower"
+	Kit.extra_level = RpgModes.tower_level(1)
+	Kit.extra_index = RpgModes.TOWER_INDEX
+	Kit.level_index = Kit.extra_index
+	var w1: int = Save.wallet()
+	var note: String = RpgModes.on_end(true)
+	check("rpg modos: piso superado sube de piso y da premio", RpgModes.floor_n() == 2 and Save.wallet() == w1 + RpgModes.tower_reward(1) and note != "")
+	check("rpg modos: perder un piso no baja", RpgModes.on_end(false) != "" and RpgModes.floor_n() == 2)
+	## Arena: rival con cuatro heroes de la coleccion, puntos de liga y entradas.
+	var r: Dictionary = RpgModes.make_rival(7)
+	check("rpg modos: rival con 4 heroes y fuerza parecida a la tuya", (r["heroes"] as Array).size() == 4 and float(r["mult"]) > 0.7 and float(r["mult"]) < 1.6, str(r))
+	var al: Dictionary = RpgModes.arena_level(r)
+	check("rpg modos: la arena es una oleada con los heroes del rival", (al["map"] as Array).size() == 1 and str(al["map"][0]).length() == 4
+		and str(al["rpg"]["enemies"]["1"]["ref"]) == str(r["heroes"][0]))
+	var st: Dictionary = TurnsParty.new_state(Heroes.apply_to_level(al))
+	TurnsParty.next_wave(st)
+	check("rpg modos: en la partida, los rivales son heroes (con su dibujo)", (st["enemies"] as Array).size() == 4 and str(st["enemies"][0]["ref"]) != "")
+	RpgModes.active = "arena"
+	RpgModes.rival = r
+	Kit.extra_index = RpgModes.ARENA_INDEX
+	Kit.extra_level = al
+	Kit.level_index = Kit.extra_index
+	var t0: int = RpgModes.tickets()
+	var r0: int = RpgModes.rating()
+	RpgModes.on_end(true)
+	check("rpg modos: ganar en la arena da puntos y gasta una entrada", RpgModes.rating() > r0 and RpgModes.tickets() == t0 - 1)
+	var r1: int = RpgModes.rating()
+	RpgModes.on_end(false)
+	check("rpg modos: perder quita menos de lo que da ganar", RpgModes.rating() < r1 and r1 - RpgModes.rating() < RpgModes.rating() - r0 + (r1 - RpgModes.rating()) + 30)
+	check("rpg modos: ligas por puntos", RpgModes.league_name(0) == "Bronce" and RpgModes.league_name(1300) == "Oro" and RpgModes.league_name(2500) == "Leyenda")
+	(m["rpg_modes"] as Dictionary)["tickets"] = 0
+	check("rpg modos: sin entradas no hay arena", not RpgModes.play("arena"))
+	RpgModes.stop()
+	check("rpg modos: al salir vuelve la campana", not Kit.is_extra() and RpgModes.active == "")
+	## Panel de modos.
+	var host: Control = Control.new()
+	add_child(host)
+	var hub: RpgHubPanel = RpgHubPanel.open(host)
+	await frames(2)
+	check("rpg modos: panel con campana, torre y arena", hub.find_child("Mode_campaign", true, false) != null and hub.find_child("Mode_tower", true, false) != null
+		and (hub.find_child("Mode_arena", true, false) as Button).disabled)
+	host.queue_free()
+	## Una partida de la torre de verdad: el rival lo pinta la escena y el bot la gana.
+	(m["rpg_modes"] as Dictionary)["floor"] = 1
+	RpgModes.active = "tower"
+	Kit.extra_level = RpgModes.tower_level(1)
+	Kit.extra_index = RpgModes.TOWER_INDEX
+	Kit.level_index = Kit.extra_index
+	var g: Node = await start_game(Kit.config, Kit.extra_index)
+	var done: bool = await QaBot.run(get_tree(), g, 60 * 90)
+	check("rpg modos: el bot sube un piso de la torre", done and RpgModes.floor_n() == 2, str(g.call("bot_state")))
+	await stop_game(g)
+	RpgModes.stop()
+	for k: String in ["heroes", "team", "pity", "idle_t", "rpg_modes"]:
+		m.erase(k)
+	Save.add_wallet(w0 - Save.wallet())
+	Kit.config = keep
+	Kit.level_index = 0
+
+
 func _test_heroes() -> void:
 	print("- RPG: coleccion de heroes")
 	var keep: Dictionary = Kit.config.duplicate(true)
