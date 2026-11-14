@@ -12,6 +12,7 @@ APK con codigo de version nuevo (se instala encima del anterior) -> capturas -> 
 import argparse
 import json
 import os
+import shutil
 import sys
 import time
 from pathlib import Path
@@ -224,6 +225,82 @@ def programar(args: argparse.Namespace) -> dict:
 	return {"ok": True, "version": version, "titulo": diseno["titulo"], "proyecto": str(proyecto), "apk": apk, "web": web,
 		"capturas": capturas, "mod": mod, "ficha": cadena.hacer_ficha(args, proyecto, capturas), "clip": cadena.hacer_clip(args, proyecto),
 		"coste_usd": {"total": usd}, "total_s": round(time.time() - t0, 1)}
+
+
+def poner_kit_nuevo(proyecto: Path) -> None:
+	"""El codigo del juego al dia (kit, qa, escenas y autoloads) sin tocar su arte, su game.json, su
+	nombre ni su paquete de Android."""
+	for sub in ("kit", "qa", "scenes"):
+		if (cadena.KIT / sub).exists():
+			shutil.rmtree(proyecto / sub, ignore_errors=True)
+			shutil.copytree(cadena.KIT / sub, proyecto / sub, ignore=shutil.ignore_patterns(".godot"))
+	## Autoloads del kit nuevo (si se anadio alguno), el resto de project.godot se queda.
+	import re
+	nuevo = (cadena.KIT / "project.godot").read_text(encoding="utf-8")
+	pg = proyecto / "project.godot"
+	viejo = pg.read_text(encoding="utf-8")
+	sec = re.search(r"^\[autoload\]\n(?:(?!^\[).*\n?)*", nuevo, flags=re.M)
+	if sec and re.search(r"^\[autoload\]", viejo, flags=re.M):
+		viejo = re.sub(r"^\[autoload\]\n(?:(?!^\[).*\n?)*", sec.group(0).rstrip("\n") + "\n\n", viejo, count=1, flags=re.M)
+		pg.write_text(viejo, encoding="utf-8")
+
+
+def sprites_cambiados(vieja: dict, nueva: dict) -> tuple[list[str], list[str]]:
+	"""(ids que hay que dibujar, ids que sobran). Un sprite se conserva si tiene la misma descripcion,
+	tamano y orientacion y ya tiene todas las animaciones que pide el kit (aunque con menos frames por
+	el tope de imagenes de entonces): en ese caso su entrada vieja vuelve a la biblia nueva."""
+	antes = {s["id"]: s for s in vieja.get("personajes", []) + vieja.get("objetos", [])}
+	dibujar = []
+	for lista in ("personajes", "objetos"):
+		for k, s in enumerate(nueva.get(lista, [])):
+			v = antes.get(s["id"])
+			igual = v is not None and all(v.get(c) == s.get(c) for c in ("descripcion", "tamano", "mira_a", "rol")) \
+				and set(s.get("animaciones", {})) <= set(v.get("animaciones", {}))
+			if igual:
+				nueva[lista][k] = v
+			else:
+				dibujar.append(s["id"])
+	ahora = {s["id"] for s in nueva.get("personajes", []) + nueva.get("objetos", [])}
+	return sorted(dibujar), sorted(i for i in antes if i not in ahora)
+
+
+def actualizar(args: argparse.Namespace) -> dict:
+	"""Arreglar sin rehacer (14 nov): el mismo juego (diseno, niveles y arte) con el kit y la fabrica de
+	hoy. Solo se dibuja lo nuevo o lo que cambio (p. ej. los heroes del RPG o la pose de ataque), sin
+	volver a pensar el diseno: cuesta centimos en vez de un juego entero."""
+	t0 = time.time()
+	proyecto = Path(args.proyecto).resolve()
+	mem = versiones.memoria(proyecto)
+	ruta_diseno = proyecto / "fabrica" / "diseno.json"
+	ruta_biblia = proyecto / "fabrica" / "biblia.json"
+	diseno = _leer(ruta_diseno)
+	mapas = director.mapas_de(_leer(proyecto / "game.json"))
+	slug = args.slug or _slug_actual(proyecto)
+	version_nueva = int(mem["version"]) + 1
+	evento("actualizar", "inicio", "Poniendo tu juego al día (código nuevo, mismo arte)...")
+	poner_kit_nuevo(proyecto)
+	vieja = _leer(ruta_biblia) if ruta_biblia.exists() else {}
+	biblia = director.a_biblia(diseno)
+	bib.validar(biblia)
+	dibujar, sobran = sprites_cambiados(vieja, biblia)
+	_escribir(ruta_biblia, biblia)
+	cadena.ajustar_proyecto(proyecto, diseno["titulo"], slug, version_nueva)
+	cadena.escribir_game(proyecto, diseno, mapas)
+	usd_arte = 0.0
+	if dibujar or sobran:
+		evento("arte", "inicio", "Dibujando solo lo nuevo: " + (", ".join(dibujar) or "limpieza"))
+		inf = _arte_parcial(args, proyecto, ruta_biblia, dibujar, sobran)
+		usd_arte = round(inf["generaciones"] * (0.0 if args.arte_simulado else cadena.USD_POR_IMAGEN), 4)
+		evento("arte", "ok", f"Arte nuevo: {inf['generaciones']} imágenes", imagenes=inf["generaciones"], usd=usd_arte)
+	else:
+		evento("arte", "ok", "El arte ya estaba: no se dibuja nada")
+	_, mapas, apk, capturas, web = _cerrar_version(args, proyecto, slug, diseno, mapas, args.semilla + version_nueva * 31, {}, {})
+	version = versiones.anotar(proyecto, "Actualizar al kit de hoy", "Mismo juego con el código y los arreglos nuevos.", [{"op": "actualizar"}], 0,
+		{"usd": usd_arte})
+	evento("fin", "ok", f"Versión {version} lista", version=version)
+	return {"ok": True, "version": version, "titulo": diseno["titulo"], "slug": slug, "proyecto": str(proyecto), "apk": apk, "web": web,
+		"capturas": capturas, "ficha": cadena.hacer_ficha(args, proyecto, capturas), "clip": cadena.hacer_clip(args, proyecto),
+		"coste_usd": {"total": usd_arte, "arte_estimado": usd_arte}, "dibujados": dibujar, "total_s": round(time.time() - t0, 1)}
 
 
 def _slug_actual(proyecto: Path) -> str:

@@ -331,6 +331,10 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 			adelanto=lambda pck: sb.subir(ruta_adelanto, pck))
 		if trabajo["kind"] == "game_restore":
 			inf = cambio.volver(argparse.Namespace(volver=int(detalle["version"]), **comunes))
+		elif detalle.get("actualizar"):
+			## Arreglar sin rehacer: mismo juego con el kit de hoy; solo se dibuja lo nuevo.
+			inf = cambio.actualizar(argparse.Namespace(**comunes))
+			usd = float(inf.get("coste_usd", {}).get("total", 0.0))
 		elif trabajo["kind"] == "game_mod":
 			inf = cambio.programar(argparse.Namespace(instruccion=detalle.get("instruccion", ""), **comunes))
 			usd = float(inf.get("coste_usd", {}).get("total", 0.0))

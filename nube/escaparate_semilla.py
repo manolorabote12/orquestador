@@ -296,6 +296,28 @@ def encargar_idea(idea: str) -> int:
 	return 0
 
 
+def actualizar(titulo: str) -> int:
+	"""Arreglar sin rehacer: el juego de muestra mas nuevo con ese titulo pasa al kit de hoy (mismo
+	diseno, niveles y arte; solo se dibuja lo nuevo). Centimos en vez de un juego entero."""
+	if rest("POST", "rpc/fabrica_pausada", {}):
+		print("::error::La fabrica esta PARADA: reanudala antes")
+		return 1
+	u = cuenta()
+	t = (titulo or "").strip().lower()
+	if not u or len(t) < 3:
+		print("::error::Escribe parte del titulo del juego")
+		return 1
+	for p in reversed(rest("GET", f"projects?select=id,title,files,created_at&user_id=eq.{u}&order=created_at") or []):
+		if t in str(p.get("title", "")).lower() and (p.get("files") or {}).get("proyecto"):
+			rest("POST", "jobs", [{"user_id": u, "kind": "game_change", "project_id": p["id"], "cost": 0, "est_cost_usd": 0.1, "status": "queued",
+				"detail": {"actualizar": True, "instruccion": "Actualizar al kit de hoy", "semilla": True}}], {"Prefer": "return=minimal"})
+			despertar()
+			print(f"::notice::Actualizando «{p['title']}» al kit de hoy (mismo arte; solo se dibuja lo nuevo)")
+			return 0
+	print(f"::error::No hay ningun juego con «{titulo}» en el titulo")
+	return 1
+
+
 def cancelar() -> int:
 	poner_objetivo(0)
 	u = cuenta()
@@ -553,6 +575,8 @@ def main(args: list[str]) -> int:
 		return cancelar()
 	if accion == "capturas":
 		return capturas()
+	if accion == "actualizar":
+		return actualizar(args[1] if len(args) > 1 else "")
 	if accion == "apk":
 		return apk(args[1] if len(args) > 1 else "")
 	if accion == "rescatar_capturas":
