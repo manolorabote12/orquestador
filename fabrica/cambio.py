@@ -292,6 +292,9 @@ def actualizar(args: argparse.Namespace) -> dict:
 	## Marcos de panel y botones dibujados (menus que no parezcan de codigo), si no los tiene.
 	if man.exists() and not ui_prev.get("skin"):
 		dibujar.append("piel")
+	## Locutor de la arena (Qwen3-TTS), si aun no lo tiene.
+	if man.exists() and biblia["juego"].get("genero") == "arena" and "loc_victoria" not in (_leer(man).get("voces") or {}):
+		dibujar.append("locutor")
 	_escribir(ruta_biblia, biblia)
 	cadena.ajustar_proyecto(proyecto, diseno["titulo"], slug, version_nueva)
 	cadena.escribir_game(proyecto, diseno, mapas)

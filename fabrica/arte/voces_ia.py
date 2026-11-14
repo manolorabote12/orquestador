@@ -117,3 +117,39 @@ def generar_dialogos(biblia: dict, carpeta: Path, cliente, ya: set[str] | None =
 		except Exception as e:  # noqa: BLE001 - sin esa voz la frase se lee igual
 			informe["fallidas"][clave] = str(e)[:160]
 	return salida, informe
+
+
+## Locutor de la arena (15 nov, Qwen3-TTS VoiceDesign): la voz se describe con palabras y dice los momentos
+## grandes de la partida. El kit las pone con Audio.play_voice("loc_...") (sin voz, no pasa nada).
+LOCUTOR_VOZ = ("An energetic, charismatic male arena announcer from Spain, deep powerful voice, very excited and punchy, "
+	"like a sports commentator hyping a big match, clear Castilian Spanish pronunciation")
+LOCUTOR = {
+	"loc_luchar": "¡A luchar!",
+	"loc_victoria": "¡Victoria!",
+	"loc_derrota": "Derrota...",
+	"loc_eliminado": "¡Eliminado!",
+	"loc_doble": "¡Doble eliminación!",
+	"loc_super": "¡Súper listo!",
+	"loc_gol": "¡Gooool!",
+}
+
+
+def generar_locutor(carpeta: Path, cliente, ya: set[str] | None = None) -> tuple[dict[str, Path], dict]:
+	informe: dict = {"motor": "qwen3-tts-voicedesign", "voces": {}, "fallidas": {}}
+	salida: dict[str, Path] = {}
+	for clave, frase in LOCUTOR.items():
+		if ya and clave in ya:
+			continue
+		try:
+			out = cliente.trabajo({"motor": "qwen", "texto": frase, "idioma": "es", "voz": LOCUTOR_VOZ})
+			if out.get("error") or not out.get("audio"):
+				raise VozError(str(out.get("error") or "sin audio"))
+			ruta = procesar(base64.b64decode(out["audio"]), 1.0, False, carpeta / f"{clave}.wav")
+			problemas = revisar(ruta)
+			if problemas:
+				raise VozError(", ".join(problemas))
+			salida[clave] = ruta
+			informe["voces"][clave] = frase
+		except Exception as e:  # noqa: BLE001 - sin esa frase la partida sigue igual
+			informe["fallidas"][clave] = str(e)[:160]
+	return salida, informe

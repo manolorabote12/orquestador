@@ -4,6 +4,7 @@
 	                                            (RunPod no deja encogerlo; se paga por GB al mes)
 	python nube/animaciones.py modelos          baja Wan 2.2 (grupo "video" de modelos.json) al volumen
 	python nube/animaciones.py endpoint         imprime el id del endpoint orq-imagenes
+	python nube/animaciones.py voces            baja Chatterbox y Qwen3-TTS (locutor) al volumen del endpoint de voces
 """
 
 import json
@@ -15,10 +16,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from desplegar import REST, ejecutar, lista, pedir  # noqa: E402
 
 
-def endpoint() -> dict:
-	ep = next((e for e in lista("/endpoints") if str(e.get("name", "")).startswith("orq-imagenes")), None)
+def endpoint(nombre: str = "orq-imagenes") -> dict:
+	ep = next((e for e in lista("/endpoints") if str(e.get("name", "")).startswith(nombre)), None)
 	if ep is None:
-		raise SystemExit("No encuentro el endpoint orq-imagenes")
+		raise SystemExit(f"No encuentro el endpoint {nombre}")
 	return ep
 
 
@@ -44,6 +45,9 @@ def main() -> int:
 		print(json.dumps(r))
 		if r.get("errores"):
 			return 1
+	elif accion == "voces":
+		r = ejecutar(endpoint("orq-voces")["id"], {"tarea": "descargar_modelos"}, 1800)
+		print(json.dumps(r))
 	elif accion == "endpoint":
 		print(endpoint()["id"])
 	else:

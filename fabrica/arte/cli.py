@@ -301,6 +301,22 @@ def fabricar(args: argparse.Namespace) -> dict:
 			informe["voces_historia"] = inf_d
 		except Exception as e:  # noqa: BLE001 - sin voz el juego funciona igual
 			informe["voces_aviso"] = f"Voces con IA no disponibles ({str(e)[:160]})"
+	## Locutor de la arena (Qwen3-TTS): al fabricar un juego de arena o si se pide ("locutor").
+	es_arena = biblia["juego"].get("genero") == "arena"
+	if destino_voz and ((solo is None and es_arena) or (solo is not None and "locutor" in solo)):
+		print("[voces] locutor (Qwen3-TTS)")
+		try:
+			from .runpod import RunPodCliente
+			cli_loc = RunPodCliente(destino_voz, timeout=600, usd_seg=float(os.environ.get("ORQ_VOZ_USD_SEG") or "0.000208"))
+			loc, inf_l = voces_ia.generar_locutor(salida / "voces", cli_loc)
+			voces.update(loc)
+			informe["locutor"] = inf_l
+			if cli_voz is None:
+				cli_voz = cli_loc
+			else:
+				cli_voz.usd = float(getattr(cli_voz, "usd", 0.0)) + float(getattr(cli_loc, "usd", 0.0))
+		except Exception as e:  # noqa: BLE001 - sin locutor la partida va igual
+			informe["locutor_aviso"] = f"Locutor no disponible ({str(e)[:160]})"
 	informe["voces"] = sorted(voces)
 	## 11 - Fondos ilustrados (titulo y ficha de la tienda): solo al fabricar o si se pide.
 	fondos: dict = {}

@@ -7,12 +7,18 @@ y clonado de voz con una muestra corta. Cada audio lleva la marca de agua inaudi
 	entrada: {"texto": "...", "idioma": "es", "emocion": 0.5, "ritmo": 0.5, "voz_ref": "<wav en base64, opcional>"}
 	salida:  {"audio": "<wav base64>", "formato": "wav", "sr": 24000, "segundos": 7.3}  o  {"error": "..."}
 	{"tarea": "descargar_modelos"} deja el modelo en el volumen (/runpod-volume/hf) para arrancar rapido.
+
+Qwen3-TTS VoiceDesign (Apache-2.0, 15 nov): la voz se describe con palabras (locutor de la arena, pirata
+viejo...). Va en su propio Python (/opt/qwen, otra version de PyTorch) como proceso hijo que se queda vivo:
+	entrada: {"motor": "qwen", "texto": "...", "idioma": "es", "voz": "energetic arena announcer..."}
 """
 
 import base64
 import io
+import json
 import os
 import re
+import subprocess
 import tempfile
 import wave
 
@@ -24,6 +30,32 @@ IDIOMAS = {"ar", "da", "de", "el", "en", "es", "fi", "fr", "he", "hi", "it", "ja
 MAX_TEXTO = 1200
 MAX_REF = 6 * 1024 * 1024
 MODELO = None
+QWEN = None
+QWEN_REPO = "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign"
+QWEN_PY = os.environ.get("ORQ_QWEN_PY", "/opt/qwen/bin/python")
+QWEN_IDIOMAS = {"es": "Spanish", "en": "English", "fr": "French", "de": "German", "it": "Italian", "pt": "Portuguese",
+	"ru": "Russian", "ja": "Japanese", "ko": "Korean", "zh": "Chinese"}
+
+
+def qwen(peticion: dict) -> dict:
+	"""Habla con el proceso de Qwen3-TTS (lo arranca la primera vez; el modelo sale del volumen)."""
+	global QWEN
+	if QWEN is None or QWEN.poll() is not None:
+		QWEN = subprocess.Popen([QWEN_PY, "-u", os.path.join(os.path.dirname(os.path.abspath(__file__)), "qwen_servidor.py")],
+			stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
+		for linea in QWEN.stdout:
+			if '"listo"' in linea:
+				break
+		else:
+			QWEN = None
+			return {"error": "Qwen3-TTS no arranco"}
+	QWEN.stdin.write(json.dumps(peticion) + "\n")
+	QWEN.stdin.flush()
+	linea = QWEN.stdout.readline()
+	if not linea:
+		QWEN = None
+		return {"error": "Qwen3-TTS se cerro"}
+	return json.loads(linea)
 
 
 def cargar():
@@ -74,12 +106,19 @@ def handler(trabajo: dict) -> dict:
 	if entrada.get("tarea") == "descargar_modelos":
 		from huggingface_hub import snapshot_download
 		ruta = snapshot_download(repo_id=REPO, repo_type="model", allow_patterns=ARCHIVOS, token=os.getenv("HF_TOKEN"))
-		return {"descargados": ARCHIVOS, "ruta": ruta}
+		qwen_ruta = snapshot_download(repo_id=QWEN_REPO, repo_type="model", token=os.getenv("HF_TOKEN"))
+		return {"descargados": ARCHIVOS + [QWEN_REPO], "ruta": ruta, "qwen": qwen_ruta}
 	texto = str(entrada.get("texto", "")).strip()
 	if not texto:
 		return {"error": "Falta el texto"}
 	if len(texto) > MAX_TEXTO:
 		return {"error": f"Texto demasiado largo (maximo {MAX_TEXTO} caracteres)"}
+	if entrada.get("motor") == "qwen":
+		r = qwen({"texto": texto, "idioma": QWEN_IDIOMAS.get(str(entrada.get("idioma", "es")).lower(), "Spanish"),
+			"voz": str(entrada.get("voz") or "")})
+		if r.get("audio"):
+			r["formato"] = "wav"
+		return r
 	idioma = str(entrada.get("idioma", "es")).lower()
 	if idioma not in IDIOMAS:
 		return {"error": f"Idioma no disponible: {idioma}"}

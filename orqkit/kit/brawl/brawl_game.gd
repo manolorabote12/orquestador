@@ -75,6 +75,7 @@ var boxes: Dictionary = {}
 var cubes: Array[Dictionary] = []
 ## Remolinos de agua del super "remolino" (atraen y danan a los rivales unos segundos).
 var zones: Array[Dictionary] = []
+var _last_kill: float = -99.0
 ## {"pos", "vel", "owner", "dmg", "left", "col"}
 var bullets: Array[Dictionary] = []
 var gas_center: Vector2 = Vector2.ZERO
@@ -280,6 +281,7 @@ func _reset() -> void:
 	_box_nodes.clear()
 	cubes.clear()
 	zones.clear()
+	_last_kill = -99.0
 	bullets.clear()
 	_walls.clear()
 	_bush.clear()
@@ -1124,8 +1126,11 @@ func _hit_fighter(f: BrawlFighter, dmg: float, by: BrawlFighter, col: Color) -> 
 	if mode == "ball" and ball.get("holder") == f and dmg > f.max_hp * 0.12:
 		_drop_ball(f)
 	if by != null and is_instance_valid(by) and by.alive:
+		var was: float = by.super_charge
 		by.super_charge = minf(1.0, by.super_charge + 0.07)
 		by.calm = 0.0
+		if by.is_player and was < 1.0 and by.super_charge >= 1.0:
+			_voice("loc_super")
 	if f.sprite != null:
 		Juice.flash(f.sprite, Color(3, 3, 3, 1), 0.07)
 	if f.is_player or (by != null and is_instance_valid(by) and by.is_player):
@@ -1183,6 +1188,10 @@ func _hit_box(cell: Vector2i, dmg: float, by: BrawlFighter) -> void:
 func _on_death(f: BrawlFighter, by: BrawlFighter) -> void:
 	f.alive = false
 	f.visible = false
+	## Locutor: eliminado / doble eliminacion (dos en menos de 4 s).
+	if by != null and is_instance_valid(by) and by.is_player and not f.ai.has("turret") and not f.is_player:
+		_voice("loc_doble" if time_in_level - _last_kill < 4.0 else "loc_eliminado")
+		_last_kill = time_in_level
 	if net != null and not f.remote:
 		net.send("ko", {"id": f.net_id, "by": by.net_id if by != null and is_instance_valid(by) else ""})
 	Juice.burst(_fx, f.position + Vector2(0, -30), Color("#ff6b5b") if not f.is_player else Color("#5fd35f"), 24, 380.0)
@@ -1991,6 +2000,8 @@ func _goal_scored(team: int) -> void:
 	Juice.burst(_fx, bp, Color("#ffe066"), 36, 420.0)
 	Juice.shake(0.4)
 	Audio.play("win" if team == 0 else "hurt")
+	if team == 0:
+		_voice("loc_gol")
 	announce(Kit.text("brawl_goal", "\u00a1GOL!") if team == 0 else Kit.text("brawl_goal_them", "\u00a1Gol de ellos!"),
 		Color("#ffe066") if team == 0 else UI.colors["peligro"], 96)
 	QA.log_event("goal", {"team": team, "score": goals_score.duplicate()})
@@ -2036,6 +2047,7 @@ func _win() -> void:
 	if not online.is_empty():
 		_net_end(1)
 		return
+	_voice("loc_victoria")
 	finished = true
 	placed = 1
 	move_input = Vector2.ZERO
@@ -2090,6 +2102,7 @@ func _lose() -> void:
 	if not online.is_empty():
 		_net_end(placed)
 		return
+	_voice("loc_derrota")
 	failed = true
 	deaths += 1
 	move_input = Vector2.ZERO
@@ -2369,11 +2382,18 @@ func _intro_tick() -> void:
 			Audio.play("click", 0.0, 0.0, 1.0 + 0.1 * float(3 - n))
 	if _intro <= 0.0:
 		announce(Kit.text("brawl_fight", "\u00a1A LUCHAR!"), Color("#ffd447"), 96, 0.9)
+		_voice("loc_luchar")
 		Audio.play("powerup")
 		UI.float_text(_fx, player.position + Vector2(0.0, -190.0), _mode_hint(), UI.colors["acento"], 34)
 
 
 ## Locutor: un unico cartel grande en el centro (uno sustituye al anterior: nunca se pisan).
+## Voz del locutor (assets/manifest.json -> voces "loc_..."; Qwen3-TTS). Sin ella, nada.
+func _voice(key: String) -> void:
+	if Kit.assets.get("voces", {}).has(key):
+		Audio.play_voice(key)
+
+
 func announce(text: String, col: Color, size: int = 72, secs: float = 1.3) -> void:
 	if not has_node("Hud"):
 		return
