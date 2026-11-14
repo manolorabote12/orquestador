@@ -1,0 +1,10 @@
+{
+	"id": "chispa",
+	"descripcion": "a small orange-red crab with two big round claws, tiny eyes on stalks, a determined grin and a little yellow bandana on its shell",
+	"estilo": {
+		"familia": "cartoon",
+		"descripcion": "Bright cartoon tropical island seen from above, thick outlines, saturated colors, sandy beaches, palm trees, turquoise water and foam, cheerful and punchy look.",
+		"fondo_chroma": "#FF00FF"
+	},
+	"semilla": 4242
+}

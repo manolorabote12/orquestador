@@ -56,14 +56,18 @@ MODELOS_DIR = os.environ.get("ORQ_MODELOS_DIR", "/runpod-volume/models")
 MANIFIESTO = os.environ.get("ORQ_MODELOS_MANIFIESTO", os.path.join(os.path.dirname(os.path.abspath(__file__)), "modelos.json"))
 
 
-def descargar_modelos(con_opcionales: bool = False) -> dict:
+def descargar_modelos(con_opcionales: bool = False, grupo: str = "") -> dict:
 	"""Baja al volumen de red los modelos que falten (una vez; despues todos los trabajadores los usan).
 	Descarga a .part y renombra al terminar: un corte nunca deja un modelo a medias."""
 	lista = json.loads(open(MANIFIESTO, encoding="utf-8").read())["modelos"]
 	hechos, ya, errores = [], [], []
 	token = os.environ.get("HF_TOKEN", "")
 	for m in lista:
-		if m.get("opcional") and not con_opcionales:
+		## Un grupo (p. ej. "video": Wan 2.2 para animar personajes) baja solo lo suyo, aunque sea opcional.
+		if grupo:
+			if m.get("grupo") != grupo:
+				continue
+		elif m.get("opcional") and not con_opcionales:
 			continue
 		destino = os.path.join(MODELOS_DIR, m["carpeta"], m["archivo"])
 		if os.path.exists(destino) and os.path.getsize(destino) > 0:
@@ -94,12 +98,12 @@ def descargar_modelos(con_opcionales: bool = False) -> dict:
 def handler(trabajo: dict) -> dict:
 	entrada = (trabajo or {}).get("input") or {}
 	if entrada.get("tarea") == "descargar_modelos":
-		r = descargar_modelos(bool(entrada.get("opcionales")))
+		r = descargar_modelos(bool(entrada.get("opcionales")), str(entrada.get("grupo") or ""))
 		return {**r, "error": "; ".join(r["errores"])} if r["errores"] else r
 	wf = entrada.get("workflow")
 	if not isinstance(wf, dict) or not wf:
 		return {"error": "Falta input.workflow (formato API de ComfyUI)"}
-	if not any(isinstance(n, dict) and str(n.get("class_type", "")).startswith(("SaveImage", "SaveAudio")) for n in wf.values()):
+	if not any(isinstance(n, dict) and str(n.get("class_type", "")).startswith(("SaveImage", "SaveAudio", "SaveAnimated")) for n in wf.values()):
 		return {"error": "El workflow no tiene SaveImage ni SaveAudio"}
 	refs = entrada.get("images") or []
 	if len(refs) > MAX_REFS:
@@ -131,7 +135,7 @@ def _extension(b: bytes) -> str:
 	if b[:4] == b"fLaC":
 		return ".flac"
 	if b[:4] == b"RIFF":
-		return ".wav"
+		return ".webp" if b[8:12] == b"WEBP" else ".wav"
 	if b[:3] == b"ID3" or b[:2] == b"\xff\xfb":
 		return ".mp3"
 	if b[:4] == b"OggS":

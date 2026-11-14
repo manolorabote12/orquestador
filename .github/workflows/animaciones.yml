@@ -1,0 +1,78 @@
+name: "Animaciones (Wan 2.2)"
+# Personajes animados con un modelo de video abierto en el endpoint de imagenes de RunPod
+# (fabrica/arte/animar.py). Acciones:
+#   volumen  agranda el volumen de modelos a «gb» (se paga por GB al mes; RunPod no deja encogerlo)
+#   modelos  baja Wan 2.2 I2V 14B (~38 GB) al volumen (una vez, unos minutos de GPU)
+#   animar   anima el personaje «personaje» (fabrica/pruebas/animar/<personaje>.json): ficha + 7 animaciones
+# El resultado va a la rama «animaciones». Tope de gasto de GPU por ejecucion: «tope» (dolares).
+on:
+  workflow_dispatch:
+    inputs:
+      accion:
+        type: choice
+        options: [animar, modelos, volumen]
+        default: animar
+      personaje:
+        required: false
+        default: chispa
+      animaciones:
+        description: "Solo estas (separadas por comas); vacio = todas"
+        required: false
+        default: ""
+      gb:
+        required: false
+        default: "100"
+      tope:
+        required: false
+        default: "1.0"
+
+jobs:
+  animar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    env:
+      RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+      ORQ_TOPE_GPU_DURO: ${{ inputs.tope }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            fabrica
+            nube
+      - run: pip install pillow numpy
+      - name: Volumen
+        if: inputs.accion == 'volumen'
+        run: python3 nube/animaciones.py volumen "${{ inputs.gb }}" | tee /tmp/r.txt && echo "::notice::$(cat /tmp/r.txt)"
+      - name: Modelos
+        if: inputs.accion == 'modelos'
+        run: python3 nube/animaciones.py modelos | tee /tmp/r.txt; s=${PIPESTATUS[0]}; echo "::notice::$(head -c 1500 /tmp/r.txt)"; exit $s
+      - name: Animar
+        if: inputs.accion == 'animar'
+        run: |
+          ep=$(python3 nube/animaciones.py endpoint)
+          python3 - <<'PY'
+          import json, os
+          p = json.load(open("fabrica/pruebas/animar/${{ inputs.personaje }}.json"))
+          solo = [a.strip() for a in "${{ inputs.animaciones }}".split(",") if a.strip()]
+          if solo:
+              p["animaciones"] = solo
+          json.dump(p, open("/tmp/personaje.json", "w"))
+          PY
+          mkdir -p animaciones
+          set -o pipefail
+          cd fabrica && ORQ_COMFY="runpod://$ep" python3 -m arte.animar /tmp/personaje.json ../animaciones/${{ inputs.personaje }} 2>&1 | tee ../animaciones/log.txt
+      - name: Resumen
+        if: always() && inputs.accion == 'animar'
+        run: |
+          f=animaciones/${{ inputs.personaje }}/informe.json
+          [ -f "$f" ] && echo "::notice::$(cat $f | head -c 2000)" || echo "::warning::$(tail -c 1500 animaciones/log.txt 2>/dev/null)"
+      - name: Subir a la rama animaciones
+        if: always() && inputs.accion == 'animar'
+        run: |
+          [ -d animaciones ] || exit 0
+          cd animaciones
+          git init -q -b animaciones && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "Animaciones (${{ inputs.personaje }})"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" animaciones
