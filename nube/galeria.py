@@ -1,7 +1,8 @@
 """Galeria tipo Poki: reparto mensual a los creadores y cobros en dinero (lo lanza el dueno).
 
 	python3 nube/galeria.py estado                       -> anuncios del mes, repartos hechos y cobros pendientes
-	python3 nube/galeria.py repartir 2026-11 12.34       -> reparte el 50 % de 12,34 EUR (lo que pago Google ese mes)
+	python3 nube/galeria.py repartir 2026-11 12.34 [3,10] -> reparte el 80 % de 12,34 EUR (lo que pago Google ese mes)
+	                                                        menos 3,10 EUR de costes de servir los juegos (opcional)
 	python3 nube/galeria.py pagado 17 [nota]             -> el cobro 17 ya esta pagado por PayPal
 	python3 nube/galeria.py rechazado 17 [motivo]        -> el cobro 17 no se pudo pagar: el dinero vuelve al creador
 
@@ -56,7 +57,7 @@ def estado() -> int:
 	repartos = rest("GET", "galeria_repartos?select=*&order=mes.desc&limit=6") or []
 	for r in repartos:
 		print(f"::notice::Reparto {r['mes'][:7]}: entraron {euros(r['ingresos_cent'])}, repartidos {euros(r['reparto_cent'])} "
-			f"entre {r['creadores']} creadores ({r['anuncios']} anuncios)")
+			f"entre {r['creadores']} creadores ({r['anuncios']} anuncios; costes descontados {euros(r.get('costes_cent') or 0)})")
 	pend = rest("GET", "creador_cobros?select=id,cent,paypal,nombre,created_at&estado=eq.pendiente&order=created_at") or []
 	total = sum(c["cent"] for c in pend)
 	print(f"::notice::Cobros pendientes: {len(pend)} ({euros(total)})")
@@ -69,7 +70,8 @@ def main(a: list[str]) -> int:
 	accion = a[0] if a else "estado"
 	try:
 		if accion == "repartir":
-			r = rest("POST", "rpc/galeria_reparto", {"p_mes": mes_valido(a[1]), "p_ingresos_cent": centimos(a[2])})
+			costes = centimos(a[3]) if len(a) > 3 and a[3].strip() else 0
+			r = rest("POST", "rpc/galeria_reparto", {"p_mes": mes_valido(a[1]), "p_ingresos_cent": centimos(a[2]), "p_costes_cent": costes})
 			print(f"::notice::Reparto hecho: {json.dumps(r, ensure_ascii=False)}")
 		elif accion in ("pagado", "rechazado"):
 			r = rest("POST", "rpc/cobro_cerrar", {"p_id": int(a[1]), "p_estado": accion, "p_nota": " ".join(a[2:]) or None})
