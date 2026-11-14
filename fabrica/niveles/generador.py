@@ -5848,7 +5848,17 @@ def generar_supervivencia(i: int, n: int, enemigos: list[str], dificultad: str, 
 				g[cerca[0][0]][cerca[0][1]] = "X"
 		## Estilos: guaridas de otro bicho, casas y coches que saquear y prados con ciervos.
 		libres_est = [t for t in resto[pos + 1:] if g[t[0]][t[1]] in ".," and abs(t[0] - salida[0]) + abs(t[1] - salida[1]) >= 3]
-		if "apocalipsis" in estilos:
+		if "mutantes" in estilos:
+			## Plaga mutante: manadas de lobos en casi todas las guaridas, cuervos desde el nivel 2 y el
+			## oso desde el 3 (una guarida cada uno); casas y coches como en el apocalipsis.
+			for k, (y, x) in enumerate(dens):
+				g[y][x] = "O" if (k == 0 and i >= 2) else ("K" if (k == 1 or (k == 0 and i == 1)) else "M")
+			for k, ch in enumerate(["H"] * (3 + min(i, 3)) + ["C"] * 2):
+				if k < len(libres_est):
+					y, x = libres_est[k]
+					g[y][x] = ch
+			libres_est = libres_est[3 + min(i, 3) + 2:]
+		elif "apocalipsis" in estilos:
 			for y, x in dens:
 				g[y][x] = "Z"
 			for k, ch in enumerate(["H"] * (3 + min(i, 3)) + ["C"] * 2):
@@ -5859,7 +5869,7 @@ def generar_supervivencia(i: int, n: int, enemigos: list[str], dificultad: str, 
 		elif "caza" in estilos:
 			for y, x in dens:
 				g[y][x] = "J"
-		if any(e in estilos for e in ("apocalipsis", "invierno", "caza")):
+		if any(e in estilos for e in ("apocalipsis", "invierno", "caza")) and "mutantes" not in estilos:
 			prados = [t for t in libres_est if g[t[0]][t[1]] == "." and abs(t[0] - salida[0]) + abs(t[1] - salida[1]) >= 5]
 			for y, x in prados[:2 + (1 if "apocalipsis" not in estilos else 0)]:
 				g[y][x] = "A"
@@ -5892,7 +5902,7 @@ def _superv_justo(g: list[list[str]], salida: tuple[int, int], estilos: list[str
 			if k in cuenta and al_alcance(y, x):
 				cuenta[k] += 1
 	cuenta["A"] = sum(1 for y in range(alto) for x in range(ancho) if g[y][x] == "A" and (y, x) in visto)
-	if "apocalipsis" in (estilos or []) and (cuenta["H"] * 3 + cuenta["C"] * 4 < 9 or cuenta["H"] * 3 + cuenta["C"] * 2 < 6):
+	if any(e in (estilos or []) for e in ("apocalipsis", "mutantes")) and (cuenta["H"] * 3 + cuenta["C"] * 4 < 9 or cuenta["H"] * 3 + cuenta["C"] * 2 < 6):
 		return False
 	return cuenta["W"] > 0 and cuenta["B"] + cuenta["A"] >= 2 and cuenta["T"] * 4 >= 34 and cuenta["R"] * 3 >= 9 and cuenta["G"] * 2 >= 16 and len(visto) >= 60
 
@@ -5915,7 +5925,7 @@ def parametros_supervivencia(i: int, n: int, dificultad: str, mapa: list[str] | 
 	presets = [ESTILO_SUPERV[e] for e in (estilos or []) if e in ESTILO_SUPERV]
 	if presets:
 		out["survival"] = {"preset": presets}
-		if "zombis" in presets:
+		if "zombis" in presets or "mutantes" in presets:
 			## Zombis: uno por guarida al empezar y otro cada noche (no se van al amanecer).
 			out["wolves"] = 1
 			if balsa:
@@ -5924,7 +5934,7 @@ def parametros_supervivencia(i: int, n: int, dificultad: str, mapa: list[str] | 
 
 
 ## Giro de la fabrica -> estilo del kit (PRESETS en kit/survival/survival_map.gd).
-ESTILO_SUPERV = {"apocalipsis": "zombis", "invierno": "invierno", "caza": "caza"}
+ESTILO_SUPERV = {"apocalipsis": "zombis", "invierno": "invierno", "caza": "caza", "mutantes": "mutantes"}
 
 
 ## << genero supervivencia

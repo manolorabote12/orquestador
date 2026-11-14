@@ -114,6 +114,12 @@ def main() -> int:
 		and game.get("twists") == ["apocalipsis", "invierno"]
 		and all((lv.get("survival") or {}).get("preset") == ["zombis", "invierno"] and any("Z" in f for f in lv["map"]) and any("H" in f for f in lv["map"])
 			for lv in game["levels"]), str([lv.get("survival") for lv in game["levels"]][:2]))
+	## Plaga de animales mutantes (tipo Last Day on Earth sin zombis): lobos, cuervos y oso mutantes.
+	inf, game = fabricar("[gancho:supervivencia:mutantes] los animales se han vuelto locos y quieren acabar con la humanidad")
+	check("supervivencia mutantes: superado por los bots, con guaridas mutantes, casas y radio", inf["ok"]
+		and game.get("twists") == ["mutantes"]
+		and all((lv.get("survival") or {}).get("preset") == ["mutantes"] and any("M" in f or "K" in f or "O" in f for f in lv["map"])
+			and any("H" in f for f in lv["map"]) for lv in game["levels"]), str([lv.get("map") for lv in game["levels"]][:1]))
 	## RPG de equipo: cuatro heroes con habilidades contra oleadas (modo equipo del kit).
 	inf, game = fabricar("[gancho:rpg:equipo] un rpg por turnos con un equipo de cuatro heroes")
 	check("rpg equipo: superado por los bots y en modo equipo en todos los niveles", inf["ok"] and game.get("twists") == ["equipo"]

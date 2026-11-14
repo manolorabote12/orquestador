@@ -49,7 +49,8 @@ REGLAS
     quedarse tirado en una isla, es el genero supervivencia (no horda). La supervivencia copia los
     estilos de los juegos de movil con giros: zombis, saquear casas y coches o un apocalipsis (tipo
     Last Day on Earth) -> giro apocalipsis; frio, nieve o invierno -> giro invierno; cazar animales
-    y cocinar la carne -> giro caza (se pueden juntar dos).
+    y cocinar la carne -> giro caza; animales mutantes o enloquecidos que atacan a la humanidad
+    (en vez de zombis) -> giro mutantes, no apocalipsis (se pueden juntar dos).
     El RPG por turnos tambien copia estilos con giros: equipo de heroes, gacha, tipo Raid,
     Summoners War o AFK Arena -> giro equipo; criaturas, entrenador o tipo Pokemon -> giro
     criaturas (uno de los dos).

@@ -205,7 +205,10 @@ func _wolf_node(id: int, kind: String = "wolf") -> Node2D:
 	var lk: String = str(cdef.get("look", "wolf"))
 	var hostile: bool = bool(cdef.get("hostile", true))
 	var id_art: String = str(Kit.param("art.enemies.walker", "")) if hostile else ""
-	var entry: Dictionary = Kit.sprite_entry(id_art) if id_art != "" else {}
+	## Cada criatura con su dibujo si la fabrica lo hizo (criatura_<tipo>: lobo, cuervo y oso mutantes...).
+	var entry: Dictionary = Kit.sprite_entry("criatura_" + kind)
+	if entry.is_empty():
+		entry = Kit.sprite_entry(id_art) if id_art != "" else {}
 	if entry.is_empty():
 		entry = Kit.sprite_by_role("enemigo" if hostile else "presa")
 	if not entry.is_empty():

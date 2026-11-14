@@ -102,6 +102,32 @@ const PRESETS: Dictionary = {
 		"creatures": {"deer": {"hp": 25.0, "dmg": 0.0, "speed": 3.2, "when": "always", "hostile": false, "flee": true,
 			"drops": {"meat": 2, "fur": 1}, "look": "beast", "color": "#a07850"}},
 		"cold": 2.0, "palette": {"ground": "#dfe7ee", "sand": "#c7d1da", "sea": "#2c5d7c"}},
+	## mutantes (15 nov): los animales de la Tierra se han vuelto locos y van a por la humanidad. Casas
+	## y coches para saquear (como zombis) y tres plagas: manadas de lobos mutantes "M" (siempre),
+	## cuervos mutantes "K" (rapidos, poca vida) y el oso mutante "O" (de noche, enorme). No hay
+	## animales mansos: se come de latas y bayas. Ballesta, muros y puerta; meta: la radio.
+	"mutantes": {
+		"items": {"scrap": {}, "cloth": {}, "can": {"food": 30.0, "water": 10.0}, "venda": {"heal": 40.0}, "fur": {}},
+		"tiles": {"H": {"loot": {"can": 1, "cloth": 1, "scrap": 1}, "yield": 3, "time": 1.2, "look": "H", "keep": true},
+			"C": {"loot": {"scrap": 2, "cloth": 1}, "yield": 2, "time": 1.4, "look": "C", "keep": true},
+			"M": {"den": "lobo_mutante", "look": "D", "tint": "#7a3b6b"},
+			"K": {"den": "cuervo_mutante", "look": "D", "tint": "#3a3a4a"},
+			"O": {"den": "oso_mutante", "look": "D", "tint": "#4a2b2b"}},
+		"recipes": {"lanza": null, "machete": {"cost": {"wood": 2, "scrap": 2, "fiber": 1}, "tool": {"dmg": 40.0}},
+			"ballesta": {"cost": {"wood": 4, "scrap": 3, "fiber": 2}, "tool": {"dmg": 60.0}},
+			"venda": {"cost": {"cloth": 2}, "item": {"venda": 1}}, "muro": {"cost": {"wood": 3}, "build": "muro"},
+			"puerta": {"cost": {"wood": 3, "scrap": 1}, "build": "puerta"},
+			"radio": {"cost": {"scrap": 6, "cloth": 2, "wood": 3}, "win": true}},
+		"creatures": {
+			"lobo_mutante": {"hp": 55.0, "dmg": 13.0, "speed": 2.7, "when": "always", "hostile": true, "fear_fire": true,
+				"drops": {"fur": 1}, "look": "wolf", "color": "#8e3b5b"},
+			"cuervo_mutante": {"hp": 18.0, "dmg": 6.0, "speed": 3.6, "when": "always", "hostile": true, "fear_fire": false,
+				"drops": {}, "look": "beast", "color": "#2d2d3a"},
+			"oso_mutante": {"hp": 160.0, "dmg": 26.0, "speed": 1.8, "when": "night", "hostile": true, "fear_fire": false,
+				"drops": {"fur": 2, "cloth": 1}, "look": "beast", "color": "#5a2e2e"}},
+		"bag": 30, "tool_uses": 40, "palette": {"ground": "#6f7f4a", "sand": "#b9a77a"},
+		"names": {"lobo_mutante": "lobos mutantes", "cuervo_mutante": "cuervos mutantes", "oso_mutante": "oso mutante",
+			"ballesta": "Ballesta", "fur": "piel"}},
 	"caza": {
 		"tiles": {"A": {"walk": true, "herd": "deer"}, "J": {"den": "boar", "look": "D", "tint": "#6b4a2b"}},
 		"creatures": {"deer": {"hp": 25.0, "dmg": 0.0, "speed": 3.2, "when": "always", "hostile": false, "flee": true, "drops": {"meat": 2},

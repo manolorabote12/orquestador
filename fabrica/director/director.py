@@ -491,6 +491,13 @@ PIEZAS_PUZLE = [("red", "round"), ("orange", "diamond-shaped"), ("yellow", "squa
 
 ## Heroes del RPG de equipo del kit (kit/turns/party_catalog.json y kit/turns/heroes.gd): el primero
 ## (guerrero) es el protagonista; estos se dibujan aparte como heroe_<id>.
+## Plaga mutante de la supervivencia (giro mutantes): las criaturas del kit (PRESETS["mutantes"]).
+MUTANTES = {
+	"lobo_mutante": "a mutated wolf with patchy fur, glowing purple veins, bony spikes on its back and huge exposed fangs, snarling",
+	"cuervo_mutante": "a mutated giant crow with ragged black feathers, glowing red eyes, a jagged beak and extra claws, wings spread",
+	"oso_mutante": "a huge mutated bear with torn fur, glowing purple veins, bony armor plates and long claws, standing on all fours, terrifying",
+}
+
 HEROES_KIT = {
 	"maga": ("Maga", "young ice mage woman in flowing blue robes holding a crystal-topped staff"),
 	"sanadora": ("Sanadora", "healer priestess in white and gold robes holding a glowing holy symbol"),
@@ -596,6 +603,17 @@ def a_biblia(d: dict) -> dict:
 					f"floating alone with no ground, no grass and no terrain around it, materials inspired by {mundo}")[:300],
 				"tamano": [celda, celda], "mira_a": "frente",
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
+	## Supervivencia con plaga mutante (15 nov): cada criatura con su dibujo (el kit las busca como
+	## criatura_<tipo>); si no, todas serian el mismo enemigo.
+	if d.get("genero") == "supervivencia" and "mutantes" in (d.get("giros") or []):
+		for cid, desc in MUTANTES.items():
+			personajes.append({
+				"id": "criatura_" + cid, "nombre": cid.replace("_", " "), "rol": "npc",
+				"descripcion": (desc + ", side view, menacing but readable, same art style as the hero")[:280],
+				"tamano": [celda, celda], "mira_a": "derecha",
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}, "run": {"frames": 4, "fps": 10, "bucle": True},
+					"hurt": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
 	## Arena: cada personaje con su propio dibujo (14 nov, Marea Alta: varios compartian el arte de los
 	## enemigos con otro color). El heroe es «tenaza»; el kit busca los demas como brawler_<id>.
@@ -1039,7 +1057,7 @@ def opciones_niveles(d: dict) -> dict:
 		"hielo": "hielo" in (d.get("giros") or []),
 		"tuneles": "tuneles" in (d.get("giros") or []),
 		"modos": "modos" in (d.get("giros") or []),
-		"estilos_superv": [x for x in (d.get("giros") or []) if x in ("apocalipsis", "invierno", "caza")],
+		"estilos_superv": [x for x in (d.get("giros") or []) if x in ("apocalipsis", "invierno", "caza", "mutantes")],
 		"estilos_rpg": estilos_rpg(d),
 		"contenido_rpg": d.get("contenido") if d.get("genero") == "rpg" else None,
 		"a_medida_mapas": d.get("a_medida_mapas") if d.get("genero") == "a_medida" else None,

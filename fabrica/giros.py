@@ -110,6 +110,11 @@ GIROS: dict[str, dict] = {
 		"generos": ["supervivencia"], "seguro": False, "mezcla": True,
 		"claves": ["zombi", "zombie", "apocalipsis", "last day", "ldoe", "saquear", "postapocal", "post apocal", "fin del mundo"],
 	},
+	"mutantes": {
+		"nombre": "Plaga de animales mutantes", "que": "Los animales de la Tierra se han vuelto locos: lobos, cuervos y un oso mutantes atacan; saquea casas y coches, construye muros y arregla la radio",
+		"generos": ["supervivencia"], "seguro": False, "mezcla": True,
+		"claves": ["mutante", "mutantes", "animales locos", "animales asesinos", "plaga de animales", "rebelion animal", "rebelión animal", "bestias mutadas"],
+	},
 	"invierno": {
 		"nombre": "Invierno", "que": "Hace frío de noche: hoguera, cama o un abrigo de piel de ciervo para no congelarte",
 		"generos": ["supervivencia"], "seguro": False, "mezcla": True,
