@@ -41,6 +41,23 @@ def main() -> int:
 				print(f"FALLO {nombre}: faltan {que} en el esquema: {', '.join(faltan)}")
 			else:
 				print(f"OK    {nombre}: {len(todos)} {que}")
+	## La biblia de arte de cada genero (con sus giros) cabe en su esquema (14 nov: el RPG de
+	## equipo pedia 17 personajes y el esquema admitia 12: «La Biblia no es valida» en la fabrica).
+	from arte import biblia as bib
+	from director import director, simulado
+	for gen in sorted(generos.GENEROS):
+		for gi in ([[]] + [[g] for g in sorted(giros.GIROS) if gen in str(giros.GIROS[g])]):
+			d = simulado.disenar("prueba")
+			d["genero"] = gen
+			d["giros"] = gi
+			try:
+				b = director.a_biblia(d)
+				bib.recortar(b, 36, 0)
+				bib.validar(b)
+			except Exception as e:  # noqa: BLE001
+				fallos += 1
+				print(f"FALLO biblia de {gen} {gi}: {str(e)[:300]}")
+	print("OK    biblias de todos los generos" if not fallos else "")
 	print("== %d fallos ==" % fallos)
 	return 1 if fallos else 0
 
