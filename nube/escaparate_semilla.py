@@ -503,10 +503,13 @@ def estado() -> int:
 			avisos = [p for p in (j.get("progress") or []) if isinstance(p, dict) and (p.get("estado") == "aviso" or p.get("paso") == "critica")]
 			for p in avisos[-4:]:
 				print(f"::notice::Aviso del ultimo terminado: {p.get('paso')}: {str(p.get('mensaje') or '')[:800]}")
-		if j["status"] == "failed" and j.get("error") != "cancelado":
-			pasos = j.get("progress") or []
-			ultimos = " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:70]}" for p in pasos[-6:] if isinstance(p, dict))
-			print(f"::warning::Fallo «{str((j.get('detail') or {}).get('idea'))[:60]}»: {str(j.get('error'))[:700]} || {ultimos[:700]}")
+	## Los fallos, los mas nuevos primero y solo 5 (GitHub ensena 10 avisos por trabajo: el ultimo
+	## fallo se quedaba fuera, 14 nov).
+	fallos = [j for j in js if j["status"] == "failed" and j.get("error") != "cancelado"]
+	for j in list(reversed(fallos))[:5]:
+		pasos = j.get("progress") or []
+		ultimos = " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:70]}" for p in pasos[-6:] if isinstance(p, dict))
+		print(f"::warning::Fallo «{str((j.get('detail') or {}).get('idea'))[:60]}»: {str(j.get('error'))[:700]} || {ultimos[:700]}")
 	return 0
 
 
