@@ -42,6 +42,17 @@ from textos import traducir
 
 RAIZ = Path(__file__).resolve().parent
 KIT = RAIZ.parent / "orqkit"
+
+
+def huella_kit() -> str:
+	"""Huella corta del kit con el que se fabrico (para ver en el informe que el servidor usa la
+	version nueva: en noviembre un servidor ya encendido fabrico con el kit anterior)."""
+	import hashlib
+	h = hashlib.sha1()
+	for f in sorted((KIT / "kit").rglob("*.gd")):
+		h.update(f.name.encode())
+		h.update(str(f.stat().st_size).encode())
+	return h.hexdigest()[:10]
 ## Estimacion de coste por imagen en RunPod serverless (GPU de 24 GB, ~4 s por imagen).
 USD_POR_IMAGEN = float(os.environ.get("ORQ_USD_POR_IMAGEN", "0.002"))
 FLUJOS_ARTE = {
@@ -1185,7 +1196,7 @@ def _fabricar(args: argparse.Namespace) -> dict:
 		{"usd": round(gasto.usd + usd_arte, 4)})
 	informe.update({
 		"ok": True, "version": version, "titulo": diseno["titulo"], "slug": slug, "proyecto": str(proyecto),
-		"apk": str(apk) if apk else None, "web": str(web) if web else None, "capturas": capturas, "ficha": ficha_zip, "clip": clip_mp4, "marketing": marketing, "modelo_diseno": modelo,
+		"apk": str(apk) if apk else None, "web": str(web) if web else None, "capturas": capturas, "ficha": ficha_zip, "clip": clip_mp4, "marketing": marketing, "modelo_diseno": modelo, "kit": huella_kit(),
 		"coste_usd": {"diseno": gasto.usd, "arte_estimado": usd_arte, "total": round(gasto.usd + usd_arte, 4)},
 		"llamadas_ia": gasto.llamadas, "imagenes": inf_arte["generaciones"], "niveles_rehechos": sum(intentos.values()),
 		"tiempos_s": tiempos, "total_s": round(time.time() - t0, 1),

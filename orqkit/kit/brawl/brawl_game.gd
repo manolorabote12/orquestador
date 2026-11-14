@@ -99,6 +99,7 @@ var _pad_attack: BrawlPad
 var _pad_super: BrawlPad
 var _left_label: Label
 var _gas_label: Label
+var _left_icon: UiIcon
 var _flow: Dictionary = {}
 ## Dano que se va sumando a cada luchador para ensenarlo como un solo numero por rafaga.
 var _dmg_acc: Dictionary = {}
@@ -346,9 +347,15 @@ func _reset() -> void:
 	_camera.position = player.position
 	_camera.reset_smoothing()
 	var vp: Vector2 = get_viewport_rect().size
-	_camera.zoom = Vector2.ONE * clampf(vp.x / (TILE * 8.6), 0.5, 1.4)
+	_camera.zoom = Vector2.ONE * clampf(vp.x / (TILE * 7.4), 0.5, 1.4)
 	_floor.queue_redraw()
 	_bushes.queue_redraw()
+	if _left_icon != null:
+		## En balon y torretas el marcador lleva copa; en el resto, la calavera de rivales que quedan.
+		var team_score: bool = mode in ["ball", "turrets"]
+		_left_icon.kind = "trophy" if team_score else "skull"
+		_left_icon.color = Color("#ffd166") if team_score else Color("#ff8a80")
+		_left_icon.queue_redraw()
 	_update_hud()
 
 
@@ -365,7 +372,7 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		f.damage = PLAYER_DMG * up * float(b.get("dmg", 1.0))
 		f.speed = float(Kit.param("player.brawl_speed", 330.0)) * float(b.get("speed", 1.0))
 		f.bar_color = Color("#5fd35f")
-		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 92.0)
+		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 108.0)
 		if f.sprite != null:
 			Skins.apply(f.sprite)
 			if str(b.get("tint", "")) != "":
@@ -379,7 +386,7 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		f.bar_color = Color("#ff5a4f")
 		## Los aliados (i >= 20) se ven como tu personaje, tenido; los rivales, con el arte de enemigos.
 		var art: Dictionary = Kit.sprite_by_role("jugador") if i >= 20 else (_arts[i % _arts.size()] if not _arts.is_empty() else {})
-		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 88.0)
+		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 104.0)
 		if f.sprite != null and str(b.get("tint", "")) != "":
 			f.sprite.self_modulate = Brawlers.tint(b)
 	f.ai = {"think": 0.1 * float(i), "aim": 0.0, "strafe": 1.0 if i % 2 == 0 else -1.0, "flip": 1.5, "goal": at,
@@ -411,7 +418,8 @@ func _build_hud() -> void:
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_theme_constant_override("separation", 12)
 	col.add_child(bar)
-	bar.add_child(UiIcon.make("skull", Color("#ff8a80"), 44.0))
+	_left_icon = UiIcon.make("skull", Color("#ff8a80"), 44.0)
+	bar.add_child(_left_icon)
 	_left_label = Label.new()
 	_left_label.name = "RivalsLeft"
 	_left_label.theme_type_variation = "HeaderLabel"
@@ -1476,11 +1484,30 @@ func _make_turret(t: int) -> void:
 	if f.body != null:
 		f.body.polygon = LevelBuilder._circle(46.0, 8)
 		f.body.position = Vector2(0.0, -34.0)
+		f.body.color = Color("#5d6b82") if t == 0 else Color("#82625d")
+		var ring: Polygon2D = Polygon2D.new()
+		ring.color = f.body.color.lightened(0.25)
+		ring.polygon = LevelBuilder._circle(36.0, 8)
+		ring.position = Vector2(0.0, -40.0)
+		f.rig.add_child(ring)
+		## Canon que gira hacia a quien apunta.
+		var barrel: Polygon2D = Polygon2D.new()
+		barrel.name = "Barrel"
+		barrel.color = Color("#2b2d42")
+		barrel.polygon = PackedVector2Array([Vector2(0, -9), Vector2(54, -7), Vector2(54, 7), Vector2(0, 9)])
+		barrel.position = Vector2(0.0, -58.0)
+		barrel.rotation = PI * 0.5 if t == 0 else -PI * 0.5
+		f.rig.add_child(barrel)
 		var top: Polygon2D = Polygon2D.new()
 		top.color = f.bar_color
-		top.polygon = LevelBuilder._circle(26.0, 8)
+		top.polygon = LevelBuilder._circle(24.0, 10)
 		top.position = Vector2(0.0, -58.0)
 		f.rig.add_child(top)
+		var shine: Polygon2D = Polygon2D.new()
+		shine.color = Color(1, 1, 1, 0.35)
+		shine.polygon = LevelBuilder._circle(8.0, 8)
+		shine.position = Vector2(-8.0, -66.0)
+		f.rig.add_child(shine)
 	f.ai = {"turret": true, "atk": {"n": 1, "spread": 0.0, "range": TURRET_RANGE / SHOT_RANGE, "speed": 1.0, "dmg": 1.0},
 		"cool": 1.0, "think": 0.0, "aim": 0.0, "strafe": 1.0, "flip": 1.0, "goal": at, "home": at}
 	f.hp = f.max_hp
@@ -1509,6 +1536,9 @@ func _turret_think(f: BrawlFighter, delta: float) -> void:
 		return
 	f.ai["cool"] = 0.85
 	f.ammo = float(BrawlFighter.AMMO_MAX)
+	var barrel: Node2D = f.rig.get_node_or_null("Barrel") as Node2D if f.rig != null else null
+	if barrel != null:
+		barrel.rotation = (target.position - f.position).angle()
 	shoot(f, _lead(f, target).rotated(_rng.randf_range(-0.05, 0.05)))
 
 
@@ -1992,7 +2022,7 @@ func capture_delays() -> Vector2:
 
 func _floor_colors() -> Array[Color]:
 	var base: Color = Kit.color("sky", Color("#1b2a41")).lerp(Color("#d8c49a"), 0.62)
-	return [base, base.darkened(0.06)]
+	return [base, base.darkened(0.035)]
 
 
 func _draw_floor() -> void:
@@ -2001,7 +2031,6 @@ func _draw_floor() -> void:
 	## Borde de la arena: agua oscura alrededor.
 	_floor.draw_rect(Rect2(Vector2(-TILE * 6.0, -TILE * 6.0), w + Vector2(TILE * 12.0, TILE * 12.0)), Kit.color("sky", Color("#1b2a41")).darkened(0.25))
 	_floor.draw_rect(Rect2(Vector2(-10, -10), w + Vector2(20, 20)), cols[1].darkened(0.4))
-	var tex: Texture2D = Kit.first_tile_texture()
 	for y: int in _size.y:
 		for x: int in _size.x:
 			var r: Rect2 = Rect2(Vector2(x, y) * TILE, Vector2(TILE, TILE))
@@ -2010,8 +2039,11 @@ func _draw_floor() -> void:
 			_floor.draw_rect(Rect2(r.position, Vector2(TILE, 3.0)), Color(1, 1, 1, 0.1))
 			_floor.draw_rect(Rect2(r.position, Vector2(3.0, TILE)), Color(1, 1, 1, 0.07))
 			_floor.draw_rect(Rect2(r.position + Vector2(0.0, TILE - 3.0), Vector2(TILE, 3.0)), Color(0, 0, 0, 0.08))
-			if tex != null and (x * 7 + y * 3) % 9 == 0:
-				_floor.draw_texture_rect(tex, r.grow(-6.0), false, Color(1, 1, 1, 0.07))
+	## Suelo limpio (la critica visual lo veia ruidoso con texturas encima): solo un oscurecido suave
+	## hacia los bordes para que los personajes resalten en el centro.
+	for k: int in 6:
+		var g: float = TILE * 0.35 * float(k)
+		_floor.draw_rect(Rect2(Vector2(g, g), w - Vector2(g, g) * 2.0), Color(0, 0, 0, 0.035), false, TILE * 0.35)
 	## Lineas de pista finas (dan sensacion de campo de juego).
 	_floor.draw_rect(Rect2(Vector2(TILE * 0.5, TILE * 0.5), w - Vector2(TILE, TILE)), Color(1, 1, 1, 0.14), false, 4.0)
 	_floor.draw_arc(w * 0.5, TILE * 1.6, 0.0, TAU, 48, Color(1, 1, 1, 0.14), 4.0, true)

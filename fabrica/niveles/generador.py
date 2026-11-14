@@ -1640,7 +1640,7 @@ def generar_arena(i: int, n: int, enemigos: list[str], dificultad: str, semilla:
 			g[y][ancho - 1 - x] = ch
 			return True
 
-		for _m in range(int(4 + 4 * d + i % 3)):
+		for _m in range(int(6 + 5 * d + i % 3)):
 			f = rnd.choice(formas)
 			y0, x0 = rnd.randint(2, alto - 4), rnd.randint(0, mitad - 1)
 			if all(0 <= y0 + dy < alto and 0 <= x0 + dx <= mitad - 1 and (y0 + dy, x0 + dx) not in reservado
