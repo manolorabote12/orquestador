@@ -1,0 +1,8 @@
+[animar] idle: 33 fotogramas -> 12 en la hoja
+[animar] run: 33 fotogramas -> 8 en la hoja
+[animar] attack: 33 fotogramas -> 8 en la hoja
+[animar] super: 33 fotogramas -> 12 en la hoja
+[animar] hurt: 33 fotogramas -> 6 en la hoja
+[animar] death: 33 fotogramas -> 12 en la hoja
+[animar] victory: 33 fotogramas -> 12 en la hoja
+{"personaje": "chispa", "animaciones": {"idle": {"frames": 12, "video_frames": 33, "fps": 10, "bucle": true}, "run": {"frames": 8, "video_frames": 33, "fps": 12, "bucle": true}, "attack": {"frames": 8, "video_frames": 33, "fps": 10, "bucle": false}, "super": {"frames": 12, "video_frames": 33, "fps": 10, "bucle": false}, "hurt": {"frames": 6, "video_frames": 33, "fps": 10, "bucle": false}, "death": {"frames": 12, "video_frames": 33, "fps": 10, "bucle": false}, "victory": {"frames": 12, "video_frames": 33, "fps": 10, "bucle": true}}, "errores": {}, "segundos": 482.4, "usd": 0.1448, "segundos_gpu": 389.4}
