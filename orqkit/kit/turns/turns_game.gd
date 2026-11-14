@@ -237,7 +237,7 @@ func _select_valid() -> void:
 
 
 func _t(s: float) -> float:
-	return s * (0.15 if fast else 1.0)
+	return s * (0.15 if fast else 0.5 if bool(Save.get_setting("rpg_x2", false)) else 1.0)
 
 
 func waiting_player() -> bool:
@@ -619,6 +619,14 @@ func _build_party_hud() -> void:
 		if on and waiting_player():
 			_auto_turn())
 	low.add_child(_auto_btn)
+	## Velocidad x2 (como los RPG de heroes): se recuerda entre partidas.
+	var x2: Button = UI.make_button("x2", false, "")
+	x2.name = "Btn_x2"
+	x2.toggle_mode = true
+	x2.button_pressed = bool(Save.get_setting("rpg_x2", false))
+	x2.custom_minimum_size = Vector2(110.0, UI.MIN_TOUCH)
+	x2.toggled.connect(func(on: bool) -> void: Save.set_setting("rpg_x2", on))
+	low.add_child(x2)
 
 
 func _party_reset() -> void:

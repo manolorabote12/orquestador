@@ -40,7 +40,7 @@ const EXTRA: Dictionary = {
 const EXTRA_SKILLS: Dictionary = {
 	"furia": {"name": "Furia", "target": "self", "effects": [{"status": "atk_up", "turns": 3}], "cooldown": 4},
 	"drenar": {"name": "Drenar", "target": "enemy", "power": 1.1, "drain": 0.5, "cooldown": 3},
-	"maldicion": {"name": "Maldición", "target": "all_enemies", "power": 0.4, "effects": [{"status": "def_down", "turns": 2}], "cooldown": 3},
+	"maldicion": {"name": "Maldici\u00f3n", "target": "all_enemies", "power": 0.4, "effects": [{"status": "def_down", "turns": 2}], "cooldown": 3},
 	"regenerar": {"name": "Regenerar", "target": "all_allies", "effects": [{"status": "regen", "turns": 3}], "cooldown": 4},
 	"golpe_letal": {"name": "Golpe letal", "target": "enemy", "power": 2.4, "cooldown": 4},
 	"aliento": {"name": "Aliento de fuego", "target": "all_enemies", "power": 1.0, "effects": [{"status": "burn", "turns": 2}], "cooldown": 4},
@@ -203,11 +203,49 @@ static func apply_to_level(lv: Dictionary) -> Dictionary:
 	return out
 
 
-## Despues de crear la partida: cada heroe con su fuerza (rareza, nivel y estrellas).
+## Sinergia de elementos (como las facciones de los RPG de heroes): 2 del mismo elemento en el
+## equipo +5 %, 3 +12 % y 4 +20 % de vida y ataque para todos. {"element", "n", "bonus"}.
+const SYNERGY: Dictionary = {2: 0.05, 3: 0.12, 4: 0.2}
+
+
+const ELEM_NAME: Dictionary = {"fire": "Fuego", "water": "Agua", "nature": "Naturaleza", "light": "Luz", "dark": "Oscuridad"}
+
+
+static func elem_name(el: String) -> String:
+	return Kit.text("elem_" + el, str(ELEM_NAME.get(el, el)))
+
+
+static func synergy(ids: Array) -> Dictionary:
+	var count: Dictionary = {}
+	for id: Variant in ids:
+		var el: String = str(hero(str(id)).get("element", ""))
+		if el != "":
+			count[el] = int(count.get(el, 0)) + 1
+	var best: Dictionary = {"element": "", "n": 0, "bonus": 0.0}
+	for el: String in count:
+		if int(count[el]) > int(best["n"]):
+			best = {"element": el, "n": int(count[el]), "bonus": float(SYNERGY.get(mini(int(count[el]), 4), 0.0))}
+	return best
+
+
+## Poder del equipo (el numero grande de los RPG de heroes): vida y ataque con todo aplicado.
+static func team_power(ids: Array = []) -> int:
+	var t: Array = ids if not ids.is_empty() else team()
+	var m: float = 1.0 + float(synergy(t)["bonus"])
+	var total: float = 0.0
+	for id: Variant in t:
+		var d: Dictionary = hero(str(id))
+		total += (float(d.get("hp", 100.0)) * 0.5 + float(d.get("atk", 15.0)) * 5.0 + float(d.get("def", 10.0)) * 1.5) * power_mult(str(id)) * m
+	return int(round(total * 10.0))
+
+
+## Despues de crear la partida: cada heroe con su fuerza (rareza, nivel, estrellas y sinergia).
 static func apply_power(state: Dictionary) -> void:
+	var ids: Array = (state.get("heroes", []) as Array).map(func(u: Dictionary) -> String: return str(u["id"]))
+	var syn: float = 1.0 + float(synergy(ids)["bonus"])
 	for u: Variant in state.get("heroes", []):
 		var d: Dictionary = u
-		var m: float = power_mult(str(d["id"]))
+		var m: float = power_mult(str(d["id"])) * syn
 		d["hp"] = float(d["hp"]) * m
 		d["max_hp"] = float(d["max_hp"]) * m
 		d["atk"] = float(d["atk"]) * m

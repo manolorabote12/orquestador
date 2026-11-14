@@ -18,7 +18,7 @@ static func open(host: Node) -> HeroesPanel:
 
 
 func _ready() -> void:
-	build_frame(Kit.text("heroes", "Héroes"), 680.0)
+	build_frame(Kit.text("heroes", "H\u00e9roes"), 680.0)
 	_top = Label.new()
 	_top.name = "HeroesInfo"
 	_top.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -69,9 +69,15 @@ func _refresh() -> void:
 		return ka < kb)
 	for id: String in ids:
 		_grid.add_child(_card(id, team.has(id)))
-	_top.text = Kit.text("heroes_info", "{n} de {max} héroes  ·  equipo {t}/4").format(
+	var syn: Dictionary = Heroes.synergy(team)
+	var syn_txt: String = ""
+	if float(syn["bonus"]) > 0.0:
+		syn_txt = "  \u00b7  " + Kit.text("hero_synergy", "Sinergia {e} x{n}: +{p} %").format({"e": Heroes.elem_name(str(syn["element"])),
+			"n": int(syn["n"]), "p": int(round(float(syn["bonus"]) * 100.0))})
+	_top.text = Kit.text("hero_power", "Poder {p}").format({"p": Heroes.team_power(team)}) + syn_txt + "\n" \
+		+ Kit.text("heroes_info", "{n} de {max} h\u00e9roes  \u00b7  equipo {t}/4").format(
 		{"n": Heroes.owned_ids().size(), "max": ids.size(), "t": team.size()}) + "\n" \
-		+ Kit.text("heroes_hint", "Toca un héroe para meterlo o sacarlo del equipo.")
+		+ Kit.text("heroes_hint", "Toca un h\u00e9roe para meterlo o sacarlo del equipo.")
 
 
 func _card(id: String, in_team: bool) -> Control:
@@ -110,7 +116,7 @@ func _card(id: String, in_team: bool) -> Control:
 	pic.add_child(fig)
 	v.add_child(_lab(str(d.get("name", id)), 22, Color.WHITE))
 	if mine:
-		v.add_child(_lab("★".repeat(Heroes.stars(id)) + "☆".repeat(Heroes.MAX_STARS - Heroes.stars(id)), 18, Color("#ffc94d")))
+		v.add_child(_lab("\u2605".repeat(Heroes.stars(id)) + "\u2606".repeat(Heroes.MAX_STARS - Heroes.stars(id)), 18, Color("#ffc94d")))
 		v.add_child(_lab(Kit.text("brawler_level", "Nivel %d") % Heroes.level(id), 17, Color("#c9a6ff")))
 		if Heroes.level(id) < Heroes.MAX_LEVEL:
 			var up: Button = UI.make_button(Kit.text("hero_up", "Subir") + " %d" % Heroes.level_cost(id), true, Store.currency_icon())
@@ -126,7 +132,7 @@ func _card(id: String, in_team: bool) -> Control:
 					_refresh.call_deferred())
 			v.add_child(up)
 		if in_team:
-			v.add_child(_lab(Kit.text("hero_in_team", "✔ En el equipo"), 16, UI.colors.get("acento", Color.ORANGE)))
+			v.add_child(_lab(Kit.text("hero_in_team", "\u2714 En el equipo"), 16, UI.colors.get("acento", Color.ORANGE)))
 	else:
 		v.add_child(_lab(Kit.text("hero_locked", "Se consigue invocando"), 15, UI.colors.get("texto_suave", Color(0.7, 0.7, 0.75))))
 	card.pressed.connect(func() -> void:

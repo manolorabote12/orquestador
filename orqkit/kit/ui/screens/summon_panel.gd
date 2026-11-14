@@ -33,7 +33,7 @@ func _ready() -> void:
 	var parts: Array[String] = []
 	for r: String in ["legendario", "epico", "raro", "comun"]:
 		parts.append("%s %s %%" % [Kit.text("rarity_" + r, r.capitalize()), str(Heroes.RATES[r]).replace(".0", "")])
-	odds.text = Kit.text("summon_odds", "Probabilidades") + ": " + "  ·  ".join(parts)
+	odds.text = Kit.text("summon_odds", "Probabilidades") + ": " + "  \u00b7  ".join(parts)
 	body.add_child(odds)
 	_info = Label.new()
 	_info.name = "Pity"
@@ -51,11 +51,11 @@ func _ready() -> void:
 	row.alignment = BoxContainer.ALIGNMENT_CENTER
 	row.add_theme_constant_override("separation", 12)
 	body.add_child(row)
-	_one = UI.make_button("x1  ·  %d" % Heroes.COST_ONE, true, Store.currency_icon())
+	_one = UI.make_button("x1  \u00b7  %d" % Heroes.COST_ONE, true, Store.currency_icon())
 	_one.name = "BtnSummon1"
 	_one.pressed.connect(func() -> void: _do(1))
 	row.add_child(_one)
-	_ten = UI.make_button("x10  ·  %d" % Heroes.COST_TEN, true, Store.currency_icon())
+	_ten = UI.make_button("x10  \u00b7  %d" % Heroes.COST_TEN, true, Store.currency_icon())
 	_ten.name = "BtnSummon10"
 	_ten.pressed.connect(func() -> void: _do(10))
 	row.add_child(_ten)
@@ -68,7 +68,7 @@ func _ready() -> void:
 
 func _update() -> void:
 	_info.text = Kit.text("summon_pity", "Legendario seguro en {n} invocaciones").format({"n": Heroes.PITY - Heroes.pity()}) \
-		+ "   ·   " + "%d %s" % [Save.wallet(), Store.currency_name()]
+		+ "   \u00b7   " + "%d %s" % [Save.wallet(), Store.currency_name()]
 	_one.disabled = Save.wallet() < Heroes.COST_ONE
 	_ten.disabled = Save.wallet() < Heroes.COST_TEN
 
@@ -114,7 +114,7 @@ func _tile(r: Dictionary, i: int) -> Control:
 	fig.position = Vector2(50.0, 82.0)
 	pic.add_child(fig)
 	var l: Label = Label.new()
-	l.text = str(Heroes.hero(id).get("name", id)) + ("\n" + Kit.text("summon_new", "¡Nuevo!") if bool(r["new"]) else "\n" + "★".repeat(int(r["stars"])))
+	l.text = str(Heroes.hero(id).get("name", id)) + ("\n" + Kit.text("summon_new", "\u00a1Nuevo!") if bool(r["new"]) else "\n" + "\u2605".repeat(int(r["stars"])))
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.add_theme_font_size_override("font_size", 15)
 	v.add_child(l)

@@ -6559,6 +6559,9 @@ func _test_heroes() -> void:
 	Heroes.apply_power(st)
 	var lg: Dictionary = (st["heroes"] as Array).filter(func(u: Dictionary) -> bool: return str(u["id"]) == legend)[0]
 	check("heroes: el legendario pelea con su fuerza", float(lg["max_hp"]) > float(Heroes.hero(legend)["hp"]) * 1.2)
+	check("heroes: sinergia de elementos (4 del mismo +20 %)", is_equal_approx(float(Heroes.synergy(["guerrero", "berserker", "dragona", "guerrero"])["bonus"]), 0.2)
+		and is_equal_approx(float(Heroes.synergy(["guerrero", "maga"])["bonus"]), 0.0))
+	check("heroes: el poder del equipo sube al subir de nivel", Heroes.team_power() > 0)
 	var t0: float = 1000000.0
 	Heroes.idle_claim(t0)
 	check("heroes: botin por hora y tope de 12 horas", Heroes.idle_pending(t0 + 3600.0) == Heroes.idle_rate() and Heroes.idle_pending(t0 + 3600.0 * 30.0) == Heroes.idle_rate() * 12)
