@@ -77,7 +77,7 @@ func _card(b: Dictionary, selected: bool) -> Control:
 	var tint: Color = Brawlers.tint(b)
 	var card: Button = Button.new()
 	card.name = "Brawler_" + str(b["id"])
-	card.custom_minimum_size = Vector2(290.0, 330.0)
+	card.custom_minimum_size = Vector2(290.0, 400.0)
 	card.focus_mode = Control.FOCUS_ALL
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
 	sb.bg_color = UI.colors.get("panel", Color(0.12, 0.12, 0.16)).darkened(0.12 if free else 0.35)
@@ -113,6 +113,8 @@ func _card(b: Dictionary, selected: bool) -> Control:
 	nm.add_theme_font_size_override("font_size", 26)
 	nm.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	v.add_child(nm)
+	if free:
+		v.add_child(_power_row(b))
 	if not free:
 		var lk: Label = Label.new()
 		lk.name = "Locked"
@@ -133,6 +135,20 @@ func _card(b: Dictionary, selected: bool) -> Control:
 		l.add_theme_font_size_override("font_size", 19)
 		l.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		v.add_child(l)
+	if free and Brawlers.level(str(b["id"])) < Brawlers.MAX_LEVEL:
+		var up: Button = UI.make_button(Kit.text("brawler_upgrade", "Mejorar") + "  %d" % Brawlers.coins_need(str(b["id"])), Brawlers.can_upgrade(str(b["id"])), "coin")
+		up.name = "BtnUpgrade"
+		up.custom_minimum_size = Vector2(0.0, 52.0)
+		up.disabled = not Brawlers.can_upgrade(str(b["id"]))
+		up.add_theme_font_size_override("font_size", 19)
+		var uid: String = str(b["id"])
+		up.pressed.connect(func() -> void:
+			if Brawlers.upgrade(uid):
+				Audio.play("powerup")
+				Juice.burst(self, up.get_global_rect().get_center(), Color("#c9a6ff"), 24)
+				changed.emit()
+				_refresh.call_deferred())
+		v.add_child(up)
 	if selected:
 		var s: Label = Label.new()
 		s.name = "Selected"
@@ -173,4 +189,40 @@ func _bar(label: String, k: float, col: Color) -> Control:
 	bar.add_theme_stylebox_override("fill", fill)
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	h.add_child(bar)
+	return h
+
+
+## Nivel de fuerza y puntos para el siguiente (barra morada como en los juegos de arena).
+func _power_row(b: Dictionary) -> Control:
+	var id: String = str(b["id"])
+	var h: HBoxContainer = HBoxContainer.new()
+	h.name = "Power"
+	h.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.alignment = BoxContainer.ALIGNMENT_CENTER
+	var lv: Label = Label.new()
+	lv.name = "Level"
+	lv.text = Kit.text("brawler_level", "Nivel %d") % Brawlers.level(id)
+	lv.add_theme_font_size_override("font_size", 20)
+	lv.add_theme_color_override("font_color", Color("#c9a6ff"))
+	lv.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	h.add_child(lv)
+	var need: int = Brawlers.points_need(id)
+	if need > 0:
+		var bar: ProgressBar = ProgressBar.new()
+		bar.custom_minimum_size = Vector2(120.0, 18.0)
+		bar.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		bar.show_percentage = false
+		bar.max_value = float(need)
+		bar.value = minf(float(Brawlers.points(id)), float(need))
+		var fill: StyleBoxFlat = StyleBoxFlat.new()
+		fill.bg_color = Color("#a46bff") if Brawlers.points(id) < need else Color("#5fd35f")
+		fill.set_corner_radius_all(6)
+		bar.add_theme_stylebox_override("fill", fill)
+		bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		h.add_child(bar)
+		var n: Label = Label.new()
+		n.text = "%d/%d" % [Brawlers.points(id), need]
+		n.add_theme_font_size_override("font_size", 16)
+		n.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		h.add_child(n)
 	return h

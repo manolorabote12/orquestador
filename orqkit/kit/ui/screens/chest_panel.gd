@@ -145,6 +145,20 @@ func _open() -> void:
 		body.add_child(cl)
 		body.move_child(cl, _info.get_index() + 1)
 		UI.pop_in(cl, 0.4)
+	var pts: Array = r.get("points", [])
+	if not pts.is_empty():
+		var pl: Label = Label.new()
+		pl.name = "ChestPoints"
+		var parts2: PackedStringArray = PackedStringArray()
+		for e: Variant in pts:
+			parts2.append("%s +%d" % [str(Brawlers.find(str((e as Dictionary)["id"])).get("name", "")), int((e as Dictionary)["n"])])
+		pl.text = Kit.text("chest_points", "Puntos de fuerza: %s") % ", ".join(parts2)
+		pl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		pl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		pl.add_theme_color_override("font_color", Color("#c9a6ff"))
+		body.add_child(pl)
+		body.move_child(pl, _info.get_index() + 1)
+		UI.pop_in(pl, 0.5)
 	opened.emit(r)
 	for c2: Node in body.get_children():
 		if c2 is Button and c2.name == "BtnCloseChest":

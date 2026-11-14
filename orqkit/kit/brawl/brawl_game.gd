@@ -96,6 +96,9 @@ var _gas: Node2D
 var _camera: Camera2D
 var stick: HordeStick
 var _pad_attack: BrawlPad
+## Apuntado a mano (arrastrando el boton): direccion mientras apuntas, Vector2.ZERO si no.
+var aim_attack: Vector2 = Vector2.ZERO
+var aim_super: Vector2 = Vector2.ZERO
 var _pad_super: BrawlPad
 var _left_label: Label
 var _gas_label: Label
@@ -367,7 +370,7 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 	if is_player:
 		f.name = "Player"
 		## Mejora de la tienda: +8 % de vida y dano por nivel.
-		var up: float = 1.0 + 0.08 * float(Save.upgrade_level("luchador"))
+		var up: float = (1.0 + 0.08 * float(Save.upgrade_level("luchador"))) * (Brawlers.power_mult(str(b.get("id", ""))) if online.is_empty() else 1.0)
 		f.max_hp = Kit.player_hp(PLAYER_HP) * up * float(b.get("hp", 1.0))
 		f.damage = PLAYER_DMG * up * float(b.get("dmg", 1.0))
 		f.speed = float(Kit.param("player.brawl_speed", 330.0)) * float(b.get("speed", 1.0))
@@ -449,6 +452,8 @@ func _build_hud() -> void:
 	_pad_super.custom_minimum_size = Vector2(124, 124)
 	_pad_super.size_flags_vertical = Control.SIZE_SHRINK_END
 	_pad_super.pressed.connect(use_super)
+	_pad_super.aim.connect(func(d: Vector2) -> void: aim_super = d)
+	_pad_super.aimed.connect(super_toward)
 	pads.add_child(_pad_super)
 	_pad_attack = BrawlPad.new()
 	_pad_attack.name = "PadAttack"
@@ -457,6 +462,8 @@ func _build_hud() -> void:
 	_pad_attack.segments = BrawlFighter.AMMO_MAX
 	_pad_attack.custom_minimum_size = Vector2(176, 176)
 	_pad_attack.pressed.connect(attack)
+	_pad_attack.aim.connect(func(d: Vector2) -> void: aim_attack = d)
+	_pad_attack.aimed.connect(attack_toward)
 	pads.add_child(_pad_attack)
 	var pad_gap: Control = Control.new()
 	pad_gap.custom_minimum_size = Vector2(0, 30)
@@ -824,6 +831,26 @@ func use_super() -> bool:
 	return fire_super(player)
 
 
+## Disparo apuntado a mano (arrastrar el boton y soltar).
+func attack_toward(dir: Vector2) -> bool:
+	if finished or failed or player == null or not player.alive or dir == Vector2.ZERO:
+		return false
+	if mode == "ball" and ball.get("holder") == player:
+		player.facing = dir
+		return kick(player, dir)
+	return shoot(player, dir.normalized())
+
+
+## Super apuntado a mano: la bomba cae a donde apuntas y la embestida va hacia ahi.
+func super_toward(dir: Vector2) -> bool:
+	if finished or failed or player == null or not player.alive or dir == Vector2.ZERO:
+		return false
+	player.ai["super_dir"] = dir.normalized()
+	var ok: bool = fire_super(player)
+	player.ai.erase("super_dir")
+	return ok
+
+
 func _lead(f: BrawlFighter, t: BrawlFighter) -> Vector2:
 	var to: Vector2 = t.position - f.position
 	var time: float = to.length() / SHOT_SPEED
@@ -895,6 +922,8 @@ func _spawn_super(f: BrawlFighter, origin: Vector2) -> void:
 		"bomba":
 			var t: BrawlFighter = best_target(f)
 			var to: Vector2 = t.position if t != null else origin + f.facing * 300.0
+			if f.ai.has("super_dir"):
+				to = origin + (f.ai["super_dir"] as Vector2) * SUPER_RANGE
 			if to.distance_to(origin) > SUPER_RANGE * 1.2:
 				to = origin + (to - origin).normalized() * SUPER_RANGE * 1.2
 			var dist: float = maxf(origin.distance_to(to), 1.0)
@@ -1283,6 +1312,44 @@ func _coop_death(f: BrawlFighter, by: BrawlFighter) -> void:
 		_net_end(2)
 
 
+## Guia de apuntado: por donde iran las balas (o el balon) y donde caera el super.
+func _draw_aim() -> void:
+	if player == null or not player.alive:
+		return
+	var o: Vector2 = player.position + Vector2(0, -26)
+	if aim_attack != Vector2.ZERO:
+		player.facing = aim_attack
+		var holding: bool = mode == "ball" and ball.get("holder") == player
+		var atk: Dictionary = player.ai.get("atk", {})
+		var n: int = 1 if holding else int(atk.get("n", 3))
+		var spread: float = 0.0 if holding else float(atk.get("spread", 0.07))
+		var reach: float = SHOT_RANGE * 0.9 if holding else range_of(player)
+		var col: Color = Color(1, 1, 1, 0.32) if player.ammo >= 1.0 or holding else Color(1, 0.4, 0.4, 0.3)
+		if n == 1:
+			var end: Vector2 = o + aim_attack * reach
+			_fx.draw_line(o, end, col, 14.0, true)
+			_fx.draw_circle(end, 9.0, col)
+		else:
+			var half: float = spread * float(n - 1) * 0.5 + 0.035
+			var pts: PackedVector2Array = PackedVector2Array([o])
+			for k: int in 13:
+				pts.append(o + aim_attack.rotated(lerpf(-half, half, float(k) / 12.0)) * reach)
+			_fx.draw_colored_polygon(pts, col)
+	if aim_super != Vector2.ZERO and player.super_charge >= 1.0:
+		var gold: Color = Color(1.0, 0.85, 0.25, 0.4)
+		match str(player.ai.get("super", "ola")):
+			"bomba":
+				var at: Vector2 = player.position + aim_super * SUPER_RANGE
+				_fx.draw_dashed_line(o, at + Vector2(0, -26), gold, 5.0, 16.0)
+				_fx.draw_circle(at, 165.0, Color(1.0, 0.5, 0.2, 0.18))
+				_fx.draw_arc(at, 165.0, 0.0, TAU, 40, Color(1.0, 0.6, 0.2, 0.7), 4.0, true)
+			"dash":
+				_fx.draw_line(o, o + aim_super * 320.0, gold, 40.0, true)
+			_:
+				var rad: float = 330.0 if str(player.ai.get("super", "")) == "cura" else SUPER_RANGE
+				_fx.draw_arc(player.position, rad, 0.0, TAU, 48, gold, 5.0, true)
+
+
 # ------------------------------------------------------------------ modos
 
 func _nearest_foe(f: BrawlFighter, movers_only: bool) -> BrawlFighter:
@@ -1316,6 +1383,8 @@ func _super_ready(f: BrawlFighter, target: BrawlFighter, d: float) -> bool:
 func _dash(f: BrawlFighter, col: Color) -> void:
 	var t: BrawlFighter = best_target(f)
 	var dir: Vector2 = (t.position - f.position).normalized() if t != null else f.facing
+	if f.ai.has("super_dir"):
+		dir = f.ai["super_dir"]
 	var p: Vector2 = f.position
 	var moved: float = 0.0
 	while moved < 320.0:
@@ -1602,12 +1671,14 @@ func _ball_goal(f: BrawlFighter, target: BrawlFighter) -> Vector2:
 	return holder.position + (goal_center(1 - f.team) - holder.position).normalized() * 220.0
 
 
-func kick(f: BrawlFighter) -> bool:
+func kick(f: BrawlFighter, aimed: Vector2 = Vector2.ZERO) -> bool:
 	if ball.get("holder") != f:
 		return false
 	var gp: Vector2 = goal_center(1 - f.team)
 	var dir: Vector2 = f.facing
-	if f.position.distance_to(gp) < SHOT_RANGE * 1.1 or not f.is_player:
+	if aimed != Vector2.ZERO:
+		dir = aimed.normalized()
+	elif f.position.distance_to(gp) < SHOT_RANGE * 1.1 or not f.is_player:
 		dir = (gp - f.position).normalized().rotated(_rng.randf_range(-0.06, 0.06))
 	ball["holder"] = null
 	ball["kicker"] = f
@@ -2151,6 +2222,7 @@ func _draw_fx() -> void:
 		_fx.draw_line(p - v * 46.0, p, Color(col, 0.28), w * 1.6, true)
 		_fx.draw_line(p - v * 22.0, p, col, w, true)
 		_fx.draw_circle(p, w * 0.7, col.lerp(Color.WHITE, 0.6))
+	_draw_aim()
 	## Escudos.
 	for f: BrawlFighter in fighters:
 		if f.alive and f.ai.has("shield"):

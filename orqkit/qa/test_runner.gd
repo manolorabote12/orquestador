@@ -2626,10 +2626,30 @@ func _test_brawl_modes() -> void:
 	check("personajes: los dos primeros libres, el resto por trofeos", Brawlers.unlocked(cat[0]) and Brawlers.unlocked(cat[1]) and (t0 >= 1200 or not Brawlers.unlocked(cat[7])))
 	check("personajes: no se elige uno bloqueado", t0 >= 1200 or not Brawlers.choose("rey"))
 	check("personajes: se elige uno libre", Brawlers.choose("coraza") and str(Brawlers.chosen()["id"]) == "coraza")
+	## Nivel de fuerza: puntos + monedas suben de nivel; mas vida en partida.
+	var lv0: int = Brawlers.level("coraza")
+	Brawlers.add_points("coraza", Brawlers.points_need("coraza"))
+	Save.add_wallet(Brawlers.coins_need("coraza") + 5)
+	check("fuerza: se puede mejorar con puntos y monedas", Brawlers.can_upgrade("coraza"))
+	check("fuerza: mejorar sube un nivel", Brawlers.upgrade("coraza") and Brawlers.level("coraza") == lv0 + 1)
+	check("fuerza: el nivel da +8 %", absf(Brawlers.power_mult("coraza") - (1.0 + 0.08 * float(lv0))) < 0.001)
+	var prng: RandomNumberGenerator = RandomNumberGenerator.new()
+	prng.seed = 7
+	var got: Array = Brawlers.chest_points("oro", prng)
+	var tot: int = 0
+	for e: Variant in got:
+		tot += int((e as Dictionary)["n"])
+	check("fuerza: un cofre de oro da 80-120 puntos", tot >= 80 and tot <= 120, str(got))
 	var duel: Array = [".........", ".........", "....R....", ".........", ".........", ".........", ".........", "....P....", ".........", ".........", "........."]
 	var game: Node = await start_game(brawl_config(duel, {"reaction": 99.0}), 0)
 	var me: BrawlFighter = game.get("player")
 	check("personajes: el elegido cambia vida y velocidad", me.max_hp > 3200.0 * 1.3 and me.speed < 330.0, "%.0f %.0f" % [me.max_hp, me.speed])
+	## Apuntado a mano: arrastrar el boton y soltar dispara hacia ahi.
+	(game.get("_pad_attack") as BrawlPad).simulate_aim(Vector2.LEFT)
+	var bl: Array = game.get("bullets")
+	check("apuntado: arrastrar y soltar dispara hacia donde apuntas", bl.size() == 5 and ((bl[2] as Dictionary)["vel"] as Vector2).x < -100.0)
+	bl.clear()
+	me.ammo = 3.0
 	game.call("shoot", me, Vector2.UP)
 	check("personajes: la escopeta lanza 5 balas", (game.get("bullets") as Array).size() == 5)
 	(game.get("bullets") as Array).clear()

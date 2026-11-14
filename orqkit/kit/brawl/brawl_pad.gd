@@ -2,8 +2,20 @@ class_name BrawlPad
 extends Control
 ## Boton redondo de la arena (ataque o super): circulo con aro de carga.
 ## fill 0..1 llena el aro; armed lo hace brillar. Responde al toque y al raton.
+## Como en los juegos de arena: tocar y soltar dispara solo al mas cercano (pressed); arrastrar
+## apunta a mano (aim con la direccion mientras arrastras) y al soltar dispara hacia ahi (aimed).
+## Arrastrar y volver al centro cancela.
 
 signal pressed
+signal aim(dir: Vector2)
+signal aimed(dir: Vector2)
+
+const DRAG_MIN: float = 22.0
+var _touching: bool = false
+var _start: Vector2 = Vector2.ZERO
+var _drag: Vector2 = Vector2.ZERO
+var _aiming: bool = false
+var _touch_index: int = -1
 
 var label: String = ""
 var color: Color = Color("#ffb627")
@@ -18,15 +30,63 @@ func _init() -> void:
 
 
 func _gui_input(event: InputEvent) -> void:
-	var hit: bool = false
-	if event is InputEventScreenTouch and (event as InputEventScreenTouch).pressed:
-		hit = true
-	elif event is InputEventMouseButton and (event as InputEventMouseButton).pressed and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
-		hit = true
-	if hit:
+	var down: int = -1  # 1 apretar, 0 soltar
+	var pos: Vector2 = Vector2.ZERO
+	if event is InputEventScreenTouch:
+		var t: InputEventScreenTouch = event
+		if t.pressed and _touching:
+			return
+		if not t.pressed and t.index != _touch_index:
+			return
+		down = 1 if t.pressed else 0
+		pos = t.position
+		_touch_index = t.index
+	elif event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
+		down = 1 if (event as InputEventMouseButton).pressed else 0
+		pos = (event as InputEventMouseButton).position
+	elif event is InputEventScreenDrag and _touching and (event as InputEventScreenDrag).index == _touch_index:
+		_move((event as InputEventScreenDrag).position)
 		accept_event()
+		return
+	elif event is InputEventMouseMotion and _touching:
+		_move((event as InputEventMouseMotion).position)
+		accept_event()
+		return
+	if down == 1:
+		accept_event()
+		_touching = true
+		_start = pos
+		_drag = Vector2.ZERO
+		_aiming = false
 		_down = 0.12
-		pressed.emit()
+	elif down == 0 and _touching:
+		accept_event()
+		_touching = false
+		_touch_index = -1
+		if _aiming:
+			_aiming = false
+			aim.emit(Vector2.ZERO)
+			if _drag.length() >= DRAG_MIN:
+				aimed.emit(_drag.normalized())
+		else:
+			pressed.emit()
+
+
+func _move(pos: Vector2) -> void:
+	_drag = pos - _start
+	if _drag.length() >= DRAG_MIN:
+		_aiming = true
+		aim.emit(_drag.normalized())
+	elif _aiming:
+		## Vuelto al centro: se cancela (no dispara al soltar).
+		aim.emit(Vector2.ZERO)
+
+
+## Las pruebas (sin pantalla) simulan arrastrar y soltar.
+func simulate_aim(dir: Vector2) -> void:
+	aim.emit(dir.normalized())
+	aim.emit(Vector2.ZERO)
+	aimed.emit(dir.normalized())
 
 
 func _process(delta: float) -> void:
@@ -37,7 +97,10 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	var r: float = minf(size.x, size.y) * 0.5
 	var c: Vector2 = size * 0.5
-	var k: float = 0.92 if _down > 0.0 else 1.0
+	var k: float = 0.92 if _down > 0.0 or _touching else 1.0
+	## Mientras apuntas, el boton se desplaza un poco hacia donde arrastras.
+	if _aiming:
+		c += _drag.limit_length(r * 0.45)
 	draw_circle(c + Vector2(0, 5), r * k, Color(0, 0, 0, 0.35))
 	draw_circle(c, r * k, Color(0.06, 0.06, 0.1, 0.55))
 	var inner: Color = color if armed else color.darkened(0.55)

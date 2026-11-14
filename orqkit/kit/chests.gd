@@ -134,11 +134,13 @@ static func open(i: int) -> Dictionary:
 			Save.grant_skin(skin)
 	## Cartas del album (13 nov).
 	var cards: Array[String] = Album.for_chest(str(c["type"]), rng)
+	## Arena: puntos de fuerza para mejorar personajes.
+	var pts: Array = Brawlers.chest_points(str(c["type"]), rng) if Genres.current() == "brawl" else []
 	s.remove_at(i)
 	Save.add_wallet(coins)
 	Save.save_data()
 	QA.log_event("chest_open", {"type": str(c["type"]), "coins": coins, "skin": skin, "cards": cards.size()})
-	return {"type": str(c["type"]), "coins": coins, "skin": skin, "cards": cards}
+	return {"type": str(c["type"]), "coins": coins, "skin": skin, "cards": cards, "points": pts}
 
 
 # ------------------------------------------------------------------ ruta de trofeos

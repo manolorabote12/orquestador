@@ -1693,7 +1693,10 @@
 			"brawler_sup_escudo": "Super: 3 s shield",
 			"brawler_sup_dash": "Super: dash",
 			"brawler_sup_cura": "Super: team heal",
-			"brawler_sup_bomba": "Super: bomb"
+			"brawler_sup_bomba": "Super: bomb",
+			"brawler_upgrade": "Upgrade",
+			"brawler_level": "Level %d",
+			"chest_points": "Power points: %s"
 		},
 		"pt": {
 			"a_friend": "um amigo",
@@ -3372,7 +3375,10 @@
 			"brawler_sup_escudo": "Super: escudo 3 s",
 			"brawler_sup_dash": "Super: investida",
 			"brawler_sup_cura": "Super: cura a equipe",
-			"brawler_sup_bomba": "Super: bomba"
+			"brawler_sup_bomba": "Super: bomba",
+			"brawler_upgrade": "Melhorar",
+			"brawler_level": "Nível %d",
+			"chest_points": "Pontos de força: %s"
 		},
 		"fr": {
 			"a_friend": "un ami",
@@ -5051,7 +5057,10 @@
 			"brawler_sup_escudo": "Super : bouclier 3 s",
 			"brawler_sup_dash": "Super : charge",
 			"brawler_sup_cura": "Super : soin d'équipe",
-			"brawler_sup_bomba": "Super : bombe"
+			"brawler_sup_bomba": "Super : bombe",
+			"brawler_upgrade": "Améliorer",
+			"brawler_level": "Niveau %d",
+			"chest_points": "Points de force : %s"
 		},
 		"de": {
 			"a_friend": "ein Freund",
@@ -6730,7 +6739,10 @@
 			"brawler_sup_escudo": "Super: 3 s Schild",
 			"brawler_sup_dash": "Super: Ansturm",
 			"brawler_sup_cura": "Super: Team heilen",
-			"brawler_sup_bomba": "Super: Bombe"
+			"brawler_sup_bomba": "Super: Bombe",
+			"brawler_upgrade": "Verbessern",
+			"brawler_level": "Stufe %d",
+			"chest_points": "Kraftpunkte: %s"
 		},
 		"it": {
 			"a_friend": "un amico",
@@ -8409,7 +8421,10 @@
 			"brawler_sup_escudo": "Super: scudo 3 s",
 			"brawler_sup_dash": "Super: carica",
 			"brawler_sup_cura": "Super: cura la squadra",
-			"brawler_sup_bomba": "Super: bomba"
+			"brawler_sup_bomba": "Super: bomba",
+			"brawler_upgrade": "Potenzia",
+			"brawler_level": "Livello %d",
+			"chest_points": "Punti forza: %s"
 		}
 	},
 	"generos": {
