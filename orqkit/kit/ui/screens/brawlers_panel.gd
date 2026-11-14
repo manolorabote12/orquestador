@@ -77,7 +77,7 @@ func _card(b: Dictionary, selected: bool) -> Control:
 	var tint: Color = Brawlers.tint(b)
 	var card: Button = Button.new()
 	card.name = "Brawler_" + str(b["id"])
-	card.custom_minimum_size = Vector2(290.0, 400.0)
+	card.custom_minimum_size = Vector2(290.0, 440.0)
 	card.focus_mode = Control.FOCUS_ALL
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
 	sb.bg_color = UI.colors.get("panel", Color(0.12, 0.12, 0.16)).darkened(0.12 if free else 0.35)

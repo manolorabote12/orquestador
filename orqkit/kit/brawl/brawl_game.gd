@@ -353,6 +353,11 @@ func _reset() -> void:
 	_camera.zoom = Vector2.ONE * clampf(vp.x / (TILE * 7.4), 0.5, 1.4)
 	_floor.queue_redraw()
 	_bushes.queue_redraw()
+	## La camara no sale de la arena: antes media pantalla era mar oscuro (critica «nivel_vacio»).
+	_camera.limit_left = int(-TILE * 0.6)
+	_camera.limit_top = int(-TILE * 1.6)
+	_camera.limit_right = int(float(_size.x) * TILE + TILE * 0.6)
+	_camera.limit_bottom = int(float(_size.y) * TILE + TILE * 1.8)
 	if _left_icon != null:
 		## En balon y torretas el marcador lleva copa; en el resto, la calavera de rivales que quedan.
 		var team_score: bool = mode in ["ball", "turrets"]
@@ -879,7 +884,7 @@ func _spawn_shot(f: BrawlFighter, origin: Vector2, dir: Vector2) -> void:
 	var atk: Dictionary = f.ai.get("atk", {})
 	var n: int = int(atk.get("n", 3))
 	var spread: float = float(atk.get("spread", 0.07))
-	var w: float = 14.0 if n == 1 else 9.0
+	var w: float = 17.0 if n == 1 else 12.0
 	for k: int in n:
 		var d: Vector2 = dir.rotated((float(k) - float(n - 1) * 0.5) * spread)
 		bullets.append({"pos": origin + d * 30.0 + Vector2(0, -26), "vel": d * SHOT_SPEED * float(atk.get("speed", 1.0)), "owner": f,
@@ -1010,7 +1015,8 @@ func _hit_fighter(f: BrawlFighter, dmg: float, by: BrawlFighter, col: Color) -> 
 	if f.is_player:
 		Juice.shake(0.12)
 		Juice.vibrate(20)
-	Juice.burst(_fx, f.position + Vector2(0, -30), col, 5, 160.0)
+	Juice.burst(_fx, f.position + Vector2(0, -30), col, 8, 220.0)
+	Juice.ring(_fx, f.position + Vector2(0, -30), col.lerp(Color.WHITE, 0.4), 46.0, 0.16)
 	if killed:
 		_on_death(f, by)
 
@@ -1024,7 +1030,7 @@ func _flush_damage(delta: float) -> void:
 		_dmg_acc.erase(f)
 		if is_instance_valid(f):
 			UI.float_text(_fx, f.position + Vector2(_rng.randf_range(-24, 24), -128), str(int(acc["amount"])),
-				Color("#ff8a80") if f.is_player else Color.WHITE, 30)
+				Color("#ff8a80") if f.is_player else Color.WHITE, 40)
 
 
 func _hit_box(cell: Vector2i, dmg: float, by: BrawlFighter) -> void:
@@ -2161,7 +2167,6 @@ func _draw_floor() -> void:
 
 
 func _draw_wall(n: Node2D, cell: Vector2i) -> void:
-	var tex: Texture2D = Kit.first_tile_texture()
 	var top_col: Color = Kit.color("solid", Color("#7c8aa5"))
 	var top: Rect2 = Rect2(Vector2(0.0, -TILE - WALL_H), Vector2(TILE, TILE))
 	if not _walls.has(cell + Vector2i(0, 1)):
@@ -2169,10 +2174,9 @@ func _draw_wall(n: Node2D, cell: Vector2i) -> void:
 		n.draw_rect(Rect2(Vector2(0.0, 0.0), Vector2(TILE, 16.0)), Color(0, 0, 0, 0.22))
 		n.draw_rect(Rect2(Vector2(0.0, -WALL_H), Vector2(TILE, WALL_H)), top_col.darkened(0.45))
 		n.draw_rect(Rect2(Vector2(0.0, -WALL_H), Vector2(TILE, 4.0)), top_col.darkened(0.25))
-	if tex != null:
-		n.draw_texture_rect(tex, top, false, Color.WHITE.lerp(top_col, 0.25))
-	else:
-		n.draw_rect(top, top_col)
+	## Cara de arriba lisa con un bisel interior (la baldosa de plataformas se veia como rejilla).
+	n.draw_rect(top, top_col)
+	n.draw_rect(top.grow(-12.0), top_col.lightened(0.08))
 	## Bordes de la cara de arriba donde acaba el muro (se lee el volumen).
 	var edge: Color = top_col.lightened(0.35)
 	var dark: Color = top_col.darkened(0.55)
@@ -2220,9 +2224,9 @@ func _draw_bushes() -> void:
 			var p: Vector2 = o + Vector2(TILE * (0.22 + 0.56 * fposmod(a * 3.1 + float(k) * 0.37, 1.0)), TILE * (0.25 + 0.5 * fposmod(a * 1.7 + float(k) * 0.53, 1.0)))
 			p.x += sin(t * 1.8 + float(seed_v + k)) * 3.0
 			var r: float = TILE * (0.3 + 0.08 * a)
-			_bushes.draw_circle(p + Vector2(0, 8), r, leaf.darkened(0.45))
+			_bushes.draw_circle(p + Vector2(0, 7), r, leaf.darkened(0.28))
 			_bushes.draw_circle(p, r, leaf)
-			_bushes.draw_circle(p + Vector2(-r * 0.25, -r * 0.3), r * 0.45, leaf.lightened(0.18))
+			_bushes.draw_circle(p + Vector2(-r * 0.25, -r * 0.3), r * 0.4, leaf.lightened(0.1))
 
 
 func _draw_fx() -> void:
@@ -2263,7 +2267,7 @@ func _draw_fx() -> void:
 			continue
 		## Halo de luz suave alrededor de cada bala.
 		_fx.draw_circle(p, w * 1.9, Color(col, 0.16))
-		if w >= 14.0:
+		if w >= 16.0:
 			## Tiro largo: estela larga y fina, como un rayo.
 			_fx.draw_line(p - v * 120.0, p, Color(col, 0.22), w * 1.2, true)
 			_fx.draw_line(p - v * 60.0, p, col.lightened(0.3), w * 0.6, true)
