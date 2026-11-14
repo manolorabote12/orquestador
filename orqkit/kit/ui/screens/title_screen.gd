@@ -114,6 +114,11 @@ func _ready() -> void:
 	sub.text = Kit.text("tagline", "")
 	sub.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	## Legible encima de la ilustracion (critica: «el lema casi no se lee»): mas grande, blanco y con borde.
+	sub.add_theme_font_size_override("font_size", 30)
+	sub.add_theme_color_override("font_color", Color.WHITE)
+	sub.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.1, 0.9))
+	sub.add_theme_constant_override("outline_size", 9)
 	col.add_child(sub)
 
 	## 3 - En medio: botones redondos a los lados; el hueco del centro es para el heroe.
@@ -539,6 +544,8 @@ func _side_button(parent: VBoxContainer, node_name: String, label: String, icon:
 	while fs > 15 and fnt != null and fnt.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 108.0:
 		fs -= 1
 	l.add_theme_font_size_override("font_size", fs)
+	l.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.1, 0.9))
+	l.add_theme_constant_override("outline_size", 7)
 	l.custom_minimum_size = Vector2(112, 0)
 	l.clip_text = true
 	l.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS

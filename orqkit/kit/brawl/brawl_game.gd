@@ -104,6 +104,7 @@ var _left_label: Label
 var _gas_label: Label
 var _left_icon: UiIcon
 var _floor_theme: Texture2D
+var _wall_col: Color = Color(0, 0, 0, 0)
 var _flow: Dictionary = {}
 ## Dano que se va sumando a cada luchador para ensenarlo como un solo numero por rafaga.
 var _dmg_acc: Dictionary = {}
@@ -2158,17 +2159,14 @@ func _draw_floor() -> void:
 	for y: int in _size.y:
 		for x: int in _size.x:
 			var r: Rect2 = Rect2(Vector2(x, y) * TILE, Vector2(TILE, TILE))
+			## Sin rejilla (critica v9: «suelo con cuadricula»): cuadros alternos casi iguales.
 			_floor.draw_rect(r, cols[(x + y) % 2])
-			## Losas con bisel: luz arriba a la izquierda y sombra abajo a la derecha.
-			_floor.draw_rect(Rect2(r.position, Vector2(TILE, 3.0)), Color(1, 1, 1, 0.1))
-			_floor.draw_rect(Rect2(r.position, Vector2(3.0, TILE)), Color(1, 1, 1, 0.07))
-			_floor.draw_rect(Rect2(r.position + Vector2(0.0, TILE - 3.0), Vector2(TILE, 3.0)), Color(0, 0, 0, 0.08))
 	## Tema en el suelo: el fondo ilustrado del juego (playa con agua, bosque...) desenfocado y suave
 	## por encima de la arena (critica de Marea Alta v5: «suelo plano sin tematica, parecen dos juegos»).
 	if Look.has_level_backdrop():
 		if _floor_theme == null:
 			_floor_theme = Look.soft_texture(Look.level_texture())
-		_floor.draw_texture_rect(_floor_theme, Rect2(Vector2.ZERO, w), false, Color(1, 1, 1, 0.42))
+		_floor.draw_texture_rect(_floor_theme, Rect2(Vector2.ZERO, w), false, Color(1, 1, 1, 0.3))
 	## Suelo limpio (la critica visual lo veia ruidoso con texturas encima): solo un oscurecido suave
 	## hacia los bordes para que los personajes resalten en el centro.
 	for k: int in 6:
@@ -2192,30 +2190,51 @@ func _draw_floor() -> void:
 
 
 func _draw_wall(n: Node2D, cell: Vector2i) -> void:
-	var top_col: Color = Kit.color("solid", Color("#7c8aa5"))
-	## Muros del tema y claros (critica v7: «bloques azules planos y oscuros que parecen de otro juego»):
-	## el color solido del juego mezclado con el suelo, con un minimo de luz.
-	top_col = top_col.lerp(_floor_colors()[0], 0.3)
-	if top_col.v < 0.5:
-		top_col.v = 0.5
+	var top_col: Color = _wall_color()
+	## Muros con forma de roca (critica v9: «bloques de hormigon que no pegan con la playa»): esquinas
+	## redondeadas donde el muro acaba, cara delantera mas oscura y una veta de luz. Los muros seguidos
+	## se funden en un solo macizo.
+	var up: bool = _walls.has(cell + Vector2i(0, -1))
+	var down: bool = _walls.has(cell + Vector2i(0, 1))
+	var left: bool = _walls.has(cell + Vector2i(-1, 0))
+	var right: bool = _walls.has(cell + Vector2i(1, 0))
+	var rr: int = 30
 	var top: Rect2 = Rect2(Vector2(0.0, -TILE - WALL_H), Vector2(TILE, TILE))
-	if not _walls.has(cell + Vector2i(0, 1)):
-		## Cara de delante (mas oscura) y sombra en el suelo.
-		n.draw_rect(Rect2(Vector2(0.0, 0.0), Vector2(TILE, 16.0)), Color(0, 0, 0, 0.22))
-		n.draw_rect(Rect2(Vector2(0.0, -WALL_H), Vector2(TILE, WALL_H)), top_col.darkened(0.45))
-		n.draw_rect(Rect2(Vector2(0.0, -WALL_H), Vector2(TILE, 4.0)), top_col.darkened(0.25))
-	## Cara de arriba lisa con un bisel interior (la baldosa de plataformas se veia como rejilla).
-	n.draw_rect(top, top_col)
-	n.draw_rect(top.grow(-12.0), top_col.lightened(0.08))
-	## Bordes de la cara de arriba donde acaba el muro (se lee el volumen).
-	var edge: Color = top_col.lightened(0.35)
-	var dark: Color = top_col.darkened(0.55)
-	if not _walls.has(cell + Vector2i(0, -1)):
-		n.draw_rect(Rect2(top.position, Vector2(TILE, 5.0)), edge)
-	if not _walls.has(cell + Vector2i(-1, 0)):
-		n.draw_rect(Rect2(top.position, Vector2(5.0, TILE)), edge.lerp(top_col, 0.5))
-	if not _walls.has(cell + Vector2i(1, 0)):
-		n.draw_rect(Rect2(top.position + Vector2(TILE - 5.0, 0.0), Vector2(5.0, TILE)), dark)
+	if not down:
+		n.draw_set_transform(Vector2(TILE * 0.5, 8.0), 0.0, Vector2(1.0, 0.35))
+		n.draw_circle(Vector2.ZERO, TILE * 0.55, Color(0, 0, 0, 0.2))
+		n.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		var front: StyleBoxFlat = StyleBoxFlat.new()
+		front.bg_color = top_col.darkened(0.42)
+		front.corner_radius_bottom_left = 0 if left else rr
+		front.corner_radius_bottom_right = 0 if right else rr
+		n.draw_style_box(front, Rect2(Vector2(0.0, -WALL_H - TILE * 0.5), Vector2(TILE, WALL_H + TILE * 0.5)))
+	var face: StyleBoxFlat = StyleBoxFlat.new()
+	face.bg_color = top_col
+	face.corner_radius_top_left = 0 if (up or left) else rr
+	face.corner_radius_top_right = 0 if (up or right) else rr
+	face.corner_radius_bottom_left = 0 if (down or left) else rr
+	face.corner_radius_bottom_right = 0 if (down or right) else rr
+	n.draw_style_box(face, top)
+	## Veta de luz arriba a la izquierda y moteado suave (piedra), fijo por casilla.
+	var seed_v: int = cell.x * 37 + cell.y * 91
+	if not up:
+		n.draw_line(top.position + Vector2(18.0 if not left else 0.0, 7.0), top.position + Vector2(TILE - (18.0 if not right else 0.0), 7.0), top_col.lightened(0.3), 5.0, true)
+	for k: int in 3:
+		var px: float = 16.0 + float((seed_v + k * 29) % 64)
+		var py: float = 22.0 + float((seed_v * 3 + k * 17) % 56)
+		n.draw_circle(top.position + Vector2(px, py), 5.0 + float((seed_v + k) % 4), top_col.darkened(0.12))
+
+
+func _wall_color() -> Color:
+	if _wall_col.a == 0.0:
+		var c: Color = Kit.color("solid", Color("#7c8aa5"))
+		## Del tema y claro, entre el color solido del juego y el suelo (critica v7: bloques oscuros).
+		c = c.lerp(_floor_colors()[0], 0.35)
+		if c.v < 0.52:
+			c.v = 0.52
+		_wall_col = c
+	return _wall_col
 
 
 func _draw_box(n: Node2D, cell: Vector2i) -> void:
