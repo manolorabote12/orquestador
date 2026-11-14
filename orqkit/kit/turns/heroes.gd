@@ -86,6 +86,17 @@ static func skills_extra() -> Dictionary:
 	return EXTRA_SKILLS
 
 
+## Nombres de las habilidades de un heroe (para su ficha).
+static func skill_names(id: String) -> Array[String]:
+	var sk: Dictionary = (TurnsParty.catalog({"rpg": _rpg()})["skills"] as Dictionary).duplicate()
+	sk.merge(EXTRA_SKILLS)
+	var out: Array[String] = []
+	for s: Variant in hero(id).get("skills", []):
+		var d: Dictionary = sk.get(str(s), {})
+		out.append(Kit.text("rpg_" + str(s), str(d.get("name", s))))
+	return out
+
+
 static func hero(id: String) -> Dictionary:
 	return roster().get(id, {})
 

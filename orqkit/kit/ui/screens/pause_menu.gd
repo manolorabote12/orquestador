@@ -24,7 +24,7 @@ func _ready() -> void:
 	restart.name = "BtnRestart"
 	restart.pressed.connect(_on_restart)
 	body.add_child(restart)
-	if HowTo.has(Genres.current()):
+	if HowTo.has(HowTo.key()):
 		var how: Button = UI.make_button(Kit.text("howto_title", "C\u00f3mo se juega"), false, "star")
 		how.name = "BtnHowTo"
 		how.pressed.connect(func() -> void: HowToPanel.open(self))

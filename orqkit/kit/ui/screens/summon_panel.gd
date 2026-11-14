@@ -30,6 +30,7 @@ func _ready() -> void:
 	odds.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	odds.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	odds.add_theme_font_size_override("font_size", 17)
+	odds.custom_minimum_size = Vector2(560.0, 0.0)
 	var parts: Array[String] = []
 	for r: String in ["legendario", "epico", "raro", "comun"]:
 		parts.append("%s %s %%" % [Kit.text("rarity_" + r, r.capitalize()), str(Heroes.RATES[r]).replace(".0", "")])
@@ -38,11 +39,13 @@ func _ready() -> void:
 	_info = Label.new()
 	_info.name = "Pity"
 	_info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_info.custom_minimum_size = Vector2(560.0, 0.0)
 	_info.add_theme_color_override("font_color", Color("#ffc94d"))
 	body.add_child(_info)
 	_reveal = HFlowContainer.new()
 	_reveal.name = "Reveal"
-	_reveal.custom_minimum_size = Vector2(0.0, 300.0)
+	_reveal.custom_minimum_size = Vector2(560.0, 300.0)
 	_reveal.alignment = FlowContainer.ALIGNMENT_CENTER
 	_reveal.add_theme_constant_override("h_separation", 8)
 	_reveal.add_theme_constant_override("v_separation", 8)
@@ -68,7 +71,7 @@ func _ready() -> void:
 
 func _update() -> void:
 	_info.text = Kit.text("summon_pity", "Legendario seguro en {n} invocaciones").format({"n": Heroes.PITY - Heroes.pity()}) \
-		+ "   \u00b7   " + "%d %s" % [Save.wallet(), Store.currency_name()]
+		+ "\n" + "%d %s" % [Save.wallet(), Store.currency_name()]
 	_one.disabled = Save.wallet() < Heroes.COST_ONE
 	_ten.disabled = Save.wallet() < Heroes.COST_TEN
 
@@ -97,7 +100,7 @@ func _tile(r: Dictionary, i: int) -> Control:
 	var rc: Color = Color(str(Heroes.RARITY_COL.get(str(r["rarity"]), "#b0bec5")))
 	var p: PanelContainer = PanelContainer.new()
 	p.name = "Got_%d" % i
-	p.custom_minimum_size = Vector2(108.0, 140.0)
+	p.custom_minimum_size = Vector2(104.0, 140.0)
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
 	sb.bg_color = rc.darkened(0.6)
 	sb.border_color = rc

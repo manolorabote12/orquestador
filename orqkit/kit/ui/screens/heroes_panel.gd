@@ -86,7 +86,7 @@ func _card(id: String, in_team: bool) -> Control:
 	var rc: Color = Heroes.rarity_color(id)
 	var card: Button = Button.new()
 	card.name = "Hero_" + id
-	card.custom_minimum_size = Vector2(200.0, 330.0)
+	card.custom_minimum_size = Vector2(200.0, 370.0)
 	var sb: StyleBoxFlat = StyleBoxFlat.new()
 	sb.bg_color = UI.colors.get("panel", Color(0.12, 0.12, 0.16)).darkened(0.1 if mine else 0.4)
 	sb.border_color = UI.colors.get("acento", Color.ORANGE) if in_team else (rc if mine else Color(0.3, 0.3, 0.35))
@@ -115,11 +115,13 @@ func _card(id: String, in_team: bool) -> Control:
 		fig.modulate = Color(0, 0, 0, 0.7)
 	pic.add_child(fig)
 	v.add_child(_lab(str(d.get("name", id)), 22, Color.WHITE))
+	v.add_child(_lab(Heroes.elem_name(str(d.get("element", ""))) + "  \u00b7  " + ", ".join(Heroes.skill_names(id)), 13,
+		Heroes.ELEM_COL.get(str(d.get("element", "")), Color(0.8, 0.8, 0.85)).lightened(0.3)))
 	if mine:
 		v.add_child(_lab("\u2605".repeat(Heroes.stars(id)) + "\u2606".repeat(Heroes.MAX_STARS - Heroes.stars(id)), 18, Color("#ffc94d")))
 		v.add_child(_lab(Kit.text("brawler_level", "Nivel %d") % Heroes.level(id), 17, Color("#c9a6ff")))
 		if Heroes.level(id) < Heroes.MAX_LEVEL:
-			var up: Button = UI.make_button(Kit.text("hero_up", "Subir") + " %d" % Heroes.level_cost(id), true, Store.currency_icon())
+			var up: Button = UI.make_button(Kit.text("hero_up", "Subir") + "  %d" % Heroes.level_cost(id), true, "")
 			up.name = "BtnUp"
 			up.custom_minimum_size = Vector2(0.0, 48.0)
 			up.add_theme_font_size_override("font_size", 17)

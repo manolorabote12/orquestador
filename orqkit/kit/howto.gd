@@ -23,6 +23,7 @@ const RULES: Dictionary = {
 	"survival": ["Arrastra para moverte y pulsa Usar junto a \u00e1rboles, rocas, arbustos o agua.", "Fabrica hacha, lanza y hoguera con los botones de abajo.", "De noche qu\u00e9date junto al fuego: los lobos no se acercan a la luz."],
 	"clash": ["Arrastra una carta de tu mano a tu mitad de la arena; cuesta elixir.", "Las tropas van solas por su carril a por las torres rivales.", "Tira la torre del rey o ten m\u00e1s coronas al acabar el tiempo."],
 	"stealth": ["Toca un punto unido al tuyo para moverte; los guardias se mueven despu\u00e9s de ti.", "No acabes en una casilla vigilada (en rojo); por detr\u00e1s o de lado, los eliminas.", "Llega a la salida; con el malet\u00edn ganas m\u00e1s estrellas. Puedes deshacer."],
+	"turns_party": ["Cada h\u00e9roe act\u00faa en su turno (arriba ves el orden): toca una habilidad y despu\u00e9s el objetivo.", "Usa los elementos: fuego gana a naturaleza, naturaleza a agua y agua a fuego. AUTO y x2 juegan por ti.", "En la portada: invoca h\u00e9roes, s\u00fabelos de nivel, junta elementos iguales (sinergia) y recoge el bot\u00edn."],
 	"turns": ["En tu turno: Atacar, Especial (a todos), Poci\u00f3n o Defender.", "Defender reduce el da\u00f1o y te da energ\u00eda para el Especial.", "Cuando el jefe avise de un golpe fuerte, defi\u00e9ndete."],
 	"tycoon": ["Compra negocios y s\u00fabelos de nivel para ganar m\u00e1s dinero.", "Contrata gerentes: trabajan solos aunque no est\u00e9s.", "Junta el dinero de la meta para pasar de nivel."],
 	"deck": ["Toca una carta de la mano para jugarla si te llega la energ\u00eda; \u00abTerminar turno\u00bb pasa al enemigo.", "Encima del enemigo ves qu\u00e9 har\u00e1: espada = ataca, escudo = se protege, calavera = veneno.", "Tras cada combate eliges una carta nueva para tu mazo. Gana todos los combates."],
@@ -31,6 +32,14 @@ const RULES: Dictionary = {
 	"gemrpg": ["Cambia dos gemas vecinas para hacer l\u00edneas de 3 o m\u00e1s.", "Cada color hace atacar a tu h\u00e9roe de ese color; los corazones curan.", "Cuando un h\u00e9roe brilla, toca su retrato para su especial. Ojo con la cuenta atr\u00e1s de los monstruos."],
 	"powertower": ["Toca las salas en buen orden: solo vences a quien tiene menos poder que t\u00fa.", "Cada victoria y cada premio suman a tu poder; esquiva las trampas.", "Llega con poder suficiente al jefe de arriba."],
 }
+
+
+## El RPG de equipo tiene sus propias reglas (no las del heroe solo).
+static func key() -> String:
+	var k: String = Genres.current()
+	if k == "turns" and not Heroes._rpg().is_empty():
+		return "turns_party"
+	return k
 
 
 static func has(kit: String) -> bool:
@@ -51,7 +60,7 @@ static func seen(kit: String) -> bool:
 
 ## La primera vez de cada genero: espera a que no haya nada en pausa delante (historia) y la abre.
 static func maybe_show(game: Node) -> void:
-	var kit: String = Genres.current()
+	var kit: String = key()
 	if not enabled or not has(kit) or seen(kit) or UI.test_mode or QA.enabled or Kit.is_extra():
 		return
 	Save.set_setting("howto_" + kit, true)

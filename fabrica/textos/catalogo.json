@@ -1715,7 +1715,17 @@
 			"idle_got": "+{n} while you were away",
 			"idle_empty": "Come back later: the loot fills up by itself",
 			"iap_vip": "VIP",
-			"iap_soon": "Coming soon on the web"
+			"iap_soon": "Coming soon on the web",
+			"hero_power": "Power {p}",
+			"hero_synergy": "Synergy {e} x{n}: +{p} %",
+			"elem_fire": "Fire",
+			"elem_water": "Water",
+			"elem_nature": "Nature",
+			"elem_light": "Light",
+			"elem_dark": "Darkness",
+			"howto_turns_party_1": "Each hero acts on their turn (the order is at the top): tap a skill, then the target.",
+			"howto_turns_party_2": "Use elements: fire beats nature, nature beats water and water beats fire. AUTO and x2 play for you.",
+			"howto_turns_party_3": "On the title screen: summon heroes, level them up, team up matching elements (synergy) and collect the loot."
 		},
 		"pt": {
 			"a_friend": "um amigo",
@@ -3416,7 +3426,17 @@
 			"idle_got": "+{n} enquanto não jogava",
 			"idle_empty": "Volte mais tarde: o saque enche sozinho",
 			"iap_vip": "VIP",
-			"iap_soon": "Em breve na web"
+			"iap_soon": "Em breve na web",
+			"hero_power": "Poder {p}",
+			"hero_synergy": "Sinergia {e} x{n}: +{p} %",
+			"elem_fire": "Fogo",
+			"elem_water": "Água",
+			"elem_nature": "Natureza",
+			"elem_light": "Luz",
+			"elem_dark": "Escuridão",
+			"howto_turns_party_1": "Cada herói age no seu turno (a ordem está em cima): toque numa habilidade e depois no alvo.",
+			"howto_turns_party_2": "Use os elementos: fogo vence natureza, natureza vence água e água vence fogo. AUTO e x2 jogam por você.",
+			"howto_turns_party_3": "Na tela inicial: invoque heróis, suba-os de nível, junte elementos iguais (sinergia) e recolha o saque."
 		},
 		"fr": {
 			"a_friend": "un ami",
@@ -5117,7 +5137,17 @@
 			"idle_got": "+{n} pendant ton absence",
 			"idle_empty": "Reviens plus tard : le butin se remplit tout seul",
 			"iap_vip": "VIP",
-			"iap_soon": "Bientôt sur le web"
+			"iap_soon": "Bientôt sur le web",
+			"hero_power": "Puissance {p}",
+			"hero_synergy": "Synergie {e} x{n} : +{p} %",
+			"elem_fire": "Feu",
+			"elem_water": "Eau",
+			"elem_nature": "Nature",
+			"elem_light": "Lumière",
+			"elem_dark": "Ténèbres",
+			"howto_turns_party_1": "Chaque héros agit à son tour (l'ordre est en haut) : touche une compétence, puis la cible.",
+			"howto_turns_party_2": "Utilise les éléments : le feu bat la nature, la nature bat l'eau et l'eau bat le feu. AUTO et x2 jouent pour toi.",
+			"howto_turns_party_3": "Sur l'écran titre : invoque des héros, fais-les monter de niveau, réunis des éléments identiques (synergie) et récupère le butin."
 		},
 		"de": {
 			"a_friend": "ein Freund",
@@ -6818,7 +6848,17 @@
 			"idle_got": "+{n} während du weg warst",
 			"idle_empty": "Komm später wieder: Die Beute füllt sich von selbst",
 			"iap_vip": "VIP",
-			"iap_soon": "Bald im Web"
+			"iap_soon": "Bald im Web",
+			"hero_power": "Macht {p}",
+			"hero_synergy": "Synergie {e} x{n}: +{p} %",
+			"elem_fire": "Feuer",
+			"elem_water": "Wasser",
+			"elem_nature": "Natur",
+			"elem_light": "Licht",
+			"elem_dark": "Dunkelheit",
+			"howto_turns_party_1": "Jeder Held ist reihum dran (oben siehst du die Reihenfolge): Tippe auf eine Fähigkeit und dann auf das Ziel.",
+			"howto_turns_party_2": "Nutze die Elemente: Feuer schlägt Natur, Natur schlägt Wasser und Wasser schlägt Feuer. AUTO und x2 spielen für dich.",
+			"howto_turns_party_3": "Im Titelbild: Beschwöre Helden, steigere ihre Stufe, kombiniere gleiche Elemente (Synergie) und hol dir die Beute."
 		},
 		"it": {
 			"a_friend": "un amico",
@@ -8519,7 +8559,17 @@
 			"idle_got": "+{n} mentre non giocavi",
 			"idle_empty": "Torna più tardi: il bottino si riempie da solo",
 			"iap_vip": "VIP",
-			"iap_soon": "Presto sul web"
+			"iap_soon": "Presto sul web",
+			"hero_power": "Potenza {p}",
+			"hero_synergy": "Sinergia {e} x{n}: +{p} %",
+			"elem_fire": "Fuoco",
+			"elem_water": "Acqua",
+			"elem_nature": "Natura",
+			"elem_light": "Luce",
+			"elem_dark": "Oscurità",
+			"howto_turns_party_1": "Ogni eroe agisce nel suo turno (l'ordine è in alto): tocca un'abilità e poi il bersaglio.",
+			"howto_turns_party_2": "Usa gli elementi: il fuoco batte la natura, la natura l'acqua e l'acqua il fuoco. AUTO e x2 giocano per te.",
+			"howto_turns_party_3": "Nella schermata iniziale: evoca eroi, falli salire di livello, unisci elementi uguali (sinergia) e raccogli il bottino."
 		}
 	},
 	"generos": {

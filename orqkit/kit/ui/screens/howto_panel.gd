@@ -18,7 +18,7 @@ func _ready() -> void:
 	_was_paused = get_tree().paused
 	get_tree().paused = true
 	build_frame(Kit.text("howto_title", "C\u00f3mo se juega"), 620.0)
-	var ls: Array[String] = HowTo.lines(Genres.current())
+	var ls: Array[String] = HowTo.lines(HowTo.key())
 	for i: int in ls.size():
 		var row: HBoxContainer = HBoxContainer.new()
 		row.name = "Rule%d" % (i + 1)
