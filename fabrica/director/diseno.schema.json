@@ -676,7 +676,7 @@
 		},
 		"contenido": {
 			"type": "object",
-			"description": "Solo rpg, supervivencia, horda, zombis, imperio y karts (ver CONTENIDO PROPIO): heroes, habilidades y enemigos, u objetos, recursos, recetas y criaturas inventados para este juego. Son datos con margenes; la fabrica los prueba con bots."
+			"description": "Solo rpg, supervivencia, horda, zombis, imperio, karts, tycoon, tragaperras, reino y arena (ver CONTENIDO PROPIO): heroes, habilidades y enemigos, u objetos, recursos, recetas y criaturas inventados para este juego. Son datos con margenes; la fabrica los prueba con bots."
 		},
 		"giros": {
 			"type": "array",
@@ -711,7 +711,8 @@
 					"galactico",
 					"fiesta",
 					"mina",
-					"dados"
+					"dados",
+					"modos"
 				]
 			},
 			"description": "Giros opcionales encima del genero (ver GIROS DISPONIBLES): solo los de la lista de su genero."
@@ -889,7 +890,9 @@
 		},
 		"ajustes": {
 			"type": "object",
-			"additionalProperties": {"type": "number"},
+			"additionalProperties": {
+				"type": "number"
+			},
 			"description": "Variante del experimento del genero (camara, tamano, piezas); la pone la fabrica, no la IA"
 		},
 		"originalidad": {

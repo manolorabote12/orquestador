@@ -56,6 +56,8 @@ jobs:
           RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
           GHCR_TOKEN: ${{ secrets.GHCR_TOKEN }}
         run: python conectar.py --entorno
+      - name: Esquemas del director al dia (giros y generos)
+        run: python fabrica/pruebas/prueba_esquemas.py
 
   imagenes:
     needs: comprobar

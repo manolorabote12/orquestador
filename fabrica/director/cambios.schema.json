@@ -589,7 +589,8 @@
 								"galactico",
 								"fiesta",
 								"mina",
-								"dados"
+								"dados",
+								"modos"
 							]
 						},
 						"description": "Para 'giros': la lista COMPLETA de giros que quedan en el juego (vacia = sin giros)."
