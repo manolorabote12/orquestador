@@ -92,8 +92,24 @@ func remember_base() -> void:
 	ai["base_dmg"] = damage
 
 
+## Pose de ataque (si la fabrica la dibujo): se ve un momento al disparar y vuelve a andar o quieto.
+var _attack_t: float = 0.0
+
+
+func play_attack() -> void:
+	if sprite == null or not sprite.sprite_frames.has_animation("attack"):
+		return
+	_attack_t = 0.28
+	sprite.play("attack")
+
+
 func animate(moving: bool) -> void:
 	if sprite == null:
+		return
+	if _attack_t > 0.0:
+		_attack_t -= get_process_delta_time()
+		if absf(facing.x) > 0.2:
+			sprite.flip_h = facing.x < 0.0
 		return
 	var want: String = "run" if moving and sprite.sprite_frames.has_animation("run") else "idle"
 	if sprite.sprite_frames.has_animation(want) and sprite.animation != want:

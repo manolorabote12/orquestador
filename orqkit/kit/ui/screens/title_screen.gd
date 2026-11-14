@@ -274,7 +274,13 @@ func _ready() -> void:
 	_play.custom_minimum_size = Vector2(460, 138)
 	_play.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	_play.add_theme_font_size_override("font_size", int(float(UiTheme.params(UI.profile)["button_font"]) * 1.45))
-	_play.pressed.connect(func() -> void: UI.goto(UI.SCREEN_LEVELS))
+	## Arena con varios modos: JUGAR abre los eventos (elegir modo y mapa), como en los juegos de arena.
+	_play.pressed.connect(func() -> void:
+		if BrawlEvents.available():
+			var ep: EventsPanel = EventsPanel.open(self)
+			ep.changed.connect(_refresh_meta)
+		else:
+			UI.goto(UI.SCREEN_LEVELS))
 	col.add_child(_play)
 	var shine: Control = Control.new()
 	shine.name = "Shine"
@@ -605,6 +611,7 @@ func _refresh_meta() -> void:
 		_wallet.text = str(now)
 	if _hero != null:
 		Skins.apply(_hero)
+		_brawler_look()
 	if _level_chip != null:
 		_level_chip.queue_redraw()
 
@@ -768,6 +775,9 @@ func _build_scene_art() -> void:
 	_hero_root.name = "HeroRoot"
 	art.add_child(_hero_root)
 	var hero_art: Dictionary = Kit.sprite_by_role("jugador")
+	## Arena: en el pedestal, el personaje que has elegido (no siempre el primero).
+	if Genres.current() == "brawl":
+		hero_art = Brawlers.sprite_entry(Brawlers.chosen())
 	if not hero_art.is_empty():
 		var anims: Dictionary = hero_art.get("animaciones", {})
 		## 13 nov: a 220 px la critica lo veia «diminuto, no es el protagonista».
@@ -782,6 +792,7 @@ func _build_scene_art() -> void:
 			_hero.position = Vector2(0.0, -ch * k2 * 0.5)
 		Skins.apply(_hero)
 		_hero_root.add_child(_hero)
+		_brawler_look()
 	var coin_art: Dictionary = Kit.sprite_entry(str(Kit.param("art.coin", "moneda")))
 	if not coin_art.is_empty():
 		_coin = SpriteKit.animado(coin_art, 56.0, "spin", false)
@@ -810,3 +821,21 @@ func _layout_art() -> void:
 	if _coin != null:
 		_coin.position = base + Vector2(150.0, -230.0)
 
+
+## Arena: el pedestal ensena al personaje elegido, con su dibujo o su tinte.
+var _brawler_id: String = ""
+
+
+func _brawler_look() -> void:
+	if Genres.current() != "brawl" or _hero == null:
+		return
+	var b: Dictionary = Brawlers.chosen()
+	if str(b["id"]) == _brawler_id:
+		return
+	var first: bool = _brawler_id == ""
+	_brawler_id = str(b["id"])
+	if not first:
+		var e: Dictionary = Brawlers.sprite_entry(b)
+		_hero.sprite_frames = SpriteKit.frames_de(e)
+		_hero.play("idle" if _hero.sprite_frames.has_animation("idle") else "run")
+	_hero.self_modulate = Brawlers.tint(b)

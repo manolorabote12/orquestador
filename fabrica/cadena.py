@@ -926,7 +926,8 @@ def _fabricar(args: argparse.Namespace) -> dict:
 	## Juego ligero (canario de prueba): los menos dibujos posibles y sin fondos ilustrados.
 	ligero = bool(getattr(args, "ligero", False))
 	fondos = not ligero and (str(args.comfy).startswith("runpod://") or os.environ.get("ORQ_FONDOS") == "1")
-	maximo = 10 if ligero else int(os.environ.get("ORQ_MAX_IMAGENES") or "36")
+	## Arena y RPG llevan un plantel de personajes animados (cada uno con su dibujo): mas presupuesto.
+	maximo = 10 if ligero else int(os.environ.get("ORQ_MAX_IMAGENES") or {"arena": "96", "rpg": "64"}.get(str(diseno.get("genero")), "36"))
 	ahorradas = bib.recortar(biblia, maximo, EXTRAS_FONDOS if fondos else 0)
 	if ahorradas:
 		print(f"[cadena] {ahorradas} imagenes menos para no pasar del limite ({bib.imagenes(biblia, EXTRAS_FONDOS if fondos else 0)})", flush=True)

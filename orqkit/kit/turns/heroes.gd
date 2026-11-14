@@ -13,7 +13,8 @@ extends RefCounted
 
 const RARITIES: Array[String] = ["comun", "raro", "epico", "legendario"]
 const RATES: Dictionary = {"comun": 50.0, "raro": 33.0, "epico": 14.0, "legendario": 3.0}
-const RARITY_MULT: Dictionary = {"comun": 0.9, "raro": 1.0, "epico": 1.1, "legendario": 1.22}
+## Nunca por debajo de 1 (los niveles se calibran con el equipo de serie tal cual).
+const RARITY_MULT: Dictionary = {"comun": 1.0, "raro": 1.0, "epico": 1.1, "legendario": 1.22}
 const RARITY_COL: Dictionary = {"comun": "#b0bec5", "raro": "#4fc3ff", "epico": "#c77dff", "legendario": "#ffc94d"}
 const PITY: int = 40
 const COST_ONE: int = 280
@@ -124,12 +125,15 @@ static func rarity_color(id: String) -> Color:
 static func _col() -> Dictionary:
 	var m: Dictionary = Save.meta()
 	if not (m.get("heroes", null) is Dictionary):
-		var start: Dictionary = {}
-		for id: Variant in TurnsParty.catalog({"rpg": _rpg()}).get("party", []):
-			start[str(id)] = {"lv": 1, "stars": 1}
-		m["heroes"] = start
+		m["heroes"] = {}
 		Save.data["meta"] = m
-	return m["heroes"]
+	## El equipo de serie siempre es tuyo (14 nov: una partida guardada de otra version del juego,
+	## con otros heroes, dejaba el equipo vacio y se perdia al instante).
+	var col: Dictionary = m["heroes"]
+	for id: Variant in TurnsParty.catalog({"rpg": _rpg()}).get("party", []):
+		if not col.has(str(id)):
+			col[str(id)] = {"lv": 1, "stars": 1}
+	return col
 
 
 static func owned(id: String) -> bool:

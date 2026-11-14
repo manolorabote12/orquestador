@@ -1741,7 +1741,18 @@
 			"rpg_regenerar": "Regenerate",
 			"rpg_golpe_letal": "Lethal strike",
 			"rpg_aliento": "Fire breath",
-			"rpg_boss": "Boss!"
+			"rpg_boss": "Boss!",
+			"events": "Events",
+			"ev_showdown": "Showdown",
+			"ev_showdown_desc": "Free for all: be the last one standing.",
+			"ev_survival": "Assault",
+			"ev_survival_desc": "Waves of rivals: hold on and beat them all.",
+			"ev_ball": "Brawl Ball",
+			"ev_ball_desc": "3 vs 3: score the ball in their goal.",
+			"ev_turrets": "Siege",
+			"ev_turrets_desc": "3 vs 3: take down their turret before they take yours.",
+			"event_map": "Map: {m}",
+			"event_brawler": "Playing as {x}"
 		},
 		"pt": {
 			"a_friend": "um amigo",
@@ -3468,7 +3479,18 @@
 			"rpg_regenerar": "Regenerar",
 			"rpg_golpe_letal": "Golpe letal",
 			"rpg_aliento": "Sopro de fogo",
-			"rpg_boss": "Chefe!"
+			"rpg_boss": "Chefe!",
+			"events": "Eventos",
+			"ev_showdown": "Sobrevivência",
+			"ev_showdown_desc": "Todos contra todos: seja o último de pé.",
+			"ev_survival": "Assalto",
+			"ev_survival_desc": "Ondas de rivais: aguente e derrote todas.",
+			"ev_ball": "Bola na Rede",
+			"ev_ball_desc": "3 contra 3: marque na baliza deles.",
+			"ev_turrets": "Cerco",
+			"ev_turrets_desc": "3 contra 3: derrube a torre deles antes que derrubem a sua.",
+			"event_map": "Mapa: {m}",
+			"event_brawler": "Joga com {x}"
 		},
 		"fr": {
 			"a_friend": "un ami",
@@ -5195,7 +5217,18 @@
 			"rpg_regenerar": "Régénération",
 			"rpg_golpe_letal": "Coup fatal",
 			"rpg_aliento": "Souffle de feu",
-			"rpg_boss": "Boss !"
+			"rpg_boss": "Boss !",
+			"events": "Événements",
+			"ev_showdown": "Survie",
+			"ev_showdown_desc": "Chacun pour soi : sois le dernier debout.",
+			"ev_survival": "Assaut",
+			"ev_survival_desc": "Vagues d'adversaires : tiens bon et bats-les toutes.",
+			"ev_ball": "Ballon",
+			"ev_ball_desc": "3 contre 3 : marque dans leur but.",
+			"ev_turrets": "Siège",
+			"ev_turrets_desc": "3 contre 3 : détruis leur tourelle avant qu'ils ne détruisent la tienne.",
+			"event_map": "Carte : {m}",
+			"event_brawler": "Tu joues avec {x}"
 		},
 		"de": {
 			"a_friend": "ein Freund",
@@ -6922,7 +6955,18 @@
 			"rpg_regenerar": "Regeneration",
 			"rpg_golpe_letal": "Todesstoß",
 			"rpg_aliento": "Feueratem",
-			"rpg_boss": "Boss!"
+			"rpg_boss": "Boss!",
+			"events": "Events",
+			"ev_showdown": "Showdown",
+			"ev_showdown_desc": "Jeder gegen jeden: Sei der Letzte, der steht.",
+			"ev_survival": "Ansturm",
+			"ev_survival_desc": "Wellen von Gegnern: Halte durch und besiege alle.",
+			"ev_ball": "Ballkampf",
+			"ev_ball_desc": "3 gegen 3: Schieß den Ball in ihr Tor.",
+			"ev_turrets": "Belagerung",
+			"ev_turrets_desc": "3 gegen 3: Zerstöre ihren Turm, bevor sie deinen zerstören.",
+			"event_map": "Karte: {m}",
+			"event_brawler": "Du spielst mit {x}"
 		},
 		"it": {
 			"a_friend": "un amico",
@@ -8649,7 +8693,18 @@
 			"rpg_regenerar": "Rigenera",
 			"rpg_golpe_letal": "Colpo letale",
 			"rpg_aliento": "Soffio di fuoco",
-			"rpg_boss": "Boss!"
+			"rpg_boss": "Boss!",
+			"events": "Eventi",
+			"ev_showdown": "Sopravvivenza",
+			"ev_showdown_desc": "Tutti contro tutti: resta l'ultimo in piedi.",
+			"ev_survival": "Assalto",
+			"ev_survival_desc": "Ondate di rivali: resisti e battile tutte.",
+			"ev_ball": "Pallone",
+			"ev_ball_desc": "3 contro 3: segna nella loro porta.",
+			"ev_turrets": "Assedio",
+			"ev_turrets_desc": "3 contro 3: abbatti la loro torretta prima che abbattano la tua.",
+			"event_map": "Mappa: {m}",
+			"event_brawler": "Giochi con {x}"
 		}
 	},
 	"generos": {

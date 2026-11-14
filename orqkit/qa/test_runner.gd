@@ -62,6 +62,7 @@ func _ready() -> void:
 	await _test_jumper()
 	await _test_brawl()
 	await _test_brawl_modes()
+	await _test_brawl_events()
 	await _test_arena_live()
 	await _test_coop()
 	await _test_village()
@@ -2675,6 +2676,31 @@ func brawl_turret_map() -> Array:
 
 ## Arena, modos y personajes: catalogo y desbloqueo, formas de disparar, supers, supervivencia,
 ## balon 3 contra 3, torretas 3 contra 3, reaparecer y analizador.
+## Eventos de la arena: cada modo con su mapa, y JUGAR abre el elegido.
+func _test_brawl_events() -> void:
+	print("- Arena: eventos")
+	var keep: Dictionary = Kit.config.duplicate(true)
+	var keep_unl: int = Save.unlocked_count()
+	Kit.config["genre"] = "brawl"
+	Kit.config["levels"] = [{"name": "Playa", "map": ["#"]}, {"name": "Charca", "mode": "survival", "map": ["#"]}, {"name": "Campo", "mode": "ball", "map": ["#"]},
+		{"name": "Arena 4", "map": ["#"]}, {"name": "Fortaleza", "mode": "turrets", "map": ["#"]}]
+	check("eventos: en la arena con varios modos hay eventos", BrawlEvents.available() and BrawlEvents.modes().size() == 4, str(BrawlEvents.modes()))
+	check("eventos: cada modo con su mapa", BrawlEvents.map_name(BrawlEvents.current("ball")) == "Campo" and BrawlEvents.current("showdown") >= 0)
+	check("eventos: sin niveles de un modo, no sale", not BrawlEvents.by_mode().has("nada"))
+	var host: Control = Control.new()
+	add_child(host)
+	var ep: EventsPanel = EventsPanel.open(host)
+	await frames(2)
+	check("eventos: una tarjeta por modo y el personaje elegido", ep.find_child("Event_ball", true, false) != null and ep.find_child("Event_turrets", true, false) != null
+		and ep.find_child("BtnBrawler", true, false) != null)
+	host.queue_free()
+	Kit.config["levels"] = [{"name": "Playa", "map": ["#"]}, {"name": "Otra", "map": ["#"]}]
+	check("eventos: con un solo modo, se juega por niveles", not BrawlEvents.available())
+	Kit.config = keep
+	Kit.level_index = 0
+	await frames(1)
+
+
 func _test_brawl_modes() -> void:
 	print("- Arena: modos y personajes")
 	var cat: Array[Dictionary] = Brawlers.catalog()
@@ -6523,6 +6549,12 @@ func _test_heroes() -> void:
 	Kit.level_index = 0
 	check("heroes: hay coleccion en el RPG de equipo", Heroes.enabled() and Heroes.roster().size() == 13)
 	check("heroes: empiezas con el equipo de serie", Heroes.owned_ids().size() == 4 and Heroes.team().size() == 4 and not Heroes.owned("dragona"))
+	## Partida guardada de otra version con otros heroes: el equipo de serie sigue ahi (no queda vacio).
+	m["heroes"] = {"pirata_viejo": {"lv": 3, "stars": 1}}
+	m["team"] = ["pirata_viejo"]
+	check("heroes: una partida vieja con otros heroes no deja el equipo vacio", Heroes.team().size() == 4, str(Heroes.team()))
+	m.erase("heroes")
+	m.erase("team")
 	check("heroes: el de criaturas (uno contra uno) no tiene coleccion", not (func() -> bool:
 		Kit.config["rpg"] = {"preset": "criaturas"}
 		var e: bool = Heroes.enabled()

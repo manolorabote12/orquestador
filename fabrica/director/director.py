@@ -525,6 +525,9 @@ def a_biblia(d: dict) -> dict:
 			"hurt": {"frames": 1, "fps": 1, "bucle": False},
 		},
 	}]
+	## Arena: el heroe tambien dispara con su pose de ataque.
+	if d.get("genero") == "arena":
+		personajes[0]["animaciones"]["attack"] = {"frames": 2, "fps": 8, "bucle": False}
 	for e in (d["enemigos"] if generos.de(d)["enemigos"] or d.get("genero") in GENEROS_CON_MONSTRUOS else []):
 		anim_mov = {"frames": 4, "fps": 10, "bucle": True}
 		if e["tipo"] == "flyer":
@@ -604,7 +607,9 @@ def a_biblia(d: dict) -> dict:
 				"id": "brawler_" + b["id"], "nombre": b.get("name", b["id"]), "rol": "npc",
 				"descripcion": ("arena hero character seen from a 3/4 top-down view, same art style as the hero, " + b["desc"])[:280],
 				"tamano": [celda, celda], "mira_a": "derecha",
-				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}, "run": {"frames": 2, "fps": 8, "bucle": True},
+				## Animacion de verdad (14 nov, «muy basico»): carrera de 4 y pose de ataque al disparar.
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}, "run": {"frames": 4, "fps": 10, "bucle": True},
+					"attack": {"frames": 2, "fps": 8, "bucle": False},
 					"hurt": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
 	## RPG de coleccion: cada heroe con su dibujo (14 nov). El primero del equipo es el protagonista
@@ -839,7 +844,24 @@ def _con_jefe(d: dict) -> bool:
 	return generos.de(d)["jefe"]
 
 
+## Arena con modos: el nombre del mapa no puede hablar de otro modo (14 nov: «Balon en la Arena» era
+## un todos contra todos y «Oleadas en la Cala» un partido de balon).
+PALABRAS_MODO = {"ball": ("balon", "pelota", "gol", "partido"), "turrets": ("torre", "fortaleza", "asedio"),
+	"survival": ("oleada", "horda", "superviv", "resist"), "showdown": ("todos contra", "duelo", "batalla real")}
+LUGAR_MODO = {"ball": "Campo", "turrets": "Fortaleza", "survival": "Refugio", "showdown": "Arena"}
+
+
+def nombre_mapa_arena(nombre: str, modo: str, i: int) -> str:
+	import unicodedata
+	llano = unicodedata.normalize("NFD", nombre.lower()).encode("ascii", "ignore").decode()
+	if any(w in llano for m, ws in PALABRAS_MODO.items() if m != modo for w in ws):
+		return f"{LUGAR_MODO.get(modo, 'Arena')} {i + 1}"
+	return nombre
+
+
 def _nivel(d: dict, i: int, nombre: str, mapa: list[str]) -> dict:
+	if d.get("genero") == "arena":
+		nombre = nombre_mapa_arena(nombre, generador.modo_arena(mapa), i)
 	nv: dict = {"name": nombre, "map": mapa}
 	g = generos.de(d)
 	n = len(d["niveles"])

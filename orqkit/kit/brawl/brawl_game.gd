@@ -876,6 +876,8 @@ func shoot(f: BrawlFighter, dir: Vector2) -> bool:
 	if f.ammo < 1.0 or dir == Vector2.ZERO:
 		return false
 	f.ammo -= 1.0
+	f.facing = dir
+	f.play_attack()
 	_spawn_shot(f, f.position, dir)
 	if net != null and not f.remote:
 		net.send("sh", {"id": f.net_id, "o": [f.position.x, f.position.y], "d": [dir.x, dir.y], "s": false})
