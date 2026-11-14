@@ -1,0 +1,162 @@
+{
+ "idea": "una gata ninja muy rapida que salta por los tejados de noche y esquiva ratas robot",
+ "ok": true,
+ "clave_arte": "c117f364c518d93191785ae1ae6a0877",
+ "version": 1,
+ "titulo": "Neko Sombra en los Tejados",
+ "slug": "neko_sombra_en_los_tejad",
+ "proyecto": "/tmp/orq_1m1otusn/neko_sombra_en_los_tejad",
+ "apk": "/tmp/orq_1m1otusn/neko_sombra_en_los_tejad/build/neko_sombra_en_los_tejad.apk",
+ "web": "/tmp/orq_1m1otusn/neko_sombra_en_los_tejad/build/web/index.pck",
+ "capturas": [],
+ "ficha": null,
+ "clip": null,
+ "marketing": null,
+ "modelo_diseno": "claude-haiku-5-5",
+ "coste_usd": {
+  "diseno": 0.00748,
+  "arte_estimado": 0.2811,
+  "total": 0.2886
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 26988,
+   "salida": 2071,
+   "usd": 0.00428,
+   "segundos": 9.8,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 29205,
+   "salida": 2044,
+   "usd": 0.00199,
+   "segundos": 5.9,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1749,
+   "salida": 222,
+   "usd": 0.0003,
+   "segundos": 1.6,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1738,
+   "salida": 287,
+   "usd": 0.00026,
+   "segundos": 1.9,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1736,
+   "salida": 267,
+   "usd": 0.00025,
+   "segundos": 1.9,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1734,
+   "salida": 251,
+   "usd": 0.00024,
+   "segundos": 2.0,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1760,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 0.9,
+   "nota": "revision_visual"
+  }
+ ],
+ "imagenes": 51,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 15.9,
+  "proyecto": 0.3,
+  "niveles": 19.9,
+  "boceto": 10.3,
+  "bots_antes": 4.3,
+  "arte": 1246.0,
+  "validacion": 10.2,
+  "reto": 7.7,
+  "apk": 10.4,
+  "web": 4.2,
+  "capturas": 0.6
+ },
+ "total_s": 1336.1,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 5.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 3,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 14.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 1,
+    "monedas": 3,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 9.7,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 3,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 4,
+    "bot_segundos": 20.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 6,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ }
+}

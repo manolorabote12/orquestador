@@ -1,0 +1,224 @@
+{
+ "idea": "un caballero diminuto que salta entre castillos de nubes recogiendo estrellas fugaces",
+ "ok": true,
+ "clave_arte": "bc929217efa90e076dde2434cd53bc63",
+ "version": 1,
+ "titulo": "Caballerito de Nubes",
+ "slug": "caballerito_de_nubes",
+ "proyecto": "/tmp/orq__csvxn1j/caballerito_de_nubes",
+ "apk": "/tmp/orq__csvxn1j/caballerito_de_nubes/build/caballerito_de_nubes.apk",
+ "web": "/tmp/orq__csvxn1j/caballerito_de_nubes/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/capturas/1_titulo.png",
+  "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/capturas/2_niveles.png",
+  "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/capturas/3_juego.png",
+  "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/capturas/4_juego.png",
+  "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/capturas/5_resultado.png",
+  "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/capturas/6_jefe.png"
+ ],
+ "ficha": "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq__csvxn1j/caballerito_de_nubes/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.10805,
+  "arte_estimado": 0.2625,
+  "total": 0.3705
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 26971,
+   "salida": 456,
+   "usd": 0.06941,
+   "segundos": 4.6,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27682,
+   "salida": 2106,
+   "usd": 0.03717,
+   "segundos": 14.2,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1778,
+   "salida": 83,
+   "usd": 0.00024,
+   "segundos": 1.2,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1763,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 1.2,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1762,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 1.3,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1761,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 1.3,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1788,
+   "salida": 221,
+   "usd": 0.00023,
+   "segundos": 1.9,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2007,
+   "salida": 600,
+   "usd": 0.00052,
+   "segundos": 4.2,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 53,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 19.4,
+  "proyecto": 0.5,
+  "niveles": 29.0,
+  "boceto": 16.7,
+  "bots_antes": 9.0,
+  "arte": 1049.5,
+  "validacion": 13.6,
+  "reto": 6.6,
+  "apk": 15.4,
+  "web": 6.9,
+  "capturas": 21.8
+ },
+ "total_s": 1260.9,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 1,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 4.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 4,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 13.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 1,
+    "monedas": 3,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 1,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 12.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 1,
+    "monedas": 4,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 13.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 1,
+    "monedas": 4,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 1,
+    "bot_muertes": 1,
+    "bot_pisotones": 1,
+    "bot_segundos": 14.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 3,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 1,
+    "bot_muertes": 1,
+    "bot_pisotones": 1,
+    "bot_segundos": 20.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 8,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 1,
+    "bot_pisotones": 4,
+    "bot_segundos": 23.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 4,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 6,
+  "problemas": [],
+  "lo_mejor": ""
+ }
+}

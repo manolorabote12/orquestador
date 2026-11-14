@@ -1,0 +1,246 @@
+{
+ "idea": "carreras de caracoles con turbo por un jardin lleno de charcos, hojas y babosas tramposas",
+ "ok": true,
+ "clave_arte": "f780ce105be6b838aed29b4ecb938baa",
+ "version": 1,
+ "titulo": "Caracoles Turbo",
+ "slug": "caracoles_turbo",
+ "proyecto": "/tmp/orq_ygc4wyxq/caracoles_turbo",
+ "apk": "/tmp/orq_ygc4wyxq/caracoles_turbo/build/caracoles_turbo.apk",
+ "web": "/tmp/orq_ygc4wyxq/caracoles_turbo/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_ygc4wyxq/caracoles_turbo/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_ygc4wyxq/caracoles_turbo/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_ygc4wyxq/caracoles_turbo/fabrica/capturas/3_juego.png",
+  "/tmp/orq_ygc4wyxq/caracoles_turbo/fabrica/capturas/4_juego.png",
+  "/tmp/orq_ygc4wyxq/caracoles_turbo/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_ygc4wyxq/caracoles_turbo/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_ygc4wyxq/caracoles_turbo/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.12903,
+  "arte_estimado": 0.3101,
+  "total": 0.4391
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27026,
+   "salida": 2408,
+   "usd": 0.08904,
+   "segundos": 17.0,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 29372,
+   "salida": 1902,
+   "usd": 0.03851,
+   "segundos": 10.5,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1786,
+   "salida": 240,
+   "usd": 0.00032,
+   "segundos": 2.3,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1785,
+   "salida": 205,
+   "usd": 0.00022,
+   "segundos": 1.4,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1779,
+   "salida": 217,
+   "usd": 0.00023,
+   "segundos": 2.7,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1782,
+   "salida": 207,
+   "usd": 0.00022,
+   "segundos": 2.3,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2207,
+   "salida": 479,
+   "usd": 0.00049,
+   "segundos": 3.1,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 49,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 28.2,
+  "proyecto": 0.3,
+  "niveles": 23.5,
+  "boceto": 13.2,
+  "bots_antes": 20.5,
+  "arte": 1186.1,
+  "validacion": 24.8,
+  "reto": 15.7,
+  "apk": 13.5,
+  "web": 6.2,
+  "capturas": 115.1
+ },
+ "total_s": 1541.5,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 33,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 28.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 39,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 22,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 31.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 37,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 47,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 33.5,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 79,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 28,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 44.5,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 49,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 55,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 47.7,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 85,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 36,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 60.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 87,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 40,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 54.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 71,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 40,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 62.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 87,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 7,
+  "problemas": [
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En la partida el caracol ocupa poco alto de pantalla (captura 2 y 3); en la 3 queda muy abajo y tapado en parte por el estela amarilla, cues"
+   },
+   {
+    "tipo": "fondo_distrae",
+    "detalle": "Los edificios oscuros de los laterales y las luces amarillas de las ventanas compiten con la carretera; el fondo es muy apagado y con poco c"
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "El boton Nitro es un rectangulo azul apagado y plano, de poco peso visual; en la captura 3 casi se funde con el asfalto. Tampoco hay icono d"
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "La pantalla de partida no muestra particulas ni polvo de velocidad, y el coche rival de fondo es una mancha amarilla difusa."
+   }
+  ],
+  "lo_mejor": "La pantalla de titulo es muy atractiva: el logo con letras naranjas, el caracol con auriculares sobre la hoja y los botones redondeados dan "
+ }
+}

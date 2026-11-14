@@ -1,0 +1,228 @@
+{
+ "idea": "un pinguino repartidor que baja una montana nevada en trineo esquivando focas dormidas",
+ "ok": true,
+ "clave_arte": "c6ef8f4d7c43a648f00f4204dde3cec1",
+ "version": 1,
+ "titulo": "Pingüino Express",
+ "slug": "pinguino_express",
+ "proyecto": "/tmp/orq_spoqnyuj/pinguino_express",
+ "apk": "/tmp/orq_spoqnyuj/pinguino_express/build/pinguino_express.apk",
+ "web": "/tmp/orq_spoqnyuj/pinguino_express/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_spoqnyuj/pinguino_express/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_spoqnyuj/pinguino_express/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_spoqnyuj/pinguino_express/fabrica/capturas/3_juego.png",
+  "/tmp/orq_spoqnyuj/pinguino_express/fabrica/capturas/4_juego.png",
+  "/tmp/orq_spoqnyuj/pinguino_express/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_spoqnyuj/pinguino_express/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_spoqnyuj/pinguino_express/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.09026,
+  "arte_estimado": 0.165,
+  "total": 0.2553
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27023,
+   "salida": 2388,
+   "usd": 0.08883,
+   "segundos": 17.7,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1780,
+   "salida": 83,
+   "usd": 0.00024,
+   "segundos": 1.0,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1772,
+   "salida": 174,
+   "usd": 0.0002,
+   "segundos": 1.4,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1769,
+   "salida": 253,
+   "usd": 0.00024,
+   "segundos": 1.9,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1766,
+   "salida": 206,
+   "usd": 0.00022,
+   "segundos": 1.7,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2204,
+   "salida": 573,
+   "usd": 0.00053,
+   "segundos": 3.5,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 53,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 18.2,
+  "proyecto": 0.7,
+  "niveles": 25.3,
+  "boceto": 17.0,
+  "bots_antes": 7.2,
+  "arte": 722.9,
+  "validacion": 15.2,
+  "reto": 8.3,
+  "apk": 15.0,
+  "web": 6.5,
+  "capturas": 16.9
+ },
+ "total_s": 918.3,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 14,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 9.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 20,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 10,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 13.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 16,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 4,
+    "bot_muertes": 0,
+    "bot_pisotones": 1,
+    "bot_segundos": 16.5,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 10,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 9,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 18.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 13,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 15,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 21.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 27,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 26,
+    "bot_muertes": 0,
+    "bot_pisotones": 1,
+    "bot_segundos": 21.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 29,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 20,
+    "bot_muertes": 0,
+    "bot_pisotones": 1,
+    "bot_segundos": 20.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 22,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 6,
+  "problemas": [
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En la partida el pingüino ocupa muy poco de la pantalla vertical; apenas se distingue el sombrero y el trineo, y cuesta seguirlo entre los p"
+   },
+   {
+    "tipo": "fondo_distrae",
+    "detalle": "Los pinos y montañas del fondo tienen el mismo contraste que el pingüino y las plataformas; en la captura de partida los árboles de la izqui"
+   },
+   {
+    "tipo": "suelo_recargado",
+    "detalle": "El suelo de bloques de hielo ocupa casi la mitad inferior con cuadrícula densa y blanca; deja poco espacio para ver la acción y parece un mu"
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "En la pantalla de título los botones de Misiones, Diario y Trofeos son iconos genéricos de estrella y copa sobre cuadrados oscuros; el selec"
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "Los regalos y el marcador 0/16 son estáticos; no se aprecian partículas al saltar ni al recoger monedas, lo que resta sensación de velocidad"
+   }
+  ],
+  "lo_mejor": "La paleta invernal es coherente en título y partida, y el logo con el pingüino en trineo y el tono cálido del botón Play transmiten bien el "
+ }
+}

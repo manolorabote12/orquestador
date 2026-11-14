@@ -1,0 +1,8 @@
+{
+ "error": "El diseno sigue sin ser valido: giros/0: 'modos' is not one of ['oscuridad', 'espejo', 'contrarreloj', 'racha', 'fantasma', 'cola', 'viento', 'tormenta', 'piedras', 'hielo', 'tuneles', 'niebla', 'barajar', 'dorado', 'invisibles', 'monstruos', 'apocalipsis', 'invierno', 'caza', 'equipo', 'criaturas', 'survivor', 'vampiros', 'fantasia', 'galactico', 'fiesta', 'mina', 'dados'] @ llm.py:205 con_router < director.py:418 disenar < cadena.py:875 _fabricar",
+ "detail": {
+  "idea": "[estudio] [gancho:arena:modos] Marea Alta: Rey de los Cangrejos. Battle royale de cangrejos en una isla tropical donde la marea azul sube y cierra la arena. Modos: todos contra todos, supervivencia por oleadas, balon 3 contra 3 y torretas 3 contra 3. 8 cangrejos con habilidades distintas, ligas, pase de batalla y campana con historia contra el Rey Cangrejo.",
+  "semilla": true
+ },
+ "result": null
+}

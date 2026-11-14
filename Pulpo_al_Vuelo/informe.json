@@ -1,0 +1,105 @@
+{
+ "idea": "un pulpo cocinero que reparte sushi en patines por un mercado lleno de gaviotas ladronas",
+ "ok": true,
+ "clave_arte": "b788f866b051480662e747be04d6c2eb",
+ "version": 1,
+ "titulo": "Pulpo al Vuelo",
+ "slug": "pulpo_al_vuelo",
+ "proyecto": "/tmp/orq_v8t615h5/pulpo_al_vuelo",
+ "apk": "/tmp/orq_v8t615h5/pulpo_al_vuelo/build/pulpo_al_vuelo.apk",
+ "web": "/tmp/orq_v8t615h5/pulpo_al_vuelo/build/web/index.pck",
+ "capturas": [],
+ "ficha": null,
+ "clip": null,
+ "marketing": null,
+ "modelo_diseno": "vista_previa",
+ "coste_usd": {
+  "diseno": 0,
+  "arte_estimado": 0.0,
+  "total": 0.0
+ },
+ "llamadas_ia": [],
+ "imagenes": 68,
+ "niveles_rehechos": 1,
+ "tiempos_s": {
+  "diseno": 2.1,
+  "proyecto": 0.3,
+  "niveles": 21.8,
+  "boceto": 13.4,
+  "bots_antes": 32.0,
+  "arte": 3.1,
+  "validacion": 15.2,
+  "reto": 32.3,
+  "apk": 12.8,
+  "web": 5.8,
+  "capturas": 2.6
+ },
+ "total_s": 147.0,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 4,
+    "bot_muertes": 1,
+    "bot_pisotones": 0,
+    "bot_segundos": 7.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 6,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 1,
+    "bot_pisotones": 1,
+    "bot_segundos": 11.7,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 1,
+    "monedas": 3,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 1,
+    "bot_segundos": 9.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 4,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 1,
+    "bot_pisotones": 4,
+    "bot_segundos": 22.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 6,
+    "monedas": 3,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ }
+}

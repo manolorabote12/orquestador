@@ -1,0 +1,222 @@
+{
+ "idea": "un faro abandonado en una isla: explora, encuentra las piezas y vuelve a encender la luz",
+ "ok": true,
+ "clave_arte": "cf9cefb6df56e017e3a541aba1cb86d5",
+ "version": 1,
+ "titulo": "La Luz del Faro",
+ "slug": "la_luz_del_faro",
+ "proyecto": "/tmp/orq_tgp47p9m/la_luz_del_faro",
+ "apk": "/tmp/orq_tgp47p9m/la_luz_del_faro/build/la_luz_del_faro.apk",
+ "web": "/tmp/orq_tgp47p9m/la_luz_del_faro/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_tgp47p9m/la_luz_del_faro/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_tgp47p9m/la_luz_del_faro/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_tgp47p9m/la_luz_del_faro/fabrica/capturas/3_juego.png",
+  "/tmp/orq_tgp47p9m/la_luz_del_faro/fabrica/capturas/4_juego.png",
+  "/tmp/orq_tgp47p9m/la_luz_del_faro/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_tgp47p9m/la_luz_del_faro/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_tgp47p9m/la_luz_del_faro/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.13205,
+  "arte_estimado": 0.1809,
+  "total": 0.313
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 26972,
+   "salida": 2685,
+   "usd": 0.0917,
+   "segundos": 19.8,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 29418,
+   "salida": 2002,
+   "usd": 0.0396,
+   "segundos": 10.1,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1767,
+   "salida": 83,
+   "usd": 0.00024,
+   "segundos": 0.9,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2207,
+   "salida": 524,
+   "usd": 0.00051,
+   "segundos": 3.5,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 45,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 30.4,
+  "proyecto": 0.5,
+  "niveles": 31.4,
+  "boceto": 16.6,
+  "bots_antes": 5.6,
+  "arte": 808.7,
+  "validacion": 13.7,
+  "reto": 2.4,
+  "apk": 15.0,
+  "web": 6.8,
+  "capturas": 13.6
+ },
+ "total_s": 1005.8,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 5,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 5,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 6,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 6,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 7,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 7,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 8,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 2.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 8,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 9,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 3.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 9,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 9,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 2.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 9,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 9,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 2.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 9,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 9,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 2.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 9,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 6,
+  "problemas": [
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "En la pantalla de titulo los cuatro huecos vacios de niveles (bajo el personaje) parecen cuadros sin contenido; y los botones laterales (Mis"
+   },
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En la partida el heroe ocupa muy poco espacio (una figura de unos 20 px) dentro de un laberinto de 7x9 casillas; cuesta seguirlo, sobre todo"
+   },
+   {
+    "tipo": "fondo_distrae",
+    "detalle": "En la partida el fondo marino y la roca tras el laberinto se ven a traves de los huecos oscuros, y las losetas apagadas se confunden con el "
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "Las monedas y las puntas rojas son planas y estaticas; no se aprecian particulas, brillo ni animacion al recoger monedas o al evitar pinchos"
+   }
+  ],
+  "lo_mejor": "La pantalla de titulo tiene buen ambiente: faro, niebla y un personaje con impermeable amarillo que destaca bien sobre el fondo oscuro."
+ }
+}

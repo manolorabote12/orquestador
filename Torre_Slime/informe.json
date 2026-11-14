@@ -1,0 +1,187 @@
+{
+ "idea": "un mago aprendiz que combina hechizos de colores para limpiar una torre llena de slimes",
+ "ok": true,
+ "clave_arte": "73f73373e96a70d1decc0c8432a13860",
+ "version": 1,
+ "titulo": "Torre Slime",
+ "slug": "torre_slime",
+ "proyecto": "/tmp/orq_m5q2u7l7/torre_slime",
+ "apk": "/tmp/orq_m5q2u7l7/torre_slime/build/torre_slime.apk",
+ "web": "/tmp/orq_m5q2u7l7/torre_slime/build/web/index.pck",
+ "capturas": [],
+ "ficha": null,
+ "clip": null,
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.09765,
+  "arte_estimado": 0.1313,
+  "total": 0.2289
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27022,
+   "salida": 433,
+   "usd": 0.06928,
+   "segundos": 3.8,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27708,
+   "salida": 1195,
+   "usd": 0.02811,
+   "segundos": 8.0,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1790,
+   "salida": 132,
+   "usd": 0.00026,
+   "segundos": 1.3,
+   "nota": "revision_visual"
+  }
+ ],
+ "imagenes": 34,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 12.4,
+  "proyecto": 0.1,
+  "niveles": 14.6,
+  "boceto": 11.1,
+  "bots_antes": 2.3,
+  "arte": 558.0,
+  "validacion": 7.3,
+  "reto": 2.9,
+  "apk": 10.8,
+  "web": 4.8,
+  "capturas": 1.4
+ },
+ "total_s": 633.1,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 4,
+    "bot_segundos": 0.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 6,
+    "bot_muertes": 0,
+    "bot_pisotones": 7,
+    "bot_segundos": 0.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 7,
+    "bot_muertes": 0,
+    "bot_pisotones": 8,
+    "bot_segundos": 0.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 8,
+    "bot_muertes": 0,
+    "bot_pisotones": 7,
+    "bot_segundos": 0.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 9,
+    "bot_muertes": 0,
+    "bot_pisotones": 11,
+    "bot_segundos": 0.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 10,
+    "bot_muertes": 0,
+    "bot_pisotones": 5,
+    "bot_segundos": 0.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 11,
+    "bot_muertes": 0,
+    "bot_pisotones": 6,
+    "bot_segundos": 0.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 12,
+    "bot_muertes": 0,
+    "bot_pisotones": 5,
+    "bot_segundos": 0.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": null
+}

@@ -1,0 +1,187 @@
+{
+ "idea": "un puzle de tuberias en un submarino que hace agua: conecta las valvulas antes de hundirte",
+ "ok": true,
+ "clave_arte": "d48b085f18d1ba7c1ee343c46c247d3c",
+ "version": 1,
+ "titulo": "Agua a Bordo",
+ "slug": "agua_a_bordo",
+ "proyecto": "/tmp/orq_mfc3if9d/agua_a_bordo",
+ "apk": "/tmp/orq_mfc3if9d/agua_a_bordo/build/agua_a_bordo.apk",
+ "web": "/tmp/orq_mfc3if9d/agua_a_bordo/build/web/index.pck",
+ "capturas": [],
+ "ficha": null,
+ "clip": null,
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.10127,
+  "arte_estimado": 0.1871,
+  "total": 0.2884
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27030,
+   "salida": 438,
+   "usd": 0.06934,
+   "segundos": 4.1,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27721,
+   "salida": 1544,
+   "usd": 0.03163,
+   "segundos": 9.8,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1763,
+   "salida": 221,
+   "usd": 0.0003,
+   "segundos": 1.8,
+   "nota": "revision_visual"
+  }
+ ],
+ "imagenes": 34,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 14.5,
+  "proyecto": 0.2,
+  "niveles": 20.6,
+  "boceto": 12.4,
+  "bots_antes": 1.1,
+  "arte": 746.6,
+  "validacion": 6.8,
+  "reto": 1.3,
+  "apk": 11.1,
+  "web": 4.9,
+  "capturas": 1.2
+ },
+ "total_s": 825.3,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 20,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 20,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 20,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.5,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 20,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 30,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 30,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 30,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 30,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 48,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 48,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 48,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 48,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 63,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 63,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 63,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 63,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": null
+}

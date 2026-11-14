@@ -1,0 +1,233 @@
+{
+ "idea": "un puzle de combinar 3 joyas mágicas en el templo submarino de una sirena",
+ "ok": true,
+ "errores_diseno": [
+  "claude-sonnet-5-5: el diseno tiene un campo con forma inesperada (AttributeError: 'str' object has no attribute 'get'); respeta el esquema"
+ ],
+ "clave_arte": "18f2e38ffda656c74d95245642b6ec0a",
+ "version": 1,
+ "titulo": "Linterna Abisal",
+ "slug": "linterna_abisal",
+ "proyecto": "/tmp/orq_g4kalq24/linterna_abisal",
+ "apk": "/tmp/orq_g4kalq24/linterna_abisal/build/linterna_abisal.apk",
+ "web": "/tmp/orq_g4kalq24/linterna_abisal/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_g4kalq24/linterna_abisal/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_g4kalq24/linterna_abisal/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_g4kalq24/linterna_abisal/fabrica/capturas/3_juego.png",
+  "/tmp/orq_g4kalq24/linterna_abisal/fabrica/capturas/4_juego.png",
+  "/tmp/orq_g4kalq24/linterna_abisal/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_g4kalq24/linterna_abisal/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_g4kalq24/linterna_abisal/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.14319,
+  "arte_estimado": 0.4234,
+  "total": 0.5666
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 5731,
+   "salida": 5150,
+   "usd": 0.058,
+   "segundos": 44.8,
+   "nota": "conceptos"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27854,
+   "salida": 2620,
+   "usd": 0.04252,
+   "segundos": 17.5,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 30274,
+   "salida": 2089,
+   "usd": 0.04205,
+   "segundos": 10.5,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1779,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 1.0,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2206,
+   "salida": 432,
+   "usd": 0.00046,
+   "segundos": 2.9,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 48,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 73.1,
+  "proyecto": 0.2,
+  "niveles": 23.5,
+  "boceto": 10.3,
+  "bots_antes": 2.5,
+  "arte": 1575.0,
+  "validacion": 7.1,
+  "reto": 3.0,
+  "apk": 8.8,
+  "web": 4.2,
+  "capturas": 7.5
+ },
+ "total_s": 1750.8,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 4,
+    "bot_segundos": 0.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 6,
+    "bot_muertes": 0,
+    "bot_pisotones": 6,
+    "bot_segundos": 0.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 7,
+    "bot_muertes": 0,
+    "bot_pisotones": 8,
+    "bot_segundos": 0.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 8,
+    "bot_muertes": 0,
+    "bot_pisotones": 13,
+    "bot_segundos": 0.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 9,
+    "bot_muertes": 0,
+    "bot_pisotones": 8,
+    "bot_segundos": 0.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 10,
+    "bot_muertes": 0,
+    "bot_pisotones": 8,
+    "bot_segundos": 0.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 11,
+    "bot_muertes": 0,
+    "bot_pisotones": 1,
+    "bot_segundos": 0.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 12,
+    "bot_muertes": 1,
+    "bot_pisotones": 9,
+    "bot_segundos": 0.7,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 6,
+  "problemas": [
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En la pantalla de titulo la sirena es pequena y queda perdida entre el pedestal y el fondo; no es el protagonista claro del menu."
+   },
+   {
+    "tipo": "fondo_distrae",
+    "detalle": "En la partida el fondo submarino con rayos y particulas compite con el tablero; las piezas azules y oscuras se confunden con el fondo de cad"
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "Los botones de Misiones, Diario, Trofeos y Ajustes son iconos genericos sin variacion; la barra de progreso de la partida es una linea fina "
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "Las piezas y los bloqueos de hielo (celdas con escarcha) no muestran animacion de rotura ni destello visible en las capturas de partida."
+   }
+  ],
+  "lo_mejor": "La atmosfera abisal es coherente: paleta azul profunda, rayos de luz y buen tono de marca en el titulo y el tablero."
+ }
+}

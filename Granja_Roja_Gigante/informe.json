@@ -1,0 +1,159 @@
+{
+ "idea": "un granjero robot que cultiva verduras gigantes y las vende para ampliar su granja en Marte",
+ "ok": true,
+ "clave_arte": "f8264b353b33a6f0a2bd422301df5aba",
+ "version": 1,
+ "titulo": "Granja Roja Gigante",
+ "slug": "granja_roja_gigante",
+ "proyecto": "/tmp/orq_kozs2v56/granja_roja_gigante",
+ "apk": "/tmp/orq_kozs2v56/granja_roja_gigante/build/granja_roja_gigante.apk",
+ "web": "/tmp/orq_kozs2v56/granja_roja_gigante/build/web/index.pck",
+ "capturas": [],
+ "ficha": null,
+ "clip": null,
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.09721,
+  "arte_estimado": 0.2405,
+  "total": 0.3377
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27023,
+   "salida": 465,
+   "usd": 0.0696,
+   "segundos": 4.3,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27743,
+   "salida": 1114,
+   "usd": 0.02737,
+   "segundos": 7.4,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1784,
+   "salida": 83,
+   "usd": 0.00024,
+   "segundos": 1.3,
+   "nota": "revision_visual"
+  }
+ ],
+ "imagenes": 32,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 12.4,
+  "proyecto": 0.3,
+  "niveles": 15.3,
+  "boceto": 13.2,
+  "bots_antes": 1.7,
+  "arte": 867.7,
+  "validacion": 8.3,
+  "reto": 2.2,
+  "apk": 12.2,
+  "web": 5.2,
+  "capturas": 0.4
+ },
+ "total_s": 942.9,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 78.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 3,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 1,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 134.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 3,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 94.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 3,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 208.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 4,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 244.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 4,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 4,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 188.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 5,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": null
+}

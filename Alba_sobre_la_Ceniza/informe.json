@@ -1,0 +1,307 @@
+{
+ "idea": "un reino de fantasía épica al estilo Kingshot: elfos, enanos y hombres del oeste resisten al Señor Oscuro de las tierras de ceniza; sube tu ciudadela de piedra blanca, entrena arqueros élficos, guerreros enanos y jinetes, y conquista una a una las fortalezas de los orcos hasta la torre negra del volcán",
+ "ok": true,
+ "errores_diseno": [
+  "claude-sonnet-5-5: el diseno tiene un campo con forma inesperada (AttributeError: 'str' object has no attribute 'get'); respeta el esquema"
+ ],
+ "clave_arte": "ac2aa381643d04975a19e1c065c5653e",
+ "pulido": {
+  "nota_inicial": 4,
+  "nota": 5,
+  "rondas": 3,
+  "cambios": [
+   "Pulido visual: motas de luz que suben sobre la ceniza, y particulas, temblor suave, destellos y mensajes cortos al empezar nivel, ganar o perder batallas, rachas, terminar obras y completar el nivel. No cambia reglas ni monedas.",
+   "Pulido cosmético: brasas y ceniza flotando sobre el tablero, y partículas, temblor suave, destello y mensajes cortos en español al empezar nivel, terminar obras, ganar o perder batallas, rachas y completar el nivel. No toca reglas ni economía."
+  ]
+ },
+ "version": 1,
+ "titulo": "Alba sobre la Ceniza",
+ "slug": "alba_sobre_la_ceniza",
+ "proyecto": "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza",
+ "apk": "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/build/alba_sobre_la_ceniza.apk",
+ "web": "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/fabrica/capturas/3_juego.png",
+  "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/fabrica/capturas/4_juego.png",
+  "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_rrkdnhrv/alba_sobre_la_ceniza/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.35697,
+  "arte_estimado": 0.4407,
+  "total": 0.7977
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 5919,
+   "salida": 4708,
+   "usd": 0.0603,
+   "segundos": 38.4,
+   "nota": "conceptos"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 28166,
+   "salida": 958,
+   "usd": 0.07685,
+   "segundos": 7.0,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 28733,
+   "salida": 3068,
+   "usd": 0.04876,
+   "segundos": 19.4,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1753,
+   "salida": 83,
+   "usd": 0.00023,
+   "segundos": 0.7,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 2116,
+   "salida": 712,
+   "usd": 0.01189,
+   "segundos": 13.4,
+   "nota": "critica_visual"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 4716,
+   "salida": 3011,
+   "usd": 0.04169,
+   "segundos": 19.5,
+   "nota": "agente_mods"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 2116,
+   "salida": 631,
+   "usd": 0.0086,
+   "segundos": 5.1,
+   "nota": "critica_visual"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 4790,
+   "salida": 2839,
+   "usd": 0.04013,
+   "segundos": 20.2,
+   "nota": "agente_mods"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 2116,
+   "salida": 661,
+   "usd": 0.0089,
+   "segundos": 5.2,
+   "nota": "critica_visual"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 4739,
+   "salida": 3014,
+   "usd": 0.04178,
+   "segundos": 20.0,
+   "nota": "agente_mods"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 2116,
+   "salida": 717,
+   "usd": 0.00946,
+   "segundos": 5.7,
+   "nota": "critica_visual"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 2116,
+   "salida": 609,
+   "usd": 0.00838,
+   "segundos": 5.3,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 57,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 65.9,
+  "proyecto": 0.1,
+  "niveles": 26.3,
+  "boceto": 10.2,
+  "bots_antes": 2.9,
+  "arte": 1602.6,
+  "validacion": 7.7,
+  "reto": 4.2,
+  "pulido": 246.0,
+  "apk": 10.4,
+  "web": 4.2,
+  "capturas": 29.3
+ },
+ "total_s": 2046.3,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 140.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 0,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 164.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 0,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 196.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 0,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 244.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 0,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 272.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 0,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 316.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 5,
+    "monedas": 0,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 356.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 6,
+    "monedas": 0,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 384.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 6,
+    "monedas": 0,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 5,
+  "problemas": [
+   {
+    "tipo": "personaje_con_fondo",
+    "detalle": "Granja, Aserradero y Establo llevan un cuadrado de ruido/pixelado alrededor: el recorte falló y se ve la caja del sprite sobre el césped."
+   },
+   {
+    "tipo": "estilos_mezclados",
+    "detalle": "Título con lava, torres y estética oscura; la partida es un césped verde plano y chillón con edificios isométricos. Parecen dos juegos disti"
+   },
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En el título el caballero es diminuto sobre una plataforma borrosa grande. No es protagonista y se pierde ante el fondo recargado."
+   },
+   {
+    "tipo": "fondo_vacio",
+    "detalle": "El tablero es un verde liso con un camino beige. No hay ambiente, ni detalles, ni unidades visibles; solo edificios sueltos con sombras oval"
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "Botones de mejora grises apagados y textos mezclados en inglés y español («Upgrade the Castillo first», «Attack»). El texto rojo pequeño aba"
+   },
+   {
+    "tipo": "poca_vida",
+    "detalle": "Sin partículas, ni unidades en movimiento, ni humo en los edificios. La partida parece una hoja de cálculo estática."
+   }
+  ],
+  "lo_mejor": "La pantalla de título tiene atmósfera: lava, torres y un título dorado muy legible. Los edificios isométricos del castillo y la arquería est"
+ }
+}
