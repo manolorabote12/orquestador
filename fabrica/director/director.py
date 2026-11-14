@@ -589,6 +589,23 @@ def a_biblia(d: dict) -> dict:
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}, "run": {"frames": 2, "fps": 8, "bucle": True},
 					"hurt": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
+	## RPG de coleccion: cada heroe con su dibujo (14 nov). El primero del equipo es el protagonista
+	## (sprite del jugador); el kit busca los demas como heroe_<id> (kit/turns/heroes.gd).
+	if d.get("genero") == "rpg" and isinstance(d.get("contenido"), dict):
+		cont = d["contenido"]
+		primero = (cont.get("party") or list((cont.get("heroes") or {}).keys())[:1] or [""])[0]
+		for hid, hh in list((cont.get("heroes") or {}).items())[:10]:
+			if hid == primero or not hh.get("desc"):
+				continue
+			personajes.append({
+				"id": "heroe_" + hid, "nombre": hh.get("name", hid), "rol": "npc",
+				"descripcion": ("fantasy RPG hero character, full body, side view facing right, same art style as the hero, "
+					+ ("legendary, ornate and glowing, " if hh.get("rarity") == "legendario" else "epic, detailed, " if hh.get("rarity") == "epico" else "")
+					+ hh["desc"])[:280],
+				"tamano": [celda, celda], "mira_a": "derecha",
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True},
+					"hurt": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
 	## Carreras: los 3 rivales dibujados (12 nov: corrian coches de cajas o el heroe tenido de color).
 	## Mismo tamano y pose de carrera que el heroe; el kit los busca como rival_<tipo>.
 	if d.get("genero") == "carreras":

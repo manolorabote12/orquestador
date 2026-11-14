@@ -507,7 +507,8 @@ func _hp_ratio() -> float:
 
 func _party_ready(lv: Dictionary) -> void:
 	party_mode = true
-	_plevel = lv
+	## Coleccion de heroes (kit/turns/heroes.gd): pelea el equipo que eligio el jugador.
+	_plevel = Heroes.apply_to_level(lv) if Heroes.enabled() else lv
 	rows = lv.get("map", ["W"])
 	for k: Array in [["W", "walker"], ["S", "spiky"], ["F", "flyer"]]:
 		var id: String = str(Kit.param("art.enemies." + str(k[1]), ""))
@@ -627,6 +628,8 @@ func _party_reset() -> void:
 	coins = 0
 	_rng.seed = 900 + Kit.level_index * 53
 	state = TurnsParty.new_state(_plevel)
+	if Heroes.enabled():
+		Heroes.apply_power(state)
 	coins_total = 0
 	for w: Variant in rows:
 		coins_total += str(w).length()
@@ -714,6 +717,9 @@ func _party_actor(u: Dictionary) -> Node2D:
 	var art: Dictionary = {}
 	if enemy:
 		art = _arts.get(str(u["id"]), _arts.get("W", {}))
+	elif not Kit.sprite_entry("heroe_" + str(u["id"])).is_empty():
+		## Cada heroe con su dibujo de la fabrica (heroe_<id>).
+		art = Kit.sprite_entry("heroe_" + str(u["id"]))
 	elif int(u["uid"]) == 1 and str(u["look"]) != "beast":
 		art = Kit.sprite_by_role("jugador")
 	if not art.is_empty():

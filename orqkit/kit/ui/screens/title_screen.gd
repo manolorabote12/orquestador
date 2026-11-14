@@ -180,6 +180,23 @@ func _ready() -> void:
 		brw.pressed.connect(func() -> void:
 			var bp: BrawlersPanel = BrawlersPanel.open(self)
 			bp.changed.connect(_refresh_meta))
+	## RPG de equipo: coleccion de heroes, invocar y botin mientras no juegas.
+	if Genres.current() == "turns" and Heroes.enabled():
+		var hb: Button = _side_button(left, "BtnHeroes", Kit.text("heroes", "H\u00e9roes"), "star")
+		hb.pressed.connect(func() -> void:
+			var hp: HeroesPanel = HeroesPanel.open(self)
+			hp.changed.connect(_refresh_meta))
+		var loot: Button = _side_button(left, "BtnIdle", Kit.text("idle_loot", "Bot\u00edn"), "coin")
+		if Heroes.idle_pending() >= 50:
+			_dot(loot)
+		loot.pressed.connect(func() -> void:
+			var n: int = Heroes.idle_claim()
+			if n > 0:
+				Audio.play("coin")
+				Juice.burst(self, loot.get_global_rect().get_center(), Kit.color("coin", UI.colors["acento"]), 26)
+			UI.float_text(self, loot.get_global_rect().get_center() + Vector2(160.0, 0.0), Kit.text("idle_got", "+{n} mientras no jugabas").format({"n": n}) if n > 0 \
+				else Kit.text("idle_empty", "Vuelve m\u00e1s tarde: el bot\u00edn se llena solo"), UI.colors["acento"], 30)
+			_refresh_meta())
 	var shop: Button = _side_button(right, "BtnShop", Kit.text("shop", "Tienda"), "coin")
 	shop.pressed.connect(_open_shop)
 	## Arena: partidas en directo contra otros jugadores.
@@ -504,7 +521,7 @@ func _side_button(parent: VBoxContainer, node_name: String, label: String, icon:
 	## critica «interfaz_sosa» repetida, 12 nov). Va dentro del marco, asi respeta la piel del juego.
 	var tonos: Dictionary = {"BtnSeason": 0.78, "BtnDaily": 0.02, "BtnTorneo": 0.02, "BtnRoad": 0.12, "BtnShop": 0.36,
 		"BtnCross": 0.58, "BtnSettings": -1.0, "BtnArenaLive": 0.92, "BtnGear": 0.08, "BtnDeck": 0.68, "BtnHome": 0.3,
-		"BtnMarathon": 0.5, "BtnAlbum": 0.45, "BtnBrawlers": 0.04, "BtnVersus": 0.95, "BtnGiftMenu": 0.9, "BtnPrizeMenu": 0.14}
+		"BtnMarathon": 0.5, "BtnAlbum": 0.45, "BtnBrawlers": 0.04, "BtnHeroes": 0.75, "BtnIdle": 0.13, "BtnVersus": 0.95, "BtnGiftMenu": 0.9, "BtnPrizeMenu": 0.14}
 	var h: float = float(tonos.get(node_name, -1.0))
 	if h >= 0.0:
 		var medal: Control = Control.new()

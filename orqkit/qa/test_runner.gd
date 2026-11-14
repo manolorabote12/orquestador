@@ -58,6 +58,7 @@ func _ready() -> void:
 	await _test_cards()
 	await _test_turns()
 	await _test_turns_party()
+	await _test_heroes()
 	await _test_jumper()
 	await _test_brawl()
 	await _test_brawl_modes()
@@ -6505,6 +6506,89 @@ func _test_turns_party() -> void:
 			(g.get("result_panel") as Node).queue_free()
 		g.queue_free()
 	await frames(2)
+	Kit.config = keep
+	Kit.level_index = 0
+
+
+## Coleccion de heroes del RPG (kit/turns/heroes.gd): invocar, estrellas, nivel, equipo y botin.
+func _test_heroes() -> void:
+	print("- RPG: coleccion de heroes")
+	var keep: Dictionary = Kit.config.duplicate(true)
+	var m: Dictionary = Save.meta()
+	for k: String in ["heroes", "team", "pity", "idle_t"]:
+		m.erase(k)
+	Kit.config["genre"] = "turns"
+	Kit.config["rpg"] = {"preset": "equipo"}
+	Kit.config["levels"] = [{"map": ["WW", "WF"], "mult": 1.0, "potions": 2, "hero_level": 1}]
+	Kit.level_index = 0
+	check("heroes: hay coleccion en el RPG de equipo", Heroes.enabled() and Heroes.roster().size() == 13)
+	check("heroes: empiezas con el equipo de serie", Heroes.owned_ids().size() == 4 and Heroes.team().size() == 4 and not Heroes.owned("dragona"))
+	check("heroes: el de criaturas (uno contra uno) no tiene coleccion", not (func() -> bool:
+		Kit.config["rpg"] = {"preset": "criaturas"}
+		var e: bool = Heroes.enabled()
+		Kit.config["rpg"] = {"preset": "equipo"}
+		return e).call())
+	var total: float = 0.0
+	for r: String in Heroes.RATES:
+		total += float(Heroes.RATES[r])
+	check("heroes: las probabilidades suman 100 %", is_equal_approx(total, 100.0))
+	var w0: int = Save.wallet()
+	Save.add_wallet(Heroes.COST_TEN * 5 - w0)
+	var rng: RandomNumberGenerator = RandomNumberGenerator.new()
+	rng.seed = 7
+	var got: Array = []
+	for i: int in 4:
+		got.append_array(Heroes.summon(10, rng))
+	check("heroes: invocar x10 cobra y da 10 (los de 5 estrellas devuelven algo)", got.size() == 40 and Save.wallet() >= Heroes.COST_TEN and Save.wallet() < Heroes.COST_TEN * 2)
+	check("heroes: legendario seguro antes de 40 sin el", got.any(func(r: Dictionary) -> bool: return r["rarity"] == "legendario"))
+	check("heroes: los repetidos dan estrellas", got.any(func(r: Dictionary) -> bool: return not bool(r["new"]) and int(r["stars"]) > 1))
+	Save.add_wallet(-Save.wallet())
+	check("heroes: sin moneda no se invoca", Heroes.summon(1, rng).is_empty())
+	var id: String = Heroes.team()[0]
+	var p0: float = Heroes.power_mult(id)
+	Save.add_wallet(Heroes.level_cost(id))
+	check("heroes: subir de nivel cuesta moneda y da fuerza", Heroes.level_up(id) and Heroes.level(id) == 2 and Heroes.power_mult(id) > p0 and Save.wallet() == 0)
+	var legend: String = ""
+	for h: String in Heroes.owned_ids():
+		if Heroes.rarity(h) == "legendario":
+			legend = h
+	check("heroes: meter un heroe nuevo en el equipo (si cabe) y sacarlo", legend != "" and Heroes.toggle_team(Heroes.team()[3]) and Heroes.toggle_team(legend)
+		and Heroes.team().has(legend))
+	var lv: Dictionary = Heroes.apply_to_level(Kit.config["levels"][0])
+	var st: Dictionary = TurnsParty.new_state(lv)
+	Heroes.apply_power(st)
+	var lg: Dictionary = (st["heroes"] as Array).filter(func(u: Dictionary) -> bool: return str(u["id"]) == legend)[0]
+	check("heroes: el legendario pelea con su fuerza", float(lg["max_hp"]) > float(Heroes.hero(legend)["hp"]) * 1.2)
+	var t0: float = 1000000.0
+	Heroes.idle_claim(t0)
+	check("heroes: botin por hora y tope de 12 horas", Heroes.idle_pending(t0 + 3600.0) == Heroes.idle_rate() and Heroes.idle_pending(t0 + 3600.0 * 30.0) == Heroes.idle_rate() * 12)
+	check("heroes: cobrar el botin", Heroes.idle_claim(t0 + 7200.0) == Heroes.idle_rate() * 2 and Save.wallet() == Heroes.idle_rate() * 2)
+	## Paneles: coleccion e invocar.
+	var host: Control = Control.new()
+	add_child(host)
+	var hp: HeroesPanel = HeroesPanel.open(host)
+	await frames(2)
+	check("heroes: panel con una ficha por heroe", hp.find_child("Hero_dragona", true, false) != null and hp.find_child("HeroesGrid", true, false).get_child_count() == 13)
+	hp.queue_free()
+	Save.add_wallet(Heroes.COST_ONE)
+	var sp: SummonPanel = SummonPanel.open(host)
+	await frames(2)
+	check("heroes: invocar ensena las probabilidades", (sp.find_child("Odds", true, false) as Label).text.contains("3 %"))
+	(sp.find_child("BtnSummon1", true, false) as Button).pressed.emit()
+	await frames(2)
+	check("heroes: invocar x1 desde el panel", sp.find_child("Got_0", true, false) != null)
+	host.queue_free()
+	## La escena pelea con el equipo elegido.
+	var g: Node = (load("res://scenes/turns.tscn") as PackedScene).instantiate()
+	add_child(g)
+	await frames(3)
+	var ids: Array = (g.get("state")["heroes"] as Array).map(func(u: Dictionary) -> String: return str(u["id"]))
+	check("heroes: en la partida pelea tu equipo", ids.has(legend), str(ids))
+	g.queue_free()
+	await frames(2)
+	for k: String in ["heroes", "team", "pity", "idle_t"]:
+		m.erase(k)
+	Save.add_wallet(w0 - Save.wallet())
 	Kit.config = keep
 	Kit.level_index = 0
 

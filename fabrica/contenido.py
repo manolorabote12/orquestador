@@ -27,6 +27,7 @@ ID = re.compile(r"^[a-z][a-z0-9_]{1,19}$")
 COLOR = re.compile(r"^#[0-9a-fA-F]{6}$")
 ELEMENTOS = ("fire", "water", "nature", "light", "dark", "")
 ESTADOS = ("poison", "burn", "regen", "stun", "taunt", "atk_up", "atk_down", "def_up", "def_down")
+RAREZAS = ("comun", "raro", "epico", "legendario")
 OBJETIVOS = ("enemy", "all_enemies", "ally", "all_allies", "self")
 LETRAS_RPG = "WSFMBNL"
 LETRAS_SV = "TRGBXHC"
@@ -143,10 +144,15 @@ def _rpg(c: dict, err) -> dict:
 		else:
 			lk = u.get("look", "sword")
 			d["look"] = lk if lk in ("sword", "staff", "cross", "bow", "beast") else "sword"
+			## Coleccion de heroes (kit/turns/heroes.gd): rareza y descripcion para su dibujo.
+			if u.get("rarity") in RAREZAS:
+				d["rarity"] = u["rarity"]
+			if isinstance(u.get("desc"), str) and u["desc"].strip():
+				d["desc"] = u["desc"].strip()[:200]
 		return d
 
 	heroes = {}
-	for hid, h in _dic(err, "heroes", c.get("heroes", {}), 6).items():
+	for hid, h in _dic(err, "heroes", c.get("heroes", {}), 10).items():
 		if not ID.match(str(hid)) or not isinstance(h, dict):
 			err(f"contenido/heroes/{hid}: id en minusculas y un objeto")
 			continue
@@ -174,6 +180,9 @@ def _rpg(c: dict, err) -> dict:
 		out["party"] = list(heroes)[:4]
 	if "lineup" in c:
 		out["lineup"] = bool(c["lineup"])
+	## Con 6 o mas heroes propios, la coleccion es solo del juego (sin los de fantasia del kit).
+	if len(heroes) >= 6:
+		out["collection_extra"] = False
 	return out
 
 
@@ -748,7 +757,7 @@ def guia(genero: str | None = None) -> str:
 		"niveles justos, vuelve al estilo probado. Nombres originales (nada de marcas), en el idioma del juego.\n" + "\n".join(partes))
 
 
-GUIA_RPG = """- rpg: {"heroes": {id: {"name", "hp" 60-400, "atk" 8-40, "def" 0-60, "spd" 60-160, "element" (fire, water, nature, light, dark), "look" (sword, staff, cross, bow, beast), "skills": [2-4 ids]}}, "party": [1-4 ids], "lineup": true si es uno contra uno (criaturas), "skills": {id: {"name", "target" (enemy, all_enemies, ally, all_allies, self), "power" 0-3.5, "hits" 1-4, "heal" 0-0.6, "shield" 0-0.6, "drain" 0-1, "cleanse", "cooldown" 0-6, "telegraph", "effects": [{"status" (poison, burn, regen, stun, taunt, atk_up, atk_down, def_up, def_down), "turns" 1-5}]}}, "enemies": {letra W, S, F, M, N, L o B (jefe): {"name", "hp" 20-900, "atk", "def", "spd", "element", "skills", "thorns" 0-0.4}}}. Cada heroe y enemigo necesita un ataque basico (a enemigos, con power, sin cooldown). Equilibrio de referencia: un equipo de 3-4 heroes de 100-170 de vida y 14-25 de ataque contra enemigos de 50-110 de vida y 12-17 de ataque; el jefe 300-460. Ejemplo: tripulacion pirata con capitan (provocar), artillera (andanada a todos) y cocinero (cura a todos)."""
+GUIA_RPG = """- rpg: {"heroes": {id: {"name", "rarity" (comun, raro, epico, legendario), "desc" (como es, en ingles, para dibujarlo: 1 frase), "hp" 60-400, "atk" 8-40, "def" 0-60, "spd" 60-160, "element" (fire, water, nature, light, dark), "look" (sword, staff, cross, bow, beast), "skills": [2-4 ids]}}, "party": [1-4 ids], "lineup": true si es uno contra uno (criaturas), "skills": {id: {"name", "target" (enemy, all_enemies, ally, all_allies, self), "power" 0-3.5, "hits" 1-4, "heal" 0-0.6, "shield" 0-0.6, "drain" 0-1, "cleanse", "cooldown" 0-6, "telegraph", "effects": [{"status" (poison, burn, regen, stun, taunt, atk_up, atk_down, def_up, def_down), "turns" 1-5}]}}, "enemies": {letra W, S, F, M, N, L o B (jefe): {"name", "hp" 20-900, "atk", "def", "spd", "element", "skills", "thorns" 0-0.4}}}. Cada heroe y enemigo necesita un ataque basico (a enemigos, con power, sin cooldown). Equilibrio de referencia: un equipo de 3-4 heroes de 100-170 de vida y 14-25 de ataque contra enemigos de 50-110 de vida y 12-17 de ataque; el jefe 300-460. Ejemplo: tripulacion pirata con capitan (provocar), artillera (andanada a todos) y cocinero (cura a todos). El RPG de equipo es de COLECCIONAR heroes (se invocan): escribe 8-10 heroes del tema (2 comunes, 3 raros, 3 epicos y 2 legendarios, los legendarios con mas vida y ataque y habilidades mas fuertes), cada uno con su desc; party son los 3-4 del principio (comunes o raros)."""
 
 GUIA_SV = """- supervivencia: {"items": {id: {"name", "food" 0-60, "water" 0-40, "heal" 0-60, "fuel" 0-60, "cook": id, "sick" 0-30}}, "tiles": {letra T (arbol), R (roca), G (hierba), B (arbusto), X (restos), H (casa), C (coche): {"item": id o "loot": {id: n}, "yield" 1-6, "time" 0.2-3, "tool", "regrow", "tint" "#rrggbb"}, "D": {"den": criatura}}, "recipes": {id: {"name", "cost": {id: n}, y UNA de: "tool": {"gather" 0.3-1, "dmg" 10-80, "warm" 0.2-1}, "fire": true, "build" (muro, puerta, mesa, cama), "item": {id: n}, "win": true; "station": "fire" o una construccion}} (null quita una de las de siempre: hacha, lanza, hoguera), "creatures": {id: {"name", "hp" 10-300, "dmg" 0-40, "speed" 1-4, "when" (night, always), "hostile", "fear_fire", "drops": {id: n}, "look" (wolf, zombie, beast), "color"}}, "cold" 0-3, "bag" 0 o 12-60, "palette": {"ground", "sand", "sea"}}. Los objetos de siempre son wood, stone, fiber, berry, meat, cooked. Que haya una receta de fuego y comida al alcance. Ejemplo: naufragio en un planeta alienigena con cristales en vez de roca, frutos luminosos y bestias nocturnas."""
 
