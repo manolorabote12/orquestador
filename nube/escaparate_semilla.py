@@ -505,6 +505,10 @@ def estado() -> int:
 				print(f"::notice::Aviso del ultimo terminado: {p.get('paso')}: {str(p.get('mensaje') or '')[:800]}")
 	## Los fallos, los mas nuevos primero y solo 5 (GitHub ensena 10 avisos por trabajo: el ultimo
 	## fallo se quedaba fuera, 14 nov).
+	for j in js[-2:]:
+		pasos = [p for p in (j.get("progress") or []) if isinstance(p, dict)]
+		print(f"::notice::Ultimo encargo ({j['status']}): «{str((j.get('detail') or {}).get('idea'))[:50]}» error: {str(j.get('error'))[:500]} || "
+			+ " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:60]}" for p in pasos[-5:])[:600])
 	fallos = [j for j in js if j["status"] == "failed" and j.get("error") != "cancelado"]
 	for j in list(reversed(fallos))[:5]:
 		pasos = j.get("progress") or []
