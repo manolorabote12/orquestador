@@ -17,7 +17,7 @@ on:
       accion:
         description: "estado, encargar, seguir o cancelar"
         type: choice
-        options: [estado, encargar, encargar_idea, seguir, rescatar_capturas, cancelar, capturas, retirar, retirar_viejos]
+        options: [estado, encargar, encargar_idea, seguir, rescatar_capturas, cancelar, capturas, apk, retirar, retirar_viejos]
         default: estado
       cantidad:
         description: "Cuantos juegos encargar (maximo 25)"
@@ -55,7 +55,7 @@ jobs:
           CANTIDAD: ${{ inputs.cantidad }}
           IDEA: ${{ inputs.idea }}
         run: |
-          if [ "$ACCION" = encargar_idea ]; then python3 nube/escaparate_semilla.py "$ACCION" "$IDEA"
+          if [ "$ACCION" = encargar_idea ] || [ "$ACCION" = apk ]; then python3 nube/escaparate_semilla.py "$ACCION" "$IDEA"
           else python3 nube/escaparate_semilla.py "$ACCION" "$CANTIDAD"; fi
       - name: Despertar la fabrica
         if: inputs.accion == 'encargar'
@@ -66,6 +66,14 @@ jobs:
             curl -sf -X POST -H "Authorization: Bearer $RUNPOD_API_KEY" -H "Content-Type: application/json" \
               -d '{"input": {"despertar": "escaparate"}}' "https://api.runpod.ai/v2/$id/run" && echo "::notice::Fabrica despierta"
           fi
+      ## apk: el .apk de un juego (idea = parte de su titulo) como artefacto para descargar.
+      - name: Guardar el apk
+        if: inputs.accion == 'apk'
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk
+          path: apk_muestra/
+          retention-days: 7
       ## Las capturas van a la rama «revision» (solo esa carpeta, se reescribe cada vez): se ven en GitHub desde el movil.
       - name: Subir capturas a la rama revision
         if: inputs.accion == 'capturas'

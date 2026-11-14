@@ -458,6 +458,27 @@ def capturas(carpeta: str = "capturas_muestra") -> int:
 	return 0
 
 
+def apk(titulo: str, carpeta: str = "apk_muestra") -> int:
+	"""Baja el .apk del juego de muestra mas nuevo cuyo titulo contiene `titulo` (para instalarlo y
+	probarlo en el movil; el workflow lo deja como artefacto descargable)."""
+	from pathlib import Path
+	u = cuenta()
+	if not u:
+		return 1
+	t = (titulo or "").strip().lower()
+	for p in reversed(rest("GET", f"projects?select=id,title,files,created_at&user_id=eq.{u}&order=created_at") or []):
+		f = p.get("files") or {}
+		if t in str(p.get("title", "")).lower() and f.get("apk"):
+			d = Path(carpeta)
+			d.mkdir(parents=True, exist_ok=True)
+			nombre = "".join(c if c.isalnum() else "_" for c in p["title"])[:40] + ".apk"
+			(d / nombre).write_bytes(_bajar(f["apk"]))
+			print(f"::notice::APK de «{p['title']}»: {nombre} ({(d / nombre).stat().st_size // 1_000_000} MB)")
+			return 0
+	print(f"::error::No hay ningun juego con «{titulo}» en el titulo y .apk")
+	return 1
+
+
 def retirar(todos: bool = True) -> int:
 	"""Quita del Escaparate los juegos de muestra (todos, o solo los de antes del arreglo del arte y los
 	que se publicaron sin capturas)."""
@@ -532,6 +553,8 @@ def main(args: list[str]) -> int:
 		return cancelar()
 	if accion == "capturas":
 		return capturas()
+	if accion == "apk":
+		return apk(args[1] if len(args) > 1 else "")
 	if accion == "rescatar_capturas":
 		return rescatar_capturas()
 	if accion == "retirar":
