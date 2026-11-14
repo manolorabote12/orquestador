@@ -60,6 +60,28 @@ def _valores(enc: dict, intento: int, lado: int, ref_nombre: str | None = None) 
 	return v
 
 
+class ConRespaldo:
+	"""Pide la imagen con el flujo bueno y, si el motor no lo tiene o falla, con el de siempre (una vez
+	que falla, ya no lo vuelve a intentar en este juego)."""
+
+	def __init__(self, cliente, respaldo: dict):
+		self.cliente, self.respaldo, self.roto = cliente, respaldo, False
+
+	def generar(self, flujo: dict, valores: dict) -> list[bytes]:
+		if not self.roto:
+			try:
+				return self.cliente.generar(flujo, valores)
+			except Exception as e:  # noqa: BLE001 - modelo sin bajar, sin memoria...
+				if type(e).__name__ in ("TopeGPU", "TrabajoCancelado"):
+					raise
+				self.roto = True
+				print(f"[arte] Qwen-Image no disponible ({str(e)[:120]}): sigo con el flujo de siempre")
+		return self.cliente.generar(self.respaldo, valores)
+
+	def __getattr__(self, k):
+		return getattr(self.cliente, k)
+
+
 def fabricar(args: argparse.Namespace) -> dict:
 	inicio = time.time()
 	biblia = bib.cargar(args.biblia)
@@ -70,6 +92,12 @@ def fabricar(args: argparse.Namespace) -> dict:
 	cliente = cliente_comfy(args.comfy)
 	wf_crear = json.loads(Path(args.crear).read_text(encoding="utf-8"))
 	wf_editar = json.loads(Path(args.editar).read_text(encoding="utf-8"))
+	## Ilustraciones grandes (fondo del titulo, ficha de la tienda, carteles de los modos) con Qwen-Image
+	## 2512 (mejor composicion y detalle) en RunPod; si no esta o falla, con el flujo de siempre.
+	ilustrar, wf_ilustrar = cliente, wf_crear
+	qwen_wf = Path(args.crear).parent / "crear_qwen.json"
+	if str(args.comfy).startswith("runpod://") and qwen_wf.exists() and os.environ.get("ORQ_QWEN_IMAGE", "1") == "1":
+		ilustrar, wf_ilustrar = ConRespaldo(cliente, wf_crear), json.loads(qwen_wf.read_text(encoding="utf-8"))
 	## Las ediciones (los frames, la mayoria de las imagenes) reescalan la referencia a N megapixeles:
 	## se ajusta al lado pedido para que bajar la resolucion abarate tambien los frames.
 	for nodo in wf_editar.values():
@@ -322,7 +350,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 	fondos: dict = {}
 	if getattr(args, "fondos", False) and (solo is None or "fondos" in solo):
 		print("[arte] fondos ilustrados")
-		fondos, inf_f = portada.generar(biblia, salida / "portada", cliente, wf_crear,
+		fondos, inf_f = portada.generar(biblia, salida / "portada", ilustrar, wf_ilustrar,
 			prompts.semilla(biblia["juego"]["titulo"], "portada"))
 		informe["fondos"] = inf_f
 		informe["generaciones"] += int(inf_f.get("generaciones", 0))
@@ -355,6 +383,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 		if solo is not None and man_prev is not None and man_prev.exists():
 			ya = extras.ya_hechos(json.loads(man_prev.read_text(encoding="utf-8")))
 		ext, inf_x = extras.generar(biblia, salida / "interfaz", cliente, wf_crear, prompts.semilla(biblia["juego"]["titulo"], "extras"),
+			ilustrar=(ilustrar, wf_ilustrar),
 			arena=biblia["juego"].get("genero") == "arena", ya=ya)
 		informe["extras"] = inf_x
 		informe["generaciones"] += int(inf_x.get("generaciones", 0))

@@ -770,6 +770,13 @@ func _move(f: BrawlFighter, delta: float) -> void:
 	var moving: bool = step.length() > 0.5
 	if moving:
 		f.facing = f.velocity.normalized()
+		## Polvo al andar (cada ~0,2 s), solo cerca de la camara.
+		var dt: float = float(f.ai.get("dust_t", 0.0)) - delta
+		if dt <= 0.0:
+			dt = 0.2
+			if _fx != null and (f.is_player or (player != null and f.position.distance_to(player.position) < 800.0)) and f.modulate.a > 0.5:
+				Juice.dust(_fx, f.position + Vector2(-f.facing.x * 18.0, 6.0), Color(1.0, 0.95, 0.85, 0.55), 3, 0.5)
+		f.ai["dust_t"] = dt
 	f.animate(moving)
 	var bushed: bool = in_bush(p)
 	if bushed != f.in_bush:
@@ -948,6 +955,8 @@ func shoot(f: BrawlFighter, dir: Vector2) -> bool:
 	f.ammo -= 1.0
 	f.facing = dir
 	f.play_attack()
+	if f.rig != null:
+		Juice.squash(f.rig, Vector2(0.9, 1.1), 0.08)
 	_spawn_shot(f, f.position, dir)
 	if net != null and not f.remote:
 		net.send("sh", {"id": f.net_id, "o": [f.position.x, f.position.y], "d": [dir.x, dir.y], "s": false})
@@ -1122,6 +1131,16 @@ func _hit_fighter(f: BrawlFighter, dmg: float, by: BrawlFighter, col: Color) -> 
 	if f.ai.has("shield"):
 		dmg *= 0.25
 	var killed: bool = f.hit(dmg)
+	## Peso del golpe (15 nov): retroceso de unos pixeles, el personaje se aplasta un instante y, si el
+	## golpe es fuerte y te toca a ti, una congelacion de 40 ms (hitstop).
+	if not killed and not f.ai.has("turret") and by != null and is_instance_valid(by) and by.position != f.position:
+		var kb: Vector2 = f.position + (f.position - by.position).normalized() * clampf(dmg / maxf(f.max_hp, 1.0) * 60.0, 4.0, 14.0)
+		if free_at(kb, BrawlFighter.RADIUS * 0.8):
+			f.position = kb
+		if f.rig != null:
+			Juice.squash(f.rig, Vector2(1.14, 0.86), 0.1)
+	if (f.is_player or (by != null and is_instance_valid(by) and by.is_player)) and dmg >= f.max_hp * 0.12:
+		Juice.hitstop(0.04)
 	## Quien lleva el balon lo suelta al recibir un golpe fuerte.
 	if mode == "ball" and ball.get("holder") == f and dmg > f.max_hp * 0.12:
 		_drop_ball(f)
@@ -2617,11 +2636,12 @@ func _draw_wall(n: Node2D, cell: Vector2i) -> void:
 	## Roca dibujada por la GPU con el material del escenario (si el juego la tiene).
 	var rock: Texture2D = UI.fx_art("roca")
 	if rock != null:
-		n.draw_set_transform(Vector2(TILE * 0.5, 8.0), 0.0, Vector2(1.0, 0.35))
-		n.draw_circle(Vector2.ZERO, TILE * 0.55, Color(0, 0, 0, 0.22))
-		n.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		var flip: bool = (cell.x * 7 + cell.y * 3) % 2 == 0
 		var sz: float = TILE * 1.32
+		## Sombra justo bajo la base de la roca dibujada (antes quedaba una casilla mas abajo).
+		n.draw_set_transform(Vector2(TILE * 0.5, -TILE * 0.5 - WALL_H * 0.5 + sz * 0.4), 0.0, Vector2(1.0, 0.3))
+		n.draw_circle(Vector2.ZERO, TILE * 0.5, Color(0, 0, 0, 0.18))
+		n.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 		n.draw_set_transform(Vector2(TILE * 0.5, -TILE * 0.5 - WALL_H * 0.5), 0.0, Vector2(-1.0 if flip else 1.0, 1.0))
 		n.draw_texture_rect(rock, Rect2(Vector2(-sz * 0.5, -sz * 0.55), Vector2(sz, sz)), false)
 		n.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)

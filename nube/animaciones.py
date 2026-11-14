@@ -2,7 +2,8 @@
 
 	python nube/animaciones.py volumen <GB>     agranda el volumen de modelos del endpoint de imagenes
 	                                            (RunPod no deja encogerlo; se paga por GB al mes)
-	python nube/animaciones.py modelos          baja Wan 2.2 (grupo "video" de modelos.json) al volumen
+	python nube/animaciones.py modelos [grupo]  baja un grupo de modelos.json al volumen ("video": Wan 2.2,
+	                                            "qwen_image": Qwen-Image 2512 para las ilustraciones)
 	python nube/animaciones.py endpoint         imprime el id del endpoint orq-imagenes
 	python nube/animaciones.py voces            baja Chatterbox y Qwen3-TTS (locutor) al volumen del endpoint de voces
 """
@@ -41,7 +42,8 @@ def main() -> int:
 	if accion == "volumen":
 		print(json.dumps(volumen(int(sys.argv[2]))))
 	elif accion == "modelos":
-		r = ejecutar(endpoint()["id"], {"tarea": "descargar_modelos", "grupo": "video"}, 3000)
+		grupo = sys.argv[2] if len(sys.argv) > 2 else "video"
+		r = ejecutar(endpoint()["id"], {"tarea": "descargar_modelos", "grupo": grupo}, 3000)
 		print(json.dumps(r))
 		if r.get("errores"):
 			return 1

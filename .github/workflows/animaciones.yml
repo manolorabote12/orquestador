@@ -10,7 +10,7 @@ on:
     inputs:
       accion:
         type: choice
-        options: [animar, modelos, volumen, voces]
+        options: [animar, modelos, qwen_image, volumen, voces]
         default: animar
       personaje:
         required: false
@@ -48,6 +48,9 @@ jobs:
       - name: Modelos
         if: inputs.accion == 'modelos'
         run: python3 nube/animaciones.py modelos | tee /tmp/r.txt; s=${PIPESTATUS[0]}; echo "::notice::$(head -c 1500 /tmp/r.txt)"; exit $s
+      - name: Qwen-Image 2512
+        if: inputs.accion == 'qwen_image'
+        run: python3 nube/animaciones.py modelos qwen_image | tee /tmp/r.txt; s=${PIPESTATUS[0]}; echo "::notice::$(head -c 1500 /tmp/r.txt)"; exit $s
       - name: Voces (Qwen3-TTS)
         if: inputs.accion == 'voces'
         run: python3 nube/animaciones.py voces | tee /tmp/r.txt; s=${PIPESTATUS[0]}; echo "::notice::$(head -c 1500 /tmp/r.txt)"; exit $s

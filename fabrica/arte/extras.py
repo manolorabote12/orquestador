@@ -176,7 +176,8 @@ def faltan(manifest: dict, arena: bool) -> bool:
 	return any(t not in ya for t in todos)
 
 
-def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, arena: bool, ya: set | None = None) -> tuple[dict, dict]:
+def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, arena: bool, ya: set | None = None,
+		ilustrar: tuple | None = None) -> tuple[dict, dict]:
 	"""{"iconos": {nombre: png}, "efectos": {nombre: png}, "eventos": {modo: jpg}}, informe. ya: lo que no hay que redibujar."""
 	informe: dict = {"generaciones": 0}
 	out: dict = {"iconos": _piezas(biblia, carpeta / "iconos", cliente, flujo, semilla, ICONOS, LIBRES, informe, "iconos", 128, ya),
@@ -195,7 +196,8 @@ def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, are
 			if ya and f"eventos/{modo}" in ya:
 				continue
 			try:
-				datos = cliente.generar(flujo, {"PROMPT": _prompt_evento(biblia, modo), "SEED": semilla + 9000 + 31 * i, "ANCHO": 1024, "ALTO": 512})[0]
+				cli_i, flujo_i = ilustrar or (cliente, flujo)
+				datos = cli_i.generar(flujo_i, {"PROMPT": _prompt_evento(biblia, modo), "SEED": semilla + 9000 + 31 * i, "ANCHO": 1024, "ALTO": 512})[0]
 			except Exception as e:  # noqa: BLE001
 				informe.setdefault("fallidos", {})[f"eventos/{modo}"] = [str(e)[:120]]
 				continue
