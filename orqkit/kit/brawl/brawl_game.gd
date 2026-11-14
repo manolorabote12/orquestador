@@ -381,7 +381,7 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		f.damage = PLAYER_DMG * up * float(b.get("dmg", 1.0))
 		f.speed = float(Kit.param("player.brawl_speed", 330.0)) * float(b.get("speed", 1.0))
 		f.bar_color = Color("#5fd35f")
-		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 122.0)
+		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 136.0)
 		if f.sprite != null:
 			Skins.apply(f.sprite)
 			if str(b.get("tint", "")) != "":
@@ -398,7 +398,7 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		## Si cada personaje tiene su dibujo, aliados y rivales salen con el suyo (como en los juegos de arena).
 		if b.get("own_art", false) or (i >= 20 and str(b.get("sprite", "")) == "heroe"):
 			art = Brawlers.sprite_entry(b)
-		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 116.0)
+		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 128.0)
 		if f.sprite != null and str(b.get("tint", "")) != "":
 			f.sprite.self_modulate = Brawlers.tint(b)
 	## Nombre del personaje encima de la barra (como en los juegos de arena): tu nombre en verde.
@@ -461,6 +461,7 @@ func _build_hud() -> void:
 	_pad_super.name = "PadSuper"
 	_pad_super.label = Kit.text("brawl_super", "S\u00faper")
 	_pad_super.color = Color("#ffcf3f")
+	_pad_super.glyph = "super"
 	_pad_super.custom_minimum_size = Vector2(124, 124)
 	_pad_super.size_flags_vertical = Control.SIZE_SHRINK_END
 	_pad_super.pressed.connect(use_super)
@@ -471,6 +472,7 @@ func _build_hud() -> void:
 	_pad_attack.name = "PadAttack"
 	_pad_attack.label = Kit.text("brawl_attack", "\u00a1Fuego!")
 	_pad_attack.color = Color("#ff6b5b")
+	_pad_attack.glyph = "attack"
 	_pad_attack.segments = BrawlFighter.AMMO_MAX
 	_pad_attack.custom_minimum_size = Vector2(176, 176)
 	_pad_attack.pressed.connect(attack)
@@ -1030,7 +1032,9 @@ func _hit_fighter(f: BrawlFighter, dmg: float, by: BrawlFighter, col: Color) -> 
 	if f.is_player:
 		Juice.shake(0.12)
 		Juice.vibrate(20)
-	Juice.burst(_fx, f.position + Vector2(0, -30), col, 8, 220.0)
+	Juice.burst(_fx, f.position + Vector2(0, -30), col, 12, 260.0)
+	if by != null and is_instance_valid(by) and by.is_player:
+		Juice.shake(0.06)
 	Juice.ring(_fx, f.position + Vector2(0, -30), col.lerp(Color.WHITE, 0.4), 46.0, 0.16)
 	if killed:
 		_on_death(f, by)
@@ -2189,6 +2193,11 @@ func _draw_floor() -> void:
 
 func _draw_wall(n: Node2D, cell: Vector2i) -> void:
 	var top_col: Color = Kit.color("solid", Color("#7c8aa5"))
+	## Muros del tema y claros (critica v7: «bloques azules planos y oscuros que parecen de otro juego»):
+	## el color solido del juego mezclado con el suelo, con un minimo de luz.
+	top_col = top_col.lerp(_floor_colors()[0], 0.3)
+	if top_col.v < 0.5:
+		top_col.v = 0.5
 	var top: Rect2 = Rect2(Vector2(0.0, -TILE - WALL_H), Vector2(TILE, TILE))
 	if not _walls.has(cell + Vector2i(0, 1)):
 		## Cara de delante (mas oscura) y sombra en el suelo.

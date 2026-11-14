@@ -137,8 +137,8 @@ func draw_overlay(n: CanvasItem) -> void:
 	if not alive or modulate.a < 0.1:
 		return
 	var o: Vector2 = position
-	var w: float = 96.0
-	var top: float = -RADIUS * 2.9
+	var w: float = 110.0
+	var top: float = -RADIUS * 3.2
 	## Nombre (en la arena en directo) encima de la barra.
 	if fighter_name != "" and UI.font != null:
 		var nw: float = UI.font.get_string_size(fighter_name, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x
@@ -151,9 +151,9 @@ func draw_overlay(n: CanvasItem) -> void:
 	var f: Font = UI.font
 	if f != null:
 		var txt: String = str(int(ceil(hp)))
-		var tw: float = f.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 20).x
-		n.draw_string_outline(f, o + Vector2(-tw * 0.5, top - 4.0), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, 6, Color(0.05, 0.05, 0.08))
-		n.draw_string(f, o + Vector2(-tw * 0.5, top - 4.0), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
+		var tw: float = f.get_string_size(txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 24).x
+		n.draw_string_outline(f, o + Vector2(-tw * 0.5, top - 4.0), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, 7, Color(0.05, 0.05, 0.08))
+		n.draw_string(f, o + Vector2(-tw * 0.5, top - 4.0), txt, HORIZONTAL_ALIGNMENT_LEFT, -1, 24, Color.WHITE)
 		if power > 0:
 			var ptxt: String = str(power)
 			n.draw_rect(Rect2(o + Vector2(w * 0.5 + 4.0, top - 6.0), Vector2(26.0, 26.0)), Color("#b05cff"))
