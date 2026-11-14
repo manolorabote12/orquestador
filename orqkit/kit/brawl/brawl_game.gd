@@ -884,6 +884,9 @@ func _spawn_shot(f: BrawlFighter, origin: Vector2, dir: Vector2) -> void:
 		var d: Vector2 = dir.rotated((float(k) - float(n - 1) * 0.5) * spread)
 		bullets.append({"pos": origin + d * 30.0 + Vector2(0, -26), "vel": d * SHOT_SPEED * float(atk.get("speed", 1.0)), "owner": f,
 			"dmg": f.damage * float(atk.get("dmg", 1.0)), "left": range_of(f), "col": col, "w": w})
+	## Fogonazo en la boca del arma (mas grande en el tiro largo y la escopeta).
+	if _fx != null and (f.is_player or player == null or f.position.distance_to(player.position) < 900.0):
+		Juice.burst(_fx, origin + dir * 40.0 + Vector2(0, -26), col.lerp(Color.WHITE, 0.5), 4 if n == 3 else 7, 160.0)
 
 
 func fire_super(f: BrawlFighter) -> bool:
@@ -928,7 +931,7 @@ func _spawn_super(f: BrawlFighter, origin: Vector2) -> void:
 				to = origin + (to - origin).normalized() * SUPER_RANGE * 1.2
 			var dist: float = maxf(origin.distance_to(to), 1.0)
 			bullets.append({"pos": origin + Vector2(0, -26), "vel": (to - origin).normalized() * 700.0, "owner": f, "dmg": f.damage * 2.6,
-				"left": dist, "col": Color("#ff7a2f"), "w": 18.0, "bomb": true})
+				"left": dist, "d0": dist, "col": Color("#ff7a2f"), "w": 18.0, "bomb": true})
 			Audio.play("shoot", 0.1, -4.0)
 			QA.log_event("super", {"player": f.is_player, "kind": "bomba"})
 			return
@@ -2219,8 +2222,29 @@ func _draw_fx() -> void:
 		var v: Vector2 = (b["vel"] as Vector2).normalized()
 		var col: Color = b["col"]
 		var w: float = float(b["w"])
-		_fx.draw_line(p - v * 46.0, p, Color(col, 0.28), w * 1.6, true)
-		_fx.draw_line(p - v * 22.0, p, col, w, true)
+		if b.has("bomb"):
+			## Bomba por el aire: sombra en el suelo que crece y la bomba en parabola, con mecha.
+			var t: float = 1.0 - clampf(float(b["left"]) / maxf(float(b.get("d0", 1.0)), 1.0), 0.0, 1.0)
+			var h: float = sin(t * PI) * 140.0
+			var g: Vector2 = p + Vector2(0, 26)
+			_fx.draw_set_transform(g, 0.0, Vector2(1.0, 0.42))
+			_fx.draw_circle(Vector2.ZERO, 16.0 + 10.0 * t, Color(0, 0, 0, 0.3))
+			_fx.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+			var bp: Vector2 = p - Vector2(0, h)
+			_fx.draw_circle(bp, 19.0, Color("#1d1d2b"))
+			_fx.draw_circle(bp + Vector2(-6, -6), 6.0, Color(1, 1, 1, 0.35))
+			_fx.draw_line(bp + Vector2(8, -14), bp + Vector2(16, -24), Color("#c9a26b"), 4.0)
+			_fx.draw_circle(bp + Vector2(16, -26), 6.0 + sin(time_in_level * 30.0) * 2.0, Color("#ffd23f"))
+			continue
+		## Halo de luz suave alrededor de cada bala.
+		_fx.draw_circle(p, w * 1.9, Color(col, 0.16))
+		if w >= 14.0:
+			## Tiro largo: estela larga y fina, como un rayo.
+			_fx.draw_line(p - v * 120.0, p, Color(col, 0.22), w * 1.2, true)
+			_fx.draw_line(p - v * 60.0, p, col.lightened(0.3), w * 0.6, true)
+		else:
+			_fx.draw_line(p - v * 46.0, p, Color(col, 0.28), w * 1.6, true)
+			_fx.draw_line(p - v * 22.0, p, col, w, true)
 		_fx.draw_circle(p, w * 0.7, col.lerp(Color.WHITE, 0.6))
 	_draw_aim()
 	## Escudos.
