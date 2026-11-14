@@ -119,7 +119,7 @@ def saldo_runpod() -> float | None:
 
 
 def trabajos(u: str) -> list[dict]:
-	return rest("GET", f"jobs?select=id,status,detail,project_id,error,progress,result,created_at&user_id=eq.{u}&kind=eq.game&order=created_at") or []
+	return rest("GET", f"jobs?select=id,status,detail,project_id,error,progress,result,created_at&user_id=eq.{u}&kind=in.(game,game_change)&order=created_at") or []
 
 
 def cuantos_caben(pedidos: int, saldo: float | None, reserva: float) -> int:
@@ -550,7 +550,8 @@ def estado() -> int:
 	## fallo se quedaba fuera, 14 nov).
 	for j in js[-2:]:
 		pasos = [p for p in (j.get("progress") or []) if isinstance(p, dict)]
-		print(f"::notice::Ultimo encargo ({j['status']}): «{str((j.get('detail') or {}).get('idea'))[:50]}» error: {str(j.get('error'))[:500]} || "
+		d = j.get("detail") or {}
+		print(f"::notice::Ultimo encargo ({j['status']}): «{str(d.get('idea') or d.get('instruccion'))[:50]}» {j.get('created_at', '')[:16]} error: {str(j.get('error'))[:500]} || "
 			+ " | ".join(f"{p.get('paso')} {p.get('estado')} {str(p.get('mensaje') or '')[:60]}" for p in pasos[-5:])[:600])
 	fallos = [j for j in js if j["status"] == "failed" and j.get("error") != "cancelado"]
 	for j in list(reversed(fallos))[:5]:
