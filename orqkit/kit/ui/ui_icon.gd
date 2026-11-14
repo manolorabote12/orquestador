@@ -110,6 +110,11 @@ func _draw() -> void:
 			draw_circle(c + Vector2(s * 0.12, -s * 0.06), s * 0.09, color.darkened(0.75))
 			for k: int in 3:
 				_poly(_rect(o + Vector2(s * (0.37 + 0.1 * float(k)), s * 0.66), Vector2(s * 0.05, s * 0.12)), color.darkened(0.75))
+		"sword":
+			## Espada (heroes del RPG).
+			draw_line(c + Vector2(-s * 0.3, s * 0.3), c + Vector2(s * 0.34, -s * 0.34), color, s * 0.13)
+			draw_line(c + Vector2(-s * 0.36, s * 0.08), c + Vector2(-s * 0.08, s * 0.36), color.darkened(0.3), s * 0.1)
+			draw_circle(c + Vector2(-s * 0.34, s * 0.34), s * 0.07, color.darkened(0.3))
 		"gem":
 			## Gema tallada (moneda propia de las compras a medida).
 			_poly(PackedVector2Array([c + Vector2(-s * 0.4, -s * 0.12), c + Vector2(-s * 0.2, -s * 0.36), c + Vector2(s * 0.2, -s * 0.36),

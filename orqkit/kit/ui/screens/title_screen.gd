@@ -182,11 +182,11 @@ func _ready() -> void:
 			bp.changed.connect(_refresh_meta))
 	## RPG de equipo: coleccion de heroes, invocar y botin mientras no juegas.
 	if Genres.current() == "turns" and Heroes.enabled():
-		var hb: Button = _side_button(left, "BtnHeroes", Kit.text("heroes", "H\u00e9roes"), "star")
+		var hb: Button = _side_button(left, "BtnHeroes", Kit.text("heroes", "H\u00e9roes"), "sword")
 		hb.pressed.connect(func() -> void:
 			var hp: HeroesPanel = HeroesPanel.open(self)
 			hp.changed.connect(_refresh_meta))
-		var loot: Button = _side_button(left, "BtnIdle", Kit.text("idle_loot", "Bot\u00edn"), "coin")
+		var loot: Button = _side_button(left, "BtnIdle", Kit.text("idle_loot", "Bot\u00edn"), "gem")
 		if Heroes.idle_pending() >= 50:
 			_dot(loot)
 		loot.pressed.connect(func() -> void:
@@ -557,8 +557,10 @@ func _side_button(parent: VBoxContainer, node_name: String, label: String, icon:
 	## Textos largos (idiomas, nombres del juego): la letra baja hasta que cabe y, si aun asi no,
 	## puntos suspensivos. Antes un rotulo de 120 px en 112 tumbaba el juego entero en la validacion.
 	var fs: int = 22
-	var fnt: Font = l.get_theme_font("font")
-	while fs > 15 and fnt != null and fnt.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 108.0:
+	## Se mide con la letra del juego (la del tema aun no esta puesta) y contando el contorno
+	## (critica 14 nov: «More ga...» cortado).
+	var fnt: Font = UI.font if UI.font != null else l.get_theme_font("font")
+	while fs > 13 and fnt != null and fnt.get_string_size(label, HORIZONTAL_ALIGNMENT_LEFT, -1, fs).x > 98.0:
 		fs -= 1
 	l.add_theme_font_size_override("font_size", fs)
 	l.add_theme_color_override("font_outline_color", Color(0.05, 0.05, 0.1, 0.9))
