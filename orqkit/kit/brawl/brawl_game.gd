@@ -357,7 +357,7 @@ func _reset() -> void:
 	_bushes.queue_redraw()
 	## La camara no sale de la arena: antes media pantalla era mar oscuro (critica «nivel_vacio»).
 	_camera.limit_left = int(-TILE * 0.6)
-	_camera.limit_top = int(-TILE * 1.6)
+	_camera.limit_top = int(-TILE * 2.4)
 	_camera.limit_right = int(float(_size.x) * TILE + TILE * 0.6)
 	_camera.limit_bottom = int(float(_size.y) * TILE + TILE * 1.8)
 	if _left_icon != null:
