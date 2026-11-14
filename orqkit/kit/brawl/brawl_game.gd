@@ -103,6 +103,7 @@ var _pad_super: BrawlPad
 var _left_label: Label
 var _gas_label: Label
 var _left_icon: UiIcon
+var _floor_theme: Texture2D
 var _flow: Dictionary = {}
 ## Dano que se va sumando a cada luchador para ensenarlo como un solo numero por rafaga.
 var _dmg_acc: Dictionary = {}
@@ -350,7 +351,7 @@ func _reset() -> void:
 	_camera.position = player.position
 	_camera.reset_smoothing()
 	var vp: Vector2 = get_viewport_rect().size
-	_camera.zoom = Vector2.ONE * clampf(vp.x / (TILE * 7.4), 0.5, 1.4)
+	_camera.zoom = Vector2.ONE * clampf(vp.x / (TILE * 6.6), 0.5, 1.4)
 	_floor.queue_redraw()
 	_bushes.queue_redraw()
 	## La camara no sale de la arena: antes media pantalla era mar oscuro (critica «nivel_vacio»).
@@ -380,7 +381,7 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		f.damage = PLAYER_DMG * up * float(b.get("dmg", 1.0))
 		f.speed = float(Kit.param("player.brawl_speed", 330.0)) * float(b.get("speed", 1.0))
 		f.bar_color = Color("#5fd35f")
-		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 108.0)
+		f.setup(Brawlers.sprite_entry(b), Kit.color("accent", Color.ORANGE), 122.0)
 		if f.sprite != null:
 			Skins.apply(f.sprite)
 			if str(b.get("tint", "")) != "":
@@ -394,7 +395,10 @@ func _make_fighter(is_player: bool, at: Vector2, i: int) -> BrawlFighter:
 		f.bar_color = Color("#ff5a4f")
 		## Los aliados (i >= 20) se ven como tu personaje, tenido; los rivales, con el arte de enemigos.
 		var art: Dictionary = Kit.sprite_by_role("jugador") if i >= 20 else (_arts[i % _arts.size()] if not _arts.is_empty() else {})
-		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 104.0)
+		## Si cada personaje tiene su dibujo, aliados y rivales salen con el suyo (como en los juegos de arena).
+		if b.get("own_art", false) or (i >= 20 and str(b.get("sprite", "")) == "heroe"):
+			art = Brawlers.sprite_entry(b)
+		f.setup(art, Kit.color("danger", Color("#ff6b5b")), 116.0)
 		if f.sprite != null and str(b.get("tint", "")) != "":
 			f.sprite.self_modulate = Brawlers.tint(b)
 	f.ai = {"think": 0.1 * float(i), "aim": 0.0, "strafe": 1.0 if i % 2 == 0 else -1.0, "flip": 1.5, "goal": at,
@@ -1077,7 +1081,7 @@ func _on_death(f: BrawlFighter, by: BrawlFighter) -> void:
 		f.ai["respawn"] = RESPAWN_TIME
 		if by != null and is_instance_valid(by) and by.is_player:
 			kills += 1
-			UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
+			UI.float_text(_fx, f.position + Vector2(0, -200), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
 		if f.is_player:
 			UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_respawn", "Vuelves en 3 s"), UI.colors["peligro"], 34)
 		Audio.play("hurt", 0.1, -6.0)
@@ -1090,7 +1094,7 @@ func _on_death(f: BrawlFighter, by: BrawlFighter) -> void:
 			return
 		if by != null and is_instance_valid(by) and by.is_player:
 			kills += 1
-			UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
+			UI.float_text(_fx, f.position + Vector2(0, -200), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
 		Audio.play("hurt", 0.1, -6.0)
 		if rivals_left() == 0:
 			_survival_cleared()
@@ -1107,7 +1111,7 @@ func _on_death(f: BrawlFighter, by: BrawlFighter) -> void:
 		return
 	if by != null and is_instance_valid(by) and by.is_player:
 		kills += 1
-		UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
+		UI.float_text(_fx, f.position + Vector2(0, -200), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
 		Juice.hitstop(0.08)
 	Audio.play("hurt", 0.1, -6.0)
 	QA.log_event("rival_out", {"by_player": by != null and is_instance_valid(by) and by.is_player, "left": rivals_left()})
@@ -1307,7 +1311,7 @@ func _coop_death(f: BrawlFighter, by: BrawlFighter) -> void:
 	if f.team == 1:
 		if by != null and is_instance_valid(by) and by.is_player:
 			kills += 1
-			UI.float_text(_fx, f.position + Vector2(0, -140), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
+			UI.float_text(_fx, f.position + Vector2(0, -200), Kit.text("brawl_ko", "\u00a1Eliminado!"), Color("#ffe066"), 40)
 		if rivals_left() == 0:
 			if wave >= COOP_WAVES:
 				_net_end(1)
@@ -2144,6 +2148,12 @@ func _draw_floor() -> void:
 			_floor.draw_rect(Rect2(r.position, Vector2(TILE, 3.0)), Color(1, 1, 1, 0.1))
 			_floor.draw_rect(Rect2(r.position, Vector2(3.0, TILE)), Color(1, 1, 1, 0.07))
 			_floor.draw_rect(Rect2(r.position + Vector2(0.0, TILE - 3.0), Vector2(TILE, 3.0)), Color(0, 0, 0, 0.08))
+	## Tema en el suelo: el fondo ilustrado del juego (playa con agua, bosque...) desenfocado y suave
+	## por encima de la arena (critica de Marea Alta v5: «suelo plano sin tematica, parecen dos juegos»).
+	if Look.has_level_backdrop():
+		if _floor_theme == null:
+			_floor_theme = Look.soft_texture(Look.level_texture())
+		_floor.draw_texture_rect(_floor_theme, Rect2(Vector2.ZERO, w), false, Color(1, 1, 1, 0.42))
 	## Suelo limpio (la critica visual lo veia ruidoso con texturas encima): solo un oscurecido suave
 	## hacia los bordes para que los personajes resalten en el centro.
 	for k: int in 6:

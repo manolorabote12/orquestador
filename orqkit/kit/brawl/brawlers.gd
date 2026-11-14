@@ -57,6 +57,14 @@ static func catalog() -> Array[Dictionary]:
 		if by_id.has(b["id"]):
 			for k: String in (by_id[b["id"]] as Dictionary).keys():
 				b[k] = by_id[b["id"]][k]
+		## Con dibujo propio (brawler_<id>, lo pinta la fabrica) va sin tinte; el primero es el heroe.
+		if i == 0:
+			b["sprite"] = "heroe"
+			b["tint"] = ""
+		elif not Kit.sprite_entry("brawler_" + str(b["id"])).is_empty():
+			b["sprite"] = "brawler_" + str(b["id"])
+			b["tint"] = ""
+			b["own_art"] = true
 		out.append(b)
 	return out
 

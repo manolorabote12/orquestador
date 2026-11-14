@@ -576,6 +576,19 @@ def a_biblia(d: dict) -> dict:
 				"tamano": [celda, celda], "mira_a": "frente",
 				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
 			})
+	## Arena: cada personaje con su propio dibujo (14 nov, Marea Alta: varios compartian el arte de los
+	## enemigos con otro color). El heroe es «tenaza»; el kit busca los demas como brawler_<id>.
+	if d.get("genero") == "arena" and isinstance(d.get("contenido"), dict):
+		for b in (d["contenido"].get("brawlers") or [])[:8]:
+			if b.get("id") == "tenaza" or not b.get("desc"):
+				continue
+			personajes.append({
+				"id": "brawler_" + b["id"], "nombre": b.get("name", b["id"]), "rol": "npc",
+				"descripcion": ("arena hero character seen from a 3/4 top-down view, same art style as the hero, " + b["desc"])[:280],
+				"tamano": [celda, celda], "mira_a": "derecha",
+				"animaciones": {"idle": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}, "run": {"frames": 2, "fps": 8, "bucle": True},
+					"hurt": {"frames": 1, "fps": 1, "bucle": False, "desde_ficha": True}},
+			})
 	## Carreras: los 3 rivales dibujados (12 nov: corrian coches de cajas o el heroe tenido de color).
 	## Mismo tamano y pose de carrera que el heroe; el kit los busca como rival_<tipo>.
 	if d.get("genero") == "carreras":

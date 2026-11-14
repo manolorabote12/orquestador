@@ -669,6 +669,12 @@ def _arena(c: dict, err) -> dict:
 			err(f"contenido/brawlers/{k}: objeto con name")
 			continue
 		x = {"id": k, "name": _nombre(err, f"brawlers/{k}/name", b.get("name", ""), 16)}
+		## Descripcion visual (en ingles) para dibujar su propio personaje (14 nov: antes compartian arte).
+		desc = b.get("desc")
+		if isinstance(desc, str) and 8 <= len(desc.strip()) <= 220:
+			x["desc"] = desc.strip()
+		elif desc is not None:
+			err(f"contenido/brawlers/{k}/desc: descripcion visual en ingles de 8 a 220 letras")
 		if "tint" in b:
 			if isinstance(b["tint"], str) and COLOR.match(b["tint"]):
 				x["tint"] = b["tint"]
@@ -760,4 +766,4 @@ GUIA_TRAGAPERRAS = """- tragaperras: {"village": nombre de la aldea, "symbols": 
 
 GUIA_REINO = """- reino: {"realm": nombre del reino, "res": {food/wood/stone: {"name"}}, "buildings": {castillo/granja/aserradero/cantera/cuartel/establo/arqueria: {"name", "look" (castle, farm, mill, quarry, barracks, stable, range)}}, "troops": {infantry/cavalry/archer: {"name", "hp", "atk"}}, "heroes": {amadea/jabel/saul: {"name"}}, "camp_names": [2-6 nombres de campamentos enemigos, el ultimo el jefe]}. Los papeles no cambian (infanteria gana a caballeria, caballeria a arqueros, arqueros a infanteria); cambia los nombres al tema y la vida y el ataque como mucho un 30 % (de serie: lanceros 12 y 3, jinetes 14 y 4, arqueros 7 y 5). Ejemplo: un reino helado con iglu-castillo, pescaderia, leñera y mina de hielo; cazadores, trineos de lobos y lanzanieves; campamentos de yetis."""
 
-GUIA_ARENA = """- arena: {"brawlers": {tenaza/coraza/aguja/rapida/alga/tinta/perla/rey: {"name", "tint" "#rrggbb"}}, "hazard": {"name", "color"}}. Los papeles no cambian (tenaza: rafaga y onda; coraza: escopeta y escudo, mucha vida; aguja: francotiradora con bomba; rapida: veloz con embestida; alga: cura al equipo; tinta: escopeta con bomba; perla: tiro largo y onda; rey: el mas fuerte, se gana el ultimo); pon nombres del tema (cortos, 16 letras como mucho) y un tinte claro distinto a cada uno. hazard es lo que cierra la arena (de serie, gas verde). Ejemplo: cangrejos en una playa con Pinzas, Caparazon, Arponera, Corre-Corre, Anemona, Calamar, Perla y Rey Cangrejo; la marea azul (#3fa9f5) que sube."""
+GUIA_ARENA = """- arena: {"brawlers": {tenaza/coraza/aguja/rapida/alga/tinta/perla/rey: {"name", "tint" "#rrggbb", "desc"}}, "hazard": {"name", "color"}}. desc: como es por fuera, en ingles, 1 frase (se dibuja cada uno con su arte propio; tenaza es el heroe y usa su dibujo). Los papeles no cambian (tenaza: rafaga y onda; coraza: escopeta y escudo, mucha vida; aguja: francotiradora con bomba; rapida: veloz con embestida; alga: cura al equipo; tinta: escopeta con bomba; perla: tiro largo y onda; rey: el mas fuerte, se gana el ultimo); pon nombres del tema (cortos, 16 letras como mucho) y un tinte claro distinto a cada uno. hazard es lo que cierra la arena (de serie, gas verde). Ejemplo: cangrejos en una playa con Pinzas, Caparazon, Arponera, Corre-Corre, Anemona, Calamar, Perla y Rey Cangrejo; la marea azul (#3fa9f5) que sube."""
