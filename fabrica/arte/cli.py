@@ -333,8 +333,13 @@ def fabricar(args: argparse.Namespace) -> dict:
 	## explosiones) y las ilustraciones de los modos de la arena. Al fabricar o si se pide ("extras").
 	if (getattr(args, "fondos", False) and solo is None) or (solo is not None and "extras" in solo):
 		print("[arte] iconos, efectos e ilustraciones")
+		## Al actualizar, solo lo que el juego aun no tiene (los dibujos de antes se conservan al fusionar).
+		ya: set = set()
+		man_prev = Path(args.godot) / "assets" / "manifest.json" if args.godot else None
+		if solo is not None and man_prev is not None and man_prev.exists():
+			ya = extras.ya_hechos(json.loads(man_prev.read_text(encoding="utf-8")))
 		ext, inf_x = extras.generar(biblia, salida / "interfaz", cliente, wf_crear, prompts.semilla(biblia["juego"]["titulo"], "extras"),
-			arena=biblia["juego"].get("genero") == "arena")
+			arena=biblia["juego"].get("genero") == "arena", ya=ya)
 		informe["extras"] = inf_x
 		informe["generaciones"] += int(inf_x.get("generaciones", 0))
 		fondos["extras"] = ext

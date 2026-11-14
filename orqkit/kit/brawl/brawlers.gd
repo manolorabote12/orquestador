@@ -8,7 +8,8 @@ extends RefCounted
 ## 3 - Disparos: "rafaga" (3 balas juntas), "escopeta" (5 abiertas, corto alcance) y "franco"
 ##     (una bala larga y fuerte). Supers: "ola" (anillo de balas), "escudo" (3 s casi sin dano),
 ##     "dash" (embestida que golpea al llegar), "cura" (a ti y a tu equipo cerca) y "bomba"
-##     (explosion donde esta el rival mas cercano).
+##     (explosion donde esta el rival mas cercano), "remolino" (atrae y dana), "red" (deja al rival
+##     quieto 1,5 s) y "marea" (ola gigante en abanico que empuja). Cada personaje tiene el suyo.
 ## Los aliados y los rivales usan personajes del catalogo (por orden), asi cada partida se ve variada.
 ## 4 - Nivel de fuerza (1 a 11, como en los juegos de arena): los cofres dan puntos de fuerza a los
 ##     personajes desbloqueados y con puntos + monedas se mejoran. Cada nivel, +8 % de vida y dano.
@@ -19,9 +20,9 @@ const LIST: Array[Dictionary] = [
 	{"id": "aguja", "name": "Aguja", "hp": 0.78, "speed": 1.0, "dmg": 1.0, "attack": "franco", "super": "bomba", "trophies": 60},
 	{"id": "rapida", "name": "Rayo", "hp": 0.86, "speed": 1.22, "dmg": 0.92, "attack": "rafaga", "super": "dash", "trophies": 150},
 	{"id": "alga", "name": "Brote", "hp": 1.0, "speed": 1.0, "dmg": 0.82, "attack": "rafaga", "super": "cura", "trophies": 300},
-	{"id": "tinta", "name": "Tinta", "hp": 0.92, "speed": 1.0, "dmg": 1.08, "attack": "escopeta", "super": "bomba", "trophies": 500},
-	{"id": "perla", "name": "Perla", "hp": 0.8, "speed": 1.05, "dmg": 1.22, "attack": "franco", "super": "ola", "trophies": 800},
-	{"id": "rey", "name": "Rey", "hp": 1.3, "speed": 0.95, "dmg": 1.12, "attack": "escopeta", "super": "dash", "trophies": 1200},
+	{"id": "tinta", "name": "Tinta", "hp": 0.92, "speed": 1.0, "dmg": 1.08, "attack": "escopeta", "super": "remolino", "trophies": 500},
+	{"id": "perla", "name": "Perla", "hp": 0.8, "speed": 1.05, "dmg": 1.22, "attack": "franco", "super": "red", "trophies": 800},
+	{"id": "rey", "name": "Rey", "hp": 1.3, "speed": 0.95, "dmg": 1.12, "attack": "escopeta", "super": "marea", "trophies": 1200},
 ]
 const MAX_LEVEL: int = 11
 ## Puntos y monedas para pasar del nivel n al n+1 (indice n-1).

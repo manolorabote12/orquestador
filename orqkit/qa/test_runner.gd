@@ -2759,6 +2759,61 @@ func _test_brawl_modes() -> void:
 		for k: int in 60:
 			await get_tree().physics_frame
 		check("super bomba: explota donde esta el rival", foe.hp < fh, "%.0f -> %.0f" % [fh, foe.hp])
+	## Supers del mar: cada personaje tiene el suyo (red que inmoviliza, remolino que atrae, ola que empuja).
+	var sups: Dictionary = {}
+	for b: Dictionary in Brawlers.catalog():
+		sups[str(b["super"])] = true
+	check("supers: los 8 personajes tienen un super distinto", sups.size() == 8, str(sups.keys()))
+	## Partida nueva (la bomba de antes puede haber tumbado al rival si el personaje esta mejorado).
+	await stop_game(game)
+	game = await start_game(brawl_config(duel, {"reaction": 99.0}), 0)
+	me = game.get("player")
+	foe = (game.get("fighters") as Array)[1]
+	await frames(2)
+	me.position = foe.position + Vector2(0, 300)
+	me.ai["super"] = "red"
+	me.super_charge = 1.0
+	(game.get("bullets") as Array).clear()
+	game.call("fire_super", me)
+	var net_b: Array = game.get("bullets")
+	if net_b.size() == 1:
+		(net_b[0] as Dictionary)["vel"] = (foe.position - me.position).normalized() * 1100.0
+		(net_b[0] as Dictionary)["pos"] = me.position + Vector2(0, -26)
+	for k: int in 60:
+		await get_tree().physics_frame
+		if foe.ai.has("stun"):
+			break
+	check("super red: el rival se queda quieto y sin disparar", foe.ai.has("stun") and not bool(game.call("shoot", foe, Vector2.DOWN)),
+		"vivo=%s balas=%d" % [foe.alive, net_b.size()])
+	foe.ai.erase("stun")
+	foe.ammo = 3.0
+	me.ai["super"] = "remolino"
+	me.super_charge = 1.0
+	game.call("use_super")
+	var z: Array = game.get("zones")
+	check("super remolino: aparece donde esta el rival", z.size() == 1 and ((z[0] as Dictionary)["pos"] as Vector2).distance_to(foe.position) < 40.0)
+	var zc: Vector2 = foe.position + (me.position - foe.position).normalized() * 150.0
+	if z.size() == 1:
+		(z[0] as Dictionary)["pos"] = zc
+	var hz: float = foe.hp
+	for k: int in 70:
+		await get_tree().physics_frame
+	check("super remolino: atrae y dana", foe.hp < hz and foe.position.distance_to(zc) < 90.0, "%.0f del centro" % foe.position.distance_to(zc))
+	for k: int in 120:
+		await get_tree().physics_frame
+	check("super remolino: se acaba solo", (game.get("zones") as Array).is_empty())
+	foe.hp = foe.max_hp
+	foe.ai["reaction"] = 99.0
+	var before: float = foe.position.distance_to(me.position)
+	me.position = foe.position + Vector2(0, 260)
+	before = foe.position.distance_to(me.position)
+	me.ai["super"] = "marea"
+	me.super_charge = 1.0
+	game.call("use_super")
+	check("super marea: abanico de 9 olas", (game.get("bullets") as Array).size() == 9)
+	for k: int in 40:
+		await get_tree().physics_frame
+	check("super marea: golpea y empuja", foe.hp < foe.max_hp and foe.position.distance_to(me.position) > before + 40.0, "%.0f -> %.0f" % [before, foe.position.distance_to(me.position)])
 	await stop_game(game)
 	Save.meta()["brawler"] = "tenaza"
 	## Supervivencia: oleadas y el bot (piloto automatico) aguanta.

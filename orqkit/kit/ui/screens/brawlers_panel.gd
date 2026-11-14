@@ -20,6 +20,9 @@ const SUPER_TEXT: Dictionary = {
 	"dash": ["brawler_sup_dash", "Súper: embestida"],
 	"cura": ["brawler_sup_cura", "Súper: cura al equipo"],
 	"bomba": ["brawler_sup_bomba", "Súper: bomba"],
+	"remolino": ["brawler_sup_remolino", "Súper: remolino que atrae"],
+	"red": ["brawler_sup_red", "Súper: red que inmoviliza"],
+	"marea": ["brawler_sup_marea", "Súper: ola gigante"],
 }
 
 

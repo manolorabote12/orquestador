@@ -21,6 +21,7 @@ import cadena
 import versiones
 from arte import biblia as bib
 from arte import cli as arte_cli
+from arte import extras
 from cadena import ErrorCadena, evento
 from director import cambios, director, llm
 
@@ -286,7 +287,7 @@ def actualizar(args: argparse.Namespace) -> dict:
 	## Arte de GPU de lo que antes era codigo (iconos, efectos, eventos): si el juego aun no lo tiene.
 	man = proyecto / "assets" / "manifest.json"
 	ui_prev = (_leer(man).get("ui") or {}) if man.exists() else {}
-	if man.exists() and "efectos" not in ui_prev:
+	if man.exists() and extras.faltan(_leer(man), biblia["juego"].get("genero") == "arena"):
 		dibujar.append("extras")
 	## Marcos de panel y botones dibujados (menus que no parezcan de codigo), si no los tiene.
 	if man.exists() and not ui_prev.get("skin"):

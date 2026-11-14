@@ -31,6 +31,10 @@ const WALL_H: float = 30.0
 const SHOT_RANGE: float = 560.0
 const SHOT_SPEED: float = 1150.0
 const SUPER_RANGE: float = 430.0
+const ZONE_R: float = 210.0
+const ZONE_SECS: float = 2.8
+const ZONE_PULL: float = 230.0
+const NET_SECS: float = 1.5
 const BUSH_SEE: float = 170.0
 const GAS_DPS: float = 420.0
 const REGEN: float = 0.13
@@ -69,6 +73,8 @@ var player: BrawlFighter = null
 var boxes: Dictionary = {}
 ## {"pos": Vector2, "t": float}
 var cubes: Array[Dictionary] = []
+## Remolinos de agua del super "remolino" (atraen y danan a los rivales unos segundos).
+var zones: Array[Dictionary] = []
 ## {"pos", "vel", "owner", "dmg", "left", "col"}
 var bullets: Array[Dictionary] = []
 var gas_center: Vector2 = Vector2.ZERO
@@ -273,6 +279,7 @@ func _reset() -> void:
 	boxes.clear()
 	_box_nodes.clear()
 	cubes.clear()
+	zones.clear()
 	bullets.clear()
 	_walls.clear()
 	_bush.clear()
@@ -710,6 +717,7 @@ func _physics_process(delta: float) -> void:
 	if not online.is_empty():
 		_net_step(delta)
 	_move_bullets(delta)
+	_zones_step(delta)
 	_flush_damage(delta)
 	_pickups(delta)
 	if mode == "ball" and not ball.is_empty():
@@ -743,6 +751,12 @@ func _control_player(_delta: float) -> void:
 
 
 func _move(f: BrawlFighter, delta: float) -> void:
+	## Atrapado en la red: no se mueve.
+	if f.ai.has("stun"):
+		f.velocity = Vector2.ZERO
+	## Dentro de un remolino: le cuesta salir (anda a un tercio).
+	if f.ai.has("slow"):
+		f.velocity *= 0.33
 	var step: Vector2 = f.velocity * delta
 	var r: float = BrawlFighter.RADIUS * 0.8
 	var p: Vector2 = f.position
@@ -774,6 +788,14 @@ func _tick(f: BrawlFighter, delta: float) -> void:
 		f.ai["shield"] = float(f.ai["shield"]) - delta
 		if float(f.ai["shield"]) <= 0.0:
 			f.ai.erase("shield")
+	if f.ai.has("slow"):
+		f.ai["slow"] = float(f.ai["slow"]) - delta
+		if float(f.ai["slow"]) <= 0.0:
+			f.ai.erase("slow")
+	if f.ai.has("stun"):
+		f.ai["stun"] = float(f.ai["stun"]) - delta
+		if float(f.ai["stun"]) <= 0.0:
+			f.ai.erase("stun")
 	if f.ai.has("turret"):
 		f.queue_redraw()
 		return
@@ -919,7 +941,7 @@ func _lead(f: BrawlFighter, t: BrawlFighter) -> Vector2:
 
 
 func shoot(f: BrawlFighter, dir: Vector2) -> bool:
-	if f.ammo < 1.0 or dir == Vector2.ZERO:
+	if f.ammo < 1.0 or dir == Vector2.ZERO or f.ai.has("stun"):
 		return false
 	f.ammo -= 1.0
 	f.facing = dir
@@ -1007,6 +1029,36 @@ func _spawn_super(f: BrawlFighter, origin: Vector2) -> void:
 			Audio.play("shoot", 0.1, -4.0)
 			QA.log_event("super", {"player": f.is_player, "kind": "bomba"})
 			return
+		"remolino":
+			var t2: BrawlFighter = best_target(f)
+			var at: Vector2 = t2.position if t2 != null else origin + f.facing * 300.0
+			if f.ai.has("super_dir"):
+				at = origin + (f.ai["super_dir"] as Vector2) * SUPER_RANGE
+			if at.distance_to(origin) > SUPER_RANGE * 1.2:
+				at = origin + (at - origin).normalized() * SUPER_RANGE * 1.2
+			zones.append({"pos": at, "t": ZONE_SECS, "owner": f, "dmg": f.damage * 0.75, "tick": 0.0})
+			Juice.ring(_fx, at, Color("#5fd8ff"), ZONE_R, 0.4)
+			Audio.play("powerup")
+			QA.log_event("super", {"player": f.is_player, "kind": "remolino"})
+			return
+		"red", "marea":
+			var dir: Vector2 = _super_dir(f)
+			var kind: String = str(f.ai.get("super"))
+			if kind == "red":
+				bullets.append({"pos": origin + Vector2(0, -26), "vel": dir * SHOT_SPEED * 0.95, "owner": f, "dmg": f.damage * 1.2,
+					"left": SUPER_RANGE * 1.15, "col": Color("#c9f2ff"), "w": 22.0, "net": true})
+				Audio.play("shoot", 0.1, -2.0)
+			else:
+				for k: int in 9:
+					var d2: Vector2 = dir.rotated(lerpf(-0.55, 0.55, float(k) / 8.0))
+					bullets.append({"pos": origin + Vector2(0, -26), "vel": d2 * SHOT_SPEED * 0.8, "owner": f, "dmg": f.damage * 1.3,
+						"left": SUPER_RANGE * 0.9, "col": Color("#7fd8ff"), "w": 15.0, "push": true})
+				if not _fx_sprite("marea", origin + dir * 150.0 + Vector2(0, -40), 300.0, 0.55, dir.angle() if dir.x >= 0.0 else dir.angle() + PI, Color.WHITE, 1.25, 0.7):
+					Juice.ring(_fx, origin + Vector2(0, -26), Color("#7fd8ff"), SUPER_RANGE * 0.5, 0.35)
+				Juice.shake(0.3)
+				Audio.play("powerup")
+			QA.log_event("super", {"player": f.is_player, "kind": kind})
+			return
 	for k: int in 16:
 		var d: Vector2 = Vector2.RIGHT.rotated(TAU * float(k) / 16.0)
 		bullets.append({"pos": origin + Vector2(0, -26), "vel": d * SHOT_SPEED * 0.85, "owner": f, "dmg": f.damage * 1.5, "left": SUPER_RANGE, "col": col, "w": 13.0})
@@ -1057,6 +1109,7 @@ func _move_bullets(delta: float) -> void:
 						Juice.burst(_fx, f.position + Vector2(0, -30), b["col"] as Color, 5, 160.0)
 					else:
 						_hit_fighter(f, float(b["dmg"]), b["owner"] as BrawlFighter, b["col"] as Color)
+						_bullet_extra(b, f)
 					break
 		if dead:
 			bullets.remove_at(i)
@@ -1426,8 +1479,19 @@ func _draw_aim() -> void:
 				_fx.draw_dashed_line(o, at + Vector2(0, -26), gold, 5.0, 16.0)
 				_fx.draw_circle(at, 165.0, Color(1.0, 0.5, 0.2, 0.18))
 				_fx.draw_arc(at, 165.0, 0.0, TAU, 40, Color(1.0, 0.6, 0.2, 0.7), 4.0, true)
+			"remolino":
+				var at2: Vector2 = player.position + aim_super * SUPER_RANGE
+				_fx.draw_dashed_line(o, at2 + Vector2(0, -26), gold, 5.0, 16.0)
+				_fx.draw_arc(at2, ZONE_R, 0.0, TAU, 40, Color(0.4, 0.85, 1.0, 0.7), 4.0, true)
 			"dash":
 				_fx.draw_line(o, o + aim_super * 320.0, gold, 40.0, true)
+			"red":
+				_fx.draw_line(o, o + aim_super * SUPER_RANGE * 1.15, gold, 22.0, true)
+			"marea":
+				var pts2: PackedVector2Array = PackedVector2Array([o])
+				for k: int in 13:
+					pts2.append(o + aim_super.rotated(lerpf(-0.55, 0.55, float(k) / 12.0)) * SUPER_RANGE * 0.9)
+				_fx.draw_colored_polygon(pts2, Color(1.0, 0.85, 0.25, 0.22))
 			_:
 				var rad: float = 330.0 if str(player.ai.get("super", "")) == "cura" else SUPER_RANGE
 				_fx.draw_arc(player.position, rad, 0.0, TAU, 48, gold, 5.0, true)
@@ -1448,6 +1512,58 @@ func _nearest_foe(f: BrawlFighter, movers_only: bool) -> BrawlFighter:
 	return best
 
 
+## Hacia donde va un super que se lanza en una direccion (red, ola gigante).
+func _super_dir(f: BrawlFighter) -> Vector2:
+	if f.ai.has("super_dir"):
+		return f.ai["super_dir"]
+	var t: BrawlFighter = best_target(f)
+	return (t.position - f.position).normalized() if t != null and t.position != f.position else f.facing
+
+
+## Red: el rival se queda quieto y sin disparar. Ola gigante: lo empuja hacia atras.
+func _bullet_extra(b: Dictionary, f: BrawlFighter) -> void:
+	if not f.alive or f.ai.has("turret"):
+		return
+	if b.has("net"):
+		f.ai["stun"] = NET_SECS
+		if not _fx_sprite("red", f.position + Vector2(0, -44), 150.0, NET_SECS, 0.0, Color.WHITE, 1.0, 1.0):
+			Juice.ring(_fx, f.position + Vector2(0, -30), Color("#c9f2ff"), 70.0, NET_SECS)
+	if b.has("push"):
+		var push: Vector2 = f.position + (b["vel"] as Vector2).normalized() * 90.0
+		if free_at(push, BrawlFighter.RADIUS * 0.8):
+			f.position = push
+
+
+## Remolinos: atraen hacia el centro y danan cada medio segundo.
+func _zones_step(delta: float) -> void:
+	var i: int = zones.size() - 1
+	while i >= 0:
+		var z: Dictionary = zones[i]
+		z["t"] = float(z["t"]) - delta
+		z["tick"] = float(z["tick"]) + delta
+		var c: Vector2 = z["pos"]
+		var by: BrawlFighter = z["owner"] if is_instance_valid(z["owner"]) else null
+		var bite: bool = float(z["tick"]) >= 0.5
+		if bite:
+			z["tick"] = 0.0
+		for o: BrawlFighter in fighters.duplicate():
+			if not o.alive or o.remote or o.ai.has("turret") or (by != null and not foes(by, o)) or o == by:
+				continue
+			var d: float = o.position.distance_to(c)
+			if d > ZONE_R:
+				continue
+			o.ai["slow"] = 0.15
+			if d > 24.0:
+				var np: Vector2 = o.position + (c - o.position).normalized() * minf(ZONE_PULL * delta, d)
+				if free_at(np, BrawlFighter.RADIUS * 0.8):
+					o.position = np
+			if bite:
+				_hit_fighter(o, float(z["dmg"]) * 0.5, by, Color("#5fd8ff"))
+		if float(z["t"]) <= 0.0:
+			zones.remove_at(i)
+		i -= 1
+
+
 ## Cuando conviene usar el super (la IA y el piloto automatico).
 func _super_ready(f: BrawlFighter, target: BrawlFighter, d: float) -> bool:
 	match str(f.ai.get("super", "ola")):
@@ -1457,8 +1573,12 @@ func _super_ready(f: BrawlFighter, target: BrawlFighter, d: float) -> bool:
 			return f.hp < f.max_hp * 0.55
 		"dash":
 			return d < 330.0 and not target.ai.has("turret")
-		"bomba":
+		"bomba", "remolino":
 			return d < SUPER_RANGE * 1.15
+		"red":
+			return d < SUPER_RANGE * 1.05 and not target.ai.has("turret")
+		"marea":
+			return d < 380.0
 	return d < SUPER_RANGE * 0.85
 
 
@@ -2401,6 +2521,18 @@ func _draw_floor() -> void:
 	if not _sea:
 		_floor.draw_rect(Rect2(Vector2(-TILE * 6.0, -TILE * 6.0), w + Vector2(TILE * 12.0, TILE * 12.0)), Kit.color("sky", Color("#1b2a41")).darkened(0.25))
 	_floor.draw_rect(Rect2(Vector2(-10, -10), w + Vector2(20, 20)), cols[1].darkened(0.4))
+	## Suelo dibujado por la GPU (assets/ui/efectos/suelo.png, sin costuras): nitido y repetido, con un
+	## damero muy suave encima para leer las casillas. Sin el fondo borroso ni las motas de codigo.
+	var ground: Texture2D = UI.fx_art("suelo")
+	if ground != null:
+		_floor.texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+		_floor.draw_texture_rect(ground, Rect2(Vector2.ZERO, w), true)
+		for y3: int in _size.y:
+			for x3: int in _size.x:
+				if (x3 + y3) % 2 == 1:
+					_floor.draw_rect(Rect2(Vector2(x3, y3) * TILE, Vector2(TILE, TILE)), Color(0, 0, 0, 0.045))
+		_draw_floor_marks(w)
+		return
 	for y: int in _size.y:
 		for x: int in _size.x:
 			var r: Rect2 = Rect2(Vector2(x, y) * TILE, Vector2(TILE, TILE))
@@ -2434,6 +2566,11 @@ func _draw_floor() -> void:
 				var cpos: Vector2 = o2 + Vector2(TILE * 0.5, TILE * 0.55)
 				_floor.draw_arc(cpos, 26.0, PI * 1.15, PI * 1.85, 10, Color(base.darkened(0.12), 0.8), 3.0, true)
 				_floor.draw_arc(cpos + Vector2(10, 14), 20.0, PI * 1.15, PI * 1.85, 10, Color(base.lightened(0.12), 0.8), 3.0, true)
+	_draw_floor_marks(w)
+
+
+## Lineas de campo, porterias y el oscurecido de los bordes (encima de cualquier suelo).
+func _draw_floor_marks(w: Vector2) -> void:
 	## Suelo limpio (la critica visual lo veia ruidoso con texturas encima): solo un oscurecido suave
 	## hacia los bordes para que los personajes resalten en el centro.
 	for k: int in 6:
@@ -2577,6 +2714,24 @@ func _draw_bushes() -> void:
 
 
 func _draw_fx() -> void:
+	## Remolinos (arte de GPU girando, achatado como el suelo; si no hay arte, espiral de anillos).
+	var wt: Texture2D = UI.fx_art("remolino")
+	for z: Dictionary in zones:
+		var c: Vector2 = z["pos"]
+		var a: float = clampf(float(z["t"]) / 0.4, 0.0, 1.0) * clampf((ZONE_SECS - float(z["t"])) / 0.25, 0.0, 1.0)
+		var spin: float = -float(Time.get_ticks_msec()) / 1000.0 * 4.0
+		if wt != null:
+			var xf: Transform2D = Transform2D(spin, Vector2.ZERO).scaled(Vector2(1.0, 0.62)).translated(c)
+			_fx.draw_set_transform_matrix(xf)
+			_fx.draw_texture_rect(wt, Rect2(-ZONE_R, -ZONE_R, ZONE_R * 2.0, ZONE_R * 2.0), false, Color(1, 1, 1, 0.85 * a))
+			_fx.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
+		else:
+			_fx.draw_set_transform(c, 0.0, Vector2(1.0, 0.62))
+			_fx.draw_circle(Vector2.ZERO, ZONE_R, Color(0.2, 0.6, 0.95, 0.22 * a))
+			for k: int in 4:
+				var r: float = ZONE_R * (1.0 - float(k) * 0.22)
+				_fx.draw_arc(Vector2.ZERO, r, spin + k, spin + k + PI * 1.3, 24, Color(0.85, 0.97, 1.0, 0.6 * a), 5.0, true)
+			_fx.draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 	## Cubos de poder sueltos (flotan y brillan).
 	var ct: Texture2D = UI.fx_art("cubo")
 	for c: Dictionary in cubes:
