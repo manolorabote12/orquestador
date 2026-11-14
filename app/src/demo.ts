@@ -388,7 +388,7 @@ export class Demo implements Backend {
     const g = this.gan();
     return { saldo_cent: g.saldo, ganado_cent: g.ganado, anuncios_mes: 58,
       por_juego: [{ titulo: "Bigotes Veloces", anuncios: 41 }, { titulo: "Mago de Bolsillo", anuncios: 17 }],
-      movimientos: g.movs, cobros: [], tuercas_por_euro: 150, cobro_minimo_cent: 2000, cobro_activo: false, reparto_pct: 50 };
+      movimientos: g.movs, cobros: [], tuercas_por_euro: 150, cobro_minimo_cent: 2000, cobro_activo: false, reparto_pct: 60 };
   }
 
   async gananciasATuercas(cent: number) {

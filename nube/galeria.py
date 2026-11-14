@@ -1,7 +1,7 @@
 """Galeria tipo Poki: reparto mensual a los creadores y cobros en dinero (lo lanza el dueno).
 
 	python3 nube/galeria.py estado                       -> anuncios del mes, repartos hechos y cobros pendientes
-	python3 nube/galeria.py repartir 2026-11 12.34 [3,10] -> reparte el 80 % de 12,34 EUR (lo que pago Google ese mes)
+	python3 nube/galeria.py repartir 2026-11 12.34 [3,10] -> reparte el 60 % de 12,34 EUR (lo que pago Google ese mes)
 	                                                        menos 3,10 EUR de costes de servir los juegos (opcional)
 	python3 nube/galeria.py pagado 17 [nota]             -> el cobro 17 ya esta pagado por PayPal
 	python3 nube/galeria.py rechazado 17 [motivo]        -> el cobro 17 no se pudo pagar: el dinero vuelve al creador

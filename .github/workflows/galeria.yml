@@ -3,7 +3,7 @@ name: "Galeria: reparto y cobros"
 # Actions -> este workflow -> Run workflow.
 #  - estado:    repartos hechos y cobros en dinero pendientes (a quien pagar por PayPal y cuanto).
 #  - repartir:  a principios de mes, con lo que pago Google el mes anterior por los anuncios de la galeria
-#               (AdMob -> Informes -> bloque de la galeria). Reparte el 80 % entre los creadores de lo que
+#               (AdMob -> Informes -> bloque de la galeria). Reparte el 60 % entre los creadores de lo que
 #               queda tras restar los costes de servir los juegos (campo «costes»: Supabase -> Uso -> egress).
 #  - pagado:    ya pagaste el cobro N por PayPal.
 #  - rechazado: el cobro N no se pudo pagar (PayPal mal escrito...): el dinero vuelve a su saldo.
