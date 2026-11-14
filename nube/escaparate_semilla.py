@@ -307,17 +307,48 @@ def _bajar(ruta: str) -> bytes:
 	return _req("GET", f"{base()}/storage/v1/object/juegos/{urllib.parse.quote(ruta)}")
 
 
+def _clave(titulo: str) -> str:
+	"""Mismo juego aunque cambie el subtitulo: «Marea Alta: Rey Cangrejo» y «Marea Alta»."""
+	return str(titulo or "").split(":")[0].strip().lower()
+
+
+def _retirar_uno(u: str, pid: str, titulo: str) -> None:
+	rest("POST", "rpc/escaparate_retirar", {"p_user": u, "p_project": pid})
+	rutas = [f"{pid}/{n}" for n in ("index.pck", "icono.png", "portada.png", "ficha.json")]
+	try:
+		_req("DELETE", f"{base()}/storage/v1/object/escaparate", json.dumps({"prefixes": rutas}).encode(), {"Content-Type": "application/json"})
+	except ValueError as err:
+		print(f"::warning::{titulo}: {err}")
+	print(f"::notice::Retirado del Escaparate (hay una version mas nueva): {titulo}")
+
+
 def publicar() -> int:
 	u = cuenta()
 	if not u:
 		return 0
-	ya = {e["project_id"] for e in (rest("GET", f"escaparate?select=project_id&user_id=eq.{u}") or [])}
-	proyectos = rest("GET", f"projects?select=id,title,spec,version,files&user_id=eq.{u}&created_at=gte.{PUBLICAR_DESDE}") or []
+	publicados = rest("GET", f"escaparate?select=project_id,titulo&user_id=eq.{u}") or []
+	ya = {e["project_id"] for e in publicados}
+	proyectos = rest("GET", f"projects?select=id,title,spec,version,files,created_at&user_id=eq.{u}&created_at=gte.{PUBLICAR_DESDE}") or []
+	## Varias versiones del mismo juego (14 nov: Marea Alta v1, v4, v5...): solo va la mas nueva que
+	## tenga paquete web, y las anteriores se retiran del Escaparate.
+	nuevo: dict[str, dict] = {}
+	for p in proyectos:
+		if (p.get("files") or {}).get("web"):
+			k = _clave(p["title"])
+			if k not in nuevo or str(p.get("created_at", "")) > str(nuevo[k].get("created_at", "")):
+				nuevo[k] = p
+	for e in publicados:
+		k = _clave(e.get("titulo", ""))
+		if k in nuevo and nuevo[k]["id"] != e["project_id"] and any(x["id"] == e["project_id"] for x in proyectos):
+			_retirar_uno(u, e["project_id"], e.get("titulo", ""))
+			ya.discard(e["project_id"])
 	n = 0
 	notas = notas_visuales(trabajos(u))
 	for p in proyectos:
 		f = p.get("files") or {}
 		if p["id"] in ya or not f.get("web"):
+			continue
+		if nuevo.get(_clave(p["title"]), p)["id"] != p["id"]:
 			continue
 		## Sin capturas no hay portada ni critica visual: no se publica (12 nov: «Agua a Bordo» salio asi).
 		if not [c for c in (f.get("capturas") or []) if isinstance(c, str)]:
