@@ -9784,6 +9784,9 @@ func _test_stealth() -> void:
 func _test_chests() -> void:
 	print("- Cofres y trofeos")
 	Save.meta().erase("chests")
+	check("cofres: de bienvenida, uno listo para abrir", Chests.slots().size() == 1 and Chests.ready(0))
+	var wel: Dictionary = Chests.open(0)
+	check("cofres: el de bienvenida da monedas", int(wel.get("coins", 0)) > 0 and Chests.slots().is_empty())
 	var w: Dictionary = Chests.on_level_won("0", 3)
 	check("cofres: superar un nivel da cofre y 30 trofeos", str(w["chest"]) == "madera" and int(w["trophies"]) == 30 and Chests.slots().size() == 1)
 	var w2: Dictionary = Chests.on_level_won("0", 3)

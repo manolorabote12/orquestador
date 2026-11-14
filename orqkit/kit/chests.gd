@@ -24,7 +24,9 @@ const TROPHY_STEP: int = 50
 static func _data() -> Dictionary:
 	var m: Dictionary = Save.meta()
 	if not (m.get("chests", null) is Dictionary):
-		m["chests"] = {"slots": [], "cycle": 0, "trophies": 0, "road": [], "stars": {}}
+		## Cofre de bienvenida listo para abrir (como los juegos grandes): la portada no empieza con
+		## cuatro huecos vacios y el primer toque ya da premio (critica «interfaz_sosa», 14 nov).
+		m["chests"] = {"slots": [{"type": "madera", "start": 0, "welcome": true}], "cycle": 0, "trophies": 0, "road": [], "stars": {}}
 	var d: Dictionary = m["chests"]
 	for k: String in ["slots", "road"]:
 		if not (d.get(k, null) is Array):
