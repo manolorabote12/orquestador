@@ -386,7 +386,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 			ya -= {f"{g}/{k.strip()}" for k in os.environ.get("ORQ_REDIBUJAR", "").split(",") if k.strip() for g in ("efectos", "iconos", "eventos")}
 		ext, inf_x = extras.generar(biblia, salida / "interfaz", cliente, wf_crear, prompts.semilla(biblia["juego"]["titulo"], "extras"),
 			ilustrar=(ilustrar, wf_ilustrar),
-			arena=biblia["juego"].get("genero") == "arena", ya=ya)
+			arena=biblia["juego"].get("genero") == "arena", ya=ya, superv=biblia["juego"].get("genero") == "supervivencia")
 		informe["extras"] = inf_x
 		informe["generaciones"] += int(inf_x.get("generaciones", 0))
 		fondos["extras"] = ext

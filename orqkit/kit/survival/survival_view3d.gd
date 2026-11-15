@@ -14,7 +14,8 @@ const H_SAND: float = 0.0
 const H_GRASS: float = 0.08
 const H_POND: float = -0.14
 const H_SEA: float = -0.32
-const CAM_OFF: Vector3 = Vector3(0.0, 9.0, 6.4)
+## Mas cerca que antes (15 nov: personajes diminutos; los survival de movil enfocan al personaje).
+const CAM_OFF: Vector3 = Vector3(0.0, 7.2, 5.2)
 
 var game: Node2D
 var _camera: Camera3D
@@ -222,6 +223,15 @@ func rebuild_props() -> void:
 		var k: int = (c.x * 31 + c.y * 17) % 7
 		var rot: Basis = Basis(Vector3.UP, float(k) * 0.9)
 		var kind: String = str(r["kind"])
+		## Arte de la GPU (casa, coche, arbol, roca, arbusto, caja): un dibujo de verdad de pie en vez
+		## de cubos (15 nov, «las casas son cajas rojas»). Lo agotado se ve mas pequeno y apagado.
+		var lk2: String = M.look(s0, kind)
+		if PROP_ART.has(lk2) and UI.fx_art(str(PROP_ART[lk2][0])) != null:
+			var full: float = 1.0
+			if lk2 in ["T", "B"] and M.tile_yield(s0, kind) > 0:
+				full = 0.7 + 0.3 * float(r["left"]) / float(M.tile_yield(s0, kind))
+			_billboard(UI.fx_art(str(PROP_ART[lk2][0])), p, float(PROP_ART[lk2][1]) * full, k % 2 == 0, r.has("done"))
+			continue
 		match M.look(s0, kind):
 			"H":
 				houses.append(Transform3D(Basis(), p + Vector3(0, 0.45, 0)))
@@ -254,7 +264,11 @@ func rebuild_props() -> void:
 					berries.append(Transform3D(Basis(), p + Vector3(cos(a2) * 0.28, 0.38 + 0.08 * float(j2 % 2), sin(a2) * 0.28)))
 			"X":
 				crates.append(Transform3D(rot, p + Vector3(0, 0.2, 0)))
+	var den_art: Texture2D = UI.fx_art("guarida")
 	for d: Vector2i in s0["dens"]:
+		if den_art != null:
+			_billboard(den_art, at(M.center(d), H_SAND), 1.3, (d.x + d.y) % 2 == 0, false)
+			continue
 		dens.append(Transform3D(Basis().scaled(Vector3(1.1, 0.65, 1.1)), at(M.center(d), H_SAND)))
 	_multi("Trunks", trunks, [], _box(Vector3(0.18, 0.7, 0.18)), mat(Color("#7a4b2a")))
 	_multi("Crowns", crowns, crown_c, _cone(0.48, 0.85, 6), null)
@@ -277,6 +291,30 @@ func rebuild_props() -> void:
 		hole.material_override = mat(Color("#120c0c"))
 		hole.position = at(M.center(d2), H_SAND + 0.22) + Vector3(0, 0, 0.6)
 		_props.add_child(hole)
+
+
+## Que dibujo de la GPU va en cada casilla (assets/ui/efectos) y su alto en metros.
+const PROP_ART: Dictionary = {"H": ["casa", 2.0], "C": ["coche", 1.1], "T": ["arbol", 1.8], "R": ["roca", 0.9], "B": ["arbusto_bayas", 0.8], "X": ["caja", 0.65]}
+
+
+func _billboard(tex: Texture2D, at_p: Vector3, height_m: float, flip: bool, spent: bool) -> void:
+	var s: Sprite3D = Sprite3D.new()
+	s.texture = tex
+	s.pixel_size = height_m / float(maxi(tex.get_height(), 1))
+	## Mirando de frente a la camara (con FIXED_Y se aplastaban abajo de la pantalla).
+	s.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	s.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+	s.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	s.shaded = false
+	s.flip_h = flip
+	s.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	s.position = at_p + Vector3(0, height_m * 0.5 - 0.05, 0)
+	if spent:
+		s.modulate = Color(0.72, 0.7, 0.68)
+	_props.add_child(s)
+	var sh: MeshInstance3D = _shadow(minf(0.9, height_m * 0.33))
+	sh.position = at_p + Vector3(0, 0.02, 0)
+	_props.add_child(sh)
 
 
 func _multi(nm: String, xf: Array[Transform3D], cols: Array[Color], mesh: Mesh, m: Material) -> void:
@@ -345,7 +383,8 @@ func _figure(entry: Dictionary, height_m: float, anim: String) -> AnimatedSprite
 	var celda: Array = entry.get("celda", [32, 32])
 	spr.pixel_size = height_m / (float(celda[1]) * 0.86)
 	spr.billboard = BaseMaterial3D.BILLBOARD_FIXED_Y
-	spr.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST
+	## Arte dibujado (no pixel art): suavizado; si no, al alejarse sale con dientes de sierra.
+	spr.texture_filter = BaseMaterial3D.TEXTURE_FILTER_NEAREST if str(Kit.assets.get("familia", "")) == "pixel_art" else BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
 	spr.shaded = false
 	spr.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
 	spr.position = Vector3(0, height_m * 0.5, 0)
@@ -377,7 +416,7 @@ func _build_player() -> void:
 	_player.add_child(_shadow(0.3))
 	var art: Dictionary = Kit.sprite_by_role("jugador")
 	if not art.is_empty():
-		_player_spr = _figure(art, 1.4, "idle")
+		_player_spr = _figure(art, 1.6, "idle")
 		_player.add_child(_player_spr)
 	else:
 		var body: MeshInstance3D = MeshInstance3D.new()
@@ -411,7 +450,9 @@ func _wolf_node(id: int, kind: String = "wolf") -> Node3D:
 		entry = Kit.sprite_by_role("enemigo" if hostile else "presa")
 	var col: Color = Color.from_string(str(cdef.get("color", "#5b6270")), Color("#5b6270"))
 	if not entry.is_empty():
-		var spr: AnimatedSprite3D = _figure(entry, 1.15, "run")
+		## El oso (y lo que tenga mucha vida) se ve enorme; los pajaros, pequenos.
+		var tall: float = 1.3 * (1.6 if float(cdef.get("hp", 50.0)) >= 120.0 else (0.8 if kind.contains("cuervo") else 1.0))
+		var spr: AnimatedSprite3D = _figure(entry, tall, "run")
 		spr.name = "Art"
 		root.add_child(spr)
 	elif lk == "zombie":

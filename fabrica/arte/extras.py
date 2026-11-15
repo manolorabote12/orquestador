@@ -61,6 +61,20 @@ PROPS = {
 SUELO = ("Seamless tileable ground texture seen from directly above, flat even lighting, {mat}, small natural details, "
 	"mobile game floor, no objects, no characters, no shadows, no perspective, no text")
 
+## Supervivencia en 3D (15 nov, «las casas son cajas»): cada cosa del mapa dibujada por la GPU y puesta de
+## pie en el mundo 3D (kit/survival/survival_view3d.gd, PROP_ART).
+PROPS_SUPERV = {
+	"casa": "a single small abandoned ruined house with broken boarded windows and a damaged roof, overgrown with weeds, seen from a three quarter view, {mat}",
+	"coche": "a single abandoned rusty wrecked car with flat tires and broken glass, seen from a three quarter view",
+	"arbol": "a single tall tree with a full leafy crown and a visible trunk, seen from a three quarter view, from {mat}",
+	"roca": "a single chunky boulder rock, seen from a three quarter view, made of {mat}",
+	"arbusto_bayas": "a single round leafy bush with bright red berries, seen from a three quarter view",
+	"caja": "a single wooden supply crate with metal corners, seen from a three quarter view",
+	"guarida": "a single dark menacing animal den cave entrance made of rocks and bones, seen from a three quarter view",
+}
+for _k in PROPS_SUPERV:
+	PROPS_SUPERV[_k] += ", isolated object only, no ground, no grass, no shadow, no base around it"
+
 MODOS = {
 	"showdown": "a free for all battle where small heroes fight among bushes and rocks while a storm closes in",
 	"ball": "a 3 versus 3 sports match where small heroes kick a ball towards a goal",
@@ -168,21 +182,27 @@ def ya_hechos(manifest: dict) -> set[str]:
 	return {f"{g}/{k}" for g in ("iconos", "efectos", "eventos") for k in (ui.get(g) or {})}
 
 
-def faltan(manifest: dict, arena: bool) -> bool:
+def faltan(manifest: dict, arena: bool, superv: bool = False) -> bool:
 	ya = ya_hechos(manifest)
 	todos = [f"iconos/{k}" for k in ICONOS] + [f"efectos/{k}" for k in EFECTOS]
+	if superv:
+		todos += [f"efectos/{k}" for k in PROPS_SUPERV]
 	if arena:
 		todos += [f"efectos/{k}" for k in PROPS] + [f"eventos/{k}" for k in MODOS] + ["efectos/suelo"]
 	return any(t not in ya for t in todos)
 
 
 def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, arena: bool, ya: set | None = None,
-		ilustrar: tuple | None = None) -> tuple[dict, dict]:
+		ilustrar: tuple | None = None, superv: bool = False) -> tuple[dict, dict]:
 	"""{"iconos": {nombre: png}, "efectos": {nombre: png}, "eventos": {modo: jpg}}, informe. ya: lo que no hay que redibujar."""
 	informe: dict = {"generaciones": 0}
 	out: dict = {"iconos": _piezas(biblia, carpeta / "iconos", cliente, flujo, semilla, ICONOS, LIBRES, informe, "iconos", 128, ya),
 		"efectos": _piezas(biblia, carpeta / "efectos", cliente, flujo, semilla + 5000, EFECTOS, set(EFECTOS), informe, "efectos", 192, ya),
 		"eventos": {}}
+	if superv:
+		mat_s = (biblia.get("escenarios") or [{}])[0].get("descripcion", "the game world")[:160]
+		props_s = {k: v.format(mat=mat_s) for k, v in PROPS_SUPERV.items()}
+		out["efectos"].update(_piezas(biblia, carpeta / "props", cliente, flujo, semilla + 8500, props_s, set(props_s), informe, "efectos", 320, ya))
 	if arena:
 		mat = (biblia.get("escenarios") or [{}])[0].get("descripcion", "the game world")[:160]
 		props = {k: v.format(mat=mat) for k, v in PROPS.items()}
