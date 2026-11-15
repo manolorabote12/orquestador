@@ -108,6 +108,7 @@ const GUION: [number, Evento][] = [
   [0.4, { paso: "validacion", estado: "inicio", mensaje: "Probando el juego con bots..." }],
   [2.8, { paso: "validacion", estado: "aviso", mensaje: "Rehaciendo niveles que el bot no supera: [3]" }],
   [2.0, { paso: "validacion", estado: "ok", mensaje: "Los bots han superado todos los niveles" }],
+  [0.8, { paso: "boceto", estado: "ok", mensaje: "¡Ya tiene su arte de verdad! Vuelve a abrirlo y juega mientras lo empaqueto", boceto: "demo/web/boceto.pck", arte: true }],
   [0.4, { paso: "apk", estado: "inicio", mensaje: "Empaquetando para Android..." }],
   [2.4, { paso: "apk", estado: "ok", mensaje: "APK lista" }],
   [0.4, { paso: "ficha", estado: "inicio", mensaje: "Preparando la ficha para Google Play..." }],

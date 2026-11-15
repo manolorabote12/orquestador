@@ -15,6 +15,8 @@ export interface Evento {
   titulo?: string;
   /** Paquete web provisional (arte del kit) para jugar mientras se dibuja el definitivo. */
   boceto?: string;
+  /** El boceto ya lleva el arte de verdad (juego en directo: se rehace al terminar el arte). */
+  arte?: boolean;
   /** Paquete web de un cambio ya probado por los bots: se puede jugar mientras se termina el APK. */
   adelanto?: string;
 }

@@ -1283,3 +1283,8 @@ details.como summary { cursor: pointer; color: var(--brass-hi); font-weight: 700
 /* Lo que cuesta cada cosa, siempre a la vista (15 nov) */
 .coste-linea { margin: 6px 0; padding: 6px 10px; border-radius: 10px; background: color-mix(in srgb, var(--brass, #c9a227) 14%, transparent); }
 .coste-linea strong { color: var(--brass, #c9a227); }
+
+/* Juego en directo: el botón del boceto late cuando ya trae el arte de verdad. */
+.btn.late { animation: late 1.1s ease-in-out 3; }
+@keyframes late { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); box-shadow: 0 0 0 6px rgba(255, 207, 46, 0.35); } }
+@media (prefers-reduced-motion: reduce) { .btn.late { animation: none; } }

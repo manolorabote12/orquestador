@@ -734,9 +734,21 @@ export function vistaTaller(app: App): VistaHecha {
     if (hechosAntes >= 0 && nHechos > hechosAntes && t.status === "running") sonar("paso");
     hechosAntes = nHechos;
     musica(t.status === "running" || t.status === "queued");
-    const boceto = t.progress.find((e) => e.boceto)?.boceto;
+    // Juego en directo: el boceto se rehace cuando el arte de verdad ya está; el botón lo dice y late.
+    const bocetos = t.progress.filter((e) => e.boceto);
+    const boceto = bocetos[bocetos.length - 1]?.boceto;
     if (boceto) rutaBoceto = boceto;
+    const conArte = bocetos.some((e) => e.arte);
     jugarBoceto.hidden = !boceto || t.status !== "running";
+    const etiqueta = conArte ? " Jugar con el arte nuevo" : " Jugar el boceto";
+    if (jugarBoceto.lastChild?.textContent !== etiqueta) {
+      jugarBoceto.lastChild!.textContent = etiqueta;
+      if (conArte) {
+        jugarBoceto.classList.remove("late");
+        void jugarBoceto.offsetWidth;
+        jugarBoceto.classList.add("late");
+      }
+    }
     registro.replaceChildren(...t.progress.map((e) => h("div", { class: e.estado === "aviso" ? "aviso" : "" }, "› " + e.mensaje)));
     registro.scrollTop = registro.scrollHeight;
     const ultimo = t.progress[t.progress.length - 1];
