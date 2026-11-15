@@ -1,0 +1,168 @@
+{
+ "estilo": "Lively watercolor fantasy illustration for a mobile game, thick dark ink outlines, soft paper texture, glowing magic sparkles, rich saturated colors, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "retrato_heroe",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6100,
+   "prompt": "Vertical character card art, waist-up portrait of Young knight woman in shiny blue plate armor with a tall crest of white horsehair on her helmet, a round shield and a short sword, determined smile, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_maga",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6105,
+   "prompt": "Vertical character card art, waist-up portrait of young ice mage woman in flowing blue robes holding a crystal-topped staff, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_sanadora",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6106,
+   "prompt": "Vertical character card art, waist-up portrait of healer priestess in white and gold robes holding a glowing holy symbol, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_arquero",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6107,
+   "prompt": "Vertical character card art, waist-up portrait of elf ranger archer in a green hood with a longbow and quiver, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_escudero",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6108,
+   "prompt": "Vertical character card art, waist-up portrait of young squire in leather armor with a round wooden shield and short sword, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_ballestero",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6109,
+   "prompt": "Vertical character card art, waist-up portrait of crossbowman in a blue tabard aiming a heavy crossbow, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_berserker",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6110,
+   "prompt": "Vertical character card art, waist-up portrait of fierce red-haired berserker with two axes and a fur cloak, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_monje",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6111,
+   "prompt": "Vertical character card art, waist-up portrait of bald martial arts monk in orange robes with prayer beads and glowing fists, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_paladina",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6112,
+   "prompt": "Vertical character card art, waist-up portrait of paladin woman in shining white and gold plate armor with a warhammer and shield, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_nigromante",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6113,
+   "prompt": "Vertical character card art, waist-up portrait of dark necromancer in a purple hooded robe with a skull staff and green soul flames, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_druida",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6114,
+   "prompt": "Vertical character card art, waist-up portrait of forest druid with an antler crown, leaf cloak and gnarled wooden staff, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_asesina",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6115,
+   "prompt": "Vertical character card art, waist-up portrait of shadow assassin woman in black leather with twin daggers and purple smoke, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "retrato_dragona",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1152,
+   "semilla": 6116,
+   "prompt": "Vertical character card art, waist-up portrait of small fierce red dragon with golden horns and fiery wings, standing, three quarter view, expressive face looking at the viewer, heroic confident pose, soft painted magical background with light rays and sparkles behind the character, no text, no frame"
+  },
+  {
+   "id": "libro",
+   "motor": "qwen",
+   "ancho": 864,
+   "alto": 1536,
+   "semilla": 6200,
+   "prompt": "Top-down view of a huge old open leather-bound book lying on a dark wooden guild table, two blank aged parchment pages with faint watercolor stains, small ink pots, a quill, a few violet crystal shards and candles around the edges, the pages are empty with no writing, vertical composition"
+  },
+  {
+   "id": "sello_fire",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 6300,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no background elements",
+   "prompt": "a single round red wax seal stamp with an embossed flame symbol in the center, glossy wax drips at the edges, front view"
+  },
+  {
+   "id": "sello_water",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 6301,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no background elements",
+   "prompt": "a single round deep blue wax seal stamp with an embossed water drop symbol in the center, glossy wax drips at the edges, front view"
+  },
+  {
+   "id": "sello_nature",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 6302,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no background elements",
+   "prompt": "a single round green wax seal stamp with an embossed leaf symbol in the center, glossy wax drips at the edges, front view"
+  },
+  {
+   "id": "sello_light",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 6303,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no background elements",
+   "prompt": "a single round golden yellow wax seal stamp with an embossed sun symbol in the center, glossy wax drips at the edges, front view"
+  },
+  {
+   "id": "sello_dark",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 6304,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no background elements",
+   "prompt": "a single round purple wax seal stamp with an embossed crescent moon symbol in the center, glossy wax drips at the edges, front view"
+  }
+ ]
+}
