@@ -296,7 +296,7 @@ def encargar_idea(idea: str) -> int:
 	return 0
 
 
-def actualizar(titulo: str, animar: bool = False) -> int:
+def actualizar(titulo: str, animar: bool = False, rehacer: dict | None = None) -> int:
 	"""Arreglar sin rehacer: el juego de muestra mas nuevo con ese titulo pasa al kit de hoy (mismo
 	diseno, niveles y arte; solo se dibuja lo nuevo). Centimos en vez de un juego entero."""
 	if rest("POST", "rpc/fabrica_pausada", {}):
@@ -311,7 +311,8 @@ def actualizar(titulo: str, animar: bool = False) -> int:
 		if t in str(p.get("title", "")).lower() and (p.get("files") or {}).get("proyecto"):
 			rest("POST", "jobs", [{"user_id": u, "kind": "game_change", "project_id": p["id"], "cost": 0, "est_cost_usd": 0.1, "status": "queued",
 				"detail": {"actualizar": True, "instruccion": "Actualizar al kit de hoy", "semilla": True,
-					**({"animar": True, "tope_usd": 2.0, "redibujar": ["roca", "arbusto"]} if animar else {})}}], {"Prefer": "return=minimal"})
+					**({"animar": True, "tope_usd": 2.0, "redibujar": ["roca", "arbusto"]} if animar else {}),
+					**({"animar": True, "tope_usd": 1.0, "rehacer": rehacer} if rehacer else {})}}], {"Prefer": "return=minimal"})
 			despertar()
 			print(f"::notice::Actualizando «{p['title']}» al kit de hoy (mismo arte; solo se dibuja lo nuevo)")
 			return 0
@@ -583,6 +584,13 @@ def main(args: list[str]) -> int:
 		return capturas()
 	if accion == "actualizar":
 		return actualizar(args[1] if len(args) > 1 else "")
+	if accion == "rehacer":
+		## Redibujar (y animar) un personaje con otra descripcion: idea = "Titulo :: id :: descripcion".
+		partes = [x.strip() for x in " ".join(args[1:]).split("::")]
+		if len(partes) != 3 or not partes[1] or len(partes[2]) < 10:
+			print("::error::Formato: Titulo :: id_del_personaje :: descripcion nueva (en ingles)")
+			return 1
+		return actualizar(partes[0], rehacer={partes[1]: partes[2]})
 	if accion == "animar":
 		## Actualizar y ademas animar los personajes de la arena con video (Wan 2.2; tope 2 $).
 		return actualizar(args[1] if len(args) > 1 else "", animar=True)

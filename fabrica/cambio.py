@@ -281,6 +281,15 @@ def actualizar(args: argparse.Namespace) -> dict:
 	evento("actualizar", "inicio", "Poniendo tu juego al día (código nuevo, mismo arte)...")
 	poner_kit_nuevo(proyecto)
 	vieja = _leer(ruta_biblia) if ruta_biblia.exists() else {}
+	## Rehacer personajes con otra descripcion (ORQ_REHACER = {"brawler_x": "nueva descripcion"}; 15 nov:
+	## uno se parecia demasiado a un personaje famoso). Se cambia en el diseno para que no vuelva.
+	rehacer = json.loads(os.environ.get("ORQ_REHACER") or "{}")
+	for sid, desc in rehacer.items():
+		for b in ((diseno.get("contenido") or {}).get("brawlers") or []) if sid.startswith("brawler_") else []:
+			if b.get("id") == sid[len("brawler_"):]:
+				b["desc"] = str(desc)[:200]
+	if rehacer:
+		_escribir(ruta_diseno, diseno)
 	biblia = director.a_biblia(diseno)
 	bib.validar(biblia)
 	dibujar, sobran = sprites_cambiados(vieja, biblia)
@@ -295,7 +304,7 @@ def actualizar(args: argparse.Namespace) -> dict:
 	## Personajes animados con video (Wan 2.2): solo si se pide (cuesta ~0,15 $ por personaje).
 	if man.exists() and getattr(args, "animar", False) and biblia["juego"].get("genero") == "arena":
 		sp = _leer(man).get("sprites") or {}
-		if any(not (sp.get(k) or {}).get("animado") for k in sp if k == "heroe" or k.startswith("brawler_")):
+		if rehacer or any(not (sp.get(k) or {}).get("animado") for k in sp if k == "heroe" or k.startswith("brawler_")):
 			dibujar.append("animar")
 	## Locutor de la arena (Qwen3-TTS), si aun no lo tiene.
 	if man.exists() and biblia["juego"].get("genero") == "arena" and "loc_victoria" not in (_leer(man).get("voces") or {}):

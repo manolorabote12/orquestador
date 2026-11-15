@@ -17,7 +17,7 @@ on:
       accion:
         description: "estado, encargar, seguir o cancelar"
         type: choice
-        options: [estado, encargar, encargar_idea, seguir, rescatar_capturas, cancelar, capturas, apk, actualizar, animar, retirar, retirar_viejos]
+        options: [estado, encargar, encargar_idea, seguir, rescatar_capturas, cancelar, capturas, apk, actualizar, animar, rehacer, retirar, retirar_viejos]
         default: estado
       cantidad:
         description: "Cuantos juegos encargar (maximo 25)"
@@ -55,7 +55,7 @@ jobs:
           CANTIDAD: ${{ inputs.cantidad }}
           IDEA: ${{ inputs.idea }}
         run: |
-          if [ "$ACCION" = encargar_idea ] || [ "$ACCION" = apk ] || [ "$ACCION" = actualizar ] || [ "$ACCION" = animar ]; then python3 nube/escaparate_semilla.py "$ACCION" "$IDEA"
+          if [ "$ACCION" = encargar_idea ] || [ "$ACCION" = apk ] || [ "$ACCION" = actualizar ] || [ "$ACCION" = animar ] || [ "$ACCION" = rehacer ]; then python3 nube/escaparate_semilla.py "$ACCION" "$IDEA"
           else python3 nube/escaparate_semilla.py "$ACCION" "$CANTIDAD"; fi
       - name: Despertar la fabrica
         if: inputs.accion == 'encargar' || inputs.accion == 'encargar_idea'

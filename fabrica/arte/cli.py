@@ -405,6 +405,7 @@ def fabricar(args: argparse.Namespace) -> dict:
 		if man_a.exists():
 			hechos_previos = {k for k, v in (json.loads(man_a.read_text(encoding="utf-8")).get("sprites") or {}).items()
 				if isinstance(v, dict) and v.get("animado")}
+		hechos_previos -= set(json.loads(os.environ.get("ORQ_REHACER") or "{}"))
 		maximo = int(os.environ.get("ORQ_ANIMAR_MAX") or "4")
 		for i, s in enumerate(quien):
 			if s["id"] in hechos_previos:

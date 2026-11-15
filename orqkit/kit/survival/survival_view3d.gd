@@ -170,6 +170,15 @@ func _build_ground() -> MeshInstance3D:
 	m.vertex_color_use_as_albedo = true
 	m.vertex_color_is_srgb = true
 	m.roughness = 0.95
+	## Suelo dibujado por la GPU (assets/ui/efectos/suelo.png, sin costuras y casi gris): textura que se
+	## repite cada 2 m, tenida con el color de cada casilla (15 nov: «el suelo es una cuadricula lisa»).
+	var ground: Texture2D = UI.fx_art("suelo")
+	if ground != null:
+		m.albedo_texture = ground
+		m.uv1_triplanar = true
+		m.albedo_color = Color(1.25, 1.25, 1.25)
+		m.uv1_scale = Vector3(0.5, 0.5, 0.5)
+		m.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC
 	var mi: MeshInstance3D = MeshInstance3D.new()
 	mi.name = "Island"
 	var mesh: ArrayMesh = stl.commit()
@@ -416,7 +425,7 @@ func _build_player() -> void:
 	_player.add_child(_shadow(0.3))
 	var art: Dictionary = Kit.sprite_by_role("jugador")
 	if not art.is_empty():
-		_player_spr = _figure(art, 1.6, "idle")
+		_player_spr = _figure(art, 1.9, "idle")
 		_player.add_child(_player_spr)
 	else:
 		var body: MeshInstance3D = MeshInstance3D.new()
@@ -451,7 +460,7 @@ func _wolf_node(id: int, kind: String = "wolf") -> Node3D:
 	var col: Color = Color.from_string(str(cdef.get("color", "#5b6270")), Color("#5b6270"))
 	if not entry.is_empty():
 		## El oso (y lo que tenga mucha vida) se ve enorme; los pajaros, pequenos.
-		var tall: float = 1.3 * (1.6 if float(cdef.get("hp", 50.0)) >= 120.0 else (0.8 if kind.contains("cuervo") else 1.0))
+		var tall: float = 1.5 * (1.6 if float(cdef.get("hp", 50.0)) >= 120.0 else (0.8 if kind.contains("cuervo") else 1.0))
 		var spr: AnimatedSprite3D = _figure(entry, tall, "run")
 		spr.name = "Art"
 		root.add_child(spr)

@@ -157,7 +157,8 @@ def sin_costuras(img: Image.Image) -> Image.Image:
 	return Image.fromarray((a * k + b * (1.0 - k)).clip(0, 255).astype(np.uint8))
 
 
-def _suelo(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, mat: str, informe: dict) -> Path | None:
+def _suelo(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, mat: str, informe: dict, gris: float = 0.0) -> Path | None:
+	"""gris: cuanto se le quita el color (la supervivencia 3D lo tine con el color de cada casilla)."""
 	try:
 		datos = cliente.generar(flujo, {"PROMPT": f"{prompts.estilo_dibujo(biblia['estilo'])}. " + SUELO.format(mat=mat), "SEED": semilla,
 			"ANCHO": 1024, "ALTO": 1024})[0]
@@ -170,6 +171,13 @@ def _suelo(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, mat:
 	a = np.asarray(img).astype(np.float32)
 	m = a.mean(axis=(0, 1), keepdims=True)
 	img = Image.fromarray((m + (a - m) * 0.7).clip(0, 255).astype(np.uint8))
+	if gris > 0.0:
+		g = np.asarray(img.convert("L").convert("RGB")).astype(np.float32)
+		c = np.asarray(img).astype(np.float32)
+		mezcla = c * (1.0 - gris) + g * gris
+		## Claro: el kit lo multiplica por el color de la casilla.
+		mezcla = mezcla / max(float(mezcla.mean()), 1.0) * 200.0
+		img = Image.fromarray(mezcla.clip(0, 255).astype(np.uint8))
 	carpeta.mkdir(parents=True, exist_ok=True)
 	ruta = carpeta / "suelo.png"
 	img.save(ruta, optimize=True)
@@ -186,7 +194,7 @@ def faltan(manifest: dict, arena: bool, superv: bool = False) -> bool:
 	ya = ya_hechos(manifest)
 	todos = [f"iconos/{k}" for k in ICONOS] + [f"efectos/{k}" for k in EFECTOS]
 	if superv:
-		todos += [f"efectos/{k}" for k in PROPS_SUPERV]
+		todos += [f"efectos/{k}" for k in PROPS_SUPERV] + ["efectos/suelo"]
 	if arena:
 		todos += [f"efectos/{k}" for k in PROPS] + [f"eventos/{k}" for k in MODOS] + ["efectos/suelo"]
 	return any(t not in ya for t in todos)
@@ -202,11 +210,18 @@ def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, are
 	if superv:
 		mat_s = (biblia.get("escenarios") or [{}])[0].get("descripcion", "the game world")[:160]
 		props_s = {k: v.format(mat=mat_s) for k, v in PROPS_SUPERV.items()}
-		out["efectos"].update(_piezas(biblia, carpeta / "props", cliente, flujo, semilla + 8500, props_s, set(props_s), informe, "efectos", 320, ya))
+		## Decorado con Qwen-Image si esta (obedece mejor «sin suelo debajo»; FLUX les ponia una islita).
+		cli_p, flujo_p = ilustrar or (cliente, flujo)
+		out["efectos"].update(_piezas(biblia, carpeta / "props", cli_p, flujo_p, semilla + 8500, props_s, set(props_s), informe, "efectos", 320, ya))
+		if not (ya and "efectos/suelo" in ya):
+			suelo_s = _suelo(biblia, carpeta / "props", cliente, flujo, semilla + 8100, mat_s, informe, gris=0.75)
+			if suelo_s is not None:
+				out["efectos"]["suelo"] = suelo_s
 	if arena:
 		mat = (biblia.get("escenarios") or [{}])[0].get("descripcion", "the game world")[:160]
 		props = {k: v.format(mat=mat) for k, v in PROPS.items()}
-		out["efectos"].update(_piezas(biblia, carpeta / "props", cliente, flujo, semilla + 7000, props, set(props), informe, "efectos", 256, ya))
+		cli_p, flujo_p = ilustrar or (cliente, flujo)
+		out["efectos"].update(_piezas(biblia, carpeta / "props", cli_p, flujo_p, semilla + 7000, props, set(props), informe, "efectos", 256, ya))
 		if not (ya and "efectos/suelo" in ya):
 			suelo = _suelo(biblia, carpeta / "props", cliente, flujo, semilla + 8000, mat, informe)
 			if suelo is not None:
