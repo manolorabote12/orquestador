@@ -132,6 +132,7 @@ class Estudio:
 		self.fin: dict | None = None
 		self.log: list[str] = []
 		self.cli_img = None
+		self.error = ""
 
 	# ------------------------------------------------------------------ utilidades
 
@@ -350,7 +351,13 @@ class Estudio:
 			if self.usd() > self.tope:
 				self.log.append("tope de gasto")
 				break
-			resp = _llamar(mensajes, self.gasto)
+			try:
+				resp = _llamar(mensajes, self.gasto)
+			except llm.ErrorIA as e:
+				## Sin saldo, sin red...: se para, pero el informe y el diario se guardan igual.
+				self.log.append(f"[{turno}] PARADO: {str(e)[:300]}")
+				self.error = str(e)[:300]
+				break
 			contenido = resp.get("content", [])
 			mensajes.append({"role": "assistant", "content": contenido})
 			usos = [b for b in contenido if b.get("type") == "tool_use"]
@@ -382,7 +389,7 @@ class Estudio:
 			if self.fin:
 				break
 		informe = {"ok": bool(self.fin), "titulo": self.titulo, "idea": self.idea, "usd": self.usd(), "usd_ia": self.gasto.usd,
-			"usd_imagenes": round(self.usd_img, 3), "llamadas": len(self.gasto.llamadas), "prueba": self.ultimo_todo, **(self.fin or {})}
+			"usd_imagenes": round(self.usd_img, 3), "llamadas": len(self.gasto.llamadas), "prueba": self.ultimo_todo, **({"error": self.error} if self.error else {}), **(self.fin or {})}
 		self.salida.mkdir(parents=True, exist_ok=True)
 		(self.salida / "informe.json").write_text(json.dumps(informe, indent=1, ensure_ascii=False), encoding="utf-8")
 		(self.salida / "diario.txt").write_text("\n".join(self.log), encoding="utf-8")
