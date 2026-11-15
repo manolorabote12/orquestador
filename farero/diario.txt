@@ -1,0 +1,50 @@
+[0] listar {"ruta": "res://kit"}
+[0] listar {"ruta": "res://libre"}
+[0] listar {"ruta": "res://assets"}
+[0] leer {"ruta": "res://kit/save.gd"}
+[1] leer {"ruta": "res://kit/ui/ui.gd"}
+[2] listar {"ruta": "res://kit/ui"}
+[3] listar {"ruta": "res://kit/ui/fonts"}
+[3] leer {"ruta": "res://kit/ui/ui_theme.gd"}
+[4] dibujar {"id": "bg_isla", "prompt": "Vertical scene: a tall striped lighthouse on a lonely rocky island in a pale gre...", "ancho": 768, "alto": 1344}
+[4] dibujar {"id": "bg_noche", "prompt": "Vertical scene: a dark stormy night sea thick with fog under a veiled moon, blac...", "ancho": 768, "alto": 1344}
+[4] dibujar {"id": "h_ibsen", "prompt": "Full-body standing character: weathered old whaling captain in a heavy oilskin c...", "ancho": 512, "alto": 640, "recorte": true}
+[5] dibujar {"id": "h_alba", "prompt": "Full-body standing character: gentle young nun-astronomer from a sky world, long...", "ancho": 512, "alto": 640, "recorte": true}
+[5] dibujar {"id": "h_koji", "prompt": "Full-body standing character: wandering swordsman from an autumn world wearing a...", "ancho": 512, "alto": 640, "recorte": true}
+[5] dibujar {"id": "h_tumo", "prompt": "Full-body standing character: friendly clockwork automaton made of brass gears a...", "ancho": 512, "alto": 640, "recorte": true}
+[5] dibujar {"id": "h_lyra", "prompt": "Full-body standing character: young balloon aeronaut woman with brass flying gog...", "ancho": 512, "alto": 640, "recorte": true}
+[5] dibujar {"id": "h_nerea", "prompt": "Full-body standing character: hooded eclipse hunter from a land of endless dusk,...", "ancho": 512, "alto": 640, "recorte": true}
+[5] dibujar {"id": "m_sombra", "prompt": "A small ghostly fog wisp creature, a swirling smoky shroud with two hollow glowi...", "ancho": 512, "alto": 512, "recorte": true}
+[5] dibujar {"id": "m_rondador", "prompt": "A hulking fog crawler monster, crab-like body covered in barnacles and thick gre...", "ancho": 512, "alto": 512, "recorte": true}
+[5] dibujar {"id": "m_espectro", "prompt": "A translucent ghost of a drowned sailor in a tattered barnacle-crusted coat and ...", "ancho": 512, "alto": 640, "recorte": true}
+[5] dibujar {"id": "m_leviatan", "prompt": "A colossal sea leviathan rising from fog, long serpentine neck and huge maw with...", "ancho": 640, "alto": 640, "recorte": true}
+[6] dibujar {"id": "m_leviatan2", "prompt": "An isolated colossal sea serpent leviathan, whole creature visible with curving ...", "ancho": 640, "alto": 640, "recorte": true}
+[8] escribir {"ruta": "res://libre/estado.gd", "contenido": "class_name Estado\nextends RefCounted\n## Reglas y datos del juego: heroes, enemig..."}
+[9] escribir {"ruta": "res://libre/estilo.gd", "contenido": "class_name Estilo\nextends RefCounted\n## Estetica: grabado antiguo coloreado. Col..."}
+[10] escribir {"ruta": "res://libre/main.gd", "contenido": "extends Control\n## Titulo: la isla, el faro y el comienzo de la partida.\n\nconst ..."}
+[10] escribir {"ruta": "res://libre/main.tscn", "contenido": "[gd_scene load_steps=2 format=3]\n\n[ext_resource type=\"Script\" path=\"res://libre/..."}
+[10] escribir {"ruta": "res://libre/isla.tscn", "contenido": "[gd_scene load_steps=2 format=3]\n\n[ext_resource type=\"Script\" path=\"res://libre/..."}
+[10] escribir {"ruta": "res://libre/noche.tscn", "contenido": "[gd_scene load_steps=2 format=3]\n\n[ext_resource type=\"Script\" path=\"res://libre/..."}
+[11] escribir {"ruta": "res://libre/pips.gd", "contenido": "class_name Pips\nextends Control\n## Fila de circulos (llamas de luz, horas de sol..."}
+[12] escribir {"ruta": "res://libre/isla.gd", "contenido": "extends Control\n## El dia: explorar la isla, reparar el faro, preparar a los her..."}
+[13] escribir {"ruta": "res://libre/noche.gd"}
+[14] escribir {"ruta": "res://libre/noche.gd"}
+[15] escribir {"ruta": "res://libre/noche.gd"}
+[16] escribir {"ruta": "res://libre/noche.gd"}
+[17] escribir {"ruta": "res://libre/noche.gd"}
+[18] escribir {"ruta": "res://libre/noche.gd"}
+[19] escribir {"ruta": "res://libre/noche.gd"}
+[20] escribir {"ruta": "res://libre/noche.gd", "contenido": "extends Control\n## La noche: combate por turnos donde la luz del faro es un recu..."}
+[21] editar {"ruta": "res://libre/noche.gd", "viejo": "\ts.modulate.a = 0.0\n\tcreate_tween().tween_property(s, \"modulate:a\", 1.0, 0.8)\n", "nuevo": "\tEstilo.fundir(s, 0.0, 1.0, 0.8)\n\n\n# -------------------------------------------..."}
+[22] editar {"ruta": "res://libre/noche.gd", "viejo": "\t\tif not busy and not over:\n\t\t\t_derrota(\"huida\"))\n", "nuevo": "\t\tif not busy and not over:\n\t\t\t_derrota(\"huida\"))\n\n\n# --------------------------..."}
+[23] editar {"ruta": "res://libre/estilo.gd", "viejo": "static func etiqueta(", "nuevo": "static func fundir(r: CanvasItem, desde: float, hasta: float, seg: float = 0.4) ..."}
+[23] editar {"ruta": "res://libre/noche.gd", "viejo": "\t\tJuice.squash(heroes[i][\"nodo\"] as Node2D if false else null, Vector2.ONE) if f...", "nuevo": ""}
+[23] editar {"ruta": "res://libre/noche.gd", "viejo": "\t\tvar nodo: Control = h[\"nodo\"] as Control\n\t\tnodo.modulate = Color(0.7, 0.7, 0.7...", "nuevo": "\t\tif bool(h[\"vivo\"]):\n\t\t\tEstilo.param(h[\"spr\"] as CanvasItem, \"gris\", 0.6 if boo..."}
+[24] escribir {"ruta": "res://libre/bot.gd", "contenido": "extends RefCounted\n## Bot: juega El Farero de la Niebla como un jugador cuidados..."}
+[24] probar {"que": "compilar"}
+[25] probar {"que": "todo"}
+[26] probar {"que": "compilar"}
+[27] probar {"que": "recorrer"}
+[28] probar {"que": "todo"}
+[29] terminar {"resumen": "El Farero de la Niebla es un RPG melancólico con estética de grabado antiguo col...", "huella": "{'metafora': 'Un farero que cuida una lámpara frente a la niebla: la luz es a la..."}
+tope de gasto

@@ -1,0 +1,11 @@
+{
+ "ok": false,
+ "titulo": "Reina del Jardin",
+ "idea": "Un RPG en tiempo real en el que eres la reina de una colonia de hormigas en un jardin abandonado. Excavas tuneles, eliges que crian tus camaras (obreras, soldados, exploradoras) y mandas expediciones a la superficie: el jardin es enorme y peligroso (aranas, escarabajos, la lluvia, otras colonias). Tus hormigas suben de rango y aprenden habilidades. Quiero que se sienta vivo, rapido y con mucho color, estilo ilustracion botanica de libro antiguo pero vibrante.",
+ "usd": 0.0,
+ "usd_ia": 0,
+ "usd_imagenes": 0.0,
+ "llamadas": 0,
+ "prueba": null,
+ "error": "HTTP 400: {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.\"},\"request_id\":\"req_011Ch4wDePk2G46Q4K8MMJhk\"}"
+}

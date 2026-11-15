@@ -1,0 +1,12 @@
+{
+ "ok": false,
+ "titulo": "El Farero de la Niebla",
+ "idea": "Un RPG en el que eres el farero de una isla perdida en la niebla. Cada noche la niebla trae naufragos de otros mundos que se unen a ti como heroes, y monstruos de la niebla que atacan el faro. Combates por turnos donde la luz del faro es un recurso: iluminar a un enemigo lo debilita. De dia exploras la isla, reparas y mejoras el faro y preparas a tus heroes. Quiero que se sienta melancolico y bonito, con estilo de grabado antiguo coloreado.",
+ "usd": 6.119,
+ "usd_ia": 6.04063,
+ "usd_imagenes": 0.078,
+ "llamadas": 30,
+ "prueba": {
+  "compilar": false
+ }
+}

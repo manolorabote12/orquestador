@@ -1,0 +1,1 @@
+[0] PARADO: HTTP 400: {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Ch4wDePk2G46Q4K8MMJhk"}
