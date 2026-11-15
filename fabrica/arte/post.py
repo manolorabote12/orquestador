@@ -221,3 +221,34 @@ def hoja(frames: list[Image.Image]) -> Image.Image:
 	for i, f in enumerate(frames):
 		out.alpha_composite(f, (i * w, 0))
 	return out
+
+
+def limpiar_magenta(img: Image.Image, borde: int = 14) -> Image.Image:
+	"""Piezas pintadas sobre magenta (15 nov, El Farero: el cangrejo y el humo con motas y orla rosa):
+	1) quita todo lo de tono magenta (o ya transparente) unido al exterior; 2) se queda solo con lo unido
+	al centro de la pieza; 3) despill en una franja junto al borde transparente (el rosa que tine el humo
+	y los contornos baja hacia el verde, sin tocar los morados de dentro)."""
+	from PIL import ImageDraw, ImageFilter
+	a = np.asarray(img.convert("RGBA")).astype(np.int32)
+	hsv = np.asarray(img.convert("RGB").convert("HSV")).astype(float)
+	h, s, v = hsv[..., 0] * 360 / 255, hsv[..., 1] / 255, hsv[..., 2] / 255
+	fondo = ((h > 295) & (h < 352) & (s > 0.3) & (v > 0.12)) | (a[..., 3] < 24)
+	m = Image.fromarray(np.pad(np.where(fondo, 255, 0).astype(np.uint8), 1, constant_values=255), "L").copy()
+	ImageDraw.floodfill(m, (0, 0), 128)
+	fuera = np.asarray(m)[1:-1, 1:-1] == 128
+	solido = Image.fromarray(np.where(fuera | (a[..., 3] < 24), 0, 255).astype(np.uint8), "L").copy()
+	cy, cx = a.shape[0] // 2, a.shape[1] // 2
+	if solido.getpixel((cx, cy)) == 255:
+		ImageDraw.floodfill(solido, (cx, cy), 128)
+		fuera = fuera | (np.asarray(solido) == 255)
+	## Huecos cerrados (entre patas, bajo un brazo): magenta puro aunque no toque el exterior.
+	puro = (h > 300) & (h < 345) & (s > 0.62) & (v > 0.38)
+	a[..., 3] = np.where(fuera | puro, 0, a[..., 3])
+	franja = np.asarray(Image.fromarray(np.where(a[..., 3] < 24, 255, 0).astype(np.uint8), "L")
+		.filter(ImageFilter.MaxFilter(borde * 2 + 1))) > 0
+	r, g, b = a[..., 0], a[..., 1], a[..., 2]
+	exceso = np.clip(np.minimum(r, b) - g, 0, None)
+	exceso = np.where(franja, exceso, 0)
+	a[..., 0] = r - exceso
+	a[..., 2] = b - exceso
+	return Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGBA")

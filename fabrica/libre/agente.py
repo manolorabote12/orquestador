@@ -63,14 +63,17 @@ Como trabajas:
 3. Escribes el codigo en res://libre/ (y solo ahi). La entrada es res://libre/main.tscn. Las escenas .tscn,
    minimas (un nodo raiz con su script); construye la interfaz en codigo en _ready. GDScript 4 con
    tabulaciones, tipos estaticos y sin APIs del sistema (nada de OS.execute, DirAccess, HTTP, ni @tool).
+   Archivos de 300 lineas como mucho: reparte cada pantalla en varios scripts (reglas, interfaz, efectos...).
+   Una respuesta muy larga se CORTA y el archivo se pierde entero; para alargar uno ya escrito usa anadir.
 4. Escribes res://libre/bot.gd: `extends RefCounted` con `static func jugar(tree: SceneTree) -> Dictionary`
    (puede ser async con await). Juega TU juego de verdad desde la escena que este abierta (puede cambiar de
    escena, leer el estado de los nodos y llamar a sus funciones, como haria un jugador perfecto) y supera al
    menos los 3 primeros niveles/etapas/rondas (o el bucle principal entero si no hay niveles). Devuelve
    {"ok": true, "niveles": n, "detalle": "que hizo"}. Si tu juego no se puede ganar, el bot lo dira.
 5. Pruebas con probar: "compilar" a menudo; "todo" (compila, recorre todas las pantallas con fotos, mono de
-   toques al azar y tu bot) antes de terminar. MIRA las fotos: si algo se sale, se solapa, se lee mal o se ve
-   pobre, lo arreglas. Cualquier SCRIPT ERROR es un fallo que hay que corregir.
+   toques al azar y tu bot) antes de terminar. MIRA las fotos (salen todas las escenas): si algo se sale, se
+   solapa ([LIBRE_SOLAPE]), se lee mal, el recorte deja bordes de color o se ve pobre, lo arreglas. Cualquier
+   SCRIPT ERROR es un fallo que hay que corregir. Cuidado con los textos: genero y gramatica correctos.
 6. Terminas con terminar (resumen y huella) solo cuando "todo" sale limpio.
 
 Calidad que se espera (lo minimo para publicar):
@@ -90,6 +93,8 @@ HERRAMIENTAS = [
 	{"name": "leer", "description": "Lee un archivo del proyecto (de libre/ o del kit, solo lectura).",
 		"input_schema": {"type": "object", "required": ["ruta"], "properties": {"ruta": {"type": "string"}}}},
 	{"name": "escribir", "description": "Crea o sustituye un archivo de res://libre/ (.gd, .tscn, .json, .gdshader).",
+		"input_schema": {"type": "object", "required": ["ruta", "contenido"], "properties": {"ruta": {"type": "string"}, "contenido": {"type": "string"}}}},
+	{"name": "anadir", "description": "Anade texto al FINAL de un archivo de res://libre/ (para escribir uno largo en varias partes).",
 		"input_schema": {"type": "object", "required": ["ruta", "contenido"], "properties": {"ruta": {"type": "string"}, "contenido": {"type": "string"}}}},
 	{"name": "editar", "description": "Cambia un trozo exacto (que aparezca una sola vez) de un archivo de res://libre/.",
 		"input_schema": {"type": "object", "required": ["ruta", "viejo", "nuevo"], "properties": {
@@ -205,6 +210,17 @@ class Estudio:
 		f.write_text(contenido, encoding="utf-8")
 		return f"Escrito {ruta} ({len(contenido)} caracteres)"
 
+	def t_anadir(self, ruta: str, contenido: str) -> str:
+		f = self._ruta(ruta, True)
+		previo = f.read_text(encoding="utf-8") if f.is_file() else ""
+		todo = previo + ("" if previo.endswith("\n") or not previo else "\n") + contenido
+		e = self._revisar(f, todo)
+		if e:
+			return "NO anadido: " + "; ".join(e)
+		f.parent.mkdir(parents=True, exist_ok=True)
+		f.write_text(todo, encoding="utf-8")
+		return f"Anadido a {ruta} (ahora {todo.count(chr(10)) + 1} lineas)"
+
 	def t_editar(self, ruta: str, viejo: str, nuevo: str) -> str:
 		f = self._ruta(ruta, True)
 		if not f.is_file():
@@ -245,7 +261,7 @@ class Estudio:
 		self.usd_img += USD_IMAGEN
 		img = Image.open(io.BytesIO(datos)).convert("RGBA")
 		if recorte:
-			img = post.quitar_fondo_borde(post.quitar_fondo(img, (255, 0, 255)))
+			img = post.limpiar_magenta(post.quitar_fondo_borde(post.quitar_fondo(img, (255, 0, 255))))
 			bb = post.caja(img)
 			if bb:
 				img = img.crop(bb)
@@ -272,7 +288,7 @@ class Estudio:
 			else:
 				out = self._godot("res://qa/libre.tscn", "--", "--modo=bot", timeout=300)
 			err = self._errores(out)
-			marcas = [l.strip() for l in out.splitlines() if l.startswith(("[LIBRE_COMPILA", "[LIBRE_RECORRIDO", "[LIBRE_MONO", "[LIBRE_BOT", "[LIBRE_FUERA", "[LIBRE_PEQUENO", "[LIBRE_PANTALLA", "[LIBRE_AVISO"))]
+			marcas = [l.strip() for l in out.splitlines() if l.startswith(("[LIBRE_COMPILA", "[LIBRE_RECORRIDO", "[LIBRE_MONO", "[LIBRE_BOT", "[LIBRE_FUERA", "[LIBRE_PEQUENO", "[LIBRE_PANTALLA", "[LIBRE_AVISO", "[LIBRE_SOLAPE"))]
 			ok = not err
 			if paso == "bot":
 				bot = next((l for l in marcas if l.startswith("[LIBRE_BOT]")), "")
@@ -286,18 +302,25 @@ class Estudio:
 			txt = f"== {paso}: {'BIEN' if ok else 'MAL'}\n" + "\n".join(marcas[:30]) + ("\nErrores:\n- " + "\n- ".join(err) if err else "")
 			partes.append({"type": "text", "text": txt[:6000]})
 			if paso == "recorrer":
-				fotos_l = sorted((self.p / "build" / "libre_fotos").glob("*.png"))[:6]
+				fotos_l = sorted((self.p / "build" / "libre_fotos").glob("*.png"))[:10]
 				for f in fotos_l:
 					partes.append({"type": "text", "text": f.name})
-					partes.append(_imagen_archivo(f, 300))
+					partes.append(_imagen_archivo(f, 260))
 			if paso == "compilar" and not ok and que == "todo":
 				break
+		self.log.append("    -> " + " | ".join(p["text"].replace("\n", " ")[:600] for p in partes if p.get("type") == "text" and p["text"].startswith("==")))
 		if que == "todo":
 			self.ultimo_todo = resumen
 		partes.insert(0, {"type": "text", "text": f"Gastado: {self.usd()} $ de {self.tope} $."})
 		return partes
 
-	def t_terminar(self, resumen: str, huella: dict) -> str:
+	def t_terminar(self, resumen: str, huella) -> str:
+		if isinstance(huella, str):
+			import ast
+			try:
+				huella = ast.literal_eval(huella)
+			except (ValueError, SyntaxError):
+				huella = {"descripcion": huella[:600]}
 		if not self.ultimo_todo or not all(self.ultimo_todo.get(k) for k in ("compilar", "recorrer", "mono", "bot")):
 			return "Todavia no: pasa probar('todo') limpio (compilar, recorrer, mono y bot) y luego terminas."
 		self.fin = {"resumen": resumen, "huella": huella}
@@ -338,8 +361,15 @@ class Estudio:
 				mensajes.append({"role": "user", "content": "Sigue trabajando con las herramientas; termina con terminar cuando 'todo' salga limpio."})
 				continue
 			resultados = []
+			cortada = resp.get("stop_reason") == "max_tokens"
 			for u in usos:
 				nombre, args = u["name"], u.get("input", {})
+				if cortada and u is usos[-1]:
+					self.log.append(f"[{turno}] {nombre} CORTADO (respuesta demasiado larga)")
+					resultados.append({"type": "tool_result", "tool_use_id": u["id"], "is_error": True, "content": [{"type": "text", "text":
+						"Tu respuesta se CORTO por larga y esta llamada llego incompleta: no se ha hecho nada. Escribe archivos de 300 lineas "
+						"como mucho (parte la pantalla en varios scripts) o escribe el principio y sigue con anadir."}]})
+					continue
 				self.log.append(f"[{turno}] {nombre} {json.dumps({k: (v if len(str(v)) < 80 else str(v)[:80] + '...') for k, v in args.items()}, ensure_ascii=False)}")
 				try:
 					r = getattr(self, "t_" + nombre)(**args)
@@ -405,6 +435,18 @@ def _podar(mensajes: list[dict]) -> None:
 def _llamar(mensajes: list[dict], gasto: llm.Gasto) -> dict:
 	if not llm.clave():
 		raise llm.ErrorIA("Falta ANTHROPIC_API_KEY")
+	## Cache que avanza: el ultimo bloque marcado; la conversacion entera se lee de cache en la siguiente
+	## llamada (sin esto cada vuelta pagaba de nuevo todo lo anterior: 6 $ en 30 llamadas, El Farero).
+	for m in mensajes[1:]:
+		if isinstance(m.get("content"), list):
+			for b in m["content"]:
+				if isinstance(b, dict):
+					b.pop("cache_control", None)
+	ult = mensajes[-1]
+	if isinstance(ult.get("content"), str):
+		ult["content"] = [{"type": "text", "text": ult["content"]}]
+	if ult["content"]:
+		ult["content"][-1]["cache_control"] = {"type": "ephemeral"}
 	cuerpo = {"model": MODELO, "max_tokens": 16000,
 		"system": [{"type": "text", "text": SISTEMA, "cache_control": {"type": "ephemeral"}}],
 		"tools": HERRAMIENTAS, "messages": mensajes}

@@ -116,7 +116,7 @@ class LibreRunner extends Node:
 		return (t if t != "" else str(b.name)).strip_edges().left(30)
 
 	func _foto(nombre: String) -> void:
-		if str(cfg["out"]) == "" or DisplayServer.get_name() == "headless" or _shots >= 10:
+		if str(cfg["out"]) == "" or DisplayServer.get_name() == "headless" or _shots >= 14:
 			return
 		await RenderingServer.frame_post_draw
 		_shots += 1
@@ -131,6 +131,32 @@ class LibreRunner extends Node:
 				print("[LIBRE_FUERA] boton fuera de la pantalla: ", _nombre_boton(b), " ", r)
 			elif r.size.x < 60.0 or r.size.y < 60.0:
 				print("[LIBRE_PEQUENO] boton muy pequeno para un dedo: ", _nombre_boton(b), " ", r.size)
+		## Personajes y piezas que se pisan (15 nov, El Farero: los monstruos encima de los heroes). Se miran
+		## las imagenes visibles que no son fondo (menos del 55% de la pantalla).
+		var piezas: Array[Rect2] = []
+		var nombres: Array[String] = []
+		var texs: Array[Texture2D] = []
+		for n: Node in get_tree().root.find_children("*", "TextureRect", true, false):
+			var t: TextureRect = n as TextureRect
+			if t == null or not t.is_visible_in_tree() or t.texture == null or t.get_viewport() != get_viewport():
+				continue
+			var r: Rect2 = t.get_global_rect()
+			if r.get_area() < 2500.0 or r.get_area() > vp.get_area() * 0.55:
+				continue
+			piezas.append(r)
+			texs.append(t.texture)
+			nombres.append(str(t.name) + "(" + t.texture.resource_path.get_file() + ")")
+		var avisos: int = 0
+		for i: int in piezas.size():
+			for j: int in range(i + 1, piezas.size()):
+				## La misma imagen repetida (bancos de niebla, nubes, adornos) se puede pisar a proposito.
+				if texs[i] == texs[j]:
+					continue
+				var x: Rect2 = piezas[i].intersection(piezas[j])
+				var menor: float = minf(piezas[i].get_area(), piezas[j].get_area())
+				if x.get_area() > menor * 0.3 and not piezas[i].encloses(piezas[j]) and not piezas[j].encloses(piezas[i]) and avisos < 6:
+					avisos += 1
+					print("[LIBRE_SOLAPE] se pisan ", nombres[i], " y ", nombres[j], " (", int(100.0 * x.get_area() / menor), "%)")
 
 	func _recorrer() -> void:
 		await _abrir()
@@ -172,6 +198,24 @@ class LibreRunner extends Node:
 			await _esperar(0.6)
 			if get_tree().paused:
 				get_tree().paused = false
+		## Las escenas a las que no se llego pulsando botones se abren directamente: todas salen en foto.
+		var vistas: Dictionary = {}
+		for f: String in _seen.keys():
+			vistas[f.get_slice("|", 0)] = true
+		var escenas: Array[String] = []
+		_scripts("res://libre", escenas)
+		for e: String in escenas:
+			if not e.ends_with(".tscn") or vistas.has(e) or e == MAIN:
+				continue
+			get_tree().change_scene_to_file(e)
+			await get_tree().process_frame
+			await _esperar(1.2)
+			var cs: Node = get_tree().current_scene
+			if cs == null:
+				continue
+			print("[LIBRE_PANTALLA] ", e, " (abierta directamente) botones=", _botones().size())
+			_revisar_pantalla()
+			await _foto(str(cs.name))
 		print("[LIBRE_RECORRIDO] pantallas=%d pulsados=%d" % [_seen.size(), _pressed.size()])
 
 	func _mono() -> void:
