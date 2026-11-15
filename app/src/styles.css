@@ -1279,3 +1279,7 @@ details.como summary { cursor: pointer; color: var(--brass-hi); font-weight: 700
 .ficha-heroe h2 { text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); }
 .gal-play { position: absolute; top: 44px; left: 8px; z-index: 2; padding: 4px 9px; border: 0; border-radius: 999px; font: 700 11px var(--body);
   color: #fff; background: #01875f; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); cursor: pointer; }
+
+/* Lo que cuesta cada cosa, siempre a la vista (15 nov) */
+.coste-linea { margin: 6px 0; padding: 6px 10px; border-radius: 10px; background: color-mix(in srgb, var(--brass, #c9a227) 14%, transparent); }
+.coste-linea strong { color: var(--brass, #c9a227); }

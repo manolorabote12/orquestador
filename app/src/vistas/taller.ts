@@ -402,7 +402,9 @@ export function vistaTaller(app: App): VistaHecha {
   let previa: { id: string; texto: string } | null = null;
   let dejarPrevia: (() => void) | null = null;
   const estado = h("p", { class: "status", role: "status" });
-  const nota = h("p", { class: "muted small" }, "Se cobra al empezar. Si la fábrica falla, te devolvemos las tuercas.");
+  const nota = h("p", { class: "muted small" }, app.tuercas >= app.precio
+    ? `Cuesta ${app.precio} tuercas · tienes ${app.tuercas} · te quedarán ${app.tuercas - app.precio}. Se cobra al empezar; si la fábrica falla, te las devolvemos. Probar gratis no cuesta nada.`
+    : `Cuesta ${app.precio} tuercas · tienes ${app.tuercas}: te faltan ${app.precio - app.tuercas}. Puedes probar gratis el boceto mientras tanto.`);
   // Capa 3: si la idea no encaja en ningún género, Chispa programa uno nuevo solo para este juego.
   const aMedida = h("input", { type: "checkbox", id: "a-medida" }) as HTMLInputElement;
   const aMedidaFila = h("label", { class: "check-row", for: "a-medida" }, aMedida,

@@ -2,7 +2,7 @@
 // El móvil nunca se concede nada: el servidor verifica cada anuncio y cada compra con Google.
 
 import type { App } from "../main";
-import { type EstadoTienda, type Invitacion, type MisGanancias, type Periodo, type ProductoTienda } from "../api";
+import { motivoTuercas, type EstadoTienda, type Invitacion, type MisGanancias, type Periodo, type ProductoTienda } from "../api";
 import { compartirEnlace } from "../compartir";
 import { ICONOS, aviso, bloqueError, h, svg, type VistaHecha } from "../ui";
 import { mensajeError } from "../errores";
@@ -30,9 +30,37 @@ export function vistaTuercas(app: App): VistaHecha {
     }
     if (!vivo) return;
     if (t.plan) cabecera.querySelector(".sheet-head")?.append(h("span", { class: "pill done" }, t.plan === "pro" ? "Taller Pro" : "Plan Taller"));
-    raiz.replaceChildren(cabecera, seccionPacks(t), seccionPlanes(t), seccionAnuncio(t, saldo), seccionGanancias(), seccionInvitar(),
+    raiz.replaceChildren(cabecera, seccionPrecios(), seccionMovimientos(), seccionPacks(t), seccionPlanes(t), seccionAnuncio(t, saldo), seccionGanancias(), seccionInvitar(),
       h("p", { class: "muted small", style: "text-align:center" },
         "Los pagos los gestiona Google Play. Las tuercas de los packs no caducan. ¿Una compra no te llegó? Cierra y abre la app: se recupera sola."));
+  }
+
+  // Cuánto cuesta cada cosa (de la tabla de precios del servidor): sin sorpresas.
+  function seccionPrecios(): HTMLElement {
+    const cuerpo = h("div", {}, h("p", { class: "muted small" }, "Cargando precios..."));
+    const sec = h("details", { class: "sheet plegable" }, h("summary", {}, h("h2", {}, "¿Cuánto cuesta cada cosa?")), cuerpo);
+    const que: [string, string][] = [["game", "Un juego completo"], ["game_change", "Un cambio (según lo que cambie; Chispa te dice el precio antes)"],
+      ["game_mod", "Que Chispa programe algo nuevo"], ["game_restore", "Volver a una versión anterior"], ["game_marketing", "3 vídeos de promoción"]];
+    void app.api.precios().then((pr) => {
+      cuerpo.replaceChildren(h("ul", { class: "gan-movs" }, ...que.filter(([k]) => k === "game_change" || pr[k] !== undefined).map(([k, txt]) => h("li", {},
+        h("span", {}, txt), h("span", { class: "muted" }, k === "game_change" ? "variable" : `${pr[k]} tuercas`)))),
+        h("p", { class: "muted small" }, "Si algo no sale, te devolvemos las tuercas solas. Nunca se cobra sin que digas que sí."));
+    }).catch(() => cuerpo.replaceChildren(h("p", { class: "muted small" }, "No se pudieron cargar los precios.")));
+    return sec;
+  }
+
+  // En qué se han ido (y de dónde han venido) las tuercas: cada gasto con su juego o cambio.
+  function seccionMovimientos(): HTMLElement {
+    const cuerpo = h("div", { "aria-live": "polite" }, h("p", { class: "muted small" }, "Cargando..."));
+    const sec = h("details", { class: "sheet plegable" }, h("summary", {}, h("h2", {}, "Tus movimientos de tuercas")), cuerpo);
+    void app.api.movimientos().then((ms) => {
+      if (!ms.length) { cuerpo.replaceChildren(h("p", { class: "muted small" }, "Aún no hay movimientos.")); return; }
+      const fecha = (iso: string) => new Date(iso).toLocaleDateString("es-ES", { day: "numeric", month: "short" });
+      cuerpo.replaceChildren(h("ul", { class: "gan-movs" }, ...ms.map((m) => h("li", {},
+        h("span", {}, motivoTuercas(m.motivo), m.detalle ? h("span", { class: "muted small" }, ` · ${m.detalle}`) : "", h("span", { class: "muted small" }, ` · ${fecha(m.fecha)}`)),
+        h("span", { class: m.cantidad >= 0 ? "ok" : "muted" }, `${m.cantidad >= 0 ? "+" : ""}${m.cantidad}`)))));
+    }).catch(() => cuerpo.replaceChildren(h("p", { class: "muted small" }, "No se pudieron cargar tus movimientos.")));
+    return sec;
   }
 
   // Invita a un amigo: los dos ganan tuercas cuando el amigo hace su primera compra (lo da el

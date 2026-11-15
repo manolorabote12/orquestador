@@ -1771,8 +1771,9 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
         h("button", { class: "btn btn-line", style: "width:100%", onclick: () => void jugar(p) }, svg(ICONOS.jugar), "Jugar el boceto"),
         h("p", { class: "muted small", style: "margin:12px 0" },
           "Es tu juego con los niveles de verdad y dibujos provisionales. Al fabricarlo, Chispa le dibuja sus personajes y fondos, le pone música y voz, y te deja el APK listo para Google Play."),
+        lineaCoste(precio, app.tuercas),
         fabricarlo,
-        precio > app.tuercas ? h("p", { class: "muted small", style: "margin-top:8px" }, "Te faltan tuercas: consigue más en la pestaña Tuercas.") : "",
+        precio > app.tuercas ? h("p", { class: "muted small", style: "margin-top:8px" }, "Consigue más en la pestaña Tuercas.") : "",
         h("div", { style: "height:14px" }), quitarBoceto));
       return;
     }
@@ -1816,7 +1817,10 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
     const entrada = h("textarea", { rows: "2", maxlength: "400", placeholder: "¿Qué cambiamos? Ej.: haz al gato negro", "aria-label": "Instrucción para Chispa" });
     const enviar = h("button", { class: "btn btn-brass btn-small" }, "Enviar");
     const chips = h("div", { class: "chips desliza", role: "list", "aria-label": "Ideas de cambios" }, ...SUGERENCIAS.map((s) => h("button", { class: "chip", type: "button", onclick: () => { entrada.value = s; entrada.focus(); } }, s)));
-    const nota = h("p", { class: "muted small" }, "Chispa te dice qué hará y cuánto cuesta antes de cobrar nada. Volver atrás cuesta 3 tuercas.");
+    const nota = h("p", { class: "muted small" }, "Chispa te dice qué hará y cuánto cuesta antes de cobrar nada.");
+    void app.api.precios().then((pr) => {
+      if (pr.game_restore) nota.textContent = `Chispa te dice qué hará y cuánto cuesta antes de cobrar nada. Volver a una versión anterior cuesta ${pr.game_restore} tuercas.`;
+    }).catch(() => undefined);
     // 1 - Editor manual: dibujar los niveles casilla a casilla (los bots los prueban al guardar).
     const aMano = h("button", { class: "btn btn-line btn-small", type: "button" }, "✎ Editar niveles a mano");
     aMano.addEventListener("click", () => void abrirEditor(app, p, (prop) => {
@@ -1964,7 +1968,8 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       const aplicar = h("button", { class: "btn btn-brass btn-small" }, "Aplicar ", h("span", { class: "price" }, svg(ICONOS.tuerca), String(prop.coste)));
       const no = h("button", { class: "btn btn-line btn-small" }, "Mejor no");
       const tarjeta = h("div", { class: "msg plan" },
-        h("p", { class: "small muted" }, falta > 0 ? `Te faltan ${falta} tuercas para este cambio.` : "Solo se rehace lo que cambia."),
+        lineaCoste(prop.coste, app.tuercas),
+        h("p", { class: "small muted" }, falta > 0 ? "Consigue más en la pestaña Tuercas." : "Solo se rehace lo que cambia; si no sale, te las devuelvo."),
         h("div", { class: "btn-row" }, no, aplicar));
       aplicar.disabled = falta > 0;
       no.addEventListener("click", () => tarjeta.replaceWith(burbuja("chispa", "Vale, no toco nada.")));
@@ -1991,7 +1996,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       const no = h("button", { class: "btn btn-line btn-small" }, "Mejor no");
       const tarjeta = h("div", { class: "msg plan" },
         h("p", { class: "small" }, "Puedo programarlo yo: escribo el código, compruebo que es seguro y los bots juegan la nueva versión antes de dártela. Si no sale, te devuelvo las tuercas."),
-        falta > 0 ? h("p", { class: "small muted" }, `Te faltan ${falta} tuercas.`) : "",
+        lineaCoste(precio, app.tuercas),
         h("div", { class: "btn-row" }, no, si));
       si.disabled = falta > 0;
       no.addEventListener("click", () => tarjeta.replaceWith(burbuja("chispa", "Vale, lo dejamos así.")));
@@ -2100,7 +2105,8 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
         } else if (t.status === "failed") {
           parar();
           progreso.className = "msg chispa error";
-          progreso.textContent = t.refunded ? "Algo se ha roto en la fábrica. Te he devuelto las tuercas." : "Algo se ha roto en la fábrica.";
+          progreso.textContent = t.refunded
+            ? `Algo se ha roto en la fábrica. Te he devuelto ${t.coste ? `las ${t.coste} tuercas` : "las tuercas"}: no has pagado nada.` : "Algo se ha roto en la fábrica.";
           void app.refrescarTuercas();
           bloquear(false);
         }
@@ -2119,4 +2125,11 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
 
   void lista();
   return { el: raiz, limpiar: () => { vivo = false; parar(); } };
+}
+
+/** «Cuesta X · tienes Y · te quedarán Z» (o cuántas faltan): el dinero, siempre a la vista. */
+function lineaCoste(coste: number, tienes: number): HTMLElement {
+  const queda = tienes - coste;
+  return h("p", { class: "small coste-linea" }, h("strong", {}, `Cuesta ${coste} tuercas`),
+    queda >= 0 ? ` · tienes ${tienes} · te quedarán ${queda}` : ` · tienes ${tienes} · te faltan ${-queda}`);
 }

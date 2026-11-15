@@ -1,7 +1,7 @@
 // Modo demostración: sin servidor. Reproduce los pasos reales de la fábrica con sus tiempos
 // y termina con un juego de ejemplo fabricado de verdad por la cadena (sus capturas e icono).
 
-import type { PuestoReto, RetoSemana } from "./api";
+import type { MovimientoTuercas, PuestoReto, RetoSemana } from "./api";
 import type { PerfilCreador } from "./creador";
 import type { Opiniones } from "./api";
 import type { AdmobIds, EstadoCharla, EventoJuego, Gancho, InformeAb, Invitacion, Resena, FilaLiga, Ingresos, FilaMarcador, JuegoEscaparate, MisGanancias, Backend, CuentaApple, EstadoTienda, ModoYoutube, CampanaLz, CuentaPlay, Entrada, MiCampanaLz, PanelLz, PruebaLz, EstadoPlay, Evento, Marketing, Propuesta, Proyecto, Publicar, Resultado, Trabajo } from "./api";
@@ -191,6 +191,8 @@ interface Guardado {
   invitadoCon?: string;
   /** Reto de la semana: el juego presentado. */
   reto?: string;
+  /** Movimientos de tuercas (el más nuevo primero). */
+  movs?: MovimientoTuercas[];
 }
 
 // ---------------------------------------------------------------- Escaparate (demo)
@@ -440,6 +442,18 @@ export class Demo implements Backend {
   async precioJuego() {
     return 120;
   }
+  async precios() {
+    return { game: 120, game_mod: 30, game_restore: 3, game_marketing: 40 } as Record<string, number>;
+  }
+  async movimientos() {
+    return this.s.movs ?? [{ cantidad: 120, motivo: "signup", detalle: null, fecha: new Date().toISOString() }];
+  }
+  /** Apunta un movimiento de tuercas (para el historial de la pestaña Tuercas). */
+  private mov(cantidad: number, motivo: string, detalle: string | null = null) {
+    const l = this.s.movs ?? (this.s.movs = [{ cantidad: 120, motivo: "signup", detalle: null, fecha: new Date().toISOString() }]);
+    l.unshift({ cantidad, motivo, detalle, fecha: new Date().toISOString() });
+    l.splice(60);
+  }
 
   async borrarBoceto(_proyectoId: string): Promise<void> {
     throw new ErrorApp("En la demostración no hay bocetos guardados.");
@@ -471,6 +485,7 @@ export class Demo implements Backend {
     if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
     if (this.s.tuercas < 120) throw new ErrorApp("No tienes tuercas suficientes para un juego completo.");
     this.s.tuercas -= 120;
+    this.mov(-120, "game", idea.slice(0, 60));
     const t: Trabajo = {
       id: "demo-" + Date.now(), kind: "game", project_id: null, status: "queued", created_at: new Date().toISOString(), idea: idea.trim().replace(/^\[(plantilla|gancho):[a-z0-9_:,]*\]\s*/, ""),
       progress: [], result: null, error: null, refunded: false, titulo: null,
@@ -614,6 +629,7 @@ export class Demo implements Backend {
     }
     delete this.s.planes[planId];
     this.s.tuercas -= plan.coste;
+    this.mov(-plan.coste, "game_change", plan.instruccion.slice(0, 60));
     for (const o of plan.mapas ?? []) {
       if (o.op === "giros") {
         const pr = this.s.proyectos.find((x) => x.id === plan.proyecto);
@@ -665,6 +681,7 @@ export class Demo implements Backend {
       throw new ErrorApp("Ese juego ya se está fabricando. Espera a que termine.");
     }
     this.s.tuercas -= 30;
+    this.mov(-30, "game_mod");
     const t = this.nuevoCambio("game_mod", proyectoId, texto);
     void this.cambiar(t.id, texto, undefined, GUION_PROGRAMA);
     return { job_id: t.id, credits: this.s.tuercas };
@@ -1217,6 +1234,7 @@ export class Demo implements Backend {
     await espera(400);
     if (this.s.tuercas < 40) throw new ErrorApp("No tienes tuercas suficientes.");
     this.s.tuercas -= 40;
+    this.mov(-40, "charla");
     const todas = this.s.charla ?? {};
     const c = todas[proyectoId] ?? { mensajes: 0, activa: true };
     todas[proyectoId] = { mensajes: c.mensajes + 500, activa: true };
@@ -1313,6 +1331,7 @@ export class Demo implements Backend {
     if (!p) throw new ErrorApp("Ese juego no existe.");
     if (this.s.tuercas < 20) throw new ErrorApp("No tienes tuercas suficientes.");
     this.s.tuercas -= 20;
+    this.mov(-20, "game_marketing");
     const t = this.nuevoCambio("game_marketing", proyectoId, "Vídeos para redes");
     void this.hacerMarketing(t.id);
     return { job_id: t.id, credits: this.s.tuercas };
@@ -1410,6 +1429,7 @@ export class Demo implements Backend {
   async verAnuncio() {
     await espera(1200);
     this.s.tuercas += 5;
+    this.mov(5, "reward_ad");
     this.guardar();
     return { visto: true, tuercas: this.s.tuercas };
   }

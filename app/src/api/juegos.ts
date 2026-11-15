@@ -53,6 +53,8 @@ export interface Trabajo {
   error: string | null;
   refunded: boolean;
   titulo: string | null;
+  /** Tuercas que costó (las que se devuelven si falla). */
+  coste?: number;
 }
 
 export interface Version {
@@ -112,7 +114,7 @@ export type Entrada =
       genero?: string; giros?: string[]; portada?: string }
   | { tipo: "encargo"; trabajo: Trabajo };
 
-const COLUMNAS = "id,kind,project_id,status,created_at,detail,progress,result,error,refunded,projects(title)";
+const COLUMNAS = "id,kind,project_id,status,created_at,detail,progress,result,error,refunded,cost,projects(title)";
 
 interface FilaTrabajo {
   id: string;
@@ -125,6 +127,7 @@ interface FilaTrabajo {
   result: Resultado | null;
   error: string | null;
   refunded: boolean;
+  cost?: number | null;
   projects: { title: string } | { title: string }[] | null;
 }
 
@@ -144,6 +147,7 @@ function aTrabajo(f: FilaTrabajo): Trabajo {
     error: f.error,
     refunded: f.refunded,
     titulo: p?.title ?? ultimoTitulo,
+    coste: typeof f.cost === "number" ? f.cost : undefined,
   };
 }
 

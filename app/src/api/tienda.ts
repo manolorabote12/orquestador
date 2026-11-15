@@ -34,10 +34,36 @@ export interface EstadoTienda {
   anuncios: boolean;
 }
 
+/** Un movimiento de tuercas (gasto, compra, devolución, regalo...). */
+export interface MovimientoTuercas {
+  cantidad: number;
+  motivo: string;
+  /** De qué juego o cambio era, si se sabe. */
+  detalle: string | null;
+  fecha: string;
+}
+
+/** Nombre de cada motivo para el usuario (credit_ledger.reason y tipos de trabajo). */
+export const MOTIVOS: Record<string, string> = {
+  signup: "Regalo de bienvenida", welcome: "Regalo de bienvenida", purchase: "Compra en Google Play", plan: "Tuercas de tu plan",
+  refund: "Devolución (no salió)", refund_purchase: "Compra devuelta", reward_ad: "Anuncio con premio", invite: "Invitación de un amigo",
+  weekly_challenge: "Premio del reto semanal", ganancias: "Ganancias de tus juegos", design: "Juego nuevo", game: "Juego nuevo",
+  edit: "Cambio en un juego", game_change: "Cambio en un juego", game_mod: "Chispa programó un cambio", game_restore: "Volver a una versión",
+  game_marketing: "Vídeos de promoción", game_publish: "Publicación", game_ios: "Versión para iPhone", charla: "Charla con tus jugadores",
+};
+
+export function motivoTuercas(m: string): string {
+  return MOTIVOS[m] ?? (m.startsWith("game") ? "Fábrica" : m.replace(/_/g, " "));
+}
+
 /** Lo que la app puede pedir en esta area (servidor real o demostracion). */
 export interface ApiTienda {
   tuercas(): Promise<number>;
   precioJuego(): Promise<number>;
+  /** Precio en tuercas de cada cosa que se cobra (pricing.kind -> tuercas). */
+  precios(): Promise<Record<string, number>>;
+  /** Últimos movimientos de tuercas, el más nuevo primero. */
+  movimientos(): Promise<MovimientoTuercas[]>;
   /** Tienda: packs de tuercas y premium, con precios de Google Play. */
   tienda(): Promise<EstadoTienda>;
   /** Compra y espera a que el servidor la verifique con Google. Devuelve el saldo nuevo. */
@@ -67,6 +93,30 @@ export function supaTienda(con: Conexion): ApiTienda {
     async precioJuego() {
       const { data } = await con.sb.from("pricing").select("credits").eq("kind", "game").maybeSingle();
       return (data?.credits as number | undefined) ?? 60;
+    },
+
+    async precios() {
+      const { data } = await con.sb.from("pricing").select("kind,credits");
+      const out: Record<string, number> = {};
+      for (const r of (data ?? []) as { kind: string; credits: number }[]) out[r.kind] = r.credits;
+      return out;
+    },
+
+    async movimientos() {
+      const { data, error } = await con.sb.from("credit_ledger").select("amount,reason,ref,created_at").order("created_at", { ascending: false }).limit(60);
+      if (error) throw new ErrorApp("No se pudieron leer tus movimientos.");
+      const filas = (data ?? []) as { amount: number; reason: string; ref: string | null; created_at: string }[];
+      // De qué juego era cada gasto: los trabajos (su idea o instrucción) por su id.
+      const ids = [...new Set(filas.map((f) => f.ref ?? "").filter((r) => /^[0-9a-f-]{36}$/.test(r)))];
+      const que: Record<string, string> = {};
+      if (ids.length) {
+        const { data: js } = await con.sb.from("jobs").select("id,detail").in("id", ids);
+        for (const j of (js ?? []) as { id: string; detail: { idea?: string; instruccion?: string } | null }[]) {
+          const t = (j.detail?.instruccion || j.detail?.idea || "").replace(/^\[[^\]]*\]\s*/g, "").trim();
+          if (t) que[j.id] = t.length > 60 ? t.slice(0, 57) + "..." : t;
+        }
+      }
+      return filas.map((f) => ({ cantidad: f.amount, motivo: f.reason, detalle: (f.ref && que[f.ref]) || null, fecha: f.created_at }));
     },
 
     async tienda(): Promise<EstadoTienda> {
