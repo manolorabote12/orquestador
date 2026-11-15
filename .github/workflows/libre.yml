@@ -39,7 +39,7 @@ jobs:
           sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1 libxi6 libxrandr2 libxcursor1 libxinerama1 > /dev/null
           wget -q https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -O /tmp/g.zip
           unzip -q /tmp/g.zip -d /tmp/g && sudo mv /tmp/g/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot && sudo chmod +x /usr/local/bin/godot
-          pip install -q pillow numpy
+          sudo pip3 install -q --break-system-packages pillow numpy jsonschema defusedxml
           sudo useradd --system --create-home --home-dir /home/orqsb --shell /usr/sbin/nologin orqsb
       - name: Huellas de los juegos anteriores
         run: |
@@ -58,7 +58,7 @@ jobs:
           mkdir -p salida/$NOMBRE
           set -o pipefail
           cd fabrica
-          sudo -E env PATH="$PATH" ORQ_COMFY="runpod://$ep" ORQ_SANDBOX=orqsb GODOT=/usr/local/bin/godot \
+          sudo --preserve-env=ANTHROPIC_API_KEY,RUNPOD_API_KEY env PATH="$PATH" ORQ_COMFY="runpod://$ep" ORQ_SANDBOX=orqsb GODOT=/usr/local/bin/godot \
             python3 -m libre.agente "$IDEA" /tmp/juego --titulo "$TITULO" --tope "$TOPE" --huellas /tmp/huellas.json \
             --salida ../salida/$NOMBRE 2>&1 | tee ../salida/$NOMBRE/log.txt || true
       - name: Guardar en la rama libre
