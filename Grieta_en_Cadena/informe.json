@@ -1,0 +1,38 @@
+{
+ "ok": true,
+ "version": 2,
+ "titulo": "Grieta en Cadena",
+ "slug": "grieta_en_cadena",
+ "proyecto": "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena",
+ "apk": "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/build/grieta_en_cadena.apk",
+ "web": "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/fabrica/capturas/3_juego.png",
+  "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/fabrica/capturas/4_juego.png",
+  "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_cambio_m06d6_4f/grieta_en_cadena/fabrica/ficha/ficha.zip",
+ "clip": null,
+ "coste_usd": {
+  "total": 0.09,
+  "arte_estimado": 0.09
+ },
+ "dibujados": [
+  "heroe_arquero",
+  "heroe_asesina",
+  "heroe_ballestero",
+  "heroe_berserker",
+  "heroe_dragona",
+  "heroe_druida",
+  "heroe_escudero",
+  "heroe_maga",
+  "heroe_monje",
+  "heroe_nigromante",
+  "heroe_paladina",
+  "heroe_sanadora",
+  "extras"
+ ],
+ "total_s": 392.7
+}

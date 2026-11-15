@@ -1,0 +1,226 @@
+{
+ "idea": "una mazmorra por turnos donde un esqueleto bueno escapa de la cripta con sus amigos zombis",
+ "ok": true,
+ "clave_arte": "fee298c11d92d8b5c92cd3dcbac9e5b0",
+ "version": 1,
+ "titulo": "Huesitos: Fuga de la Cripta",
+ "slug": "huesitos_fuga_de_la_crip",
+ "proyecto": "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip",
+ "apk": "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/build/huesitos_fuga_de_la_crip.apk",
+ "web": "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/fabrica/capturas/3_juego.png",
+  "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/fabrica/capturas/4_juego.png",
+  "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_jrr4usk9/huesitos_fuga_de_la_crip/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.13144,
+  "arte_estimado": 0.1777,
+  "total": 0.3091
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27039,
+   "salida": 2603,
+   "usd": 0.09101,
+   "segundos": 18.5,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 29420,
+   "salida": 2001,
+   "usd": 0.03959,
+   "segundos": 10.0,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1764,
+   "salida": 243,
+   "usd": 0.00031,
+   "segundos": 2.1,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2215,
+   "salida": 566,
+   "usd": 0.00053,
+   "segundos": 3.5,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 33,
+ "niveles_rehechos": 2,
+ "tiempos_s": {
+  "diseno": 29.0,
+  "proyecto": 0.1,
+  "niveles": 18.7,
+  "boceto": 10.1,
+  "bots_antes": 1.4,
+  "arte": 730.8,
+  "validacion": 6.4,
+  "reto": 2.0,
+  "apk": 8.9,
+  "web": 3.3,
+  "capturas": 4.4
+ },
+ "total_s": 844.0,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 3,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 3,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 3,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 7,
+    "monedas": 3,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 3,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 5,
+    "monedas": 3,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 13,
+    "monedas": 3,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 4,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 2.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 14,
+    "monedas": 4,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 5,
+  "problemas": [
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En la partida el esqueleto mide unos 15 px sobre un tablero de casillas grandes; apenas se distingue del fondo y no se lee quien es el heroe"
+   },
+   {
+    "tipo": "fondo_distrae",
+    "detalle": "En la pantalla de partida el fondo exterior (colinas, muros morados con huesos y manchas verdes) compite con el tablero; el recuadro marron "
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "El HUD superior mezcla iconos minusculos (corazon, espada, rombo, moneda) con texto 'Explore' en boton morado sin icono; el boton de pausa e"
+   },
+   {
+    "tipo": "nivel_vacio",
+    "detalle": "El mapa muestra pocas casillas, casi sin enemigos, trampas ni cofres visibles; solo una bomba o fruta roja, asi que el nivel transmite poco "
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "En el menu principal los iconos de Misiones, Diario y Trofeos son botones planos; no hay particulas ni animacion visible del personaje en la"
+   }
+  ],
+  "lo_mejor": "El menu principal tiene identidad: el titulo en pixel art, el esqueleto central con el halo amarillo y la paleta morada coherente con la cri"
+ }
+}

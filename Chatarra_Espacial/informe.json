@@ -1,0 +1,241 @@
+{
+ "idea": "una nave hecha con piezas de chatarra que esquiva asteroides y rescata astronautas perdidos",
+ "ok": true,
+ "clave_arte": "441c72cda0e5638752a220e232bae3f7",
+ "version": 1,
+ "titulo": "Chatarra Espacial",
+ "slug": "chatarra_espacial",
+ "proyecto": "/tmp/orq_49ybeliq/chatarra_espacial",
+ "apk": "/tmp/orq_49ybeliq/chatarra_espacial/build/chatarra_espacial.apk",
+ "web": "/tmp/orq_49ybeliq/chatarra_espacial/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/capturas/3_juego.png",
+  "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/capturas/4_juego.png",
+  "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/capturas/5_resultado.png",
+  "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/capturas/6_jefe.png"
+ ],
+ "ficha": "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_49ybeliq/chatarra_espacial/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-haiku-5-5",
+ "coste_usd": {
+  "diseno": 0.00595,
+  "arte_estimado": 0.2246,
+  "total": 0.2306
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 27068,
+   "salida": 2253,
+   "usd": 0.00438,
+   "segundos": 11.1,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1797,
+   "salida": 210,
+   "usd": 0.0003,
+   "segundos": 1.7,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1771,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 1.1,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1772,
+   "salida": 187,
+   "usd": 0.00021,
+   "segundos": 1.4,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1760,
+   "salida": 205,
+   "usd": 0.00022,
+   "segundos": 1.6,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1797,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 1.2,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2006,
+   "salida": 600,
+   "usd": 0.00052,
+   "segundos": 4.7,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 64,
+ "niveles_rehechos": 2,
+ "tiempos_s": {
+  "diseno": 11.2,
+  "proyecto": 0.5,
+  "niveles": 24.0,
+  "boceto": 16.6,
+  "bots_antes": 25.5,
+  "arte": 980.5,
+  "validacion": 13.5,
+  "reto": 6.6,
+  "apk": 15.7,
+  "web": 7.0,
+  "capturas": 25.9
+ },
+ "total_s": 1203.4,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 3,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 5.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 5,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 9.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 1,
+    "monedas": 4,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 9.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 1,
+    "monedas": 3,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 10.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 3,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 1,
+    "bot_muertes": 0,
+    "bot_pisotones": 1,
+    "bot_segundos": 12.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 5,
+    "monedas": 4,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 1,
+    "bot_pisotones": 0,
+    "bot_segundos": 19.8,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 3,
+    "monedas": 4,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 4,
+    "bot_muertes": 0,
+    "bot_pisotones": 3,
+    "bot_segundos": 26.1,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 4,
+    "monedas": 7,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 5,
+  "problemas": [
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En la partida el heroe (la nave) mide unos 25 px de ancho en pantalla de 360; apenas se distingue sobre el fondo oscuro."
+   },
+   {
+    "tipo": "suelo_recargado",
+    "detalle": "El suelo es un bloque gris de baldosas repetidas que ocupa casi la mitad inferior de la pantalla y tapa la zona de accion."
+   },
+   {
+    "tipo": "fondo_vacio",
+    "detalle": "El area central y superior de la partida esta vacia, con solo algunas rocas recortadas en las esquinas y estrellas difusas."
+   },
+   {
+    "tipo": "interfaz_rota",
+    "detalle": "En la captura de titulo, los botones de Misiones, Diario, Trofeos y Ajustes tienen marcos metalicos y un recuadro cuadrado de fondo; el de T"
+   },
+   {
+    "tipo": "colores_chocan",
+    "detalle": "El queso amarillo-marron de la esquina inferior izquierda y los botones de control grises pesan visualmente frente al azul frio del resto."
+   },
+   {
+    "tipo": "estilos_mezclados",
+    "detalle": "Los botones de control y el texto 'Level 2' sobre Play usan tipografia y acabados distintos al logotipo y a los menus."
+   }
+  ],
+  "lo_mejor": ""
+ }
+}

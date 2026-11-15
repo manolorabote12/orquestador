@@ -1,0 +1,233 @@
+{
+ "idea": "un juego de fusión: suelta semillas y junta iguales hasta crear un árbol mágico gigante en un jardín flotante",
+ "ok": true,
+ "errores_diseno": [
+  "claude-sonnet-5-5: el diseno tiene un campo con forma inesperada (AttributeError: 'str' object has no attribute 'get'); respeta el esquema"
+ ],
+ "clave_arte": "4676f90b95b7483c50abb776cb0597cb",
+ "version": 1,
+ "titulo": "Arbolón de las Nubes",
+ "slug": "arbolon_de_las_nubes",
+ "proyecto": "/tmp/orq_ih09c5n3/arbolon_de_las_nubes",
+ "apk": "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/build/arbolon_de_las_nubes.apk",
+ "web": "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/fabrica/capturas/3_juego.png",
+  "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/fabrica/capturas/4_juego.png",
+  "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_ih09c5n3/arbolon_de_las_nubes/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.16931,
+  "arte_estimado": 0.1139,
+  "total": 0.2832
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 5744,
+   "salida": 2357,
+   "usd": 0.03644,
+   "segundos": 18.6,
+   "nota": "conceptos"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27911,
+   "salida": 2389,
+   "usd": 0.09065,
+   "segundos": 16.5,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 30174,
+   "salida": 2053,
+   "usd": 0.04149,
+   "segundos": 10.8,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1772,
+   "salida": 83,
+   "usd": 0.00024,
+   "segundos": 1.1,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2209,
+   "salida": 490,
+   "usd": 0.00049,
+   "segundos": 2.7,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 44,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 46.1,
+  "proyecto": 0.1,
+  "niveles": 21.5,
+  "boceto": 10.3,
+  "bots_antes": 1.3,
+  "arte": 554.7,
+  "validacion": 6.9,
+  "reto": 2.6,
+  "apk": 8.8,
+  "web": 4.2,
+  "capturas": 6.3
+ },
+ "total_s": 697.2,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.5,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.7,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 0.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 2.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 0,
+    "bot_segundos": 1.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 5,
+  "problemas": [
+   {
+    "tipo": "estilos_mezclados",
+    "detalle": "La pantalla de titulo usa fondo fotografico 3D de arbol y nubes, pero la partida es un tablero plano morado con fichas de colores; no parece"
+   },
+   {
+    "tipo": "fondo_distrae",
+    "detalle": "En la partida, el fondo rosado con nubes y hojas borrosas compite con la cuadricula; las particulas doradas flotan sobre las fichas y ensuci"
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "El tablero de partida es un rectangulo morado sin marco ni textura de arbol; la ficha de siguiente turno y el 'Goal: 64' son texto pequeno y"
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "Las fichas (4, 16, 32, 2) son cuadrados planos sin personaje, sin animacion visible ni brillo de fusion, asi que la gracia del 'merge' no se"
+   }
+  ],
+  "lo_mejor": "La pantalla de titulo es atractiva: tipografia redondeada grande, arbol 3D con buena iluminacion y botones de madera con iconos claros."
+ }
+}

@@ -1,0 +1,243 @@
+{
+ "error": "Los bots no pueden superar el juego ni rehaciendo niveles (parado antes de dibujar: sin gasto de arte): [{\"bot_completa\": false, \"bot_monedas\": 0, \"bot_muertes\": 2, \"bot_pisotones\": 0, \"bot_segundos\": 0.0, \"completable\": true, \"detalle\": [], \"enemigos\": 8, \"monedas\": 8, \"nivel\": 0, \"problemas\": [], \"sonidos_que_faltan\": 4}, {\"bot_completa\": false, \"bot_monedas\": 0, \"bot_muertes\": 2, \"bot_pisotones",
+ "detail": {
+  "idea": "Leyendas de la Grieta: RPG de coleccionar heroes como los idle RPG que mas triunfan. Una grieta magica se abre sobre el reino y salen demonios de sombra; formas un equipo de 4 heroes (caballera, maga de hielo, arquera elfa, sanadora, paladina, nigromante, dragona, asesina...) y luchas por turnos con habilidades, elementos y jefes enormes al final de cada capitulo. Invocas heroes de rareza comun, r",
+  "semilla": true
+ },
+ "result": {
+  "diseno": {
+   "voz": {
+    "inicio": "¡Por el reino!",
+    "derrota": "¡Aún no me rindo!",
+    "victoria": "¡La grieta cede!"
+   },
+   "jefe": {
+    "nombre": "Coloso Boca-Grieta",
+    "descripcion": "Gigantic ink-blue shadow colossus with a huge mouth that is a glowing golden and pink rift, many yellow eyes, glowing crystal weak points on its chest and shoulders."
+   },
+   "lema": "Invoca héroes y derrota a los colosos",
+   "giros": [
+    "equipo"
+   ],
+   "heroe": {
+    "nombre": "Brasa",
+    "descripcion": "Female knight with a dented steel armor, a short red cape, a brown ponytail and a short sword, determined smile, chibi cartoon proportions."
+   },
+   "estilo": {
+    "paleta": [
+     "#1d1233",
+     "#2b1b4d",
+     "#6b3f8f",
+     "#8a5a3c",
+     "#c9915a",
+     "#ff7a3d",
+     "#ff4d6d",
+     "#ff9ad5",
+     "#ffd23f",
+     "#5ec8ff",
+     "#3a4cb8",
+     "#fff6e6"
+    ],
+    "familia": "cartoon",
+    "descripcion": "Colorful fantasy cartoon with bold clean outlines, glowing magic sparks, warm castle towers under a violet sky, golden and pink rift light, ink-blue shadow demons with yellow eyes."
+   },
+   "genero": "rpg",
+   "musica": {
+    "tempo": 110,
+    "ambiente": "Epic yet warm fantasy adventure with a magical shimmer and driving drums for turn-based battles.",
+    "instrumentos": [
+     "orchestral strings",
+     "harp",
+     "war drums",
+     "glockenspiel",
+     "brass"
+    ]
+   },
+   "sonido": "suave",
+   "titulo": "Leyendas de la Grieta",
+   "disparo": false,
+   "niveles": [
+    "La Grieta se Rasga",
+    "Torres Cálidas",
+    "Bosque de Chispas",
+    "Lago de Carámbanos",
+    "Nido de la Reina Mandíbula",
+    "Telaraña del Eclipse",
+    "Corazón de la Grieta"
+   ],
+   "poderes": [],
+   "publico": "todos",
+   "resumen": "Una grieta mágica suelta demonios de sombra sobre el reino. Invoca héroes de rareza común a legendaria, forma un equipo de 4 y vence por turnos a los jefes gigantes de cada capítulo con habilidades y elementos.",
+   "enemigos": [
+    {
+     "tipo": "walker",
+     "nombre": "Titiritero de Humo",
+     "descripcion": "Ink-blue smoky shadow puppet demon with strings hanging from its hands, glowing yellow eyes, wobbly walking pose."
+    },
+    {
+     "tipo": "spiky",
+     "nombre": "Reptante de Cristal",
+     "descripcion": "Ink-blue crawling shadow lizard with big pointed crystal horns and sharp crystal spikes on its back, yellow eyes."
+    },
+    {
+     "tipo": "flyer",
+     "nombre": "Chispa de Sombra",
+     "descripcion": "Small ink-blue winged shadow bat creature with ragged wings, glowing yellow eyes and a trail of dark smoke."
+    }
+   ],
+   "historia": {
+    "niveles": [
+     {
+      "fin": [
+       {
+        "quien": "heroe",
+        "texto": "¡Primer titiritero fuera! Necesito aliadas, y rápido."
+       }
+      ],
+      "intro": [
+       {
+        "quien": "narrador",
+        "texto": "Una grieta dorada y rosa rasga el cielo violeta sobre el reino."
+       },
+       {
+        "quien": "heroe",
+        "texto": "Soy Brasa. Mi armadura está abollada, pero mi coraje no."
+       },
+       {
+        "quien": "rival",
+        "texto": "Jijiji... un hilito y bailarás para mí, caballera."
+       }
+      ]
+     },
+     {
+      "fin": [
+       {
+        "quien": "heroe",
+        "texto": "Dos héroes y un reino que salvar. Vamos bien."
+       }
+      ],
+      "intro": [
+       {
+        "quien": "narrador",
+        "texto": "Brasa invoca a Rama, la arquera elfa de ojos verdes brillantes."
+       },
+       {
+        "quien": "heroe",
+        "texto": "Las torres cálidas nos esperan. ¡Cubre mi espalda, Rama!"
+       }
+      ]
+     },
+     {
+      "fin": [
+       {
+        "quien": "heroe",
+        "texto": "Alba nos cura y Névula llega con su sombrero de hielo."
+       }
+      ],
+      "intro": [
+       {
+        "quien": "narrador",
+        "texto": "El bosque brilla con chispas que gotean de la grieta."
+       },
+       {
+        "quien": "rival",
+        "texto": "Las chispas son nuestras. ¡Largo de aquí!"
+       }
+      ]
+     },
+     {
+      "fin": [
+       {
+        "quien": "heroe",
+        "texto": "El equipo ya es de cuatro. ¡Las sombras tiemblan!"
+       }
+      ],
+      "intro": [
+       {
+        "quien": "narrador",
+        "texto": "Névula guía al equipo hasta un lago helado lleno de carámbanos."
+       },
+       {
+        "quien": "heroe",
+        "texto": "Hielo contra sombras: ¡combinemos elementos!"
+       }
+      ]
+     },
+     {
+      "fin": [
+       {
+        "quien": "heroe",
+        "texto": "¡Cayó la reina! Pero la grieta sigue creciendo."
+       }
+      ],
+      "intro": [
+       {
+        "quien": "narrador",
+        "texto": "En un nido oscuro despierta la Reina Mandíbula."
+       },
+       {
+        "quien": "jefe",
+        "texto": "Mis crías tienen hambre de héroes."
+       }
+      ]
+     },
+     {
+      "fin": [
+       {
+        "quien": "heroe",
+        "texto": "La luz vuelve. Solo queda el corazón de la grieta."
+       }
+      ],
+      "intro": [
+       {
+        "quien": "narrador",
+        "texto": "Una telaraña de eclipse cubre el cielo y apaga la luz del reino."
+       },
+       {
+        "quien": "heroe",
+        "texto": "Ceniza, la dragona, nos presta sus alas de ascuas."
+       }
+      ]
+     },
+     {
+      "fin": [
+       {
+        "quien": "narrador",
+        "texto": "La grieta se cierra y el cielo violeta se llena de estrellas."
+       },
+       {
+        "quien": "heroe",
+        "texto": "Somos las Leyendas de la Grieta. ¡Lo logramos!"
+       }
+      ],
+      "intro": [
+       {
+        "quien": "narrador",
+        "texto": "En el corazón de la grieta, el Coloso Boca-Grieta abre sus fauces."
+       },
+       {
+        "quien": "jefe",
+        "texto": "Todo reino acaba en mi boca."
+       },
+       {
+        "quien": "heroe",
+        "texto": "¡Equipo, juntad el poder! ¡A por sus cristales!"
+       }
+      ]
+     }
+    ]
+   },
+   "escenario": {
+    "descripcion": "Warm sandstone castle courtyard floor with cracked glowing golden lines, repeating stone tiles with small pink sparks."
+   },
+   "sensacion": "normal",
+   "dificultad": "normal",
+   "originalidad": 99,
+   "coleccionable": {
+    "nombre": "Gema de Grieta",
+    "descripcion": "A small glowing golden and pink crystal shard that drips tiny sparks.",
+    "nombre_plural": "Gemas de Grieta"
+   }
+  }
+ }
+}

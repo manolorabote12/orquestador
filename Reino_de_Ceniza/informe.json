@@ -1,0 +1,248 @@
+{
+ "idea": "un reino de fantasía épica al estilo Kingshot: elfos, enanos y hombres del oeste resisten al Señor Oscuro de las tierras de ceniza; sube tu ciudadela de piedra blanca, entrena arqueros élficos, guerreros enanos y jinetes, y conquista una a una las fortalezas de los orcos hasta la torre negra del volcán",
+ "ok": true,
+ "clave_arte": "970d4ef321b932fa7c178f17dba50606",
+ "version": 1,
+ "titulo": "Reino de Ceniza",
+ "slug": "reino_de_ceniza",
+ "proyecto": "/tmp/orq_ra0gw_g4/reino_de_ceniza",
+ "apk": "/tmp/orq_ra0gw_g4/reino_de_ceniza/build/reino_de_ceniza.apk",
+ "web": "/tmp/orq_ra0gw_g4/reino_de_ceniza/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_ra0gw_g4/reino_de_ceniza/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_ra0gw_g4/reino_de_ceniza/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_ra0gw_g4/reino_de_ceniza/fabrica/capturas/3_juego.png",
+  "/tmp/orq_ra0gw_g4/reino_de_ceniza/fabrica/capturas/4_juego.png",
+  "/tmp/orq_ra0gw_g4/reino_de_ceniza/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_ra0gw_g4/reino_de_ceniza/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_ra0gw_g4/reino_de_ceniza/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-haiku-5-5",
+ "coste_usd": {
+  "diseno": 0.144,
+  "arte_estimado": 0.1439,
+  "total": 0.2879
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 27193,
+   "salida": 2665,
+   "usd": 0.09198,
+   "segundos": 17.3,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 30085,
+   "salida": 2490,
+   "usd": 0.04568,
+   "segundos": 12.1,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 27286,
+   "salida": 3000,
+   "usd": 0.00477,
+   "segundos": 12.6,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1759,
+   "salida": 217,
+   "usd": 0.0003,
+   "segundos": 1.9,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1757,
+   "salida": 133,
+   "usd": 0.00018,
+   "segundos": 1.1,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1753,
+   "salida": 83,
+   "usd": 0.00016,
+   "segundos": 1.1,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1754,
+   "salida": 186,
+   "usd": 0.00021,
+   "segundos": 1.5,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1778,
+   "salida": 224,
+   "usd": 0.00023,
+   "segundos": 2.6,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2207,
+   "salida": 482,
+   "usd": 0.00049,
+   "segundos": 3.2,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 53,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 43.0,
+  "proyecto": 0.5,
+  "niveles": 21.2,
+  "boceto": 16.7,
+  "bots_antes": 3.3,
+  "arte": 659.4,
+  "validacion": 10.4,
+  "reto": 2.8,
+  "apk": 15.0,
+  "web": 6.8,
+  "capturas": 15.5
+ },
+ "total_s": 858.3,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 2,
+    "bot_segundos": 5.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 2,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 5,
+    "bot_muertes": 0,
+    "bot_pisotones": 5,
+    "bot_segundos": 20.5,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 5,
+    "monedas": 5,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 8,
+    "bot_muertes": 0,
+    "bot_pisotones": 8,
+    "bot_segundos": 28.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 8,
+    "monedas": 8,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 6,
+    "bot_muertes": 0,
+    "bot_pisotones": 6,
+    "bot_segundos": 35.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 6,
+    "monedas": 6,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 7,
+    "bot_muertes": 0,
+    "bot_pisotones": 7,
+    "bot_segundos": 25.0,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 7,
+    "monedas": 7,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 7,
+    "bot_muertes": 0,
+    "bot_pisotones": 7,
+    "bot_segundos": 29.9,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 7,
+    "monedas": 7,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 2,
+    "bot_muertes": 0,
+    "bot_pisotones": 2,
+    "bot_segundos": 25.5,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 2,
+    "monedas": 2,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 5,
+  "problemas": [
+   {
+    "tipo": "personaje_pequeno",
+    "detalle": "En la partida el arquero es pequeño y queda relegado al borde izquierdo; los enemigos también son diminutos y cuesta leer sus números de vid"
+   },
+   {
+    "tipo": "fondo_distrae",
+    "detalle": "En la pantalla de titulo el castillo, los volcanes y las montanas compiten con los botones; en la partida el fondo gris apagado y el volcan "
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "Los botones de combate (Attack, Special, Potion, Defend) son rectangulos planos con el mismo peso visual y el panel azul inferior queda vaci"
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "Los ataques apenas muestran destellos pequenos; no se aprecian particulas, impactos ni animaciones de muerte que den sensacion de golpe."
+   }
+  ],
+  "lo_mejor": "La pantalla de titulo tiene un logotipo con personalidad, un arquero bien recortado sobre su peana y una paleta de verdes y piedra coherente"
+ }
+}

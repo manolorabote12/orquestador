@@ -1,0 +1,22 @@
+{
+ "ok": true,
+ "version": 6,
+ "titulo": "Marea Alta",
+ "slug": "marea_alta",
+ "proyecto": "/tmp/orq_cambio_6qcl1fno/marea_alta",
+ "apk": "/tmp/orq_cambio_6qcl1fno/marea_alta/build/marea_alta.apk",
+ "web": "/tmp/orq_cambio_6qcl1fno/marea_alta/build/web/index.pck",
+ "capturas": [],
+ "ficha": null,
+ "clip": null,
+ "coste_usd": {
+  "total": 0.1867,
+  "arte_estimado": 0.1867
+ },
+ "dibujados": [
+  "brawler_tinta",
+  "piel",
+  "animar"
+ ],
+ "total_s": 725.4
+}

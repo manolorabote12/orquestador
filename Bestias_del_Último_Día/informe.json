@@ -1,0 +1,24 @@
+{
+ "ok": true,
+ "version": 3,
+ "titulo": "Bestias del Último Día",
+ "slug": "bestias_del_ultimo_dia",
+ "proyecto": "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia",
+ "apk": "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/build/bestias_del_ultimo_dia.apk",
+ "web": "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/fabrica/capturas/3_juego.png",
+  "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/fabrica/capturas/4_juego.png",
+  "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_cambio_dm_4j4f0/bestias_del_ultimo_dia/fabrica/ficha/ficha.zip",
+ "clip": null,
+ "coste_usd": {
+  "total": 0.0,
+  "arte_estimado": 0.0
+ },
+ "dibujados": [],
+ "total_s": 309.8
+}

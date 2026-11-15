@@ -1,0 +1,236 @@
+{
+ "idea": "suelta frutas mágicas y junta iguales hasta crear una sandía dorada gigante en una cocina de hadas",
+ "ok": true,
+ "errores_diseno": [
+  "claude-sonnet-5-5: (raiz): Additional properties are not allowed ('derrota', 'descripcion', 'instrumentos', 'nombre_plural', 'paleta', 'tempo', 'victoria' were unexpected)",
+  "claude-sonnet-5-5: coleccionable: '\\n<parameter name=\"nombre\">Fruta mágica' is not of type 'object'",
+  "claude-sonnet-5-5: escenario: '\\n<parameter name=\"descripcion\">Warm polished wooden kitchen counter planks with honey-colored grain, seamless and repeatable, small copper trim' is not of type 'object'",
+  "claude-sonnet-5-5: estilo: '\\n<parameter name=\"familia\">cartoon' is not of type 'object'"
+ ],
+ "clave_arte": "01533004604fc447b0f591cc8e9d1aa0",
+ "version": 1,
+ "titulo": "Sandía Dorada de Hadas",
+ "slug": "sandia_dorada_de_hadas",
+ "proyecto": "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas",
+ "apk": "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/build/sandia_dorada_de_hadas.apk",
+ "web": "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/build/web/index.pck",
+ "capturas": [
+  "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/fabrica/capturas/1_titulo.png",
+  "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/fabrica/capturas/2_niveles.png",
+  "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/fabrica/capturas/3_juego.png",
+  "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/fabrica/capturas/4_juego.png",
+  "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/fabrica/capturas/5_resultado.png"
+ ],
+ "ficha": "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/fabrica/ficha/ficha.zip",
+ "clip": "/tmp/orq_6bxh0auk/sandia_dorada_de_hadas/fabrica/clip/clip_vertical.mp4",
+ "marketing": null,
+ "modelo_diseno": "claude-sonnet-5-5",
+ "coste_usd": {
+  "diseno": 0.19595,
+  "arte_estimado": 0.1731,
+  "total": 0.369
+ },
+ "llamadas_ia": [
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 5741,
+   "salida": 3911,
+   "usd": 0.05197,
+   "segundos": 33.4,
+   "nota": "conceptos"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 28060,
+   "salida": 2804,
+   "usd": 0.0951,
+   "segundos": 18.8,
+   "nota": "diseno"
+  },
+  {
+   "modelo": "claude-sonnet-5-5",
+   "entrada": 31032,
+   "salida": 2541,
+   "usd": 0.04809,
+   "segundos": 13.0,
+   "nota": "correccion"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 1771,
+   "salida": 207,
+   "usd": 0.0003,
+   "segundos": 1.7,
+   "nota": "revision_visual"
+  },
+  {
+   "modelo": "claude-haiku-5-5",
+   "entrada": 2211,
+   "salida": 482,
+   "usd": 0.00049,
+   "segundos": 3.1,
+   "nota": "critica_visual"
+  }
+ ],
+ "imagenes": 33,
+ "niveles_rehechos": 0,
+ "tiempos_s": {
+  "diseno": 65.8,
+  "proyecto": 0.5,
+  "niveles": 27.6,
+  "boceto": 16.7,
+  "bots_antes": 4.7,
+  "arte": 752.2,
+  "validacion": 12.9,
+  "reto": 7.3,
+  "apk": 15.0,
+  "web": 6.8,
+  "capturas": 18.6
+ },
+ "total_s": 978.0,
+ "validacion": {
+  "niveles": [
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 13,
+    "bot_segundos": 0.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 0,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 29,
+    "bot_segundos": 0.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 1,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 32,
+    "bot_segundos": 0.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 2,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 53,
+    "bot_segundos": 0.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 3,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 18,
+    "bot_segundos": 0.3,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 4,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 25,
+    "bot_segundos": 0.4,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 5,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 117,
+    "bot_segundos": 1.2,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 6,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   },
+   {
+    "bot_completa": true,
+    "bot_monedas": 0,
+    "bot_muertes": 0,
+    "bot_pisotones": 62,
+    "bot_segundos": 0.6,
+    "completable": true,
+    "detalle": [],
+    "enemigos": 0,
+    "monedas": 0,
+    "nivel": 7,
+    "problemas": [],
+    "sonidos_que_faltan": 0
+   }
+  ],
+  "interfaz": [],
+  "arte": {
+   "enemigos": true,
+   "jugador": true,
+   "sonidos_que_faltan": [],
+   "tile": true
+  }
+ },
+ "critica_visual": {
+  "nota": 6,
+  "problemas": [
+   {
+    "tipo": "estilos_mezclados",
+    "detalle": "La pantalla de titulo es una cocina 3D ilustrada con hada cocinera, mientras la partida es un tablero plano de frutas kawaii sobre fondo cre"
+   },
+   {
+    "tipo": "fondo_vacio",
+    "detalle": "En la partida el fondo es un crema casi uniforme con solo un marco de madera; el area de juego transmite poca personalidad frente al titulo."
+   },
+   {
+    "tipo": "efectos_pobres",
+    "detalle": "Las frutas fusionadas y la caida no muestran particulas ni destellos visibles; el menu de pausa y los botones de la pantalla de titulo tiene"
+   },
+   {
+    "tipo": "interfaz_sosa",
+    "detalle": "En el titulo los cuatro cofres de 'Empty' y los botones laterales son genericos; el contador de puntos '50/66' en la esquina superior izquie"
+   }
+  ],
+  "lo_mejor": "Las frutas kawaii de la partida son legibles, con caras simpaticas y buen contraste de colores; el titulo con letras doradas y la hada cocin"
+ }
+}

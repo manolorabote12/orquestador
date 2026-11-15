@@ -1,0 +1,8 @@
+{
+ "error": "La Biblia no es valida:\npersonajes: [{'id': 'heroe', 'nombre': 'Alba', 'rol': 'jugador', 'descripcion': 'Paladin woman with a round golden sun shield, flowing golden cape, white and gold plate armor, short brown hair, small chibi proportions', 'tamano': [128, 128], 'mira_a': 'derecha', 'animaciones': {'idle': {'frames': 2, 'fps': 6, 'bucle': True}, 'run': {'frames': 4, 'fps': 12, 'bucle': True}, ' @ biblia.py:30 validar < cadena.py:933 _fabricar < cadena.py:846 fabricar",
+ "detail": {
+  "idea": "Leyendas de la Grieta: RPG de coleccionar heroes como los idle RPG que mas triunfan. Una grieta magica se abre sobre el reino y salen demonios de sombra; formas un equipo de 4 heroes (caballera, maga de hielo, arquera elfa, sanadora, paladina, nigromante, dragona, asesina...) y luchas por turnos con habilidades, elementos y jefes enormes al final de cada capitulo. Invocas heroes de rareza comun, r",
+  "semilla": true
+ },
+ "result": null
+}
