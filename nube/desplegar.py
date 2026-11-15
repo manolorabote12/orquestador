@@ -229,7 +229,7 @@ def desplegar(imagen_fabrica: str, imagen_gpu: str, modelos: bool = False, motor
 		"containerDiskInGb": 30, "category": "CPU", "env": {**env_fabrica, "ORQ_IMAGEN": imagen_fabrica}})
 	ep_cpu, estado_ep = asegurar("/endpoints", "orq-fabrica", {"templateId": tpl_cpu["id"], "computeType": "CPU",
 		"cpuFlavorIds": ["cpu5c", "cpu3c"], "vcpuCount": 4, "workersMin": 0, "workersMax": int((os.environ.get("ORQ_FABRICA_MAX") or "2")),
-		"idleTimeout": 30, "flashboot": True, "scalerType": "REQUEST_COUNT", "scalerValue": 1, "executionTimeoutMs": 3600000})
+		"idleTimeout": 30, "flashboot": True, "scalerType": "REQUEST_COUNT", "scalerValue": 1, "executionTimeoutMs": 9000000})
 	informe["fabrica"] = {"id": ep_cpu["id"], "estado": estado_ep}
 	## Fuera los servidores encendidos con la imagen anterior (14 nov, Marea Alta v6: un minuto despues
 	## de desplegar, la fabrica aun arrancaba con la imagen vieja): se baja el maximo a 0 un momento y se

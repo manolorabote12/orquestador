@@ -294,7 +294,9 @@ def actualizar(args: argparse.Namespace) -> dict:
 		dibujar.append("piel")
 	## Personajes animados con video (Wan 2.2): solo si se pide (cuesta ~0,15 $ por personaje).
 	if man.exists() and getattr(args, "animar", False) and biblia["juego"].get("genero") == "arena":
-		dibujar.append("animar")
+		sp = _leer(man).get("sprites") or {}
+		if any(not (sp.get(k) or {}).get("animado") for k in sp if k == "heroe" or k.startswith("brawler_")):
+			dibujar.append("animar")
 	## Locutor de la arena (Qwen3-TTS), si aun no lo tiene.
 	if man.exists() and biblia["juego"].get("genero") == "arena" and "loc_victoria" not in (_leer(man).get("voces") or {}):
 		dibujar.append("locutor")

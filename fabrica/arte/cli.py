@@ -398,7 +398,20 @@ def fabricar(args: argparse.Namespace) -> dict:
 		from .runpod import TopeGPU
 		animados: dict = {}
 		quien = [s for s in biblia["personajes"] if s["id"] == "heroe" or s["id"].startswith("brawler_")]
+		## Por tandas (15 nov: los 9 de golpe pasaban de la hora de la fabrica y se perdia todo): solo los
+		## que aun no estan animados y como mucho ORQ_ANIMAR_MAX por trabajo; lo hecho se guarda con el juego.
+		hechos_previos = set()
+		man_a = Path(args.godot) / "assets" / "manifest.json"
+		if man_a.exists():
+			hechos_previos = {k for k, v in (json.loads(man_a.read_text(encoding="utf-8")).get("sprites") or {}).items()
+				if isinstance(v, dict) and v.get("animado")}
+		maximo = int(os.environ.get("ORQ_ANIMAR_MAX") or "4")
 		for i, s in enumerate(quien):
+			if s["id"] in hechos_previos:
+				continue
+			if len(animados) + len(informe.get("animar_fallidos", {})) >= maximo:
+				informe["animar_pendientes"] = informe.get("animar_pendientes", 0) + 1
+				continue
 			desc = s["descripcion"].replace("arena hero character seen from a 3/4 top-down view, same art style as the hero, ", "")
 			desc = desc.replace(", seen from above", "").replace(" seen from above", "")
 			p = {"id": s["id"], "descripcion": desc, "estilo": biblia["estilo"],
