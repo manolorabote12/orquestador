@@ -1826,6 +1826,15 @@ export const GIROS: Giro[] = [
     "mezcla": false
   },
   {
+    "id": "modos",
+    "nombre": "Muchos modos",
+    "que": "Cada nivel es un modo distinto: todos contra todos, supervivencia por oleadas, balón 3 contra 3 y torretas 3 contra 3",
+    "generos": [
+      "arena"
+    ],
+    "mezcla": true
+  },
+  {
     "id": "cola",
     "nombre": "Laberinto serpiente",
     "que": "Mezcla con la serpiente: las casillas que dejas atrás se cierran",

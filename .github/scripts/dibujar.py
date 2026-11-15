@@ -39,7 +39,9 @@ def main() -> int:
 	inf: dict = {"piezas": {}, "fallos": {}}
 	t0 = time.time()
 	for i, p in enumerate(lote["piezas"]):
-		prompt = (str(lote.get("estilo", "")) + ". " if lote.get("estilo") else "") + str(p["prompt"])
+		## Cada pieza puede llevar su propio estilo (los iconos sin el paisaje del fondo: si no, salen con escena).
+		est = str(p.get("estilo", lote.get("estilo", "")))
+		prompt = (est + ". " if est else "") + str(p["prompt"])
 		if p.get("recorte"):
 			prompt += f", isolated, centered, on a plain solid flat {nombre_chroma} background, no shadow, no text"
 		try:

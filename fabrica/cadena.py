@@ -989,6 +989,14 @@ def _fabricar(args: argparse.Namespace) -> dict:
 	dif = originalidad.diferenciar(diseno, fijo="[gancho:" in args.idea) if activa and not ya else {"mensaje": ""}
 	if dif["mensaje"]:
 		evento("originalidad", "ok", dif["mensaje"], indice=dif["indice"])
+	## Casa propia (director/casa.py): metafora, navegacion y nombres de ESTE juego sobre el esqueleto que
+	## funciona en su genero. Solo los generos que el kit sabe montar; si la IA falla, una sencilla.
+	if not diseno.get("casa"):
+		from director import casa
+		c = casa.disenar(diseno, args.simulado, gasto)
+		if c:
+			diseno["casa"] = c
+			evento("casa", "ok", f"Casa propia: {c.get('metafora', '')}"[:200])
 
 	## 2 - Proyecto
 	t = time.time()

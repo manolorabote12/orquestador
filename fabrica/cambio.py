@@ -359,13 +359,22 @@ def actualizar(args: argparse.Namespace) -> dict:
 				b["desc"] = str(desc)[:200]
 	if rehacer:
 		_escribir(ruta_diseno, diseno)
+	## Casa propia (director/casa.py) para los juegos que aun no la tienen: una llamada a la IA (centimos).
+	from director import casa
+	if casa.genero_casa(diseno) and not diseno.get("casa"):
+		c = casa.disenar(diseno, getattr(args, "simulado", False), llm.Gasto())
+		if c:
+			diseno["casa"] = c
+			_escribir(ruta_diseno, diseno)
+			evento("casa", "ok", f"Casa propia: {c.get('metafora', '')}"[:200])
 	biblia = director.a_biblia(diseno)
 	bib.validar(biblia)
 	dibujar, sobran = sprites_cambiados(vieja, biblia)
 	## Arte de GPU de lo que antes era codigo (iconos, efectos, eventos): si el juego aun no lo tiene.
 	man = proyecto / "assets" / "manifest.json"
 	ui_prev = (_leer(man).get("ui") or {}) if man.exists() else {}
-	if man.exists() and (extras.faltan(_leer(man), biblia["juego"].get("genero") == "arena", biblia["juego"].get("genero") == "supervivencia") or os.environ.get("ORQ_REDIBUJAR")):
+	if man.exists() and (extras.faltan(_leer(man), biblia["juego"].get("genero") == "arena", biblia["juego"].get("genero") == "supervivencia",
+			biblia.get("casa")) or os.environ.get("ORQ_REDIBUJAR")):
 		dibujar.append("extras")
 	## Marcos de panel y botones dibujados (menus que no parezcan de codigo), si no los tiene.
 	if man.exists() and not ui_prev.get("skin"):

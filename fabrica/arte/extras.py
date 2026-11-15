@@ -186,15 +186,46 @@ def _suelo(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, mat:
 	return ruta
 
 
+def _casa(biblia: dict, carpeta: Path, motor: tuple, semilla: int, casa: dict, informe: dict, ya: set | None) -> dict:
+	"""Piezas de la casa propia (director/casa.py), con Qwen-Image si esta: el fondo de la campana entero y
+	lo demas recortado sobre el croma."""
+	from director import casa as casa_mod
+	cli, flujo = motor
+	carpeta.mkdir(parents=True, exist_ok=True)
+	out: dict = {}
+	sueltas: dict = {}
+	for i, (k, (que, recorte, (w, h))) in enumerate(casa_mod.piezas(casa).items()):
+		if ya and f"casa/{k}" in ya:
+			continue
+		if recorte:
+			sueltas[k] = que
+			continue
+		try:
+			datos = cli.generar(flujo, {"PROMPT": f"{prompts.estilo_dibujo(biblia['estilo'])}. {que}", "SEED": semilla + 41 * i, "ANCHO": w, "ALTO": h})[0]
+		except Exception as e:  # noqa: BLE001 - sin fondo, el kit usa el de la portada
+			informe.setdefault("fallidos", {})[f"casa/{k}"] = [str(e)[:120]]
+			continue
+		informe["generaciones"] += 1
+		ruta = carpeta / f"{k}.jpg"
+		Image.open(io.BytesIO(datos)).convert("RGB").save(ruta, quality=86, optimize=True)
+		out[k] = ruta
+	if sueltas:
+		out.update(_piezas(biblia, carpeta, cli, flujo, semilla + 500, sueltas, set(sueltas), informe, "casa", 256, ya))
+	return out
+
+
 def ya_hechos(manifest: dict) -> set[str]:
 	"""Lo que un juego ya tiene dibujado ("efectos/humo", "eventos/ball"...): al actualizar solo se pide lo que falta."""
 	ui = manifest.get("ui") or {}
-	return {f"{g}/{k}" for g in ("iconos", "efectos", "eventos") for k in (ui.get(g) or {})}
+	return {f"{g}/{k}" for g in ("iconos", "efectos", "eventos", "casa") for k in (ui.get(g) or {})}
 
 
-def faltan(manifest: dict, arena: bool, superv: bool = False) -> bool:
+def faltan(manifest: dict, arena: bool, superv: bool = False, casa: dict | None = None) -> bool:
 	ya = ya_hechos(manifest)
 	todos = [f"iconos/{k}" for k in ICONOS] + [f"efectos/{k}" for k in EFECTOS]
+	if casa:
+		from director import casa as casa_mod
+		todos += [f"casa/{k}" for k in casa_mod.piezas(casa)]
 	if superv:
 		todos += [f"efectos/{k}" for k in PROPS_SUPERV] + ["efectos/suelo"]
 	if arena:
@@ -203,12 +234,14 @@ def faltan(manifest: dict, arena: bool, superv: bool = False) -> bool:
 
 
 def generar(biblia: dict, carpeta: Path, cliente, flujo: dict, semilla: int, arena: bool, ya: set | None = None,
-		ilustrar: tuple | None = None, superv: bool = False) -> tuple[dict, dict]:
+		ilustrar: tuple | None = None, superv: bool = False, casa: dict | None = None) -> tuple[dict, dict]:
 	"""{"iconos": {nombre: png}, "efectos": {nombre: png}, "eventos": {modo: jpg}}, informe. ya: lo que no hay que redibujar."""
 	informe: dict = {"generaciones": 0}
 	out: dict = {"iconos": _piezas(biblia, carpeta / "iconos", cliente, flujo, semilla, ICONOS, LIBRES, informe, "iconos", 128, ya),
 		"efectos": _piezas(biblia, carpeta / "efectos", cliente, flujo, semilla + 5000, EFECTOS, set(EFECTOS), informe, "efectos", 192, ya),
 		"eventos": {}}
+	if casa:
+		out["casa"] = _casa(biblia, carpeta / "casa", ilustrar or (cliente, flujo), semilla + 11000, casa, informe, ya)
 	if superv:
 		mat_s = (biblia.get("escenarios") or [{}])[0].get("descripcion", "the game world")[:160]
 		props_s = {k: v.format(mat=mat_s) for k, v in PROPS_SUPERV.items()}

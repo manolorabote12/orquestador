@@ -383,10 +383,11 @@ def fabricar(args: argparse.Namespace) -> dict:
 		if solo is not None and man_prev is not None and man_prev.exists():
 			ya = extras.ya_hechos(json.loads(man_prev.read_text(encoding="utf-8")))
 			## Piezas que se piden de nuevo aunque ya esten (ORQ_REDIBUJAR="roca,arbusto": salieron mal).
-			ya -= {f"{g}/{k.strip()}" for k in os.environ.get("ORQ_REDIBUJAR", "").split(",") if k.strip() for g in ("efectos", "iconos", "eventos")}
+			ya -= {f"{g}/{k.strip()}" for k in os.environ.get("ORQ_REDIBUJAR", "").split(",") if k.strip() for g in ("efectos", "iconos", "eventos", "casa")}
 		ext, inf_x = extras.generar(biblia, salida / "interfaz", cliente, wf_crear, prompts.semilla(biblia["juego"]["titulo"], "extras"),
 			ilustrar=(ilustrar, wf_ilustrar),
-			arena=biblia["juego"].get("genero") == "arena", ya=ya, superv=biblia["juego"].get("genero") == "supervivencia")
+			arena=biblia["juego"].get("genero") == "arena", ya=ya, superv=biblia["juego"].get("genero") == "supervivencia",
+			casa=biblia.get("casa"))
 		informe["extras"] = inf_x
 		informe["generaciones"] += int(inf_x.get("generaciones", 0))
 		fondos["extras"] = ext

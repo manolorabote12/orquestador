@@ -31,7 +31,7 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 		for clave in ("sprites", "tiles", "sfx", "musica", "voces"):
 			if clave in previo:
 				manifest[clave] = previo[clave]
-		for k in ("fondo", "fondo_nivel", "skin", "iconos", "efectos", "eventos"):
+		for k in ("fondo", "fondo_nivel", "skin", "iconos", "efectos", "eventos", "casa"):
 			if previo.get("ui", {}).get(k):
 				manifest["ui"][k] = previo["ui"][k]
 	for sid in quitar or []:
@@ -123,6 +123,19 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 		(base / "ui" / "iconos").mkdir(parents=True, exist_ok=True)
 		shutil.copyfile(ruta, base / "ui" / "iconos" / f"{k}.png")
 		manifest["ui"].setdefault("iconos", {})[k] = f"res://assets/ui/iconos/{k}.png"
+	## Casa propia (director/casa.py): fondo de la campana en jpg y el resto (botin, iconos de navegacion,
+	## marcadores de etapa y jefe) en png recortado.
+	if ext.get("casa"):
+		(base / "ui" / "casa").mkdir(parents=True, exist_ok=True)
+		manifest["ui"].setdefault("casa", {})
+		for k, ruta in sorted(ext["casa"].items()):
+			dest = base / "ui" / "casa" / (k + Path(ruta).suffix)
+			if k.startswith("nav_") or k == "botin":
+				dest = dest.with_suffix(".png")
+				_sello(Path(ruta), dest)
+			else:
+				shutil.copyfile(ruta, dest)
+			manifest["ui"]["casa"][k] = f"res://assets/ui/casa/{dest.name}"
 	for grupo, ext_f in (("efectos", "png"), ("eventos", "jpg")):
 		if ext.get(grupo):
 			(base / "ui" / grupo).mkdir(parents=True, exist_ok=True)
@@ -160,3 +173,20 @@ def _voz_ogg(origen: Path, carpeta: Path, evento: str) -> Path:
 			viejo.unlink()
 			Path(str(viejo) + ".import").unlink(missing_ok=True)
 	return destino
+
+
+def _sello(src: Path, dest: Path, lado: int = 256) -> None:
+	"""Cara redonda de un sello de la casa (iconos de navegacion y botin): recorte cuadrado del centro con
+	mascara circular suave. Si el modelo pinto el objeto con paisaje detras (pasa con Qwen), queda como un
+	medallon pintado; si salio suelto, como el objeto sobre su disco."""
+	import numpy as np
+	from PIL import ImageDraw
+	im = Image.open(src).convert("RGBA")
+	w, h = im.size
+	s = int(min(w, h) * 0.94)
+	im = im.crop(((w - s) // 2, (h - s) // 2, (w + s) // 2, (h + s) // 2)).resize((lado, lado), Image.LANCZOS)
+	m = Image.new("L", (lado * 4, lado * 4), 0)
+	ImageDraw.Draw(m).ellipse((4, 4, lado * 4 - 4, lado * 4 - 4), fill=255)
+	m = m.resize((lado, lado), Image.LANCZOS)
+	im.putalpha(Image.fromarray(np.minimum(np.asarray(im.getchannel("A")), np.asarray(m))))
+	im.save(dest)

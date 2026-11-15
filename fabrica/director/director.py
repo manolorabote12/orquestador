@@ -697,6 +697,8 @@ def a_biblia(d: dict) -> dict:
 		## Frases de la historia con voz (heroe, rival y jefe; el narrador se lee).
 		"dialogos": voces_historia(d),
 		"interfaz": {"colores": {"fondo": d["estilo"]["paleta"][0].upper()}},
+		## Casa propia (director/casa.py): lo que dibuja la GPU para su navegacion y su campana.
+		**({"casa": d["casa"]} if d.get("casa") else {}),
 	}
 
 
@@ -796,7 +798,14 @@ def a_game(d: dict, niveles: list[list[str]]) -> dict:
 		"biome": bioma(d),
 		## Experimentos: el kit acerca la camara o agranda los personajes segun la variante elegida.
 		**({"tune": {k: v for k, v in d["ajustes"].items() if k in ("zoom", "sprite")}} if d.get("ajustes") else {}),
+		## Casa propia del juego (kit/ui/screens/game_hub.gd) en vez de la portada comun.
+		**({"hub": _hub(d["casa"])} if d.get("casa") else {}),
 	}
+
+
+def _hub(c: dict) -> dict:
+	from director import casa
+	return casa.a_hub(c)
 
 
 BIOMAS = {"desierto": ["desierto", "duna", "oasis", "faraon", "faraón", "egipt", "sahara", "nómada", "nomada", "desert", "dune", "pharaoh"],

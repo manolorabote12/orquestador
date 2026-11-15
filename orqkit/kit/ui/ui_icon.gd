@@ -126,6 +126,38 @@ func _draw() -> void:
 			_poly(top, color.lightened(0.35))
 			_poly(PackedVector2Array([c + Vector2(-s * 0.36, -s * 0.2), c, c + Vector2(0, s * 0.42), c + Vector2(-s * 0.36, s * 0.2)]), color)
 			_poly(PackedVector2Array([c, c + Vector2(s * 0.36, -s * 0.2), c + Vector2(s * 0.36, s * 0.2), c + Vector2(0, s * 0.42)]), color.darkened(0.3))
+		"book":
+			## Libro abierto (coleccion de heroes, contratos, bestiario).
+			_poly(PackedVector2Array([c + Vector2(0, -s * 0.22), c + Vector2(-s * 0.42, -s * 0.32), c + Vector2(-s * 0.42, s * 0.28), c + Vector2(0, s * 0.36)]), color)
+			_poly(PackedVector2Array([c + Vector2(0, -s * 0.22), c + Vector2(s * 0.42, -s * 0.32), c + Vector2(s * 0.42, s * 0.28), c + Vector2(0, s * 0.36)]), color.darkened(0.18))
+			for k: int in 3:
+				var y: float = -s * 0.12 + s * 0.13 * float(k)
+				draw_line(c + Vector2(-s * 0.32, y), c + Vector2(-s * 0.08, y + s * 0.04), color.darkened(0.45), maxf(1.5, s * 0.03))
+				draw_line(c + Vector2(s * 0.08, y + s * 0.04), c + Vector2(s * 0.32, y), color.darkened(0.55), maxf(1.5, s * 0.03))
+		"chain":
+			## Dos eslabones cruzados.
+			draw_arc(c + Vector2(-s * 0.13, -s * 0.13), s * 0.2, 0.0, TAU, 20, color, s * 0.09)
+			draw_arc(c + Vector2(s * 0.13, s * 0.13), s * 0.2, 0.0, TAU, 20, color.lightened(0.25), s * 0.09)
+		"flask":
+			## Matraz o pozo de invocar.
+			_poly(PackedVector2Array([c + Vector2(-s * 0.08, -s * 0.4), c + Vector2(s * 0.08, -s * 0.4), c + Vector2(s * 0.08, -s * 0.12),
+				c + Vector2(s * 0.36, s * 0.34), c + Vector2(-s * 0.36, s * 0.34), c + Vector2(-s * 0.08, -s * 0.12)]), color)
+			_poly(PackedVector2Array([c + Vector2(-s * 0.24, s * 0.14), c + Vector2(s * 0.24, s * 0.14), c + Vector2(s * 0.36, s * 0.34), c + Vector2(-s * 0.36, s * 0.34)]), color.lightened(0.45))
+		"mug":
+			## Jarra (taberna: encargos, cartas y diario).
+			_poly(_rect(o + Vector2(s * 0.22, s * 0.28), Vector2(s * 0.42, s * 0.5)), color)
+			draw_arc(o + Vector2(s * 0.66, s * 0.5), s * 0.13, -PI * 0.5, PI * 0.5, 12, color, s * 0.07)
+			draw_circle(o + Vector2(s * 0.32, s * 0.27), s * 0.1, Color(1, 1, 1, 0.9))
+			draw_circle(o + Vector2(s * 0.48, s * 0.25), s * 0.11, Color(1, 1, 1, 0.9))
+		"map":
+			_poly(PackedVector2Array([o + Vector2(s * 0.12, s * 0.24), o + Vector2(s * 0.38, s * 0.16), o + Vector2(s * 0.62, s * 0.26),
+				o + Vector2(s * 0.88, s * 0.18), o + Vector2(s * 0.88, s * 0.76), o + Vector2(s * 0.62, s * 0.84), o + Vector2(s * 0.38, s * 0.74), o + Vector2(s * 0.12, s * 0.82)]), color)
+			draw_line(o + Vector2(s * 0.38, s * 0.16), o + Vector2(s * 0.38, s * 0.74), color.darkened(0.3), s * 0.04)
+			draw_line(o + Vector2(s * 0.62, s * 0.26), o + Vector2(s * 0.62, s * 0.84), color.darkened(0.3), s * 0.04)
+		"shield":
+			_poly(PackedVector2Array([c + Vector2(0, -s * 0.4), c + Vector2(s * 0.34, -s * 0.26), c + Vector2(s * 0.3, s * 0.12), c + Vector2(0, s * 0.42),
+				c + Vector2(-s * 0.3, s * 0.12), c + Vector2(-s * 0.34, -s * 0.26)]), color)
+			_poly(PackedVector2Array([c + Vector2(0, -s * 0.4), c + Vector2(s * 0.34, -s * 0.26), c + Vector2(s * 0.3, s * 0.12), c + Vector2(0, s * 0.42)]), color.darkened(0.2))
 		"vibrate":
 			_poly(_rect(o + Vector2(s * 0.34, s * 0.18), Vector2(s * 0.32, s * 0.64)), color)
 			draw_line(o + Vector2(s * 0.2, s * 0.35), o + Vector2(s * 0.2, s * 0.65), color, s * 0.06)

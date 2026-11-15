@@ -46,6 +46,16 @@ func _ready() -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
+	## Casa propia del juego (game.json "hub", disenada por la fabrica para ESTE juego): sustituye a
+	## esta portada comun. Premio diario y buzon, igual que aqui.
+	if GameHub.enabled() and not Kit.config.has("muestra"):
+		GameHub.open_in(self)
+		Audio.play_track("menu")
+		if not UI.test_mode and Save.daily_pending(Save.today()) > 0:
+			_open_daily.call_deferred()
+		elif not UI.test_mode:
+			open_inbox.call_deferred()
+		return
 	_build_backdrop()
 	## 1 - Rayos de luz que giran despacio detras del heroe.
 	_rays = Control.new()
@@ -618,6 +628,11 @@ func _open_shop() -> void:
 
 
 func _refresh_meta() -> void:
+	if _wallet == null:
+		var hub: GameHub = get_node_or_null("GameHub") as GameHub
+		if hub != null:
+			hub.refresh()
+		return
 	var before: int = int(_wallet.text) if _wallet.text.is_valid_int() else 0
 	var now: int = Save.wallet()
 	if now > before and not UI.test_mode:

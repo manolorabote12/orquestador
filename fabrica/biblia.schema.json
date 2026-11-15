@@ -382,6 +382,10 @@
 					}
 				}
 			}
+		},
+		"casa": {
+			"type": "object",
+			"description": "Casa propia del juego (director/casa.py): metafora, navegacion, secciones y lo que dibuja la GPU."
 		}
 	},
 	"$defs": {

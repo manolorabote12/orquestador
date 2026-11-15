@@ -1,0 +1,86 @@
+{
+ "estilo": "Lively watercolor fantasy illustration for a mobile game, thick dark ink outlines, soft paper texture, glowing magic sparkles, emerald forests, warm stone, violet magic rift glow, rich saturated colors, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "caldero",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5200,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "a single big round black iron cauldron bubbling with glowing violet magical essence, golden sparkles rising, tiny flames under it"
+  },
+  {
+   "id": "nav_heroes",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5201,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "a single open old leather ledger book with parchment pages and a red wax seal"
+  },
+  {
+   "id": "nav_summon",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5202,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "a single small round stone well glowing with swirling violet runes and sparkles rising from it"
+  },
+  {
+   "id": "nav_campaign",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5203,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "two big interlocked dark iron chain links cracked open with violet magic light bursting from the crack"
+  },
+  {
+   "id": "nav_modes",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5204,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "two crossed steel swords over a small round wooden shield with golden trim"
+  },
+  {
+   "id": "nav_tavern",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5205,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "a single foamy wooden tavern mug with iron bands"
+  },
+  {
+   "id": "etapa",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5206,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "a single round bronze medallion with an iron ring on top, engraved rim, plain smooth polished empty bronze center"
+  },
+  {
+   "id": "jefe",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 5207,
+   "recorte": true,
+   "estilo": "Hand painted watercolor mobile game icon, thick dark ink outline, soft paper texture, rich saturated colors, a single object only, no scenery, no landscape, no trees, no background elements",
+   "prompt": "a single round dark iron medallion with a menacing violet one-eyed ink demon face in the center and small horns of broken crystal on the rim"
+  }
+ ]
+}
