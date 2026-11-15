@@ -1,0 +1,92 @@
+name: "Estudio libre"
+# Agente Estudio (fabrica/libre/agente.py): crea un juego entero desde una idea, con libertad total, y lo
+# prueba solo (compilar, recorrer pantallas, mono, su bot). El proyecto, las fotos, el informe y el diario
+# van a la rama «libre» (<nombre>/). Las huellas de los juegos anteriores (libre/huellas.json) se le pasan
+# para que no repita.
+
+on:
+  workflow_dispatch:
+    inputs:
+      idea:
+        description: "Idea del juego (como la escribiria el usuario)"
+        required: true
+      titulo:
+        description: "Titulo"
+        required: true
+      nombre:
+        description: "Carpeta (minusculas, sin espacios)"
+        required: true
+      tope:
+        description: "Tope de gasto en dolares (IA + imagenes)"
+        required: false
+        default: "6"
+
+jobs:
+  estudio:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            fabrica
+            orqkit
+            nube
+      - name: Godot y herramientas
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq xvfb libgl1 libxi6 libxrandr2 libxcursor1 libxinerama1 > /dev/null
+          wget -q https://github.com/godotengine/godot/releases/download/4.6.3-stable/Godot_v4.6.3-stable_linux.x86_64.zip -O /tmp/g.zip
+          unzip -q /tmp/g.zip -d /tmp/g && sudo mv /tmp/g/Godot_v4.6.3-stable_linux.x86_64 /usr/local/bin/godot && sudo chmod +x /usr/local/bin/godot
+          pip install -q pillow numpy
+          sudo useradd --system --create-home --home-dir /home/orqsb --shell /usr/sbin/nologin orqsb
+      - name: Huellas de los juegos anteriores
+        run: |
+          git fetch -q origin libre 2>/dev/null && git show origin/libre:huellas.json > /tmp/huellas.json 2>/dev/null || echo "[]" > /tmp/huellas.json
+          cat /tmp/huellas.json | head -c 600
+      - name: Crear el juego
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+          IDEA: ${{ inputs.idea }}
+          TITULO: ${{ inputs.titulo }}
+          NOMBRE: ${{ inputs.nombre }}
+          TOPE: ${{ inputs.tope }}
+        run: |
+          ep=$(python3 nube/animaciones.py endpoint)
+          mkdir -p salida/$NOMBRE
+          set -o pipefail
+          cd fabrica
+          sudo -E env PATH="$PATH" ORQ_COMFY="runpod://$ep" ORQ_SANDBOX=orqsb GODOT=/usr/local/bin/godot \
+            python3 -m libre.agente "$IDEA" /tmp/juego --titulo "$TITULO" --tope "$TOPE" --huellas /tmp/huellas.json \
+            --salida ../salida/$NOMBRE 2>&1 | tee ../salida/$NOMBRE/log.txt || true
+      - name: Guardar en la rama libre
+        if: always()
+        env:
+          NOMBRE: ${{ inputs.nombre }}
+        run: |
+          sudo chown -R "$(id -u):$(id -g)" /tmp/juego salida 2>/dev/null || true
+          mkdir -p rama && cd rama
+          git init -q -b libre
+          git fetch -q "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" libre 2>/dev/null && git checkout -q FETCH_HEAD -- . 2>/dev/null || true
+          rm -rf "$NOMBRE" && mkdir -p "$NOMBRE"
+          cp -r ../salida/$NOMBRE/. "$NOMBRE/" 2>/dev/null || true
+          [ -d /tmp/juego/build/libre_fotos ] && cp -r /tmp/juego/build/libre_fotos "$NOMBRE/fotos" || true
+          [ -d /tmp/juego ] && (cd /tmp/juego && zip -qr "$OLDPWD/$NOMBRE/proyecto.zip" . -x ".godot/*" "build/*" "*.import") || true
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          n = os.environ["NOMBRE"]
+          inf = Path(n) / "informe.json"
+          h = json.loads(Path("huellas.json").read_text()) if Path("huellas.json").exists() else []
+          if inf.exists():
+              d = json.loads(inf.read_text())
+              if d.get("ok") and d.get("huella"):
+                  h = [x for x in h if x.get("juego") != n] + [{"juego": n, "titulo": d.get("titulo"), **d["huella"]}]
+          Path("huellas.json").write_text(json.dumps(h, indent=1, ensure_ascii=False))
+          PY
+          git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "Estudio libre: $NOMBRE" || true
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" libre
+          [ -f "$NOMBRE/informe.json" ] && echo "::notice::$(head -c 900 $NOMBRE/informe.json | tr '\n' ' ')"

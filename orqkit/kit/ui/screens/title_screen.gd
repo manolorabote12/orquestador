@@ -46,6 +46,10 @@ func _ready() -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
+	## Juego de creacion libre (fabrica/libre): todo lo suyo vive en res://libre y empieza en su main.
+	if Kit.config.has("libre") and ResourceLoader.exists("res://libre/main.tscn"):
+		(func() -> void: get_tree().change_scene_to_file("res://libre/main.tscn")).call_deferred()
+		return
 	## Casa propia del juego (game.json "hub", disenada por la fabrica para ESTE juego): sustituye a
 	## esta portada comun. Premio diario y buzon, igual que aqui.
 	if GameHub.enabled() and not Kit.config.has("muestra"):
