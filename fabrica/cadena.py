@@ -151,6 +151,21 @@ def importar(proyecto: Path, timeout: int = 600) -> None:
 		godot(proyecto, "--import", timeout=timeout)
 
 
+## Modo experto (experto.py): usuario sin privilegios con el que se JUEGA un proyecto que trae codigo del
+## autor (bots, capturas). Importar y exportar siguen igual: el codigo de editor se rechaza al subirlo.
+SANDBOX: str = ""
+NO_EJECUTA = ("--import", "--export-release", "--export-debug", "--export-pack")
+
+
+def _encerrar(cmd: list[str], args: tuple) -> list[str]:
+	"""Con SANDBOX: el proceso cambia de usuario y arranca sin el entorno del trabajador (claves)."""
+	if not SANDBOX or any(a in NO_EJECUTA for a in args):
+		return cmd
+	return ["setpriv", f"--reuid={SANDBOX}", f"--regid={SANDBOX}", "--clear-groups", "--", "env", "-i",
+		f"PATH={os.environ.get('PATH', '/usr/local/bin:/usr/bin:/bin')}", f"HOME=/home/{SANDBOX}", "LANG=C.UTF-8",
+		"DISPLAY=" + os.environ.get("DISPLAY", "")] + cmd
+
+
 def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False, xvfb: bool = False) -> subprocess.CompletedProcess:
 	cmd = [godot_bin(), "--path", str(proyecto)]
 	if not display:
@@ -160,6 +175,7 @@ def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False
 		## (xvfb, sin Wayland), fallaba al instante: juegos sin capturas, sin ficha y sin clip.
 		cmd += ["--display-driver", "x11"]
 	cmd += list(args)
+	cmd = _encerrar(cmd, args)
 	## xvfb=True: pantalla virtual propia aunque haya DISPLAY (en el servidor puede apuntar a una que no existe).
 	if display and (xvfb or not os.environ.get("DISPLAY")):
 		return _con_pantalla_virtual(cmd, timeout)
@@ -203,6 +219,8 @@ def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProces
 				continue
 			env = dict(os.environ, DISPLAY=f":{num}", **entorno_x)
 			env.pop("WAYLAND_DISPLAY", None)
+			## Encerrado (modo experto): la pantalla va dentro del env -i.
+			orden = [f"DISPLAY=:{num}" if x.startswith("DISPLAY=") else x for x in orden]
 			return subprocess.run(orden, capture_output=True, text=True, timeout=timeout, env=env)
 		finally:
 			if srv.poll() is None:
@@ -413,8 +431,47 @@ def escribir_game(proyecto: Path, diseno: dict, mapas: list) -> dict:
 		game["mods"] = mods
 	if reglas:
 		game["rules"] = reglas
+	## Modo experto: lo que el autor cambio a mano en game.json (fabrica/game_experto.json) va encima de
+	## lo generado, y asi sobrevive a los cambios del taller. Los niveles no: esos vienen de mapas.
+	experto = proyecto / "fabrica" / "game_experto.json"
+	if experto.exists():
+		try:
+			mezclar(game, json.loads(experto.read_text(encoding="utf-8")))
+		except ValueError:
+			pass
 	(proyecto / "game.json").write_text(json.dumps(game, indent=1, ensure_ascii=False), encoding="utf-8")
 	return game
+
+
+SIN_MEZCLAR = ("levels", "i18n", "telemetry", "daily_levels", "mods", "rules", "cross", "share_url")
+
+
+def mezclar(base: dict, encima: dict, raiz: bool = True) -> dict:
+	"""encima sobre base, por claves (los diccionarios se mezclan; lo demas se sustituye)."""
+	for k, v in encima.items():
+		if raiz and k in SIN_MEZCLAR:
+			continue
+		if isinstance(v, dict) and isinstance(base.get(k), dict):
+			mezclar(base[k], v, False)
+		else:
+			base[k] = v
+	return base
+
+
+def diferencia(generado: dict, autor: dict, raiz: bool = True) -> dict:
+	"""Lo que el autor cambio respecto a lo generado (para guardar solo eso en game_experto.json)."""
+	out: dict = {}
+	for k, v in autor.items():
+		if raiz and k in SIN_MEZCLAR:
+			continue
+		g = generado.get(k)
+		if isinstance(v, dict) and isinstance(g, dict):
+			d = diferencia(g, v, False)
+			if d:
+				out[k] = d
+		elif v != g:
+			out[k] = v
+	return out
 
 
 def fijar_enlace(proyecto: Path, url: str) -> None:
@@ -1124,6 +1181,19 @@ def _fabricar(args: argparse.Namespace) -> dict:
 			"niveles": [n for n in val.get("niveles", []) if not nivel_ok(n, True)]}, ensure_ascii=False)[:1500])
 	evento("validacion", "ok", "Los bots han superado todos los niveles",
 		niveles=[{k: n.get(k) for k in ("nivel", "bot_muertes", "bot_monedas", "bot_pisotones", "bot_segundos")} for n in val["niveles"]])
+
+	## 6a - Juego en directo: el boceto se rehace con el arte de verdad (se juega ya, antes del APK).
+	if getattr(args, "web", False) and callable(subir_boceto) and ruta_boceto:
+		t = time.time()
+		try:
+			pck = proyecto / "build" / "boceto" / "index.pck"
+			godot(proyecto, "--export-pack", "Web", str(pck), timeout=300)
+			if pck.exists():
+				ruta_boceto = subir_boceto(pck)
+				evento("boceto", "ok", "¡Ya tiene su arte de verdad! Vuelve a abrirlo y juega mientras lo empaqueto", boceto=ruta_boceto, arte=True)
+		except Exception as e:  # noqa: BLE001 - extra: si falla, se sigue con el boceto de antes
+			evento("boceto", "aviso", f"El boceto sigue con los dibujos provisionales ({str(e)[:80]})")
+		cronometro("boceto_arte", t)
 
 	## 6b - Reto del dia: niveles nuevos para cuando se acaba la campana (un extra: si falla, se sigue).
 	if not getattr(args, "muestra", None):

@@ -659,6 +659,65 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       h("p", { class: "muted small" }, "No vale con fotos de personas ni con personajes de marcas o series: la imagen se revisa antes de usarla."));
   }
 
+  // ------------------------------------------------------------------ modo experto (Godot)
+
+  // Para quien sabe Godot: baja el proyecto, lo cambia a mano con Chispa dentro del editor y lo sube.
+  // La fábrica lo revisa, lo prueba con bots y saca el APK y una versión nueva (se puede volver atrás).
+  function seccionExperto(p: Proyecto, alEncargo: (jobId: string) => void): HTMLElement {
+    const estado = h("p", { class: "status", role: "status" });
+    const codigo = h("code", { class: "codigo-enlace", hidden: true });
+    const copiar = h("button", { class: "btn btn-line btn-small", type: "button", hidden: true }, "Copiar") as HTMLButtonElement;
+    const crear = h("button", { class: "btn btn-line btn-small", type: "button" }, "Crear código de enlace") as HTMLButtonElement;
+    crear.addEventListener("click", async () => {
+      crear.disabled = true;
+      try {
+        codigo.textContent = await app.api.expertoEnlace(p.id);
+        codigo.hidden = false;
+        copiar.hidden = false;
+        crear.textContent = "Crear otro (el anterior deja de valer)";
+      } catch (e) {
+        aviso(mensajeError(e, "No se pudo crear el código."));
+      }
+      crear.disabled = false;
+    });
+    copiar.addEventListener("click", () => {
+      void navigator.clipboard?.writeText(codigo.textContent ?? "").then(() => { copiar.textContent = "Copiado"; });
+    });
+    const input = h("input", { type: "file", accept: ".zip,application/zip", "aria-label": "Elegir el proyecto (.zip)" }) as HTMLInputElement;
+    const subir = h("button", { class: "btn btn-brass", type: "button", disabled: true }, "Subir y fabricar la versión") as HTMLButtonElement;
+    input.addEventListener("change", () => { subir.disabled = !input.files?.[0]; estado.textContent = ""; });
+    subir.addEventListener("click", async () => {
+      const f = input.files?.[0];
+      if (!f) return;
+      if (f.size > 150 * 1024 * 1024) { estado.className = "status err"; estado.textContent = "El zip pesa más de 150 MB."; return; }
+      subir.disabled = true;
+      estado.className = "status";
+      estado.textContent = "Subiendo tu proyecto...";
+      try {
+        const r = await app.api.expertoSubir(p.id, f);
+        app.tuercas = r.credits;
+        estado.textContent = `Subido (${r.cost} tuercas). La fábrica lo está probando con bots.`;
+        alEncargo(r.job_id);
+      } catch (e) {
+        estado.className = "status err";
+        estado.textContent = mensajeError(e, "No se pudo subir el proyecto.");
+        subir.disabled = false;
+      }
+    });
+    const paso = (n: string, titulo: string, ...cosas: (Node | string)[]) =>
+      h("div", { class: "experto-paso" }, h("strong", {}, `${n}. ${titulo}`), ...cosas);
+    return h("section", { class: "sheet", "data-seccion": "experto" },
+      h("div", { class: "sheet-head" }, h("h2", {}, "Modo experto: cámbialo en Godot"), h("span", { class: "tag" }, "Godot 4.6")),
+      h("p", { class: "muted small" }, "Si sabes Godot, cambia lo que quieras a mano. Chispa te ayuda dentro del editor y la fábrica prueba tu versión con bots antes de darte el APK."),
+      paso("1", "Baja el proyecto", h("p", { class: "muted small" }, "Botón «Godot» de arriba. Ábrelo con Godot 4.6.")),
+      paso("2", "Activa a Chispa", h("p", { class: "muted small" }, "En Godot: Proyecto > Configuración del proyecto > Plugins > Chispa > Activar. Sale un panel a la derecha.")),
+      paso("3", "Enlázalo", h("p", { class: "muted small" }, "Pega este código en el panel de Chispa. Con él puede contestarte y subir tu juego (cada subida cuesta tuercas)."),
+        h("div", { class: "btn-row" }, crear, copiar), codigo),
+      paso("4", "Súbelo", h("p", { class: "muted small" }, "Desde el panel de Chispa en Godot, o aquí con el .zip del proyecto. Se usan scenes, mods, assets, kit y game.json; addons y qa son de la fábrica."),
+        h("label", { class: "btn btn-line btn-small subir-dibujo" }, "Elegir .zip", input), subir, estado),
+      h("p", { class: "muted small" }, "No se admiten scripts de editor (@tool). Si un bot no puede con un nivel, la versión no se crea y te dice cuál; se devuelven las tuercas."));
+  }
+
   // ------------------------------------------------------------------ prueba A/B de un nivel
 
   const HACIA_AB: [string, string][] = [["mas_facil", "Más fácil"], ["mas_dificil", "Más difícil"], ["distinto", "Distinto"]];
@@ -1869,7 +1928,8 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       taller: h("div", { class: "panel-juego", role: "tabpanel" }, taller,
         plegable(seccionGiros(p, alPlan), (p.giros?.length ? p.giros.map((g) => GIROS.find((x) => x.id === g)?.nombre ?? g).join(" + ") : "hazlo único")
           + (typeof p.originalidad === "number" ? `, originalidad ${p.originalidad}%` : "")),
-        plegable(seccionDibujo(p, alPlan), ""), plegable(funciones, ""), denuncia),
+        plegable(seccionDibujo(p, alPlan), ""), plegable(funciones, ""),
+        plegable(seccionExperto(p, (id) => { mostrar("taller"); seguir(id); }), "Godot"), denuncia),
       publicar: h("div", { class: "panel-juego", role: "tabpanel" }, publicacion, apple, anuncios, seccionCompras(p), seccionGanancias(p, app.api.ingresos(p.id))),
       compartir: h("div", { class: "panel-juego", role: "tabpanel" }, compartirSec, seccionRegalo(p), seccionItch(p), videos, seccionPlanRedes(p)),
       jugadores: h("div", { class: "panel-juego", role: "tabpanel" }, jugadores, seccionAb(p, alPlan), seccionClasificacion(p), ...(p.genero === "aldea" ? [seccionLiga(p)] : []), seccionIngresos(p), seccionOpiniones(p, (instruccion) => { entrada.value = instruccion; void pedir(); mostrar("taller"); }), seccionResenas(p), seccionEventos(p), seccionPremio(p), seccionClase(p), seccionCharla(p)),

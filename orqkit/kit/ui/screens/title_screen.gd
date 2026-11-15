@@ -30,6 +30,7 @@ static var _sample_started: bool = false
 func _ready() -> void:
 	Versus.stop()
 	RpgModes.stop()
+	SurvivalDungeon.stop()
 	Marathon.stop()
 	TimeAttack.stop()
 	Expert.stop()

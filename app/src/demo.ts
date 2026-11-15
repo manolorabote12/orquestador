@@ -140,6 +140,15 @@ const GUION_PROGRAMA: [number, Evento][] = [
   [0.6, { paso: "subida", estado: "ok", mensaje: "Juego guardado" }],
 ];
 
+const GUION_EXPERTO: [number, Evento][] = [
+  [0.5, { paso: "preparar", estado: "inicio", mensaje: "Abriendo tu juego..." }],
+  [0.8, { paso: "experto", estado: "inicio", mensaje: "Revisando lo que has cambiado en Godot..." }],
+  [1.4, { paso: "experto", estado: "ok", mensaje: "Cambios hechos a mano en Godot: 3 cambiados, 1 nuevos (archivos)" }],
+  [0.4, { paso: "validacion", estado: "inicio", mensaje: "Probando la nueva versión con bots..." }],
+  [2.4, { paso: "validacion", estado: "ok", mensaje: "Los bots han superado todos los niveles" }],
+  [0.6, { paso: "subida", estado: "ok", mensaje: "Juego guardado" }],
+];
+
 // Mismos precios que fabrica/director/precios_cambios.json (el servidor real los calcula él).
 const PRECIOS: Record<string, number> = { base: 3, textos: 1, ajustes: 3, redibujar: 12, paleta: 40, estilo: 45,
   anadir_enemigo: 15, quitar_enemigo: 3, anadir_nivel: 6, quitar_nivel: 1, rehacer_nivel: 5,
@@ -670,6 +679,25 @@ export class Demo implements Backend {
 
   async precioPrograma() {
     return 30;
+  }
+
+  async expertoEnlace(proyectoId: string) {
+    if (!this.s.proyectos.some((x) => x.id === proyectoId)) throw new ErrorApp("Ese juego no existe.");
+    return "DEMO7K2Q9XWT";
+  }
+
+  async expertoSubir(proyectoId: string, zip: Blob) {
+    if (!this.s.proyectos.some((x) => x.id === proyectoId)) throw new ErrorApp("Ese juego no existe.");
+    if (zip.size < 22) throw new ErrorApp("Ese archivo no es un proyecto de Godot (.zip).");
+    if (this.s.tuercas < 25) throw new ErrorApp("No tienes tuercas suficientes.");
+    if (this.s.trabajos.some((t) => t.project_id === proyectoId && (t.status === "queued" || t.status === "running"))) {
+      throw new ErrorApp("Ese juego ya se está fabricando. Espera a que termine.");
+    }
+    this.s.tuercas -= 25;
+    this.mov(-25, "game_expert");
+    const t = this.nuevoCambio("game_change", proyectoId, "Cambios hechos a mano en Godot");
+    void this.cambiar(t.id, "Cambios hechos a mano en Godot", undefined, GUION_EXPERTO);
+    return { job_id: t.id, credits: this.s.tuercas, cost: 25 };
   }
 
   async programar(proyectoId: string, instruccion: string) {

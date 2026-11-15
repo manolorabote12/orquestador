@@ -13,6 +13,7 @@ import argparse
 import json
 import os
 import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -97,8 +98,13 @@ def _cerrar_version(args: argparse.Namespace, proyecto: Path, slug: str, diseno:
 	capturas: list[str] = []
 	if args.capturas:
 		out = proyecto / "fabrica" / "capturas"
-		cadena.godot(proyecto, "--resolution", "720x1280", "--rendering-driver", "opengl3", "--fixed-fps", "60",
-			"res://qa/capturas.tscn", "--", f"--out={out}", timeout=300, display=True)
+		## 15 nov: en 3D sin tarjeta grafica las capturas pasaban de 300 s y el cambio entero fallaba
+		## (con el APK ya hecho). Ahora se espera mas y, si aun asi no acaban, valen las que hayan salido.
+		try:
+			cadena.godot(proyecto, "--resolution", "720x1280", "--rendering-driver", "opengl3", "--fixed-fps", "60",
+				"res://qa/capturas.tscn", "--", f"--out={out}", timeout=540, display=True)
+		except subprocess.TimeoutExpired:
+			evento("capturas", "aviso", "Las capturas tardan demasiado: me quedo con las que han salido")
 		capturas = sorted(str(p) for p in out.glob("*.png"))
 	return val, mapas, apk, capturas, web
 
@@ -228,10 +234,73 @@ def programar(args: argparse.Namespace) -> dict:
 		"coste_usd": {"total": usd}, "total_s": round(time.time() - t0, 1)}
 
 
+def _sandbox_listo(proyecto: Path) -> str:
+	"""Usuario sin privilegios para jugar codigo del autor (ORQ_SANDBOX, «orqsb» en la imagen). Le da la
+	carpeta del proyecto. Sin ese usuario (en un PC) se juega como siempre."""
+	import pwd
+	nombre = os.environ.get("ORQ_SANDBOX", "orqsb")
+	try:
+		u = pwd.getpwnam(nombre)
+	except KeyError:
+		return ""
+	os.chmod(proyecto.parent, 0o755)
+	for raiz, dirs, archivos in os.walk(proyecto):
+		for n in dirs + archivos:
+			try:
+				os.chown(os.path.join(raiz, n), u.pw_uid, u.pw_gid, follow_symlinks=False)
+			except OSError:
+				pass
+	os.chown(proyecto, u.pw_uid, u.pw_gid)
+	return nombre
+
+
+def importar_experto(args: argparse.Namespace) -> dict:
+	"""Modo experto: el proyecto cambiado a mano en Godot (args.zip) se pone encima de la version guardada
+	(experto.py lo revisa) y pasa los bots, el APK y la version como cualquier cambio. Los niveles son
+	los del autor: si un bot no puede con uno, no se rehace; el cambio falla y dice cual."""
+	import experto
+
+	t0 = time.time()
+	proyecto = Path(args.proyecto).resolve()
+	mem = versiones.memoria(proyecto)
+	slug = args.slug or _slug_actual(proyecto)
+	version_nueva = int(mem["version"]) + 1
+	evento("experto", "inicio", "Revisando lo que has cambiado en Godot...")
+	previo = _leer(proyecto / "game.json")
+	try:
+		r = experto.aplicar(proyecto, Path(args.zip))
+	except experto.ErrorExperto as e:
+		raise ErrorCadena(str(e)) from e
+	txt = experto.resumen(r)
+	evento("experto", "ok", txt)
+	diseno = _leer(proyecto / "fabrica" / "diseno.json")
+	autor = _leer(proyecto / "game.json")
+	mapas = director.mapas_de(autor)
+	## Lo cambiado a mano en game.json se guarda aparte y se pone encima siempre (cadena.escribir_game).
+	if "game.json" in r["cambiados"] + r["nuevos"]:
+		ruta_exp = proyecto / "fabrica" / "game_experto.json"
+		dif = cadena.diferencia(previo, autor)
+		if dif:
+			antes = _leer(ruta_exp) if ruta_exp.exists() else {}
+			_escribir(ruta_exp, cadena.mezclar(antes, dif))
+	cadena.ajustar_proyecto(proyecto, diseno["titulo"], slug, version_nueva)
+	cadena.SANDBOX = _sandbox_listo(proyecto)
+	try:
+		_, _, apk, capturas, web = _cerrar_version(args, proyecto, slug, diseno, mapas, args.semilla + version_nueva * 31, {}, {},
+			set(range(len(mapas))))
+	finally:
+		cadena.SANDBOX = ""
+	version = versiones.anotar(proyecto, "Cambios a mano en Godot", txt, [{"op": "experto", **{k: len(v) for k, v in r.items()}}], 0)
+	evento("fin", "ok", f"Versión {version} lista", version=version)
+	return {"ok": True, "version": version, "titulo": diseno["titulo"], "proyecto": str(proyecto), "apk": apk, "web": web,
+		"capturas": capturas, "experto": r, "ficha": cadena.hacer_ficha(args, proyecto, capturas), "clip": cadena.hacer_clip(args, proyecto),
+		"coste_usd": {"total": 0.0}, "total_s": round(time.time() - t0, 1)}
+
+
 def poner_kit_nuevo(proyecto: Path) -> None:
 	"""El codigo del juego al dia (kit, qa, escenas y autoloads) sin tocar su arte, su game.json, su
 	nombre ni su paquete de Android."""
-	for sub in ("kit", "qa", "scenes"):
+	for sub in ("kit", "qa", "scenes", "addons/chispa"):
 		if (cadena.KIT / sub).exists():
 			shutil.rmtree(proyecto / sub, ignore_errors=True)
 			shutil.copytree(cadena.KIT / sub, proyecto / sub, ignore=shutil.ignore_patterns(".godot"))

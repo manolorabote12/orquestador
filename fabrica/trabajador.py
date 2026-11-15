@@ -108,10 +108,10 @@ class Supabase:
 PESADOS = ("apk", "web", "clip", "ficha", "proyecto")
 
 
-def borrar_seguro(sb: "Supabase", rutas: list[str]) -> None:
+def borrar_seguro(sb: "Supabase", rutas: list[str], bucket: str = "juegos") -> None:
 	"""Limpieza despues de cerrar un trabajo: jamas puede convertir un juego terminado en un fallo."""
 	try:
-		sb.borrar(rutas)
+		sb.borrar(rutas, bucket=bucket)
 	except Exception as e:  # noqa: BLE001
 		print(f"[trabajador] limpieza omitida: {e}", flush=True)
 
@@ -353,6 +353,13 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 				else:
 					os.environ["ORQ_TOPE_GPU_DURO"] = tope_antes
 			usd = float(inf.get("coste_usd", {}).get("total", 0.0))
+		elif detalle.get("experto"):
+			## Modo experto: el proyecto cambiado a mano en Godot (bucket privado «experto»).
+			ruta = str(detalle["experto"])
+			if not ruta.startswith(f"{usuario}/{trabajo['project_id']}/"):
+				raise RuntimeError("El proyecto subido no es de este juego")
+			zip_autor = sb.bajar(ruta, tmp / "experto.zip", bucket="experto")
+			inf = cambio.importar_experto(argparse.Namespace(zip=str(zip_autor), **comunes))
 		elif trabajo["kind"] == "game_mod":
 			inf = cambio.programar(argparse.Namespace(instruccion=detalle.get("instruccion", ""), **comunes))
 			usd = float(inf.get("coste_usd", {}).get("total", 0.0))
@@ -384,6 +391,8 @@ def atender_cambio(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 		shutil.rmtree(tmp, ignore_errors=True)
 		## El adelanto solo vale mientras dura el trabajo (la version buena ya esta en su carpeta).
 		borrar_seguro(sb, [f"{usuario}/{trabajo['project_id']}/adelanto/index.pck"])
+		if detalle.get("experto"):
+			borrar_seguro(sb, [str(detalle["experto"])], bucket="experto")
 
 
 def _bajar_referencia(sb: Supabase, usuario: str, proyecto_id: str, proyecto: Path, tmp: Path) -> None:
@@ -651,7 +660,7 @@ def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
 	t0 = time.time()
 	## Solo lo que Chispa necesita: paso, estado, mensaje y algun numero.
 	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "imagenes", "mb", "total_s", "boceto", "nota",
-		"gpu_s", "arranque_s", "seg_img", "tope"))
+		"gpu_s", "arranque_s", "seg_img", "tope", "arte"))
 
 	cadena.oyentes.append(avisar)
 	tmp = Path(tempfile.mkdtemp(prefix="orq_"))

@@ -126,6 +126,7 @@ func _ready() -> void:
 	await _test_kart()
 	await _test_kart_live()
 	await _test_survival()
+	await _test_world_map()
 	await _test_survival_template()
 	await _test_triple()
 	await _test_screw()
@@ -6664,6 +6665,54 @@ func _test_rpg_modes() -> void:
 	RpgModes.stop()
 	for k: String in ["heroes", "team", "pity", "idle_t", "rpg_modes"]:
 		m.erase(k)
+	Save.add_wallet(w0 - Save.wallet())
+	Kit.config = keep
+	Kit.level_index = 0
+
+
+func _test_world_map() -> void:
+	print("- Supervivencia: mapa del mundo y la Guarida")
+	var keep: Dictionary = Kit.config.duplicate(true)
+	var m: Dictionary = Save.meta()
+	m.erase("sv_dungeon")
+	var w0: int = Save.wallet()
+	var base: Dictionary = {"map": SV_MAP, "goal": "noches", "nights": 1, "day": 60, "night": 30, "wolves": 1, "hunger": 0.5, "thirst": 0.7}
+	Kit.config["genre"] = "survival"
+	Kit.config["levels"] = [base.merged({"name": "Barrio Desierto"}), base.merged({"name": "Gasolinera Rota"}), base.merged({"name": "Bosque de Aullidos"}), base.merged({"name": "Torre de Radio"})]
+	Kit.level_index = 0
+	check("mapa: dibujo de cada zona por su nombre", WorldMap.zone_art("Gasolinera Rota") == "coche" and WorldMap.zone_art("Bosque de Aullidos") == "arbol"
+		and WorldMap.zone_art("Búnker 7") == "guarida" and WorldMap.zone_art("Nada") == "caja")
+	var keep_prog: Dictionary = Save.progress().duplicate(true)
+	Save.data["progress"] = {"unlocked": 2, "stars": {"0": 3}}
+	var ls: Control = (load(UI.SCREEN_LEVELS) as PackedScene).instantiate()
+	add_child(ls)
+	await frames(3)
+	var z2: Button = ls.find_child("Level2", true, false) as Button
+	var z3: Button = ls.find_child("Level3", true, false) as Button
+	check("mapa: zonas en vez de rejilla, con refugio y Guarida", ls.find_child("WorldMap", true, false) != null and ls.find_child("Shelter", true, false) != null
+		and z2 != null and not z2.disabled and z3 != null and z3.disabled)
+	check("mapa: la Guarida cerrada hasta 3 zonas", (ls.find_child("BtnDungeon", true, false) as Button).disabled and not SurvivalDungeon.unlocked())
+	ls.queue_free()
+	Save.data["progress"] = {"unlocked": 4, "stars": {"0": 3, "1": 2, "2": 1}}
+	check("guarida: se abre al despejar 3 zonas", SurvivalDungeon.unlocked() and SurvivalDungeon.floor_n() == 1)
+	var f1: Dictionary = SurvivalDungeon.floor_level(1)
+	var f6: Dictionary = SurvivalDungeon.floor_level(6)
+	check("guarida: cada piso mas oscuro y con mas bestias", int(f6["day"]) < int(f1["day"]) and int(f6["night"]) > int(f1["night"]) and int(f6["wolves"]) > int(f1["wolves"])
+		and SurvivalDungeon.reward(5) > SurvivalDungeon.reward(4) * 3)
+	SurvivalDungeon.active = true
+	Kit.extra_level = f1
+	Kit.extra_index = SurvivalDungeon.INDEX
+	Kit.level_index = Kit.extra_index
+	var w1: int = Save.wallet()
+	check("guarida: piso superado baja de piso y paga", SurvivalDungeon.on_end(true) != "" and SurvivalDungeon.floor_n() == 2 and SurvivalDungeon.best() == 1
+		and Save.wallet() == w1 + SurvivalDungeon.reward(1))
+	check("guarida: perder no baja de piso", SurvivalDungeon.on_end(false) != "" and SurvivalDungeon.floor_n() == 2)
+	Save.submit_stars(str(Kit.level_index), 3)
+	check("guarida: no toca las estrellas del mapa", Save.unlocked_count() == 4)
+	SurvivalDungeon.stop()
+	check("guarida: al salir vuelve el mapa", not Kit.is_extra() and not SurvivalDungeon.active)
+	m.erase("sv_dungeon")
+	Save.data["progress"] = keep_prog
 	Save.add_wallet(w0 - Save.wallet())
 	Kit.config = keep
 	Kit.level_index = 0

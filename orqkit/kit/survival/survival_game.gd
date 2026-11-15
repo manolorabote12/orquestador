@@ -27,6 +27,9 @@ var time_in_level: float = 0.0
 var coins: int = 0
 var coins_total: int = 0
 var fast: bool = false
+## Capturas (qa/capturas.gd): pasos de simulacion por fotograma sin quitar efectos. Sin tarjeta grafica el
+## 3D va a ~5 fps y la foto de noche (casi un minuto de juego) pasaba del tiempo del servidor (15 nov).
+var capture_steps: int = 1
 var auto_retry: bool = false
 var result_panel: ResultPanel
 var par: float = 0.0
@@ -120,7 +123,8 @@ func bot_script() -> String:
 
 ## Fotos de la ficha: una de dia recogiendo y otra de noche junto a la hoguera.
 func capture_delays() -> Vector2:
-	return Vector2(14.0, maxf(8.0, float(st.get("day", 60.0)) - 14.0 + 8.0))
+	var k: float = float(maxi(capture_steps, 1))
+	return Vector2(14.0 / k, maxf(8.0, float(st.get("day", 60.0)) - 14.0 + 8.0) / k)
 
 
 func _reset() -> void:
@@ -736,7 +740,7 @@ func _physics_process(delta: float) -> void:
 		return
 	if fast and auto_retry:
 		_bot = true
-	var steps: int = 4 if fast else 1
+	var steps: int = 4 if fast else maxi(capture_steps, 1)
 	for k: int in steps:
 		if finished or get_tree().paused:
 			break
@@ -1097,7 +1101,12 @@ func _finish() -> void:
 	Audio.play_track("victoria", false)
 	if str(st["goal"]) == "balsa":
 		_big_text(Kit.text("sv_escaped", "\u00a1Escapas de la isla!"), Color("#ffd23f"), 1.2)
-	result_panel = ResultPanel.open(self, {"stars": stars, "coins": coins, "coins_total": coins_total, "score": score, "record": record})
+	var data: Dictionary = {"stars": stars, "coins": coins, "coins_total": coins_total, "score": score, "record": record}
+	## La Guarida (mazmorra de pisos): su progreso, su premio y su texto en el cartel.
+	var note: String = SurvivalDungeon.on_end(true)
+	if note != "":
+		data["note"] = note
+	result_panel = ResultPanel.open(self, data)
 	await Ads.show_interstitial("level_end")
 
 
@@ -1127,7 +1136,8 @@ func _lose() -> void:
 		title = Kit.text("sv_lost_beast", "Te han pillado los {x}").format({"x": item_name(cause)})
 	if title == "":
 		title = Kit.text("survival_lost", "No has sobrevivido")
-	var hint: String = Kit.text("survival_hint", "Bebe y come antes de la noche, enciende la hoguera junto a la charca y qu\u00e9date a su luz: los lobos no se acercan al fuego.")
+	var dn: String = SurvivalDungeon.on_end(false)
+	var hint: String = dn if dn != "" else Kit.text("survival_hint", "Bebe y come antes de la noche, enciende la hoguera junto a la charca y qu\u00e9date a su luz: los lobos no se acercan al fuego.")
 	var p: FailPanel = FailPanel.open(self, title, hint)
 	p.closed.connect(retry)
 

@@ -186,6 +186,10 @@ export interface ApiJuegos {
   precioPrograma(): Promise<number>;
   /** Chispa programa lo que el taller no sabe hacer: código revisado, compilado y probado por bots. */
   programar(proyectoId: string, instruccion: string): Promise<{ job_id: string; credits: number }>;
+  /** Modo experto: código para enlazar el plugin de Chispa en Godot (el anterior deja de valer). */
+  expertoEnlace(proyectoId: string): Promise<string>;
+  /** Modo experto: sube el proyecto cambiado a mano (.zip) y encarga la versión nueva (bots y APK). */
+  expertoSubir(proyectoId: string, zip: Blob): Promise<{ job_id: string; credits: number; cost: number }>;
   /** Sube tu dibujo (o la foto de tu mascota o juguete) y la IA lo revisa para usarlo de protagonista. */
   revisarDibujo(proyectoId: string, imagen: Blob): Promise<{ ok: boolean; descripcion?: string; motivo?: string }>;
 }
@@ -349,6 +353,17 @@ export function supaJuegos(con: Conexion): ApiJuegos {
       return (data?.credits as number | undefined) ?? 30;
     },
 
+    async expertoEnlace(proyectoId: string) {
+      const r = await con.invocar<{ codigo: string }>("experto", { accion: "enlazar", project_id: proyectoId }, "No se pudo crear el código.");
+      return r.codigo;
+    },
+    async expertoSubir(proyectoId: string, zip: Blob) {
+      const u = await con.invocar<{ url: string; ruta: string }>("experto", { accion: "subir_url", project_id: proyectoId }, "No se pudo preparar la subida.");
+      const r = await fetch(u.url, { method: "PUT", headers: { "Content-Type": "application/zip", "x-upsert": "true" }, body: zip });
+      if (!r.ok) throw new ErrorApp("No se pudo subir el proyecto. Comprueba la conexión y prueba otra vez.");
+      return con.invocar<{ job_id: string; credits: number; cost: number }>("experto", { accion: "subir", project_id: proyectoId, ruta: u.ruta },
+        "No se pudo encargar la versión.");
+    },
     programar(proyectoId: string, instruccion: string) {
       return con.invocar<{ job_id: string; credits: number }>("program-change", { project_id: proyectoId, instruccion }, "Chispa no ha podido ponerse a programarlo.");
     },

@@ -48,7 +48,7 @@ export const MOTIVOS: Record<string, string> = {
   signup: "Regalo de bienvenida", welcome: "Regalo de bienvenida", purchase: "Compra en Google Play", plan: "Tuercas de tu plan",
   refund: "Devolución (no salió)", refund_purchase: "Compra devuelta", reward_ad: "Anuncio con premio", invite: "Invitación de un amigo",
   weekly_challenge: "Premio del reto semanal", ganancias: "Ganancias de tus juegos", design: "Juego nuevo", game: "Juego nuevo",
-  edit: "Cambio en un juego", game_change: "Cambio en un juego", game_mod: "Chispa programó un cambio", game_restore: "Volver a una versión",
+  edit: "Cambio en un juego", game_change: "Cambio en un juego", game_mod: "Chispa programó un cambio", game_expert: "Cambios a mano en Godot", game_restore: "Volver a una versión",
   game_marketing: "Vídeos de promoción", game_publish: "Publicación", game_ios: "Versión para iPhone", charla: "Charla con tus jugadores",
 };
 

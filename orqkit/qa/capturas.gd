@@ -60,6 +60,8 @@ func _ready() -> void:
 	var first: float = 14.0 if horde else (26.0 if game.has_method("tower_bot_step") else (1.2 if custom else (8.0 if slow else 2.2)))
 	var second: float = 1.4 if custom else (6.0 if horde or slow else 2.6)
 	## 5 - Un genero puede pedir cuando hacer las fotos (p. ej. naves: con la oleada en pantalla).
+	if "capture_steps" in game:
+		game.set("capture_steps", 6)
 	if game.has_method("capture_delays"):
 		var dl: Vector2 = game.call("capture_delays")
 		first = dl.x

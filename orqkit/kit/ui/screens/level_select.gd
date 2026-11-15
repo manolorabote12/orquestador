@@ -22,6 +22,16 @@ func _ready() -> void:
 	bg.set_anchors_preset(Control.PRESET_FULL_RECT)
 	bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(bg)
+	## Mapa de campana (15 nov, «la lista de niveles es una rejilla sosa»): el fondo ilustrado del juego,
+	## oscurecido, y los niveles en zigzag unidos por un camino de puntos.
+	_backdrop()
+	## Supervivencia: mapa del mundo con zonas (world_map.gd) en vez de la rejilla.
+	if Genres.current() == "survival":
+		TimeAttack.stop()
+		Expert.stop()
+		SurvivalDungeon.stop()
+		WorldMap.open_in(self)
+		return
 	var root: MarginContainer = UI.safe_root(self)
 	var col: VBoxContainer = VBoxContainer.new()
 	col.add_theme_constant_override("separation", 28)
@@ -112,11 +122,31 @@ func _ready() -> void:
 		var g: GridContainer = GridContainer.new()
 		g.name = "World%d" % (w + 1)
 		g.columns = 3
-		g.add_theme_constant_override("h_separation", 24)
-		g.add_theme_constant_override("v_separation", 24)
+		g.add_theme_constant_override("h_separation", 44)
+		g.add_theme_constant_override("v_separation", 52)
 		center.add_child(g)
-		for i: int in range(start, end):
-			g.add_child(_level_button(i, i < unlocked))
+		## Zigzag: las filas impares van de derecha a izquierda (huecos vacios donde falte un nivel).
+		var row_start: int = start
+		var r: int = 0
+		while row_start < end:
+			var row_end: int = mini(row_start + 3, end)
+			var cells: Array[Control] = []
+			for i: int in range(row_start, row_end):
+				cells.append(_level_button(i, i < unlocked))
+			if r % 2 == 1:
+				while cells.size() < 3:
+					cells.append(_gap())
+				cells.reverse()
+			for c: Control in cells:
+				g.add_child(c)
+			row_start = row_end
+			r += 1
+		var path: _PathLine = _PathLine.new()
+		path.name = "Path"
+		path.grid = g
+		path.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		center.add_child(path)
+		center.move_child(path, 0)
 		grids.append(g)
 		start = end
 		w += 1
@@ -250,8 +280,71 @@ func _intro() -> void:
 	var k: int = 0
 	for g: GridContainer in grids:
 		for b: Node in g.get_children():
-			UI.pop_in(b as Control, 0.05 * float(mini(k, 12)))
-			k += 1
+			if b is Button:
+				UI.pop_in(b as Control, 0.05 * float(mini(k, 12)))
+				k += 1
+
+
+func _gap() -> Control:
+	var c: Control = Control.new()
+	c.name = "Gap"
+	c.custom_minimum_size = Vector2(180.0, 196.0)
+	c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	return c
+
+
+func _backdrop() -> void:
+	var ui_cfg: Dictionary = Kit.assets.get("ui", {}) as Dictionary
+	var path: String = str(ui_cfg.get("fondo", ""))
+	if path == "" or not ResourceLoader.exists(path):
+		return
+	var tex: Texture2D = load(path) as Texture2D
+	if tex == null:
+		return
+	var tr: TextureRect = TextureRect.new()
+	tr.name = "Backdrop"
+	tr.texture = tex
+	tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	tr.set_anchors_preset(Control.PRESET_FULL_RECT)
+	tr.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(tr)
+	var veil: ColorRect = ColorRect.new()
+	veil.name = "Veil"
+	veil.color = Color(UI.colors["fondo"], 0.62)
+	veil.set_anchors_preset(Control.PRESET_FULL_RECT)
+	veil.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	add_child(veil)
+
+
+## Camino de puntos que une los niveles en orden (por detras de los botones).
+class _PathLine extends Control:
+	var grid: GridContainer
+
+	func _process(_d: float) -> void:
+		queue_redraw()
+
+	func _draw() -> void:
+		if grid == null:
+			return
+		var order: Array = []
+		for b: Node in grid.get_children():
+			if b is Button:
+				order.append(b)
+		order.sort_custom(func(a: Node, c: Node) -> bool: return int(str(a.name).trim_prefix("Level")) < int(str(c.name).trim_prefix("Level")))
+		var pts: Array[Vector2] = []
+		for b: Node in order:
+			var ctl: Control = b as Control
+			pts.append(ctl.global_position - global_position + ctl.size * 0.5)
+		var col: Color = Color(UI.colors["acento"], 0.9)
+		for k: int in range(pts.size() - 1):
+			var a: Vector2 = pts[k]
+			var c: Vector2 = pts[k + 1]
+			var n: int = int(a.distance_to(c) / 22.0)
+			for j: int in range(1, n):
+				var q: Vector2 = a.lerp(c, float(j) / float(n))
+				draw_circle(q, 9.0, Color(0, 0, 0, 0.45))
+				draw_circle(q, 7.0, col)
 
 
 func _stars_total() -> int:

@@ -15,3 +15,7 @@ verify_jwt = false
 # La llama la propia base de datos (pg_cron + pg_net) con su clave x-reloj, sin sesion de usuario.
 [functions.reloj]
 verify_jwt = false
+
+# El plugin de Godot (modo experto) entra con su codigo de enlace, no con la sesion de la app.
+[functions.experto]
+verify_jwt = false

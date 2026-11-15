@@ -47,6 +47,11 @@ RUN mkdir -p /root/.local/share/godot/keystores /root/.config/godot \
     && printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/android_sdk_path = "/opt/android"\nexport/android/java_sdk_path = "%s"\nexport/android/debug_keystore = "/root/.local/share/godot/keystores/debug.keystore"\nexport/android/debug_keystore_user = "androiddebugkey"\nexport/android/debug_keystore_pass = "android"\n' "$JAVA_HOME" \
       > /root/.config/godot/editor_settings-4.6.tres
 
+# 3b - Modo experto: usuario sin privilegios con el que se juega un proyecto que trae codigo del autor
+#      (bots y capturas). No ve /root, ni las variables del trabajador (cadena.SANDBOX).
+RUN useradd --system --create-home --home-dir /home/orqsb --shell /usr/sbin/nologin orqsb \
+    && chmod 700 /root
+
 # 4 - Python: la fabrica, el SDK de RunPod y la voz local de respaldo (Piper, licencia MIT).
 RUN pip3 install --no-cache-dir --break-system-packages \
       pillow numpy jsonschema cryptography runpod piper-tts \
