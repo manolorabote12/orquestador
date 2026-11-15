@@ -17,7 +17,14 @@ func _ready() -> void:
 	Save.unlock_level(1)
 	Save.submit_stars("0", 3)
 	var title: Node = _add(UI.SCREEN_TITLE)
-	await _shot("1_titulo", 1.6)
+	## La entrada del logo letra a letra va por fotogramas: sin GPU la captura la pillaba a medias
+	## («Besti a»). Se da por terminada antes de la foto.
+	await get_tree().create_timer(1.6, true, false, true).timeout
+	for lt: Node in title.find_children("*", "", true, false):
+		if lt is LogoTitle:
+			lt.set("_intro_t", -1.0)
+			(lt as LogoTitle).queue_redraw()
+	await _shot("1_titulo", 0.1)
 	title.queue_free()
 	var levels: Node = _add(UI.SCREEN_LEVELS)
 	await _shot("2_niveles", 1.0)

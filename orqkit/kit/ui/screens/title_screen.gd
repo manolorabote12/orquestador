@@ -315,8 +315,19 @@ func _ready() -> void:
 		open_inbox.call_deferred()
 	resized.connect(_layout_art)
 	_layout_art.call_deferred()
-	_fit_height.call_deferred()
-	_intro.call_deferred()
+	_fit_then_intro.call_deferred()
+
+
+## Primero se encaja todo en la pantalla y despues la entrada: la entrada encoge los botones
+## (escala 0.6) y con ellos encogidos «Jugar» parecia caber aunque se saliera por abajo (15 nov,
+## RPG con seis botones a la izquierda: «Jugar» cortado).
+func _fit_then_intro() -> void:
+	modulate.a = 0.0
+	await _fit_height()
+	if not is_inside_tree():
+		return
+	modulate.a = 1.0
+	_intro()
 
 
 func _start_sample() -> void:

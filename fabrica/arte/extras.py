@@ -50,7 +50,8 @@ EFECTOS = {
 ## Decorado de la arena dibujado por la GPU (antes rectangulos y circulos de codigo): con el material del
 ## escenario de cada juego (rocas de coral en el mar, piedra en el castillo...).
 PROPS = {
-	"roca": "a single chunky square rock block obstacle seen from a three quarter top-down view, flat top, made of {mat}, isolated object only, no ground, no sand, no water and no base around it",
+	## 15 nov: «made of {mat}» con mat=arena daba bizcochos naranjas; ahora piedra con detalles del sitio.
+	"roca": "a single chunky cube-shaped block of grey weathered stone with cracks, seen from a three quarter top-down view, flat top, darker shaded sides, small details from {mat} on top, isolated object only, no ground, no sand, no water and no base around it",
 	"arbusto": "a single dense round leafy bush clump seen from a three quarter top-down view, made of plants from {mat}, isolated object only, no ground, no sand, no water and no base around it",
 	"caja": "a single wooden supply crate with metal corners seen from a three quarter top-down view",
 	"cubo": "a single glowing purple power cube crystal, three quarter view",
@@ -71,6 +72,7 @@ PROPS_SUPERV = {
 	"arbusto_bayas": "a single round leafy bush with bright red berries, seen from a three quarter view",
 	"caja": "a single wooden supply crate with metal corners, seen from a three quarter view",
 	"guarida": "a single dark menacing animal den cave entrance made of rocks and bones, seen from a three quarter view",
+	"hoguera": "a single cozy campfire with crossed burning logs and bright orange flames inside a small ring of grey stones, seen from a three quarter view",
 }
 for _k in PROPS_SUPERV:
 	PROPS_SUPERV[_k] += ", isolated object only, no ground, no grass, no shadow, no base around it"

@@ -16,6 +16,34 @@ const H_POND: float = -0.14
 const H_SEA: float = -0.32
 ## Mas cerca que antes (15 nov: personajes diminutos; los survival de movil enfocan al personaje).
 const CAM_OFF: Vector3 = Vector3(0.0, 7.2, 5.2)
+## Agua con olas, brillos y borde de espuma (15 nov: «las charcas son cuadrados azules planos»).
+const WATER_SHADER: String = """
+shader_type spatial;
+render_mode cull_disabled, specular_schlick_ggx;
+uniform vec4 deep : source_color = vec4(0.04, 0.27, 0.45, 1.0);
+uniform vec4 shallow : source_color = vec4(0.13, 0.50, 0.62, 1.0);
+uniform float foam_w = 0.0;
+varying vec3 wp;
+void vertex() {
+	wp = (MODEL_MATRIX * vec4(VERTEX, 1.0)).xyz;
+}
+void fragment() {
+	float t = TIME * 0.7;
+	float w = sin(wp.x * 1.9 + t) * 0.5 + sin(wp.z * 1.6 - t * 1.3) * 0.5 + sin((wp.x + wp.z) * 3.1 + t * 2.1) * 0.25;
+	vec3 c = mix(deep.rgb, shallow.rgb, clamp(0.5 + 0.3 * w, 0.0, 1.0));
+	/* brillos sueltos: dos ondas cruzadas que no forman cuadricula */
+	float g = sin(wp.x * 2.7 + wp.z * 1.3 + t * 1.7) * sin(wp.z * 3.1 - wp.x * 0.9 - t * 1.2) * sin(wp.x * 0.7 + wp.z * 2.2 + t * 0.5);
+	c += vec3(smoothstep(0.55, 0.85, g)) * 0.22;
+	/* espuma: COLOR.r = 1 junto a la orilla */
+	float foam = COLOR.r * foam_w * (0.65 + 0.35 * sin(t * 2.0 + wp.x * 3.0 + wp.z * 2.0));
+	c = mix(c, vec3(0.92, 0.97, 1.0), clamp(foam, 0.0, 1.0) * 0.8);
+	ALBEDO = c;
+	ROUGHNESS = 0.45;
+	SPECULAR = 0.04;
+	NORMAL = normalize(NORMAL + (VIEW_MATRIX * vec4(cos(wp.x * 2.3 + t) * 0.08, 0.0, cos(wp.z * 2.1 - t) * 0.08, 0.0)).xyz);
+}
+"""
+static var _water_mat: ShaderMaterial = null
 
 var game: Node2D
 var _camera: Camera3D
@@ -115,11 +143,35 @@ func _build_environment() -> void:
 	sea.name = "Sea"
 	var pm: PlaneMesh = PlaneMesh.new()
 	pm.size = Vector2(400, 400)
-	pm.material = mat(Color("#1f6fa8"))
+	pm.material = water_mat()
 	sea.mesh = pm
 	var s0: Dictionary = st()
 	sea.position = Vector3(float(s0["w"]) * 0.5, H_SEA, float(s0["h"]) * 0.5)
 	add_child(sea)
+
+
+## foam: espuma en la orilla (las charcas la llevan en el color de cada vertice; el mar no).
+static func water_mat(foam: bool = false) -> ShaderMaterial:
+	if _water_mat == null:
+		var sh: Shader = Shader.new()
+		sh.code = WATER_SHADER
+		_water_mat = ShaderMaterial.new()
+		_water_mat.shader = sh
+	if not foam:
+		return _water_mat
+	var m: ShaderMaterial = _water_mat.duplicate()
+	m.set_shader_parameter("foam_w", 1.0)
+	return m
+
+
+## Color de la hierba en cada esquina (no por casilla): manchas suaves en vez de cuadricula.
+func _grass_at(grass: Color, x: int, y: int) -> Color:
+	var n: float = sin(float(x) * 0.71 + float(y) * 0.37) * 0.5 + sin(float(x) * 0.23 - float(y) * 0.61 + 1.7) * 0.5
+	var c: Color = grass.lightened(0.04 + n * 0.1) if n > 0.0 else grass.darkened(-n * 0.12)
+	## Algunas manchas mas amarillas (hierba seca), como en los survival de movil.
+	if sin(float(x) * 0.31 + float(y) * 0.47 + 0.6) > 0.72:
+		c = c.lerp(Color("#b5a24a"), 0.35)
+	return c
 
 
 ## Isla: la cara de arriba de cada casilla y sus lados donde la vecina esta mas baja.
@@ -135,19 +187,29 @@ func _build_ground() -> MeshInstance3D:
 		grass = Color("#6fae4f")
 	grass = M.pal(s0, "ground", grass)
 	## Con luz y sol la hierba se aclara: un poco mas apagada que en 2D.
-	grass = grass.darkened(0.14)
-	grass.s = minf(grass.s, 0.62)
+	grass = grass.darkened(0.06)
+	grass.s = clampf(grass.s, 0.5, 0.66)
 	for y: int in h:
 		for x: int in w:
 			var ch: String = M.tile(s0, Vector2i(x, y))
 			if ch == "~":
 				continue
 			var top: float = h_of(ch)
-			var col: Color = Color("#3fa7e0") if bool(M.tile_def(s0, ch).get("water", false)) else (sand if ch == "," else grass.lightened(float((x * 73 + y * 151) % 7) / 7.0 * 0.07))
-			_quad(stl, Vector3(x, top, y), Vector3(x + 1, top, y), Vector3(x + 1, top, y + 1), Vector3(x, top, y + 1), col, Vector3.UP)
+			var is_water: bool = bool(M.tile_def(s0, ch).get("water", false))
+			if is_water:
+				## Fondo de la charca (oscuro) y el agua encima, aparte, con su shader.
+				_quad(stl, Vector3(x, top - 0.12, y), Vector3(x + 1, top - 0.12, y), Vector3(x + 1, top - 0.12, y + 1), Vector3(x, top - 0.12, y + 1), Color("#3b4a3a"), Vector3.UP)
+				_water_tiles.append(Vector2i(x, y))
+				top -= 0.12
+			elif ch == ",":
+				_quad(stl, Vector3(x, top, y), Vector3(x + 1, top, y), Vector3(x + 1, top, y + 1), Vector3(x, top, y + 1), sand, Vector3.UP)
+			else:
+				_quad4(stl, Vector3(x, top, y), Vector3(x + 1, top, y), Vector3(x + 1, top, y + 1), Vector3(x, top, y + 1),
+					[_grass_at(grass, x, y), _grass_at(grass, x + 1, y), _grass_at(grass, x + 1, y + 1), _grass_at(grass, x, y + 1)])
 			## Lados: hasta la altura de la vecina (o del mar).
 			for d: Vector2i in M.DIRS:
-				var nb: float = h_of(M.tile(s0, Vector2i(x, y) + d))
+				var nch: String = M.tile(s0, Vector2i(x, y) + d)
+				var nb: float = h_of(nch) - (0.12 if bool(M.tile_def(s0, nch).get("water", false)) else 0.0)
 				if nb >= top:
 					continue
 				var side: Color = (sand if ch != "W" else Color("#2b7fb3")).darkened(0.25)
@@ -184,7 +246,69 @@ func _build_ground() -> MeshInstance3D:
 	var mesh: ArrayMesh = stl.commit()
 	mesh.surface_set_material(0, m)
 	mi.mesh = mesh
+	if not _water_tiles.is_empty():
+		mi.add_child(_build_ponds())
 	return mi
+
+
+var _water_tiles: Array[Vector2i] = []
+
+
+## Superficie de las charcas (agua con su shader) y una tira de espuma en cada orilla.
+func _build_ponds() -> MeshInstance3D:
+	var s0: Dictionary = st()
+	var stl: SurfaceTool = SurfaceTool.new()
+	stl.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var foam: SurfaceTool = SurfaceTool.new()
+	foam.begin(Mesh.PRIMITIVE_TRIANGLES)
+	var y0: float = H_POND - 0.03
+	var fw: float = 0.1
+	var n_foam: int = 0
+	var white: Color = Color(1, 1, 1, 0.55)
+	for c: Vector2i in _water_tiles:
+		_quad(stl, Vector3(c.x, y0, c.y), Vector3(c.x + 1, y0, c.y), Vector3(c.x + 1, y0, c.y + 1), Vector3(c.x, y0, c.y + 1), Color.WHITE, Vector3.UP)
+		for d: Vector2i in M.DIRS:
+			if bool(M.tile_def(s0, M.tile(s0, c + d)).get("water", false)):
+				continue
+			var y1: float = y0 + 0.01
+			var x0: float = float(c.x)
+			var z0: float = float(c.y)
+			if d == Vector2i(1, 0):
+				_quad(foam, Vector3(x0 + 1 - fw, y1, z0), Vector3(x0 + 1, y1, z0), Vector3(x0 + 1, y1, z0 + 1), Vector3(x0 + 1 - fw, y1, z0 + 1), white, Vector3.UP)
+			elif d == Vector2i(-1, 0):
+				_quad(foam, Vector3(x0, y1, z0), Vector3(x0 + fw, y1, z0), Vector3(x0 + fw, y1, z0 + 1), Vector3(x0, y1, z0 + 1), white, Vector3.UP)
+			elif d == Vector2i(0, 1):
+				_quad(foam, Vector3(x0, y1, z0 + 1 - fw), Vector3(x0 + 1, y1, z0 + 1 - fw), Vector3(x0 + 1, y1, z0 + 1), Vector3(x0, y1, z0 + 1), white, Vector3.UP)
+			else:
+				_quad(foam, Vector3(x0, y1, z0), Vector3(x0 + 1, y1, z0), Vector3(x0 + 1, y1, z0 + fw), Vector3(x0, y1, z0 + fw), white, Vector3.UP)
+			n_foam += 1
+	var pm: MeshInstance3D = MeshInstance3D.new()
+	pm.name = "Ponds"
+	var mesh: ArrayMesh = stl.commit()
+	mesh.surface_set_material(0, water_mat())
+	pm.mesh = mesh
+	if n_foam > 0:
+		var fm: StandardMaterial3D = StandardMaterial3D.new()
+		fm.vertex_color_use_as_albedo = true
+		fm.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+		fm.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		fm.cull_mode = BaseMaterial3D.CULL_DISABLED
+		var fmesh: ArrayMesh = foam.commit()
+		fmesh.surface_set_material(0, fm)
+		var fmi: MeshInstance3D = MeshInstance3D.new()
+		fmi.name = "Foam"
+		fmi.mesh = fmesh
+		fmi.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+		pm.add_child(fmi)
+	return pm
+
+
+func _quad4(stl: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, cols: Array) -> void:
+	var vs: Array = [a, b, c, d]
+	for i: int in [0, 1, 2, 0, 2, 3]:
+		stl.set_color(cols[i])
+		stl.set_normal(Vector3.UP)
+		stl.add_vertex(vs[i])
 
 
 func _quad(stl: SurfaceTool, a: Vector3, b: Vector3, c: Vector3, d: Vector3, col: Color, n: Vector3) -> void:
@@ -532,6 +656,22 @@ func _build_fire() -> void:
 	_flame.material_override = mat(Color("#ff8a1a"), 4.0)
 	_flame.position = Vector3(0, H_GRASS + 0.32, 0)
 	_fire.add_child(_flame)
+	## Hoguera dibujada por la GPU (efectos/hoguera): sustituye a las piedras y la llama de formas.
+	var art: Texture2D = UI.fx_art("hoguera")
+	if art != null:
+		for c: Node in _fire.get_children():
+			(c as Node3D).visible = false
+		var s: Sprite3D = Sprite3D.new()
+		s.name = "FireArt"
+		s.texture = art
+		s.pixel_size = 1.0 / float(maxi(art.get_height(), 1))
+		s.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+		s.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+		s.shaded = false
+		s.texture_filter = BaseMaterial3D.TEXTURE_FILTER_LINEAR_WITH_MIPMAPS
+		s.position = Vector3(0, H_GRASS + 0.45, 0)
+		_fire.add_child(s)
+		_flame = null
 	_fire_light = OmniLight3D.new()
 	_fire_light.light_color = Color("#ffb347")
 	_fire_light.omni_range = M.FIRE_R * 1.35
@@ -603,9 +743,16 @@ func sync(delta: float) -> void:
 	var dark: float = darkness()
 	if not fire.is_empty():
 		_fire.position = at(fire["p"], 0.0)
-		_flame.visible = on
 		var fl: float = 1.0 + sin(_t * 14.0) * 0.12
-		_flame.scale = Vector3(1.0, fl, 1.0)
+		if _flame != null:
+			_flame.visible = on
+			_flame.scale = Vector3(1.0, fl, 1.0)
+		else:
+			var fa: Sprite3D = _fire.get_node_or_null("FireArt") as Sprite3D
+			if fa != null:
+				## Apagada: gris y sin latido; encendida: late un poco, como la llama.
+				fa.modulate = Color.WHITE if on else Color(0.45, 0.45, 0.5)
+				fa.scale = Vector3(1.0, fl if on else 1.0, 1.0) * (1.0 + 0.04 * sin(_t * 9.0) if on else 1.0)
 		_fire_light.light_energy = (2.2 + sin(_t * 9.0) * 0.2) * (0.25 + dark) if on else 0.0
 	## Dia y noche.
 	_sun.light_energy = lerpf(0.5, 0.04, dark)
