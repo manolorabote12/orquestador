@@ -10,7 +10,7 @@ on:
     inputs:
       accion:
         type: choice
-        options: [animar, modelos, qwen_image, volumen, voces]
+        options: [animar, modelos, qwen_image, volumen, voces, limite_fabrica]
         default: animar
       personaje:
         required: false
@@ -48,6 +48,18 @@ jobs:
       - name: Modelos
         if: inputs.accion == 'modelos'
         run: python3 nube/animaciones.py modelos | tee /tmp/r.txt; s=${PIPESTATUS[0]}; echo "::notice::$(head -c 1500 /tmp/r.txt)"; exit $s
+      - name: Limite de tiempo de la fabrica (minutos en «gb»)
+        if: inputs.accion == 'limite_fabrica'
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "nube")
+          from desplegar import REST, lista, pedir
+          ep = next(e for e in lista("/endpoints") if str(e.get("name", "")).startswith("orq-fabrica"))
+          ms = max(3600000, min(int("${{ inputs.gb }}") * 60000, 3 * 3600000))
+          pedir("PATCH", f"{REST}/endpoints/{ep['id']}", {"executionTimeoutMs": ms})
+          print(f"::notice::orq-fabrica: limite {ms // 60000} min (antes {int(ep.get('executionTimeoutMs') or 0) // 60000})")
+          PY
       - name: Qwen-Image 2512
         if: inputs.accion == 'qwen_image'
         run: python3 nube/animaciones.py modelos qwen_image | tee /tmp/r.txt; s=${PIPESTATUS[0]}; echo "::notice::$(head -c 1500 /tmp/r.txt)"; exit $s
