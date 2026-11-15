@@ -10,7 +10,7 @@ on:
     inputs:
       accion:
         type: choice
-        options: [animar, modelos, qwen_image, volumen, voces, limite_fabrica]
+        options: [animar, dibujar, modelos, qwen_image, volumen, voces, limite_fabrica]
         default: animar
       personaje:
         required: false
@@ -41,6 +41,7 @@ jobs:
           sparse-checkout: |
             fabrica
             nube
+            .github/scripts
       - run: pip install pillow numpy
       - name: Volumen
         if: inputs.accion == 'volumen'
@@ -86,6 +87,23 @@ jobs:
         run: |
           f=animaciones/${{ inputs.personaje }}/informe.json
           [ -f "$f" ] && echo "::notice::$(cat $f | head -c 2000)" || echo "::warning::$(tail -c 1500 animaciones/log.txt 2>/dev/null)"
+      ## Dibujar por prompting: lote .github/scripts/lotes/<personaje>.json -> rama «dibujos».
+      - name: Dibujar
+        if: inputs.accion == 'dibujar'
+        run: |
+          ep=$(python3 nube/animaciones.py endpoint)
+          mkdir -p dibujos/${{ inputs.personaje }}
+          set -o pipefail
+          ORQ_COMFY="runpod://$ep" python3 .github/scripts/dibujar.py .github/scripts/lotes/${{ inputs.personaje }}.json dibujos/${{ inputs.personaje }} 2>&1 | tee dibujos/log.txt
+          echo "::notice::$(tail -c 1200 dibujos/log.txt)"
+      - name: Subir a la rama dibujos
+        if: always() && inputs.accion == 'dibujar'
+        run: |
+          [ -d dibujos ] || exit 0
+          cd dibujos
+          git init -q -b dibujos && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "Dibujos (${{ inputs.personaje }})"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" dibujos
       - name: Subir a la rama animaciones
         if: always() && inputs.accion == 'animar'
         run: |

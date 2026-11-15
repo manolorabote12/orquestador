@@ -1,0 +1,86 @@
+{
+ "estilo": "Lively watercolor fantasy illustration for a mobile game, thick dark ink outlines, soft paper texture, glowing magic sparkles, emerald forests, warm stone, violet magic rift glow, rich saturated colors, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "fondo_grieta",
+   "motor": "qwen",
+   "ancho": 864,
+   "alto": 1536,
+   "semilla": 4101,
+   "prompt": "Tall vertical scene looking down into an enormous magical rift chasm that splits a forested fantasy kingdom. At the very top a small cozy adventurers camp on the cliff edge with tents, banners and a campfire. Mossy cliffs on both sides with huge iron chains, wooden ledges and rope bridges descending along the walls. The deeper it goes the light turns violet, glowing purple mist, floating crystal shards and faint runes at the bottom. Empty middle area for game buttons, no characters, no text"
+  },
+  {
+   "id": "caldero",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4102,
+   "recorte": true,
+   "prompt": "a single big round iron cauldron bubbling with glowing violet magical essence, golden sparkles and small bubbles rising, standing on a few small stones with tiny flames, three quarter view, game icon"
+  },
+  {
+   "id": "nav_heroes",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4103,
+   "recorte": true,
+   "prompt": "a single open old leather guild ledger book with parchment pages, a red wax seal and a ribbon bookmark, game menu icon, front view"
+  },
+  {
+   "id": "nav_summon",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4104,
+   "recorte": true,
+   "prompt": "a single small round stone wishing well glowing with swirling violet runes and sparkles rising from it, game menu icon, front view"
+  },
+  {
+   "id": "nav_campaign",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4105,
+   "recorte": true,
+   "prompt": "two big interlocked iron chain links cracked open with violet magic light bursting from the crack, game menu icon, front view"
+  },
+  {
+   "id": "nav_modes",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4106,
+   "recorte": true,
+   "prompt": "two crossed swords over a round wooden shield with a golden trim, game menu icon, front view"
+  },
+  {
+   "id": "nav_tavern",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4107,
+   "recorte": true,
+   "prompt": "a single foamy wooden tavern mug with an iron band, game menu icon, front view"
+  },
+  {
+   "id": "etapa",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4108,
+   "recorte": true,
+   "prompt": "a single round bronze medallion seal with an iron ring on top for a chain, plain smooth empty center, engraved rim, game map stage marker, front view"
+  },
+  {
+   "id": "jefe",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 4109,
+   "recorte": true,
+   "prompt": "a single round dark iron medallion with a menacing violet one-eyed ink demon face in the center and small horns of broken crystal on the rim, game map boss marker, front view"
+  }
+ ]
+}
