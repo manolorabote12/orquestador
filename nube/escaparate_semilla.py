@@ -296,7 +296,7 @@ def encargar_idea(idea: str) -> int:
 	return 0
 
 
-def actualizar(titulo: str, animar: bool = False, rehacer: dict | None = None) -> int:
+def actualizar(titulo: str, animar: bool = False, rehacer: dict | None = None, redibujar: list | None = None) -> int:
 	"""Arreglar sin rehacer: el juego de muestra mas nuevo con ese titulo pasa al kit de hoy (mismo
 	diseno, niveles y arte; solo se dibuja lo nuevo). Centimos en vez de un juego entero."""
 	if rest("POST", "rpc/fabrica_pausada", {}):
@@ -312,7 +312,8 @@ def actualizar(titulo: str, animar: bool = False, rehacer: dict | None = None) -
 			rest("POST", "jobs", [{"user_id": u, "kind": "game_change", "project_id": p["id"], "cost": 0, "est_cost_usd": 0.1, "status": "queued",
 				"detail": {"actualizar": True, "instruccion": "Actualizar al kit de hoy", "semilla": True,
 					**({"animar": True, "tope_usd": 2.0, "redibujar": ["roca", "arbusto"]} if animar else {}),
-					**({"animar": True, "tope_usd": 1.0, "rehacer": rehacer} if rehacer else {})}}], {"Prefer": "return=minimal"})
+					**({"animar": True, "tope_usd": 1.0, "rehacer": rehacer} if rehacer else {}),
+					**({"redibujar": redibujar[:6]} if redibujar and not animar else {})}}], {"Prefer": "return=minimal"})
 			despertar()
 			print(f"::notice::Actualizando «{p['title']}» al kit de hoy (mismo arte; solo se dibuja lo nuevo)")
 			return 0
@@ -588,7 +589,10 @@ def main(args: list[str]) -> int:
 	if accion == "capturas":
 		return capturas()
 	if accion == "actualizar":
-		return actualizar(args[1] if len(args) > 1 else "")
+		## «Titulo :: roca,arbusto» redibuja solo esas piezas del decorado (centimos).
+		partes = [x.strip() for x in " ".join(args[1:]).split("::")]
+		piezas = [x.strip() for x in partes[1].split(",") if x.strip()] if len(partes) > 1 else None
+		return actualizar(partes[0] if partes else "", redibujar=piezas)
 	if accion == "rehacer":
 		## Redibujar (y animar) un personaje con otra descripcion: idea = "Titulo :: id :: descripcion".
 		partes = [x.strip() for x in " ".join(args[1:]).split("::")]
