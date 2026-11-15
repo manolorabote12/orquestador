@@ -128,6 +128,29 @@ def godot_bin() -> str:
 	return os.environ.get("GODOT", shutil.which("godot") or "godot")
 
 
+def importar(proyecto: Path, timeout: int = 600) -> None:
+	"""Importa el arte del juego con texturas ligeras (15 nov: con los personajes animados el APK pasaba de
+	50 MB, no se podia guardar y la app ofrecia el APK viejo de otro juego): las imagenes grandes de
+	assets/ van en WebP con perdida (calidad 0,85, no se nota) y fabrica/ no se importa (.gdignore: las
+	versiones guardadas repetian todo el arte)."""
+	(proyecto / "fabrica").mkdir(exist_ok=True)
+	(proyecto / "fabrica" / ".gdignore").touch()
+	godot(proyecto, "--import", timeout=timeout)
+	cambiadas = 0
+	for imp in (proyecto / "assets").rglob("*.import") if (proyecto / "assets").exists() else []:
+		fuente = imp.with_suffix("")
+		if fuente.suffix.lower() not in (".png", ".jpg", ".jpeg") or not fuente.exists() or fuente.stat().st_size < 120_000:
+			continue
+		txt = imp.read_text(encoding="utf-8")
+		if 'importer="texture"' not in txt or "compress/mode=0" not in txt:
+			continue
+		txt = txt.replace("compress/mode=0", "compress/mode=1").replace("compress/lossy_quality=0.7", "compress/lossy_quality=0.85")
+		imp.write_text(txt, encoding="utf-8")
+		cambiadas += 1
+	if cambiadas:
+		godot(proyecto, "--import", timeout=timeout)
+
+
 def godot(proyecto: Path, *args: str, timeout: int = 1800, display: bool = False, xvfb: bool = False) -> subprocess.CompletedProcess:
 	cmd = [godot_bin(), "--path", str(proyecto)]
 	if not display:
@@ -960,7 +983,7 @@ def _fabricar(args: argparse.Namespace) -> dict:
 	intentos: dict[int, int] = {}
 	configurar_telemetria(proyecto, getattr(args, "telemetria_id", ""))
 	game = escribir_game(proyecto, diseno, mapas)
-	godot(proyecto, "--import", timeout=600)
+	importar(proyecto)
 	antes = sum(intentos.values())
 	try:
 		mapas = analizar_niveles(proyecto, diseno, mapas, args.semilla, intentos)
@@ -1078,7 +1101,7 @@ def _fabricar(args: argparse.Namespace) -> dict:
 	## 6 - Validacion con bots (y regeneracion de lo que no completan)
 	t = time.time()
 	evento("validacion", "inicio", "Probando el juego con bots...")
-	godot(proyecto, "--import", timeout=600)
+	importar(proyecto)
 	val, mapas = validar_con_bots(proyecto, diseno, mapas, args.semilla, intentos)
 	if not val.get("ok") and (diseno.get("giros") or diseno.get("contenido")):
 		## Con el giro o el contenido propio los bots no pueden: fuera (nunca se entrega un juego roto).

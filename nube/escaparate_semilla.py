@@ -492,6 +492,11 @@ def apk(titulo: str, carpeta: str = "apk_muestra") -> int:
 	t = (titulo or "").strip().lower()
 	for p in reversed(rest("GET", f"projects?select=id,title,files,created_at&user_id=eq.{u}&order=created_at") or []):
 		f = p.get("files") or {}
+		## El juego mas nuevo con ese titulo y nada mas (15 nov: si su APK no se habia podido guardar,
+		## se bajaba el de otro juego mas viejo con un titulo parecido sin avisar).
+		if t in str(p.get("title", "")).lower() and not f.get("apk"):
+			print(f"::error::«{p['title']}» no tiene APK guardado: {f.get('avisos') or 'sin aviso'}")
+			return 1
 		if t in str(p.get("title", "")).lower() and f.get("apk"):
 			d = Path(carpeta)
 			d.mkdir(parents=True, exist_ok=True)

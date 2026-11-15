@@ -60,7 +60,7 @@ def _cerrar_version(args: argparse.Namespace, proyecto: Path, slug: str, diseno:
 		ajustes: dict[int, float], intentos: dict[int, int], fijos: set[int] | None = None) -> tuple[dict, list, str | None, list[str], str | None]:
 	"""Analizador + bots + APK + web + capturas, comun a cambios y a volver atras. fijos: niveles
 	hechos a mano (no se rehacen; si no valen, el cambio falla con la explicacion)."""
-	cadena.godot(proyecto, "--import", timeout=600)
+	cadena.importar(proyecto)
 	mapas = cadena.analizar_niveles(proyecto, diseno, mapas, semilla, intentos, ajustes, fijos)
 	evento("validacion", "inicio", "Probando la nueva versión con bots...")
 	val, mapas = cadena.validar_con_bots(proyecto, diseno, mapas, semilla, intentos, ajustes, fijos)
