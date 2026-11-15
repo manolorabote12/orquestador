@@ -60,6 +60,11 @@ func _ready() -> void:
 	show_tab(main)
 
 
+func _book_layout() -> bool:
+	var h: Dictionary = cfg.get("heroes", {})
+	return str(h.get("layout", "")) == "libro" or HeroBook.portrait(str(Heroes.roster().keys()[0])) != null if not Heroes.roster().is_empty() else false
+
+
 ## Lo que la GPU dibujo para la casa (assets/manifest.json ui.casa: fondo, botin, etapa, jefe, nav_<id>)
 ## se engancha donde game.json no diga otra cosa.
 func _link_art() -> void:
@@ -74,6 +79,10 @@ func _link_art() -> void:
 	for pair: Array in [["fondo", "fondo"], ["node_art", "etapa"], ["boss_art", "jefe"]]:
 		if not camp.has(pair[0]) and casa.has(pair[1]):
 			camp[pair[0]] = str(casa[pair[1]])
+	var heroes: Dictionary = cfg.get("heroes", {})
+	if not heroes.has("fondo") and casa.has("libro"):
+		heroes["fondo"] = str(casa["libro"])
+	cfg["heroes"] = heroes
 	var idle: Dictionary = camp.get("idle", {})
 	if not idle.has("art") and casa.has("botin"):
 		idle["art"] = str(casa["botin"])
@@ -411,10 +420,13 @@ func show_tab(id: String) -> void:
 	## Secciones que son ventanas del kit: se abren encima y la seccion de antes se queda.
 	match id:
 		"heroes":
-			if Heroes.enabled():
+			## Con libro (heroes.layout "libro" o retratos pintados por la GPU): seccion propia; si no, la ventana.
+			if not Heroes.enabled():
+				return
+			if not _book_layout():
 				var hp: HeroesPanel = HeroesPanel.open(self)
 				hp.changed.connect(refresh)
-			return
+				return
 		"summon":
 			if Heroes.enabled():
 				var sp: SummonPanel = SummonPanel.open(self)
@@ -430,6 +442,13 @@ func show_tab(id: String) -> void:
 	_current = id
 	for c: Node in _content.get_children():
 		c.queue_free()
+	if id == "heroes":
+		var hb: HeroBook = HeroBook.new()
+		hb.name = "HeroBook"
+		hb.hub = self
+		hb.cfg = cfg.get("heroes", {})
+		hb.set_anchors_preset(Control.PRESET_FULL_RECT)
+		_content.add_child(hb)
 	if id == "campaign":
 		var v: CampaignView = CampaignView.new()
 		v.name = "Campaign"

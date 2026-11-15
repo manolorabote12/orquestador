@@ -51,6 +51,8 @@ Reglas:
 - Exactamente estas secciones, una vez cada una: {secciones}. La de "campaign" es la principal.
 - Los "dibujo" van en INGLES: que pintaria un ilustrador para esa pieza, en el estilo del juego, sin texto.
 - El fondo de la campana es una escena vertical con mucho aire en el centro (encima van los botones).
+- La coleccion de heroes tambien tiene su forma propia (libro de contratos, mural, baraja, vitrina...):
+  su titulo y el fondo sobre el que se ven sus cartas (escena vertical, sin personajes ni texto).
 Llama a la herramienta "casa"."""
 
 HERRAMIENTA = {
@@ -81,6 +83,10 @@ HERRAMIENTA = {
 				"botin": {"type": "object", "required": ["nombre", "verbo", "dibujo"], "properties": {
 					"nombre": {"type": "string", "description": "Lo que se llena solo (p. ej. «Caldero de esencia»)."},
 					"verbo": {"type": "string"}, "dibujo": {"type": "string"}}}}},
+			"coleccion": {"type": "object", "required": ["titulo", "fondo_dibujo"], "properties": {
+				"titulo": {"type": "string", "description": "Titulo de la coleccion de heroes (hasta 24 letras): «Libro de contratos»..."},
+				"fondo_dibujo": {"type": "string", "description": "Escena vertical (ingles) sobre la que se ven las cartas de heroes, sin personajes."},
+				"carta": {"enum": ["pergamino", "oscura"], "description": "Carta clara (pergamino) u oscura."}}},
 		},
 	},
 }
@@ -126,6 +132,9 @@ def validar(c: dict, genero: str) -> list[str]:
 		e.append("campana/botin: nombre (hasta 24), verbo y dibujo")
 	if not 2 <= len(str(c.get("titulo", ""))) <= 26:
 		e.append("titulo: de 2 a 26 letras")
+	col = c.get("coleccion")
+	if col is not None and (not 2 <= len(str(col.get("titulo", ""))) <= 24 or len(str(col.get("fondo_dibujo", ""))) < 12):
+		e.append("coleccion: titulo (hasta 24) y fondo_dibujo")
 	return e
 
 
@@ -158,6 +167,8 @@ def simulada(diseno: dict, genero: str) -> dict:
 			"etapa_dibujo": "a round bronze map marker medallion with a plain center",
 			"jefe_dibujo": "a round dark iron medallion with a menacing monster face",
 			"botin": {"nombre": "Cofre del camino", "verbo": "Recoger", "dibujo": "a small wooden treasure chest overflowing with gold coins"}},
+		"coleccion": {"titulo": "Compania", "carta": "pergamino",
+			"fondo_dibujo": "a top-down view of a wooden camp table with an open old book, a map and candles, vertical, no characters"},
 	}
 
 
@@ -190,11 +201,19 @@ def a_hub(c: dict) -> dict:
 		"campaign": {"layout": cp.get("forma", "descenso"), "verb": cp.get("verbo", "Jugar"), "stage": cp.get("etapa", "etapa"),
 			"boss_every": int(cp.get("jefe_cada", 5)), "hondo": cp.get("hondo", "#1b1033"),
 			"idle": {"name": (cp.get("botin") or {}).get("nombre", ""), "verb": (cp.get("botin") or {}).get("verbo", "Recoger")}},
+		**({"heroes": {"layout": "libro", "title": c["coleccion"].get("titulo", ""), "card": c["coleccion"].get("carta", "pergamino")}}
+			if c.get("coleccion") else {}),
 	}
 
 
-def piezas(c: dict) -> dict[str, tuple[str, bool, tuple[int, int]]]:
-	"""Lo que dibuja la GPU para la casa: id -> (prompt en ingles, recortar fondo, tamano)."""
+## Elementos de los heroes del kit (kit/turns/heroes.gd) y el simbolo de su sello de cera.
+SELLOS = {"fire": ("red", "flame"), "water": ("deep blue", "water drop"), "nature": ("green", "leaf"),
+	"light": ("golden yellow", "sun"), "dark": ("purple", "crescent moon")}
+
+
+def piezas(c: dict, biblia: dict | None = None) -> dict[str, tuple[str, bool, tuple[int, int]]]:
+	"""Lo que dibuja la GPU para la casa: id -> (prompt en ingles, recortar fondo, tamano). Con la Biblia,
+	tambien un retrato grande por heroe (las cartas de la coleccion) y los sellos de cada elemento."""
 	cp = c.get("campana", {})
 	out = {"fondo": (str(cp.get("fondo_dibujo", "")) + ". Tall vertical game map background, lots of empty space in the middle for buttons, no characters, no text", False, (864, 1536)),
 		"botin": (str((cp.get("botin") or {}).get("dibujo", "")) + ", single object, game icon, three quarter view", True, (1024, 1024))}
@@ -204,6 +223,20 @@ def piezas(c: dict) -> dict[str, tuple[str, bool, tuple[int, int]]]:
 		out["jefe"] = (str(cp["jefe_dibujo"]) + ", single round game map boss marker, front view", True, (1024, 1024))
 	for s in c.get("secciones", []):
 		out["nav_" + str(s["id"])] = (str(s.get("dibujo", "")) + ", single object, game menu icon, front view", True, (1024, 1024))
+	col = c.get("coleccion")
+	if col:
+		out["libro"] = (str(col.get("fondo_dibujo", "")) + ". Tall vertical background, empty middle area, no characters, no text", False, (864, 1536))
+		for el, (color, simbolo) in SELLOS.items():
+			out["sello_" + el] = (f"a single round {color} wax seal stamp with an embossed {simbolo} symbol in the center, glossy wax drips at the edges, front view",
+				True, (1024, 1024))
+	for p in (biblia or {}).get("personajes", []):
+		pid = str(p.get("id", ""))
+		if pid != "heroe" and not pid.startswith("heroe_"):
+			continue
+		d = re.sub(r"^fantasy RPG hero character, full body, side view facing right, same art style as the hero, ", "", str(p.get("descripcion", ""))).rstrip(".")
+		out["retrato_" + ("heroe" if pid == "heroe" else pid[6:])] = (
+			f"Vertical character card art, waist-up portrait of {d}, three quarter view, expressive face looking at the viewer, heroic confident pose, "
+			"soft painted magical background with light rays and sparkles behind the character, no text, no frame", False, (768, 1152))
 	return out
 
 

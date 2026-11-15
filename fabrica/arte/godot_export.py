@@ -133,6 +133,15 @@ def exportar(proyecto: Path, biblia: dict, hojas: dict, tiles: dict, sfx: dict,
 			if k.startswith("nav_") or k == "botin":
 				dest = dest.with_suffix(".png")
 				_sello(Path(ruta), dest)
+			elif k.startswith("retrato_"):
+				## Cartas de heroe: 512 x 768 bastan en el movil (el APK no puede pasar de 50 MB).
+				dest = dest.with_suffix(".jpg")
+				im = Image.open(ruta).convert("RGB")
+				im.thumbnail((512, 768), Image.LANCZOS)
+				im.save(dest, quality=86, optimize=True)
+			elif k.startswith("sello_"):
+				dest = dest.with_suffix(".png")
+				_limpiar_croma(Path(ruta), dest)
 			else:
 				shutil.copyfile(ruta, dest)
 			manifest["ui"]["casa"][k] = f"res://assets/ui/casa/{dest.name}"
@@ -190,3 +199,31 @@ def _sello(src: Path, dest: Path, lado: int = 256) -> None:
 	m = m.resize((lado, lado), Image.LANCZOS)
 	im.putalpha(Image.fromarray(np.minimum(np.asarray(im.getchannel("A")), np.asarray(m))))
 	im.save(dest)
+
+
+def _limpiar_croma(src: Path, dest: Path, lado: int = 160) -> None:
+	"""Sellos de cera sobre magenta: Qwen deja motas de croma oscuro alrededor. Se quita todo lo de tono
+	magenta (o ya transparente) que toque el borde, rellenando desde fuera; la pieza se queda entera."""
+	import numpy as np
+	from PIL import ImageDraw
+	im = Image.open(src).convert("RGBA")
+	a = np.asarray(im).astype(np.int32)
+	hsv = np.asarray(im.convert("RGB").convert("HSV")).astype(float)
+	h, s, v = hsv[..., 0] * 360 / 255, hsv[..., 1] / 255, hsv[..., 2] / 255
+	fondo = ((h > 295) & (h < 352) & (s > 0.3) & (v > 0.12)) | (a[..., 3] < 24)
+	m = Image.fromarray(np.pad(np.where(fondo, 255, 0).astype(np.uint8), 1, constant_values=255), "L").copy()
+	ImageDraw.floodfill(m, (0, 0), 128)
+	fuera = (np.asarray(m)[1:-1, 1:-1] == 128)
+	## Motas sueltas: solo se queda lo unido al centro de la pieza.
+	solido = Image.fromarray(np.where(fuera | (a[..., 3] < 24), 0, 255).astype(np.uint8), "L").copy()
+	cy, cx = a.shape[0] // 2, a.shape[1] // 2
+	if solido.getpixel((cx, cy)) == 255:
+		ImageDraw.floodfill(solido, (cx, cy), 128)
+		fuera = fuera | (np.asarray(solido) == 255)
+	a[..., 3] = np.where(fuera, 0, a[..., 3])
+	out = Image.fromarray(a.astype(np.uint8), "RGBA")
+	bb = out.getbbox()
+	if bb:
+		out = out.crop(bb)
+	out.thumbnail((lado, lado), Image.LANCZOS)
+	out.save(dest)

@@ -194,7 +194,7 @@ def _casa(biblia: dict, carpeta: Path, motor: tuple, semilla: int, casa: dict, i
 	carpeta.mkdir(parents=True, exist_ok=True)
 	out: dict = {}
 	sueltas: dict = {}
-	for i, (k, (que, recorte, (w, h))) in enumerate(casa_mod.piezas(casa).items()):
+	for i, (k, (que, recorte, (w, h))) in enumerate(casa_mod.piezas(casa, biblia).items()):
 		if ya and f"casa/{k}" in ya:
 			continue
 		if recorte:
@@ -220,12 +220,12 @@ def ya_hechos(manifest: dict) -> set[str]:
 	return {f"{g}/{k}" for g in ("iconos", "efectos", "eventos", "casa") for k in (ui.get(g) or {})}
 
 
-def faltan(manifest: dict, arena: bool, superv: bool = False, casa: dict | None = None) -> bool:
+def faltan(manifest: dict, arena: bool, superv: bool = False, casa: dict | None = None, biblia: dict | None = None) -> bool:
 	ya = ya_hechos(manifest)
 	todos = [f"iconos/{k}" for k in ICONOS] + [f"efectos/{k}" for k in EFECTOS]
 	if casa:
 		from director import casa as casa_mod
-		todos += [f"casa/{k}" for k in casa_mod.piezas(casa)]
+		todos += [f"casa/{k}" for k in casa_mod.piezas(casa, biblia)]
 	if superv:
 		todos += [f"efectos/{k}" for k in PROPS_SUPERV] + ["efectos/suelo"]
 	if arena:
