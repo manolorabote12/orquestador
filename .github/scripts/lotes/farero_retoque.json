@@ -1,0 +1,51 @@
+{
+ "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "m_jefe_tormenta",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 7350,
+   "prompt": "Single giant boss creature filling the whole frame, whole body visible, colossal storm queen harpy, a giant woman with huge grey feathered wings spread wide, body made of dark thunderclouds, crown of lightning, glowing eyes, talons, menacing",
+   "recorte": true
+  },
+  {
+   "id": "bg_noche_2",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7450,
+   "prompt": "Vertical scene, a violent storm at night over a black sea, lightning bolts, huge waves, a lighthouse balcony on the right side, rain, dark churning water fills the whole lower third of the image, full bleed painting, no frame, no border, no panel",
+   "recorte": false
+  },
+  {
+   "id": "bg_noche_3",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7451,
+   "prompt": "Vertical scene, a blood red tide at night, crimson water and red coral reefs rising from the sea, red moon, a lighthouse balcony on the right side, dark churning water fills the whole lower third of the image, full bleed painting, no frame, no border, no panel",
+   "recorte": false
+  },
+  {
+   "id": "bg_noche_4",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7452,
+   "prompt": "Vertical scene, a frozen sea at night with ice floes and icebergs under a green aurora borealis, a frosted lighthouse balcony on the right side, dark churning water fills the whole lower third of the image, full bleed painting, no frame, no border, no panel",
+   "recorte": false
+  },
+  {
+   "id": "bg_noche_5",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7453,
+   "prompt": "Vertical scene, a solar eclipse sky with a black sun and pale corona over a dead grey sea, ash falling, a lighthouse balcony on the right side, dark churning water fills the whole lower third of the image, full bleed painting, no frame, no border, no panel",
+   "recorte": false
+  }
+ ]
+}
