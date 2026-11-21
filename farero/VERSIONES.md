@@ -13,3 +13,6 @@
   9 musicas con ACE-Step (menu, dia, una por marea, jefe, victoria; ~10 s de GPU cada una);
   dificultad en rampa dentro de cada marea y jefes suavizados. Bot: 60 noches en 62 intentos
   (perdio la 20 y la 36), sin muros.
+- v5 (21 nov): anuncios con recompensa (botin x2, segunda oportunidad, hora extra), consejos la primera
+  vez, ajustes (musica, efectos, vibracion, idioma, privacidad), titulo con haz giratorio y lluvia,
+  icono, ingles completo (libre/en.json, Idioma), musica a q2 y texturas con perdida (WebP 0,85).
