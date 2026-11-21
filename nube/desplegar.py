@@ -28,7 +28,11 @@ import time
 import urllib.error
 import urllib.request
 
-REST = (os.environ.get("ORQ_RUNPOD_REST") or "https://rest.runpod.io/v1").rstrip("/")
+## 21 nov: RunPod retiro la API REST v1 (rest.runpod.io) el 15 de noviembre; ahora es api.runpod.io/v2
+## con otras rutas y formas. El resto del archivo sigue hablando "en v1": pedir() y lista() traducen.
+REST = (os.environ.get("ORQ_RUNPOD_REST") or "https://api.runpod.io/v2").rstrip("/")
+V2 = "/v2" in REST
+RUTAS_V2 = {"/endpoints": "/serverless", "/networkvolumes": "/network-volumes", "/templates": "/templates"}
 SERVERLESS = (os.environ.get("ORQ_RUNPOD_API") or "https://api.runpod.ai/v2").rstrip("/")
 
 ## 1 - GPUs por orden de preferencia: 24 GB sobran para Z-Image + FLUX.2 klein (y Qwen en fp8).
@@ -49,7 +53,43 @@ class ErrorRunPod(Exception):
 	pass
 
 
+def _a_v2(url: str, cuerpo: dict | None) -> tuple[str, dict | None]:
+	if not V2 or not url.startswith(REST):
+		return url, cuerpo
+	ruta = url[len(REST):]
+	for v1, v2 in RUTAS_V2.items():
+		if ruta.startswith(v1):
+			ruta = v2 + ruta[len(v1):]
+			break
+	if isinstance(cuerpo, dict):
+		cuerpo = dict(cuerpo)
+		w = {k2: cuerpo.pop(k1) for k1, k2 in (("workersMin", "min"), ("workersMax", "max"), ("idleTimeout", "idleTimeout")) if k1 in cuerpo}
+		if w:
+			cuerpo["workers"] = w
+		for k1, k2 in (("imageName", "image"), ("containerDiskInGb", "disk"), ("dataCenterId", "dataCenter")):
+			if k1 in cuerpo:
+				cuerpo[k2] = cuerpo.pop(k1)
+	return REST + ruta, cuerpo
+
+
+def _normalizar(x: dict) -> dict:
+	"""Objetos v2 con los nombres de campo de v1 que usa el resto del codigo."""
+	x = dict(x)
+	w = x.get("workers") or {}
+	x.setdefault("workersMin", w.get("min"))
+	x.setdefault("workersMax", w.get("max"))
+	if "image" in x:
+		x.setdefault("imageName", x["image"])
+	if "networkVolumeId" not in x:
+		red = ((x.get("mounts") or {}).get("network") or []) if isinstance(x.get("mounts"), dict) else []
+		vid = (red[0].get("volumeId") if red else None) or ((x.get("networkVolumes") or [None])[0])
+		if vid:
+			x["networkVolumeId"] = vid
+	return x
+
+
 def pedir(metodo: str, url: str, cuerpo: dict | None = None) -> object:
+	url, cuerpo = _a_v2(url, cuerpo)
 	req = urllib.request.Request(url, method=metodo, data=json.dumps(cuerpo).encode() if cuerpo is not None else None,
 		headers={"Authorization": "Bearer " + os.environ["RUNPOD_API_KEY"], "Content-Type": "application/json",
 			## Cloudflare de RunPod corta el agente por defecto de Python (error 1010).
@@ -76,6 +116,22 @@ def pedir(metodo: str, url: str, cuerpo: dict | None = None) -> object:
 
 
 def lista(ruta: str) -> list[dict]:
+	if V2:
+		out: list[dict] = []
+		cursor = ""
+		for _ in range(20):
+			r = pedir("GET", REST + ruta + ("?cursor=" + cursor if cursor else ""))
+			if not isinstance(r, dict):
+				break
+			for k in ("endpoints", "templates", "networkVolumes", "pods", "data", "items"):
+				if isinstance(r.get(k), list):
+					out += [_normalizar(x) for x in r[k]]
+					break
+			pg = r.get("pagination") or {}
+			cursor = str(pg.get("nextCursor") or "")
+			if not pg.get("hasNextPage") or not cursor:
+				break
+		return out
 	r = pedir("GET", REST + ruta)
 	if r is None:
 		## Una lista vacia de RunPod llega como "null".

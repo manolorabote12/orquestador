@@ -201,9 +201,10 @@ def despertar() -> bool:
 		return False
 	cab = {"Authorization": "Bearer " + clave, "User-Agent": AGENTE, "Content-Type": "application/json"}
 	try:
-		with urllib.request.urlopen(urllib.request.Request("https://rest.runpod.io/v1/endpoints", headers=cab), timeout=30) as r:
+		## 21 nov: la API REST v1 de RunPod se retiro el 15 de noviembre (ahora v2, con la lista en "endpoints").
+		with urllib.request.urlopen(urllib.request.Request("https://api.runpod.io/v2/serverless", headers=cab), timeout=30) as r:
 			d = json.loads(r.read())
-		d = d if isinstance(d, list) else d.get("data", [])
+		d = d if isinstance(d, list) else (d.get("endpoints") or d.get("data") or [])
 		ep = next((e["id"] for e in d if e.get("name") == "orq-fabrica"), "")
 		if not ep:
 			return False
