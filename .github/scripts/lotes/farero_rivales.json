@@ -1,0 +1,132 @@
+{
+ "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "f_norte",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7800,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, stern old woman lighthouse keeper from the frozen north, fur hood, pale eyes, holding an oil lamp, scar on cheek"
+  },
+  {
+   "id": "f_pirata",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7801,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, roguish pirate lighthouse keeper with an eyepatch and a red bandana, golden earring, grinning, holding a brass spyglass"
+  },
+  {
+   "id": "f_monje",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7802,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, silent bald monk lighthouse keeper in grey robes, prayer beads, calm, candle in hand"
+  },
+  {
+   "id": "f_nina",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7803,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, young girl lighthouse keeper with braids and an oversized yellow raincoat, fearless, holding a big lantern"
+  },
+  {
+   "id": "f_capitana",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7804,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, proud navy captain woman lighthouse keeper in a blue coat with brass buttons and tricorn hat, sabre at her side"
+  },
+  {
+   "id": "f_inventor",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7805,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, eccentric old inventor lighthouse keeper with goggles on his forehead, wild white hair, mechanical arm"
+  },
+  {
+   "id": "f_bruja",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7806,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, mysterious veiled woman lighthouse keeper in black lace, green witch light floating over her palm"
+  },
+  {
+   "id": "f_gemelos",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7807,
+   "recorte": true,
+   "prompt": "Half body portrait of a character, facing the viewer, two twin brothers lighthouse keepers in matching striped sweaters, one smiling one serious, back to back"
+  },
+  {
+   "id": "h_grog",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7900,
+   "recorte": true,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, burly ship cook with a stained apron, a huge ladle and a steaming pot, missing teeth, jolly"
+  },
+  {
+   "id": "h_sable",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7901,
+   "recorte": true,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, dashing pirate swordswoman with two cutlasses, long red coat, feathered hat, confident smirk"
+  },
+  {
+   "id": "h_tobias",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7902,
+   "recorte": true,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, thin old lamplighter with a long brass lighting pole and a lantern, top hat, kind eyes"
+  },
+  {
+   "id": "h_nanuk",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7903,
+   "recorte": true,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, arctic harpooner in seal-skin parka with a barbed harpoon and coiled chain, tattooed chin"
+  },
+  {
+   "id": "h_grimm",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7904,
+   "recorte": true,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, gaunt widow gravedigger in black mourning dress with a shovel over her shoulder, veil, pale"
+  },
+  {
+   "id": "h_kael",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7905,
+   "recorte": true,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, translucent ghost sailor made of mist with glowing blue eyes, old navy uniform, holding a spectral boarding axe"
+  }
+ ]
+}

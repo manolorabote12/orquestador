@@ -515,6 +515,56 @@ func liga_defenses() -> Array:
 	return r if r is Array else []
 
 
+# ------------------------------------------------------------------ duelos asincronos (cualquier juego)
+## Como las arenas de AFK Arena: subes tu equipo de defensa (un JSON que entiende tu juego) y luchas
+## contra el equipo guardado de otros jugadores, manejado por la IA en tu movil. Nadie tiene que estar
+## conectado a la vez. Sin servidor (o sin apodo) devuelve vacio y el juego usa rivales propios.
+
+func duelo_publicar(team: Variant, power: int) -> Dictionary:
+	if not available() or alias() == "":
+		return {}
+	var r: Variant = await _rpc("duelo_publicar", {"p_juego": str(config().get("game", "")), "p_sesion": device(),
+		"p_alias": alias(), "p_equipo": team, "p_poder": maxi(0, power)})
+	return r if r is Dictionary else {}
+
+
+## {"yo": {"puntos", "victorias", "derrotas"}, "rivales": [{"id", "alias", "equipo", "poder", "puntos"}]}
+func duelo_rivales() -> Dictionary:
+	if not available() or alias() == "":
+		return {}
+	var r: Variant = await _rpc("duelo_rivales", {"p_juego": str(config().get("game", "")), "p_sesion": device()})
+	return r if r is Dictionary and (r as Dictionary).has("rivales") else {}
+
+
+func duelo_empezar(rival_id: int) -> Dictionary:
+	if not available():
+		return {}
+	var r: Variant = await _rpc("duelo_empezar", {"p_juego": str(config().get("game", "")), "p_sesion": device(), "p_rival": rival_id})
+	return r if r is Dictionary and (r as Dictionary).has("combate") else {}
+
+
+func duelo_resultado(fight_id: int, won: bool) -> Dictionary:
+	if not available():
+		return {}
+	var r: Variant = await _rpc("duelo_resultado", {"p_juego": str(config().get("game", "")), "p_sesion": device(),
+		"p_combate": fight_id, "p_gano": won})
+	return r if r is Dictionary else {}
+
+
+func duelo_top(limit: int = 20) -> Array:
+	if not available():
+		return []
+	var r: Variant = await _rpc("duelo_top", {"p_juego": str(config().get("game", "")), "p_sesion": device(), "p_limite": limit})
+	return r if r is Array else []
+
+
+func duelo_registro() -> Array:
+	if not available():
+		return []
+	var r: Variant = await _rpc("duelo_registro", {"p_juego": str(config().get("game", "")), "p_sesion": device()})
+	return r if r is Array else []
+
+
 # ------------------------------------------------------------------ charla con personajes
 
 var _chat_active: int = -1
