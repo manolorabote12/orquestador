@@ -1,0 +1,481 @@
+{
+ "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "h_bram",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7100,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, huge bearded blacksmith giant with a leather apron, a massive smithing hammer on his shoulder and a glowing anvil-shaped iron shield, soot on his arms, kind tired eyes",
+   "recorte": true
+  },
+  {
+   "id": "h_mireia",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7101,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, young pearl diver woman in a patched diving suit with a brass helmet under her arm, a harpoon and a net of glowing pearls, wet hair, brave smile",
+   "recorte": true
+  },
+  {
+   "id": "h_ossian",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7102,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, old blind bard with a white bandage over his eyes and a long grey coat, playing a carved wooden harp that emits faint golden notes of light",
+   "recorte": true
+  },
+  {
+   "id": "h_hilda",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7103,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, strong icebreaker sailor woman in thick fur coat and iron-studded gloves, holding a heavy ice axe, frost on her braids",
+   "recorte": true
+  },
+  {
+   "id": "h_zahir",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7104,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, desert alchemist man in layered sand-colored robes and turban, belt of bubbling glass vials, holding a smoking green flask",
+   "recorte": true
+  },
+  {
+   "id": "h_selene",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7105,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, young astronomer woman in a dark blue cloak covered with embroidered constellations, holding a brass telescope and a small glowing star in her palm",
+   "recorte": true
+  },
+  {
+   "id": "h_pip",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7106,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, small brave boy bell ringer in an oversized coat, carrying a big bronze bell that glows softly, freckles, determined",
+   "recorte": true
+  },
+  {
+   "id": "h_morgana",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7107,
+   "prompt": "Full-body standing character, whole figure from head to feet visible, facing the viewer in three quarter view, repentant sea witch woman with seaweed hair and coral jewelry, dark teal dress, holding a staff topped with a glowing conch shell, sad wise expression",
+   "recorte": true
+  },
+  {
+   "id": "m_ahogado",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7200,
+   "prompt": "Single monster creature, whole body visible, menacing pose, drowned sailor zombie covered in barnacles and dripping seaweed, glowing pale eyes, rotten rope around his neck",
+   "recorte": true
+  },
+  {
+   "id": "m_arpia",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7201,
+   "prompt": "Single monster creature, whole body visible, menacing pose, storm harpy monster with ragged grey wings and lightning crackling between its talons, screaming bird-woman face",
+   "recorte": true
+  },
+  {
+   "id": "m_medusa",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7202,
+   "prompt": "Single monster creature, whole body visible, menacing pose, giant floating jellyfish monster crackling with blue electric lightning, long luminous tentacles",
+   "recorte": true
+  },
+  {
+   "id": "m_tentaculo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7203,
+   "prompt": "Single monster creature, whole body visible, menacing pose, huge slimy kraken tentacle rising from dark water, covered in suckers and barnacles, coiling menacingly",
+   "recorte": true
+  },
+  {
+   "id": "m_golem_coral",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7204,
+   "prompt": "Single monster creature, whole body visible, menacing pose, hulking golem made of jagged sharp coral and rock, spiky branches growing from its shoulders, glowing cracks",
+   "recorte": true
+  },
+  {
+   "id": "m_sirena",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7205,
+   "prompt": "Single monster creature, whole body visible, menacing pose, eerie siren monster with blood red scales and long black hair, mouth open singing, hypnotic glowing eyes, fish tail",
+   "recorte": true
+  },
+  {
+   "id": "m_cangrejo_rojo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7206,
+   "prompt": "Single monster creature, whole body visible, menacing pose, giant hermit crab monster living inside a human skull covered in red coral, huge claws",
+   "recorte": true
+  },
+  {
+   "id": "m_anguila",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7207,
+   "prompt": "Single monster creature, whole body visible, menacing pose, crimson giant moray eel monster with rows of needle teeth, coiled and furious",
+   "recorte": true
+  },
+  {
+   "id": "m_pescador",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7208,
+   "prompt": "Single monster creature, whole body visible, menacing pose, faceless fisherman phantom in a yellow oilskin raincoat with an empty dark hood, holding a rusty hook and lantern",
+   "recorte": true
+  },
+  {
+   "id": "m_lobo_hielo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7209,
+   "prompt": "Single monster creature, whole body visible, menacing pose, spectral frost wolf monster made of ice shards and cold mist, glowing blue eyes, snarling",
+   "recorte": true
+  },
+  {
+   "id": "m_morsa",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7210,
+   "prompt": "Single monster creature, whole body visible, menacing pose, ghostly giant walrus monster with cracked ice tusks and frozen chains, pale blue aura",
+   "recorte": true
+  },
+  {
+   "id": "m_llorona",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7211,
+   "prompt": "Single monster creature, whole body visible, menacing pose, weeping ice maiden ghost with a veil of frost, tears frozen as icicles, hovering",
+   "recorte": true
+  },
+  {
+   "id": "m_tripulante",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7212,
+   "prompt": "Single monster creature, whole body visible, menacing pose, frozen ghost sailor covered in ice and frost, stiff limbs, holding a frozen cutlass",
+   "recorte": true
+  },
+  {
+   "id": "m_ojo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7213,
+   "prompt": "Single monster creature, whole body visible, menacing pose, floating giant eye monster surrounded by black eclipse corona and thin tendrils, golden iris",
+   "recorte": true
+  },
+  {
+   "id": "m_polilla",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7214,
+   "prompt": "Single monster creature, whole body visible, menacing pose, huge ash moth monster with grey dusty wings patterned like eyes, attracted to light, glowing embers",
+   "recorte": true
+  },
+  {
+   "id": "m_caballero",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7215,
+   "prompt": "Single monster creature, whole body visible, menacing pose, hollow knight in black rusted armor with an extinguished lantern instead of a head, dark smoke leaking",
+   "recorte": true
+  },
+  {
+   "id": "m_eco",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 7216,
+   "prompt": "Single monster creature, whole body visible, menacing pose, shadowy mirror double of a lighthouse keeper, made of black smoke with a cracked porcelain face",
+   "recorte": true
+  },
+  {
+   "id": "m_jefe_tormenta",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 7300,
+   "prompt": "Single giant boss creature, whole body visible, colossal storm queen boss monster, a giant harpy woman made of thunderclouds with a crown of lightning, enormous wings spread",
+   "recorte": true
+  },
+  {
+   "id": "m_jefe_coral",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 7301,
+   "prompt": "Single giant boss creature, whole body visible, colossal boss monster, a giant beating heart made of blood red coral and bones with tentacles and many small mouths",
+   "recorte": true
+  },
+  {
+   "id": "m_jefe_helado",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 7302,
+   "prompt": "Single giant boss creature, whole body visible, colossal boss monster, a ghost ship captain fused with his frozen ship, icicle beard, huge frozen anchor weapon, pale blue glow",
+   "recorte": true
+  },
+  {
+   "id": "m_jefe_eclipse",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 7303,
+   "prompt": "Single giant boss creature, whole body visible, colossal final boss monster, a towering faceless titan of black smoke whose head is a black sun eclipse, reaching out to snuff out a lighthouse lamp",
+   "recorte": true
+  },
+  {
+   "id": "bg_noche_2",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7400,
+   "prompt": "Vertical scene, a violent storm at night over a black sea, lightning bolts, huge waves, a lighthouse balcony on the right side, rain, empty lower area for game interface",
+   "recorte": false
+  },
+  {
+   "id": "bg_noche_3",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7401,
+   "prompt": "Vertical scene, a blood red tide at night, crimson water and red coral reefs rising from the sea, red moon, a lighthouse balcony on the right side, empty lower area for game interface",
+   "recorte": false
+  },
+  {
+   "id": "bg_noche_4",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7402,
+   "prompt": "Vertical scene, a frozen sea at night with ice floes and icebergs under a green aurora borealis, a frosted lighthouse balcony on the right side, empty lower area for game interface",
+   "recorte": false
+  },
+  {
+   "id": "bg_noche_5",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7403,
+   "prompt": "Vertical scene, a solar eclipse sky with a black sun and pale corona over a dead grey sea, ash falling, a lighthouse balcony on the right side, empty lower area for game interface",
+   "recorte": false
+  },
+  {
+   "id": "bg_faro",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7404,
+   "prompt": "Vertical scene, cutaway cross-section of a tall old lighthouse tower showing many floors inside: lamp room at the top, machine room, workshop, infirmary, library, cellar at the bottom, warm interior lights, night fog outside, empty lower area for game interface",
+   "recorte": false
+  },
+  {
+   "id": "bg_mapa",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7405,
+   "prompt": "Vertical scene, an antique nautical chart map of five strange seas around a tiny lighthouse island: a foggy sea, a stormy sea, a red sea, a frozen sea and a dark eclipse sea, compass rose, sea monsters drawn in the margins, aged paper, empty lower area for game interface",
+   "recorte": false
+  },
+  {
+   "id": "r_brujula",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7500,
+   "prompt": "an antique brass compass with a glowing needle",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_campana",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7501,
+   "prompt": "a small bronze ship bell",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_perla",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7502,
+   "prompt": "a glowing black pearl in an open shell",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_ancla",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7503,
+   "prompt": "a tiny golden anchor pendant",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_reloj",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7504,
+   "prompt": "a cracked silver pocket watch",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_llave",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7505,
+   "prompt": "an ornate rusty key with a sea serpent handle",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_vela",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7506,
+   "prompt": "a lit candle in a brass holder",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_diente",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7507,
+   "prompt": "a huge monster fang on a leather cord",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_coral",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7508,
+   "prompt": "a branch of red coral",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_escarcha",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7509,
+   "prompt": "a frozen blue crystal shard",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_pluma",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7510,
+   "prompt": "a storm feather crackling with lightning",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_mapa",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7511,
+   "prompt": "a rolled old treasure map with a red wax seal",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_lente",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7512,
+   "prompt": "a glowing lighthouse lens prism",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_rosario",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7513,
+   "prompt": "a rosary of seashells",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_frasco",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7514,
+   "prompt": "a glass vial with a glowing green potion",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  },
+  {
+   "id": "r_corona",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 7515,
+   "prompt": "a small tarnished crown of a drowned king",
+   "recorte": true,
+   "estilo": "Single game item icon, ink engraving illustration with muted watercolor, warm amber glow, clean bold silhouette, centered"
+  }
+ ]
+}
