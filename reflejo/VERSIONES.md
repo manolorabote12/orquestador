@@ -11,5 +11,7 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
   mejoras (5 niveles), 7 bufandas, 15 fragmentos de historia; reto del día (semilla diaria), regalo
   diario, seguir con anuncio o con luces, luces x2 con anuncio, tienda; español, inglés y portugués;
   5 músicas con ACE-Step. Arte 0,05 $ + música ~0,05 $.
+  Ambiente por mundo (pétalos, luciérnagas, chispas, nieve, estrellas fugaces), «plop» de agua al cruzar,
+  destello al cambiar de mundo y pistas en pantalla las dos primeras carreras.
   Fantasma: tu mejor carrera corre contigo («tu récord») y avisa al adelantarla.
   Bot (ve el futuro 0,9 s): 6 de 6 carreras a 3000 m, ninguna muerte injusta.
