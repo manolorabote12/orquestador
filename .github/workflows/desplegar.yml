@@ -195,7 +195,9 @@ jobs:
 
   supabase:
     needs: runpod
-    if: ${{ !cancelled() && needs.runpod.result == 'success' }}
+    ## 21 nov: la base de datos ya no espera a que RunPod salga bien (la API v2 de RunPod bloqueaba
+    ## las migraciones). El endpoint de la fabrica solo se cambia si RunPod lo ha dado.
+    if: ${{ !cancelled() && needs.runpod.result != 'skipped' }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -227,8 +229,10 @@ jobs:
         run: |
           supabase secrets set --project-ref "$REF" --yes \
             RUNPOD_API_KEY="${{ secrets.RUNPOD_API_KEY }}" \
-            RUNPOD_FABRICA_ENDPOINT="${{ needs.runpod.outputs.fabrica }}" \
             ANTHROPIC_API_KEY="${{ secrets.ANTHROPIC_API_KEY }}"
+          if [ -n "${{ needs.runpod.outputs.fabrica }}" ]; then
+            supabase secrets set --project-ref "$REF" --yes RUNPOD_FABRICA_ENDPOINT="${{ needs.runpod.outputs.fabrica }}"
+          fi
           if [ -n "${{ secrets.ORQ_PLAY_CUENTA_CORREO }}" ]; then
             supabase secrets set --project-ref "$REF" --yes ORQ_PLAY_CUENTA_CORREO="${{ secrets.ORQ_PLAY_CUENTA_CORREO }}"
           fi

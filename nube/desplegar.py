@@ -32,7 +32,8 @@ import urllib.request
 ## con otras rutas y formas. El resto del archivo sigue hablando "en v1": pedir() y lista() traducen.
 REST = (os.environ.get("ORQ_RUNPOD_REST") or "https://api.runpod.io/v2").rstrip("/")
 V2 = "/v2" in REST
-RUTAS_V2 = {"/endpoints": "/serverless", "/networkvolumes": "/network-volumes", "/templates": "/templates"}
+RUTAS_V2 = {"/endpoints": "/serverless", "/networkvolumes": "/network-volumes", "/templates": "/templates",
+	"/containerregistryauth": "/registries"}
 SERVERLESS = (os.environ.get("ORQ_RUNPOD_API") or "https://api.runpod.ai/v2").rstrip("/")
 
 ## 1 - GPUs por orden de preferencia: 24 GB sobran para Z-Image + FLUX.2 klein (y Qwen en fp8).
@@ -123,7 +124,7 @@ def lista(ruta: str) -> list[dict]:
 			r = pedir("GET", REST + ruta + ("?cursor=" + cursor if cursor else ""))
 			if not isinstance(r, dict):
 				break
-			for k in ("endpoints", "templates", "networkVolumes", "pods", "data", "items"):
+			for k in ("endpoints", "templates", "networkVolumes", "registries", "pods", "data", "items"):
 				if isinstance(r.get(k), list):
 					out += [_normalizar(x) for x in r[k]]
 					break
