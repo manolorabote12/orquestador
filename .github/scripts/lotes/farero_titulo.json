@@ -1,0 +1,44 @@
+{
+ "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "bg_titulo_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7600,
+   "recorte": false,
+   "prompt": "Vertical scene, a lonely lighthouse on a rocky island at night seen from the sea, its powerful golden beam cutting through thick fog, huge shadowy sea monsters silhouettes half hidden in the fog around the island, stormy dark sky with lots of empty dark space in the upper third, waves crashing, epic and mysterious, full bleed painting, no text, no frame"
+  },
+  {
+   "id": "bg_titulo_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 7601,
+   "recorte": false,
+   "prompt": "Vertical scene, a lonely lighthouse on a rocky island at night seen from the sea, its powerful golden beam cutting through thick fog, huge shadowy sea monsters silhouettes half hidden in the fog around the island, stormy dark sky with lots of empty dark space in the upper third, waves crashing, epic and mysterious, full bleed painting, no text, no frame"
+  },
+  {
+   "id": "icono_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 7700,
+   "recorte": false,
+   "estilo": "Mobile game app icon, bold simple composition, strong silhouette readable at small size, rich colors, painterly, no text",
+   "prompt": "a black and white striped lighthouse on a tiny rock with a bright golden beam of light, glowing eyes of a sea monster in the dark teal fog behind it, centered, dramatic"
+  },
+  {
+   "id": "icono_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 7701,
+   "recorte": false,
+   "estilo": "Mobile game app icon, bold simple composition, strong silhouette readable at small size, rich colors, painterly, no text",
+   "prompt": "a black and white striped lighthouse on a tiny rock with a bright golden beam of light, glowing eyes of a sea monster in the dark teal fog behind it, centered, dramatic"
+  }
+ ]
+}
