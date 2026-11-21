@@ -110,7 +110,10 @@ def _a_v2(url: str, cuerpo: dict | None, metodo: str = "GET") -> tuple[str, dict
 				cuerpo.setdefault("type", "QUEUE")
 		if ruta.startswith("/templates"):
 			## v2 no admite estos campos en las plantillas (422 «additional properties ... not allowed»).
-			cuerpo.pop("isServerless", None)
+			## Al crear, v2 lo llama "serverless" (sin el, la plantilla sale de pod y el endpoint la rechaza).
+			sl = cuerpo.pop("isServerless", None)
+			if sl is not None and metodo == "POST":
+				cuerpo["serverless"] = bool(sl)
 			cuerpo.pop("volumeInGb", None)
 			auth = cuerpo.pop("containerRegistryAuthId", None)
 			if auth:
@@ -193,6 +196,10 @@ def asegurar(ruta: str, nombre: str, datos: dict, actualizar: bool = True) -> tu
 	"""Crea o actualiza por nombre. Devuelve (objeto, 'creado'|'actualizado'|'igual')."""
 	ya = por_nombre(ruta, nombre)
 	if ya is None:
+		return pedir("POST", REST + ruta, {"name": nombre, **datos}), "creado"
+	if ruta == "/templates" and datos.get("isServerless") and ya.get("serverless") is False:
+		## Plantilla creada como "de pod" (21 nov, paso a v2): no se puede cambiar; se borra y se crea bien.
+		pedir("DELETE", f"{REST}{ruta}/{ya['id']}")
 		return pedir("POST", REST + ruta, {"name": nombre, **datos}), "creado"
 	if not actualizar:
 		return ya, "igual"
