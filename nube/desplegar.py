@@ -54,7 +54,7 @@ class ErrorRunPod(Exception):
 	pass
 
 
-def _a_v2(url: str, cuerpo: dict | None) -> tuple[str, dict | None]:
+def _a_v2(url: str, cuerpo: dict | None, metodo: str = "GET") -> tuple[str, dict | None]:
 	if not V2 or not url.startswith(REST):
 		return url, cuerpo
 	ruta = url[len(REST):]
@@ -70,6 +70,13 @@ def _a_v2(url: str, cuerpo: dict | None) -> tuple[str, dict | None]:
 		for k1, k2 in (("imageName", "image"), ("containerDiskInGb", "disk"), ("dataCenterId", "dataCenter")):
 			if k1 in cuerpo:
 				cuerpo[k2] = cuerpo.pop(k1)
+		if ruta.startswith("/templates"):
+			## v2 no admite estos campos en las plantillas (422 «additional properties ... not allowed»).
+			cuerpo.pop("isServerless", None)
+			cuerpo.pop("volumeInGb", None)
+			auth = cuerpo.pop("containerRegistryAuthId", None)
+			if auth and metodo == "POST":
+				cuerpo["registry"] = {"id": auth}
 	return REST + ruta, cuerpo
 
 
@@ -90,7 +97,7 @@ def _normalizar(x: dict) -> dict:
 
 
 def pedir(metodo: str, url: str, cuerpo: dict | None = None) -> object:
-	url, cuerpo = _a_v2(url, cuerpo)
+	url, cuerpo = _a_v2(url, cuerpo, metodo)
 	req = urllib.request.Request(url, method=metodo, data=json.dumps(cuerpo).encode() if cuerpo is not None else None,
 		headers={"Authorization": "Bearer " + os.environ["RUNPOD_API_KEY"], "Content-Type": "application/json",
 			## Cloudflare de RunPod corta el agente por defecto de Python (error 1010).
