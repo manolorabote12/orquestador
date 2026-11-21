@@ -16,3 +16,9 @@
 - v5 (21 nov): anuncios con recompensa (botin x2, segunda oportunidad, hora extra), consejos la primera
   vez, ajustes (musica, efectos, vibracion, idioma, privacidad), titulo con haz giratorio y lluvia,
   icono, ingles completo (libre/en.json, Idioma), musica a q2 y texturas con perdida (WebP 0,85).
+- v6 (21 nov): Arena de los Fareros (duelos asincronos de verdad con Supabase; sin conexion, 8 fareros
+  rivales de la historia marcados como personajes), amigos por codigo (asaltar su faro), Taberna del
+  Ahogado (6 heroes nuevos, insignias y estrellas +12%), definitivas (energia: a 100 la habilidad sale
+  gratis y x2,2), tienda (packs de ambar, sin anuncios), portugues, equipos remotos validados.
+  Dificultad: vida 1+0,22(n-1), ataque 1+0,125(n-1), jefes x1,22, regeneracion de jefe 3%.
+  Bot: 60 noches en 64 intentos (perdio la 18 una vez y la 47 tres), modos reto y eterna superados.
