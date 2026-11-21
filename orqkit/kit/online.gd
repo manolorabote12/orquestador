@@ -551,6 +551,14 @@ func duelo_resultado(fight_id: int, won: bool) -> Dictionary:
 	return r if r is Dictionary else {}
 
 
+## Equipos de defensa de tus amigos (anadidos con friend_add): [{"id", "alias", "equipo", "poder", "puntos"}].
+func duelo_amigos() -> Array:
+	if not available():
+		return []
+	var r: Variant = await _rpc("duelo_amigos", {"p_juego": str(config().get("game", "")), "p_sesion": device()})
+	return r if r is Array else []
+
+
 func duelo_top(limit: int = 20) -> Array:
 	if not available():
 		return []
