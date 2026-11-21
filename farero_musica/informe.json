@@ -1,0 +1,51 @@
+{
+ "pistas": {
+  "menu": {
+   "segundos": 78.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "dia": {
+   "segundos": 78.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "marea_1": {
+   "segundos": 88.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "marea_2": {
+   "segundos": 88.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "marea_3": {
+   "segundos": 88.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "marea_4": {
+   "segundos": 88.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "marea_5": {
+   "segundos": 88.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "jefe": {
+   "segundos": 88.5,
+   "intentos": 1,
+   "bucle": true
+  },
+  "victoria": {
+   "segundos": 12.0,
+   "intentos": 1,
+   "bucle": false
+  }
+ },
+ "fallos": {},
+ "segundos": 183
+}
