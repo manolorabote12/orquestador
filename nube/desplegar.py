@@ -209,6 +209,10 @@ def asegurar(ruta: str, nombre: str, datos: dict, actualizar: bool = True) -> tu
 			pedir("PATCH", f"{REST}{ruta}/{ya['id']}", cambios)
 			break
 		except ErrorRunPod as e:
+			if "compute type cannot be changed" in str(e) and ruta == "/endpoints":
+				## Endpoint creado con el tipo equivocado (CPU/GPU) al pasar a v2: no se puede cambiar; se rehace.
+				pedir("DELETE", f"{REST}{ruta}/{ya['id']}")
+				return pedir("POST", REST + ruta, {"name": nombre, **datos}), "creado"
 			## Al actualizar, RunPod no admite algunos campos que si pide al crear (p. ej. isServerless o
 			## category de una plantilla): los quita y lo vuelve a intentar.
 			sobran = set(re.findall(r"not in input schema: '([A-Za-z0-9_]+)'", str(e))) & set(cambios)
