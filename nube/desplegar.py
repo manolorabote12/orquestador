@@ -50,6 +50,14 @@ OBLIGATORIOS = ["RUNPOD_API_KEY", "SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "
 	"ANTHROPIC_API_KEY", "ORQ_LLAVES_SECRETO"]
 
 
+## RunPod v2 elige GPUs por grupos (docs.runpod.io/sdk/configuration/gpu-types).
+POOLS_GPU = {"NVIDIA GeForce RTX 4090": "ADA_24", "NVIDIA GeForce RTX 5090": "ADA_32_PRO",
+	"NVIDIA GeForce RTX 3090": "AMPERE_24", "NVIDIA RTX A5000": "AMPERE_24", "NVIDIA L4": "AMPERE_24",
+	"NVIDIA RTX A4000": "AMPERE_16", "NVIDIA RTX A4500": "AMPERE_16", "NVIDIA RTX 4000 Ada Generation": "AMPERE_16",
+	"NVIDIA A40": "AMPERE_48", "NVIDIA RTX A6000": "AMPERE_48", "NVIDIA L40": "ADA_48_PRO", "NVIDIA L40S": "ADA_48_PRO",
+	"NVIDIA RTX 6000 Ada Generation": "ADA_48_PRO", "NVIDIA A100 80GB PCIe": "AMPERE_80"}
+
+
 class ErrorRunPod(Exception):
 	pass
 
@@ -80,6 +88,26 @@ def _a_v2(url: str, cuerpo: dict | None, metodo: str = "GET") -> tuple[str, dict
 				cuerpo["scaling"] = {"type": tipo, ("requestCount" if tipo == "REQUEST_COUNT" else "queueDelay"): valor}
 			if "executionTimeoutMs" in cuerpo:
 				cuerpo["timeout"] = cuerpo.pop("executionTimeoutMs")
+			## v2: GPUs por "pools" (grupos), CPU por sabor+vCPU, volumen como "mounts"; sin computeType.
+			cuerpo.pop("computeType", None)
+			if "gpuTypeIds" in cuerpo:
+				pools: list[str] = []
+				for g in cuerpo.pop("gpuTypeIds") or []:
+					pool = POOLS_GPU.get(str(g), str(g))
+					if pool not in pools:
+						pools.append(pool)
+				cuerpo["gpu"] = {"pools": pools, "count": int(cuerpo.pop("gpuCount", 1) or 1)}
+			cuerpo.pop("gpuCount", None)
+			if "cpuFlavorIds" in cuerpo:
+				vcpu = int(cuerpo.pop("vcpuCount", 4) or 4)
+				cuerpo["cpu"] = [{"id": str(f), "vcpuCount": vcpu} for f in cuerpo.pop("cpuFlavorIds") or []]
+			cuerpo.pop("vcpuCount", None)
+			if "networkVolumeId" in cuerpo:
+				vid = cuerpo.pop("networkVolumeId")
+				if vid:
+					cuerpo["mounts"] = {"network": [{"volumeId": vid}]}
+			if metodo == "POST":
+				cuerpo.setdefault("type", "QUEUE")
 		if ruta.startswith("/templates"):
 			## v2 no admite estos campos en las plantillas (422 «additional properties ... not allowed»).
 			cuerpo.pop("isServerless", None)
