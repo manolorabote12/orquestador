@@ -113,8 +113,8 @@ def _a_v2(url: str, cuerpo: dict | None, metodo: str = "GET") -> tuple[str, dict
 			cuerpo.pop("isServerless", None)
 			cuerpo.pop("volumeInGb", None)
 			auth = cuerpo.pop("containerRegistryAuthId", None)
-			if auth and metodo == "POST":
-				cuerpo["registry"] = {"id": auth}
+			if auth:
+				cuerpo["registry"] = str(auth)
 	return REST + ruta, cuerpo
 
 
