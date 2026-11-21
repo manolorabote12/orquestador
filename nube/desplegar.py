@@ -70,6 +70,14 @@ def _a_v2(url: str, cuerpo: dict | None, metodo: str = "GET") -> tuple[str, dict
 		for k1, k2 in (("imageName", "image"), ("containerDiskInGb", "disk"), ("dataCenterId", "dataCenter")):
 			if k1 in cuerpo:
 				cuerpo[k2] = cuerpo.pop(k1)
+		if ruta.startswith("/serverless"):
+			if isinstance(cuerpo.get("flashboot"), bool):
+				cuerpo["flashboot"] = "FLASHBOOT" if cuerpo["flashboot"] else "OFF"
+			sc = {k2: cuerpo.pop(k1) for k1, k2 in (("scalerType", "type"), ("scalerValue", "value")) if k1 in cuerpo}
+			if sc:
+				cuerpo["scaling"] = sc
+			if "executionTimeoutMs" in cuerpo:
+				cuerpo["timeout"] = cuerpo.pop("executionTimeoutMs")
 		if ruta.startswith("/templates"):
 			## v2 no admite estos campos en las plantillas (422 «additional properties ... not allowed»).
 			cuerpo.pop("isServerless", None)
