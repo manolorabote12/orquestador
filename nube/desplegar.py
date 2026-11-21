@@ -86,6 +86,9 @@ def _a_v2(url: str, cuerpo: dict | None, metodo: str = "GET") -> tuple[str, dict
 				tipo = str(cuerpo.pop("scalerType", "QUEUE_DELAY"))
 				valor = int(cuerpo.pop("scalerValue", 4))
 				cuerpo["scaling"] = {"type": tipo, ("requestCount" if tipo == "REQUEST_COUNT" else "queueDelay"): valor}
+				if tipo == "REQUEST_COUNT" and isinstance(cuerpo.get("workers"), dict):
+					## v2: «idleTimeout does not apply to queue-based endpoints scaling on requestCount».
+					cuerpo["workers"].pop("idleTimeout", None)
 			if "executionTimeoutMs" in cuerpo:
 				cuerpo["timeout"] = cuerpo.pop("executionTimeoutMs")
 			## v2: GPUs por "pools" (grupos), CPU por sabor+vCPU, volumen como "mounts"; sin computeType.
