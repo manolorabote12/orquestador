@@ -1,0 +1,78 @@
+{
+ "familia": "dreamy ambient electronic with piano and strings, emotional and driving, like Alto's Odyssey and Journey",
+ "pistas": [
+  {
+   "id": "menu",
+   "papel": "menu",
+   "tempo": 80,
+   "tonalidad": "A major",
+   "segundos": 80,
+   "ambiente": "calm sunset over a mirror lake, wonder and nostalgia, gentle",
+   "instrumentos": [
+    "felt piano",
+    "warm synth pads",
+    "soft strings",
+    "glass chimes"
+   ]
+  },
+  {
+   "id": "carrera_1",
+   "papel": "nivel",
+   "tempo": 112,
+   "tonalidad": "D major",
+   "segundos": 100,
+   "ambiente": "running free along a shore at sunset, uplifting, flowing momentum, hopeful",
+   "instrumentos": [
+    "piano arpeggios",
+    "soft electronic drums",
+    "strings",
+    "plucked synth",
+    "handpan"
+   ]
+  },
+  {
+   "id": "carrera_2",
+   "papel": "nivel",
+   "tempo": 120,
+   "tonalidad": "F# minor",
+   "segundos": 100,
+   "ambiente": "racing through a sunken city at twilight, mysterious and fast, chasing your own reflection",
+   "instrumentos": [
+    "arpeggiated synth",
+    "electronic drums",
+    "cello",
+    "glass bells",
+    "deep bass"
+   ]
+  },
+  {
+   "id": "carrera_3",
+   "papel": "nivel",
+   "tempo": 126,
+   "tonalidad": "B minor",
+   "segundos": 100,
+   "ambiente": "starry night sky upside down, euphoric and cosmic, flying fast",
+   "instrumentos": [
+    "shimmering synths",
+    "driving drums",
+    "choir pads",
+    "piano",
+    "sub bass"
+   ]
+  },
+  {
+   "id": "fin",
+   "papel": "victoria",
+   "tempo": 80,
+   "tonalidad": "A major",
+   "segundos": 10,
+   "bucle": false,
+   "ambiente": "soft landing, a ripple fades on the water, bittersweet",
+   "instrumentos": [
+    "felt piano",
+    "chimes",
+    "strings"
+   ]
+  }
+ ]
+}

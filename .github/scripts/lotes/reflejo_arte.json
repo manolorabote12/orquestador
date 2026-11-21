@@ -1,0 +1,134 @@
+{
+ "estilo": "Dreamy painterly digital matte painting, soft volumetric light, rich atmospheric gradients, Studio Ghibli meets Journey game mood, minimal detail near the bottom, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "cielo_lago_0",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8100,
+   "recorte": false,
+   "prompt": "Wide landscape painting, vast sky at golden sunset over a perfectly calm lake, warm orange pink and violet clouds, sun low near the horizon, far away soft blue mountains just above the horizon line at the very bottom, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_lago_1",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8101,
+   "recorte": false,
+   "prompt": "Wide landscape painting, vast sky at golden sunset over a perfectly calm lake, warm orange pink and violet clouds, sun low near the horizon, far away soft blue mountains just above the horizon line at the very bottom, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_bosque_0",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8102,
+   "recorte": false,
+   "prompt": "Wide landscape painting, misty sky above a flooded ancient forest at dawn, pale green and teal haze, tall distant tree silhouettes fading in fog at the very bottom, god rays through the mist, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_bosque_1",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8103,
+   "recorte": false,
+   "prompt": "Wide landscape painting, misty sky above a flooded ancient forest at dawn, pale green and teal haze, tall distant tree silhouettes fading in fog at the very bottom, god rays through the mist, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_ciudad_0",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8104,
+   "recorte": false,
+   "prompt": "Wide landscape painting, twilight sky over a sunken city, deep blue and turquoise, distant silhouettes of drowned towers and domes and lamp posts at the very bottom, first stars, soft lantern glow, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_ciudad_1",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8105,
+   "recorte": false,
+   "prompt": "Wide landscape painting, twilight sky over a sunken city, deep blue and turquoise, distant silhouettes of drowned towers and domes and lamp posts at the very bottom, first stars, soft lantern glow, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_glaciar_0",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8106,
+   "recorte": false,
+   "prompt": "Wide landscape painting, cold crystal clear sky above a frozen glacier lake, ice blue and white, aurora faint green ribbons, distant jagged ice peaks at the very bottom, sparkling cold light, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_glaciar_1",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8107,
+   "recorte": false,
+   "prompt": "Wide landscape painting, cold crystal clear sky above a frozen glacier lake, ice blue and white, aurora faint green ribbons, distant jagged ice peaks at the very bottom, sparkling cold light, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_cielo_0",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8108,
+   "recorte": false,
+   "prompt": "Wide landscape painting, magical night sky full of stars and a giant pale moon, purple and indigo nebula clouds, shooting stars, faint floating islands silhouettes far away at the very bottom, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "cielo_cielo_1",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 8109,
+   "recorte": false,
+   "prompt": "Wide landscape painting, magical night sky full of stars and a giant pale moon, purple and indigo nebula clouds, shooting stars, faint floating islands silhouettes far away at the very bottom, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame"
+  },
+  {
+   "id": "titulo_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 8200,
+   "recorte": false,
+   "prompt": "Vertical composition split by a perfectly still lake at the middle: a small girl with a long red scarf running along the shore at sunset in the upper half, and in the water below her mirrored reflection running in the opposite world full of stars and night, the reflection is slightly different and glowing, poetic, magical, lots of empty sky at the top for a title, no text, no frame"
+  },
+  {
+   "id": "icono_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 8300,
+   "recorte": false,
+   "estilo": "Mobile game app icon, bold simple composition, strong silhouette readable at small size, rich colors, painterly, no text",
+   "prompt": "a small running girl silhouette with a flowing red scarf on a thin horizon line and her glowing mirrored reflection below in dark starry water, warm sunset above and night below, centered"
+  },
+  {
+   "id": "titulo_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 8201,
+   "recorte": false,
+   "prompt": "Vertical composition split by a perfectly still lake at the middle: a small girl with a long red scarf running along the shore at sunset in the upper half, and in the water below her mirrored reflection running in the opposite world full of stars and night, the reflection is slightly different and glowing, poetic, magical, lots of empty sky at the top for a title, no text, no frame"
+  },
+  {
+   "id": "icono_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 8301,
+   "recorte": false,
+   "estilo": "Mobile game app icon, bold simple composition, strong silhouette readable at small size, rich colors, painterly, no text",
+   "prompt": "a small running girl silhouette with a flowing red scarf on a thin horizon line and her glowing mirrored reflection below in dark starry water, warm sunset above and night below, centered"
+  }
+ ]
+}
