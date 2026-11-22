@@ -1,0 +1,325 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "r_lago_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9700,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of dark purple sunset stone with warm orange highlights, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_lago_roca_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9701,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of dark purple sunset stone with warm orange highlights, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_lago_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9710,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of dark purple sunset stone with warm orange highlights, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_lago_tronco_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9711,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of dark purple sunset stone with warm orange highlights, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_lago_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9720,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of dark purple sunset stone with warm orange highlights, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_lago_muro_1",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9721,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of dark purple sunset stone with warm orange highlights, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_bosque_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9730,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of mossy dark teal wood with green moss, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_bosque_roca_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9731,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of mossy dark teal wood with green moss, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_bosque_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9740,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of mossy dark teal wood with green moss, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_bosque_tronco_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9741,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of mossy dark teal wood with green moss, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_bosque_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9750,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of mossy dark teal wood with green moss, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_bosque_muro_1",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9751,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of mossy dark teal wood with green moss, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_ciudad_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9760,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of old dark blue stone and brass with a small warm lamp, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_ciudad_roca_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9761,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of old dark blue stone and brass with a small warm lamp, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_ciudad_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9770,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of old dark blue stone and brass with a small warm lamp, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_ciudad_tronco_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9771,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of old dark blue stone and brass with a small warm lamp, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_ciudad_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9780,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of old dark blue stone and brass with a small warm lamp, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_ciudad_muro_1",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9781,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of old dark blue stone and brass with a small warm lamp, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_glaciar_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9790,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of translucent pale blue ice crystal, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_glaciar_roca_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9791,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of translucent pale blue ice crystal, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_glaciar_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9800,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of translucent pale blue ice crystal, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_glaciar_tronco_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9801,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of translucent pale blue ice crystal, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_glaciar_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9810,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of translucent pale blue ice crystal, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_glaciar_muro_1",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9811,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of translucent pale blue ice crystal, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_cielo_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9820,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of glowing violet star crystal, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_cielo_roca_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9821,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of glowing violet star crystal, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_cielo_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9830,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of glowing violet star crystal, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_cielo_tronco_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 9831,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of glowing violet star crystal, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_cielo_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9840,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of glowing violet star crystal, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_cielo_muro_1",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 9841,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of glowing violet star crystal, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_pez_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9900,
+   "recorte": true,
+   "prompt": "a single glowing koi fish leaping, side view, orange and white with luminous fins",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_pez_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9901,
+   "recorte": true,
+   "prompt": "a single glowing koi fish leaping, side view, orange and white with luminous fins",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  }
+ ]
+}
