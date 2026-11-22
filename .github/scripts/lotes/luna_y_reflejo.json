@@ -1,0 +1,516 @@
+{
+ "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality",
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "r_lago_roca",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9000,
+   "recorte": true,
+   "prompt": "a single low boulder obstacle for a sunset lake shore, warm violet and orange tones world, wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_lago_tronco",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9001,
+   "recorte": true,
+   "prompt": "a single long fallen log or horizontal low barrier for a sunset lake shore, warm violet and orange tones world, much wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_lago_rama",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 768,
+   "semilla": 9002,
+   "recorte": true,
+   "prompt": "a single hanging obstacle seen from the side hanging down from above (vines, hanging lantern, icicles or chains) for a sunset lake shore, warm violet and orange tones world, taller than wide, top edge flat",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_lago_muro",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 1024,
+   "semilla": 9003,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar or column obstacle for a sunset lake shore, warm violet and orange tones world, much taller than wide, fills the whole height",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_bosque_roca",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9004,
+   "recorte": true,
+   "prompt": "a single low boulder obstacle for a flooded misty forest, teal and moss green tones world, wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_bosque_tronco",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9005,
+   "recorte": true,
+   "prompt": "a single long fallen log or horizontal low barrier for a flooded misty forest, teal and moss green tones world, much wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_bosque_rama",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 768,
+   "semilla": 9006,
+   "recorte": true,
+   "prompt": "a single hanging obstacle seen from the side hanging down from above (vines, hanging lantern, icicles or chains) for a flooded misty forest, teal and moss green tones world, taller than wide, top edge flat",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_bosque_muro",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 1024,
+   "semilla": 9007,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar or column obstacle for a flooded misty forest, teal and moss green tones world, much taller than wide, fills the whole height",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_ciudad_roca",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9008,
+   "recorte": true,
+   "prompt": "a single low boulder obstacle for a sunken old city at twilight, deep blue stone and brass with warm lantern glow world, wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_ciudad_tronco",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9009,
+   "recorte": true,
+   "prompt": "a single long fallen log or horizontal low barrier for a sunken old city at twilight, deep blue stone and brass with warm lantern glow world, much wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_ciudad_rama",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 768,
+   "semilla": 9010,
+   "recorte": true,
+   "prompt": "a single hanging obstacle seen from the side hanging down from above (vines, hanging lantern, icicles or chains) for a sunken old city at twilight, deep blue stone and brass with warm lantern glow world, taller than wide, top edge flat",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_ciudad_muro",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 1024,
+   "semilla": 9011,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar or column obstacle for a sunken old city at twilight, deep blue stone and brass with warm lantern glow world, much taller than wide, fills the whole height",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_glaciar_roca",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9012,
+   "recorte": true,
+   "prompt": "a single low boulder obstacle for a crystal glacier, translucent ice blue and white world, wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_glaciar_tronco",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9013,
+   "recorte": true,
+   "prompt": "a single long fallen log or horizontal low barrier for a crystal glacier, translucent ice blue and white world, much wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_glaciar_rama",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 768,
+   "semilla": 9014,
+   "recorte": true,
+   "prompt": "a single hanging obstacle seen from the side hanging down from above (vines, hanging lantern, icicles or chains) for a crystal glacier, translucent ice blue and white world, taller than wide, top edge flat",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_glaciar_muro",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 1024,
+   "semilla": 9015,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar or column obstacle for a crystal glacier, translucent ice blue and white world, much taller than wide, fills the whole height",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_cielo_roca",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9016,
+   "recorte": true,
+   "prompt": "a single low boulder obstacle for a magical night sky world, indigo and violet with glowing star crystals world, wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_cielo_tronco",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9017,
+   "recorte": true,
+   "prompt": "a single long fallen log or horizontal low barrier for a magical night sky world, indigo and violet with glowing star crystals world, much wider than tall",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_cielo_rama",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 768,
+   "semilla": 9018,
+   "recorte": true,
+   "prompt": "a single hanging obstacle seen from the side hanging down from above (vines, hanging lantern, icicles or chains) for a magical night sky world, indigo and violet with glowing star crystals world, taller than wide, top edge flat",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "r_cielo_muro",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 1024,
+   "semilla": 9019,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar or column obstacle for a magical night sky world, indigo and violet with glowing star crystals world, much taller than wide, fills the whole height",
+   "estilo": "Painterly 2D mobile game prop, single object, side view, strong readable silhouette, soft rim light from behind, dreamy atmospheric colors, high quality, no ground, no scenery"
+  },
+  {
+   "id": "lr_reina",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 640,
+   "semilla": 9020,
+   "recorte": true,
+   "prompt": "a young queen in a dark hooded cloak and a small golden crown riding a white stag with antlers, holding a glowing lantern, full body, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_vagabundo",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 9021,
+   "recorte": true,
+   "prompt": "a ragged wandering peasant in a torn brown cloak, hunched, full body, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_aldeano",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 9022,
+   "recorte": true,
+   "prompt": "a simple medieval villager in a plain tunic, full body standing, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_arquero",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 9023,
+   "recorte": true,
+   "prompt": "a medieval archer villager with a wooden longbow and a quiver, green hood, full body, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_constructor",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 9024,
+   "recorte": true,
+   "prompt": "a medieval builder villager with a big hammer on the shoulder and a leather apron, full body, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_granjero",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 9025,
+   "recorte": true,
+   "prompt": "a medieval farmer villager with a scythe and a straw hat, full body, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_lancero",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 9026,
+   "recorte": true,
+   "prompt": "a medieval knight guard with a long spear and a round shield and a red cape, full body, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_sombra",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 9027,
+   "recorte": true,
+   "prompt": "a small creepy shadow creature made of black smoke with glowing red eyes and little claws, hunched, full body, side view facing left",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_bruto",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 9028,
+   "recorte": true,
+   "prompt": "a large hulking shadow beast made of black smoke and cracked stone with glowing red eyes and huge arms, full body, side view facing left",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_alado",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9029,
+   "recorte": true,
+   "prompt": "a flying shadow creature with ragged bat-like smoke wings and glowing red eyes, side view facing left",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_jefe",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 9030,
+   "recorte": true,
+   "prompt": "a giant terrifying shadow beast crowned with a crimson moon halo, made of black smoke and red cracks, horns, full body, side view facing left",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_muro1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 448,
+   "semilla": 9031,
+   "recorte": true,
+   "prompt": "a short wooden palisade wall of sharpened logs, side view, front facing",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_muro2",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9032,
+   "recorte": true,
+   "prompt": "a solid medium stone wall segment with a wooden walkway, side view, front facing",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_muro3",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 704,
+   "semilla": 9033,
+   "recorte": true,
+   "prompt": "a tall fortified stone wall with iron spikes and a banner, side view, front facing",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_torre",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 1024,
+   "semilla": 9034,
+   "recorte": true,
+   "prompt": "a tall wooden archer watchtower with a platform on top and a small roof, side view",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_granja",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9035,
+   "recorte": true,
+   "prompt": "a small farm field with golden wheat crops and a little wooden fence, side view, wide",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_hoguera",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 9036,
+   "recorte": true,
+   "prompt": "a central royal campfire with a large crackling fire, a crimson banner on a pole and stones around, side view",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_portal",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 768,
+   "semilla": 9037,
+   "recorte": true,
+   "prompt": "a dark crimson glowing rift portal between jagged black rocks, swirling red energy, side view",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_ciervo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9038,
+   "recorte": true,
+   "prompt": "a wild deer standing, side view facing right",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_mercader",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 9039,
+   "recorte": true,
+   "prompt": "a glowing blue ghostly merchant spirit with a lantern and a big backpack, side view facing left",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_arbol",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 1024,
+   "semilla": 9040,
+   "recorte": true,
+   "prompt": "a single tall dark forest pine tree, side view",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_campamento",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9041,
+   "recorte": true,
+   "prompt": "a tiny vagabond camp with a ragged tent and a small campfire, side view",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_cofre",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 320,
+   "semilla": 9042,
+   "recorte": true,
+   "prompt": "a small wooden treasure chest with gold trim, side view",
+   "estilo": "Moody painterly 2D side-scrolling game art, dark fantasy storybook, side view facing right, rich silhouettes with soft warm rim light, muted earthy palette with crimson and gold accents, clean shapes, high quality"
+  },
+  {
+   "id": "lr_cielo_dia",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 9043,
+   "recorte": false,
+   "prompt": "soft cloudy morning sky over a wild valley, warm golden light, distant hills at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_tarde",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 9044,
+   "recorte": false,
+   "prompt": "dramatic sunset sky with orange and purple clouds, distant hills silhouettes at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_noche",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 9045,
+   "recorte": false,
+   "prompt": "dark blue night sky full of stars with a pale full moon, distant hill silhouettes at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_roja",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 9046,
+   "recorte": false,
+   "prompt": "ominous night sky with a huge blood red moon and red clouds, distant hill silhouettes at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_montes",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 448,
+   "semilla": 9047,
+   "recorte": true,
+   "prompt": "a long horizontal band of distant misty blue mountains, flat bottom edge, wide panorama",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_bosque",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 512,
+   "semilla": 9048,
+   "recorte": true,
+   "prompt": "a long horizontal band of dark forest treeline silhouettes, flat bottom edge, wide panorama",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_titulo",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 9049,
+   "recorte": false,
+   "prompt": "a young queen with a lantern riding a white stag in front of a small walled village with campfires at dusk, a huge blood red moon rising behind, shadow creatures with red eyes lurking at the forest edge, epic, lots of empty sky at the top for a title",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_icono",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 9050,
+   "recorte": false,
+   "prompt": "a young queen silhouette with a glowing lantern riding a white stag in front of a giant blood red moon, centered, bold simple composition",
+   "estilo": "Mobile game app icon, bold simple composition, strong silhouette readable at small size, rich colors, painterly, no text"
+  }
+ ]
+}
