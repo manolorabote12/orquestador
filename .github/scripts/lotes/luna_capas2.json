@@ -1,0 +1,125 @@
+{
+ "chroma": "#00FF00",
+ "piezas": [
+  {
+   "id": "lr_capa_lejos_ceniza_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 15000,
+   "recorte": false,
+   "prompt": "huge black volcanoes erupting with glowing lava rivers running down, jagged dark red rocks",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_ceniza_1",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 15001,
+   "recorte": false,
+   "prompt": "huge black volcanoes erupting with glowing lava rivers running down, jagged dark red rocks",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ceniza_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15010,
+   "recorte": false,
+   "prompt": "burnt black dead trees and jagged obsidian rocks with glowing lava cracks",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ceniza_1",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15011,
+   "recorte": false,
+   "prompt": "burnt black dead trees and jagged obsidian rocks with glowing lava cracks",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_ruinas_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 15020,
+   "recorte": false,
+   "prompt": "a vast ruined gothic castle with tall towers on a dark mountain, purple stone",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_ruinas_1",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 15021,
+   "recorte": false,
+   "prompt": "a vast ruined gothic castle with tall towers on a dark mountain, purple stone",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ruinas_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15030,
+   "recorte": false,
+   "prompt": "crumbling castle walls, broken statues and overgrown stone arches with torn banners",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ruinas_1",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15031,
+   "recorte": false,
+   "prompt": "crumbling castle walls, broken statues and overgrown stone arches with torn banners",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_desierto_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15040,
+   "recorte": false,
+   "prompt": "sandstone arches, desert ruins with broken columns and palm trees, golden sand",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_desierto_1",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15041,
+   "recorte": false,
+   "prompt": "sandstone arches, desert ruins with broken columns and palm trees, golden sand",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ciervo_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15050,
+   "recorte": false,
+   "prompt": "edge of a dark pine and oak forest with a wooden windmill and golden wheat fields",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ciervo_1",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 15051,
+   "recorte": false,
+   "prompt": "edge of a dark pine and oak forest with a wooden windmill and golden wheat fields",
+   "estilo": "2D side-scrolling game parallax layer, painterly dark fantasy, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no sun, no moon, no gradient in the background, no characters, no text"
+  }
+ ]
+}
