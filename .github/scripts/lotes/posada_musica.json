@@ -1,0 +1,77 @@
+{
+ "familia": "cozy medieval fantasy tavern folk music, warm and charming, storybook",
+ "pistas": [
+  {
+   "id": "menu",
+   "papel": "menu",
+   "tempo": 84,
+   "tonalidad": "D major",
+   "segundos": 80,
+   "ambiente": "a warm inn at dusk on the last road before a dark dungeon, welcoming and a little mysterious",
+   "instrumentos": [
+    "lute",
+    "fiddle",
+    "recorder",
+    "soft strings",
+    "frame drum"
+   ]
+  },
+  {
+   "id": "dia",
+   "papel": "nivel",
+   "tempo": 104,
+   "tonalidad": "G major",
+   "segundos": 120,
+   "ambiente": "busy cheerful tavern during the day, adventurers eating and laughing, bustling",
+   "instrumentos": [
+    "lute",
+    "hurdy-gurdy",
+    "tin whistle",
+    "bodhran",
+    "accordion"
+   ]
+  },
+  {
+   "id": "noche",
+   "papel": "nivel",
+   "tempo": 80,
+   "tonalidad": "A minor",
+   "segundos": 120,
+   "ambiente": "quiet inn at night, candles, fireplace crackling, a bard playing softly",
+   "instrumentos": [
+    "solo lute",
+    "harp",
+    "cello",
+    "soft flute"
+   ]
+  },
+  {
+   "id": "mazmorra",
+   "papel": "nivel",
+   "tempo": 92,
+   "tonalidad": "E minor",
+   "segundos": 90,
+   "ambiente": "adventurers away in a dangerous dungeon, tense distant adventure",
+   "instrumentos": [
+    "low strings",
+    "taiko",
+    "hurdy-gurdy",
+    "choir"
+   ]
+  },
+  {
+   "id": "fiesta",
+   "papel": "victoria",
+   "tempo": 120,
+   "tonalidad": "C major",
+   "segundos": 40,
+   "ambiente": "adventurers return with treasure, tavern celebration, joyful jig",
+   "instrumentos": [
+    "fiddle",
+    "tin whistle",
+    "bodhran",
+    "lute"
+   ]
+  }
+ ]
+}
