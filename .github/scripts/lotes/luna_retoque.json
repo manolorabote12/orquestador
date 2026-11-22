@@ -1,0 +1,265 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_aldeano_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9500,
+   "recorte": true,
+   "prompt": "full body from head to feet, a simple medieval peasant man walking, plain brown tunic and boots",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_aldeano_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9501,
+   "recorte": true,
+   "prompt": "full body from head to feet, a simple medieval peasant man walking, plain brown tunic and boots",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_granjero_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9510,
+   "recorte": true,
+   "prompt": "full body from head to feet, a medieval farmer with a straw hat holding a scythe",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_granjero_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9511,
+   "recorte": true,
+   "prompt": "full body from head to feet, a medieval farmer with a straw hat holding a scythe",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arquero_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9520,
+   "recorte": true,
+   "prompt": "full body from head to feet, a medieval archer in a green hood holding a longbow",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arquero_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9521,
+   "recorte": true,
+   "prompt": "full body from head to feet, a medieval archer in a green hood holding a longbow",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_constructor_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9530,
+   "recorte": true,
+   "prompt": "full body from head to feet, a medieval builder in a leather apron with a big hammer on his shoulder",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_constructor_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9531,
+   "recorte": true,
+   "prompt": "full body from head to feet, a medieval builder in a leather apron with a big hammer on his shoulder",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_bruto_0",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 576,
+   "semilla": 9540,
+   "recorte": true,
+   "prompt": "full body, a huge hulking shadow beast of black smoke and cracked stone with glowing red eyes, walking",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_bruto_1",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 576,
+   "semilla": 9541,
+   "recorte": true,
+   "prompt": "full body, a huge hulking shadow beast of black smoke and cracked stone with glowing red eyes, walking",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 9550,
+   "recorte": true,
+   "prompt": "full body, a giant horned shadow demon of black smoke with red glowing cracks, walking",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 9551,
+   "recorte": true,
+   "prompt": "full body, a giant horned shadow demon of black smoke with red glowing cracks, walking",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_ciervo_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9560,
+   "recorte": true,
+   "prompt": "full body, a brown wild deer standing",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_ciervo_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 9561,
+   "recorte": true,
+   "prompt": "full body, a brown wild deer standing",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_cofre_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 320,
+   "semilla": 9570,
+   "recorte": true,
+   "prompt": "a closed small wooden treasure chest with gold trim",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_cofre_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 320,
+   "semilla": 9571,
+   "recorte": true,
+   "prompt": "a closed small wooden treasure chest with gold trim",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_granja_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9580,
+   "recorte": true,
+   "prompt": "a small patch of golden wheat crops with a short wooden fence",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_granja_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 9581,
+   "recorte": true,
+   "prompt": "a small patch of golden wheat crops with a short wooden fence",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_muro1_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 9590,
+   "recorte": true,
+   "prompt": "a short wooden palisade wall made of sharpened logs, front view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_muro1_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 9591,
+   "recorte": true,
+   "prompt": "a short wooden palisade wall made of sharpened logs, front view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_muro2_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 448,
+   "semilla": 9600,
+   "recorte": true,
+   "prompt": "a medium stone wall segment, grey stone blocks, front view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_muro2_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 448,
+   "semilla": 9601,
+   "recorte": true,
+   "prompt": "a medium stone wall segment, grey stone blocks, front view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_muro3_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9610,
+   "recorte": true,
+   "prompt": "a tall fortified stone wall segment with iron spikes on top, front view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_muro3_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 9611,
+   "recorte": true,
+   "prompt": "a tall fortified stone wall segment with iron spikes on top, front view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_torre_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 832,
+   "semilla": 9620,
+   "recorte": true,
+   "prompt": "a tall wooden archer watchtower on stilts with a small roof",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_torre_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 832,
+   "semilla": 9621,
+   "recorte": true,
+   "prompt": "a tall wooden archer watchtower on stilts with a small roof",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  }
+ ]
+}
