@@ -13,3 +13,8 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
   Arte RunPod ~0,15 $ (dos tandas: la primera salió con fondos; se repitió con prompt de sprite aislado).
   Bot: valle 1 ganado en 12 y 20 días; valle 2 ganado en 20 / perdido en el 21; valle 3 perdido en el 10 /
   ganado en 45. Recorrido 26 pantallas, mono 353 acciones sin errores.
+- v2 (22 nov): animación (pasos con rebote y estirado, constructores martilleando, arqueros tensando,
+  lanceros embistiendo, polvo del ciervo al galope, sombras con estela de humo y estallido al morir, aura
+  del jefe), flechas con punta y plumas, brasas que vuelan a la reina, minimapa del valle, cielo teñido
+  por la luna, estrellas, pájaros, niebla y luciérnagas de noche, lluvia en la Ciénaga, ceniza en los
+  Picos, antorchas en los muros, humo de la hoguera, tiendas con toldo, bosque lejano en silueta.

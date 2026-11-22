@@ -17,3 +17,4 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
   Fantasma: tu mejor carrera corre contigo («tu récord») y avisa al adelantarla.
   Bot (ve el futuro 0,9 s): 6 de 6 carreras a 3000 m, ninguna muerte injusta.
 - v2 (22 nov): velocidad más suave (370 + 0,22·m, tope 840).
+- v3 (22 nov): obstáculos pintados por mundo (roca, tronco, pilar; RunPod con prompt de sprite aislado), peces koi que saltan de un mundo a otro, remolinos que te arrastran al reflejo (4 patrones nuevos), sonidos propios (salto, luz, choque, por un pelo). Bot 6/6 a 3000 m.
