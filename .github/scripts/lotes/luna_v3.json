@@ -1,0 +1,225 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_caballero_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 10100,
+   "recorte": true,
+   "prompt": "full body from head to feet, a heroic knight in shining golden plate armor with a white cape and a glowing sword, standing, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_caballero_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 10101,
+   "recorte": true,
+   "prompt": "full body from head to feet, a heroic knight in shining golden plate armor with a white cape and a glowing sword, standing, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_bruja_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 10110,
+   "recorte": true,
+   "prompt": "full body from head to feet, a swamp witch in a tattered green cloak with a crooked staff topped by green fire, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_bruja_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 10111,
+   "recorte": true,
+   "prompt": "full body from head to feet, a swamp witch in a tattered green cloak with a crooked staff topped by green fire, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_cazadora_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 10120,
+   "recorte": true,
+   "prompt": "full body from head to feet, an elegant huntress in silver and midnight blue with a glowing silver bow and star patterns, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_cazadora_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 10121,
+   "recorte": true,
+   "prompt": "full body from head to feet, an elegant huntress in silver and midnight blue with a glowing silver bow and star patterns, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_santuario_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 10130,
+   "recorte": true,
+   "prompt": "a small ancient stone shrine with a pointed roof, candles and a glowing moon symbol",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_santuario_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 10131,
+   "recorte": true,
+   "prompt": "a small ancient stone shrine with a pointed roof, candles and a glowing moon symbol",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_ahogado_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 512,
+   "semilla": 10140,
+   "recorte": true,
+   "prompt": "full body, a drowned undead creature covered in seaweed and dripping water with glowing red eyes, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_ahogado_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 512,
+   "semilla": 10141,
+   "recorte": true,
+   "prompt": "full body, a drowned undead creature covered in seaweed and dripping water with glowing red eyes, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_golem_0",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 576,
+   "semilla": 10150,
+   "recorte": true,
+   "prompt": "full body, a hulking golem made of black ash rock with glowing orange lava cracks, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_golem_1",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 576,
+   "semilla": 10151,
+   "recorte": true,
+   "prompt": "full body, a hulking golem made of black ash rock with glowing orange lava cracks, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_muerto_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 896,
+   "semilla": 10160,
+   "recorte": true,
+   "prompt": "a single tall dead twisted swamp tree with hanging moss, no leaves",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_muerto_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 896,
+   "semilla": 10161,
+   "recorte": true,
+   "prompt": "a single tall dead twisted swamp tree with hanging moss, no leaves",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_quemado_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 896,
+   "semilla": 10170,
+   "recorte": true,
+   "prompt": "a single tall burnt black tree trunk with glowing embers, no leaves",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_quemado_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 896,
+   "semilla": 10171,
+   "recorte": true,
+   "prompt": "a single tall burnt black tree trunk with glowing embers, no leaves",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_fragmento_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 10180,
+   "recorte": true,
+   "prompt": "a single glowing crimson moon crystal shard, game icon",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_fragmento_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 10181,
+   "recorte": true,
+   "prompt": "a single glowing crimson moon crystal shard, game icon",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_cielo_dia_cienaga",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 10190,
+   "recorte": false,
+   "prompt": "grey misty marsh sky in the morning, pale green fog, distant dead trees silhouettes at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_noche_cienaga",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 10191,
+   "recorte": false,
+   "prompt": "dark foggy swamp night sky with a pale sickly green moon, will-o-wisps, distant dead trees at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_dia_ceniza",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 10192,
+   "recorte": false,
+   "prompt": "smoky orange sky over volcanic ash mountains, falling ash, distant jagged black peaks at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_noche_ceniza",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 10193,
+   "recorte": false,
+   "prompt": "black volcanic night sky with a huge glowing red moon and lava glow on the horizon, jagged peaks at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  }
+ ]
+}
