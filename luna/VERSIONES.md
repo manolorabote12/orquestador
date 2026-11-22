@@ -18,3 +18,10 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
   del jefe), flechas con punta y plumas, brasas que vuelan a la reina, minimapa del valle, cielo teñido
   por la luna, estrellas, pájaros, niebla y luciérnagas de noche, lluvia en la Ciénaga, ceniza en los
   Picos, antorchas en los muros, humo de la hoguera, tiendas con toldo, bosque lejano en silueta.
+- v3 (22 nov): 3 héroes rescatables en santuarios (Caballero de la Aurora con onda que empuja, Bruja de la
+  Ciénaga con bolas y llamarada verde, Cazadora de Estrellas con lluvia de estrellas), habilidades de la reina
+  (Destello del farol que quema y aturde; Cuerno de guerra +60% daño), fragmentos de luna (jefes, grietas,
+  valles) y Altar de la Luna con 5 mejoras permanentes, criaturas propias (ahogados en la Ciénaga, gólems de
+  lava en los Picos), cielos y árboles propios de cada valle, números de daño, parón de impacto, sombras en
+  el suelo, guía de los primeros días, brasas flotando en la portada. Dificultad: Ciénaga ×1,42, Picos ×1,95.
+  Bot: valle 1 en 21 y 36 días; valle 2 en 17 y 19; valle 3 ganado en 14 / perdido en el 30.
