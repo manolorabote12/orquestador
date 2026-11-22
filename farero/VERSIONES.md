@@ -22,3 +22,4 @@
   gratis y x2,2), tienda (packs de ambar, sin anuncios), portugues, equipos remotos validados.
   Dificultad: vida 1+0,22(n-1), ataque 1+0,125(n-1), jefes x1,22, regeneracion de jefe 3%.
   Bot: 60 noches en 64 intentos (perdio la 18 una vez y la 47 tres), modos reto y eterna superados.
+- v7 (22 nov): chispazos de impacto al golpear y al recibir golpes (tamaño según el daño).

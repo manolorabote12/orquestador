@@ -16,3 +16,4 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
   Tramo «Espejo roto» al entrar en cada mundo: zigzags seguidos con estela de luces y premio si no chocas.
   Fantasma: tu mejor carrera corre contigo («tu récord») y avisa al adelantarla.
   Bot (ve el futuro 0,9 s): 6 de 6 carreras a 3000 m, ninguna muerte injusta.
+- v2 (22 nov): velocidad más suave (370 + 0,22·m, tope 840).
