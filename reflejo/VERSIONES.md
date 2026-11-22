@@ -19,3 +19,4 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
 - v2 (22 nov): velocidad más suave (370 + 0,22·m, tope 840).
 - v3 (22 nov): obstáculos pintados por mundo (roca, tronco, pilar; RunPod con prompt de sprite aislado), peces koi que saltan de un mundo a otro, remolinos que te arrastran al reflejo (4 patrones nuevos), sonidos propios (salto, luz, choque, por un pelo). Bot 6/6 a 3000 m.
 - v4 (22 nov): 5 mundos nuevos (Laguna de Coral, Lago de Otoño, Oasis Dorado, Mar de la Tormenta con rayos, Fiordo de la Aurora) con cielos y obstáculos pintados y ambiente propio; 4 corredores (Lía; Kit del zorro +25% luces; Nilo del búho, poderes +40%; Brisa del ciervo, burbuja y salto mayor); 12 logros con premio. Bot: 4/4 carreras a 7200 m (los 10 mundos).
+- v4.1 (22 nov): integración: obstáculos con la luz de cada mundo, sombra de contacto y hierba en la base; bordes de todos los sprites oscurecidos y suavizados (sin halo); menús con sombra y marco.
