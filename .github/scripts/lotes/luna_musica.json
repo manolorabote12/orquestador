@@ -1,0 +1,80 @@
+{
+ "familia": "dark medieval fantasy orchestral with folk instruments, atmospheric and epic",
+ "pistas": [
+  {
+   "id": "menu",
+   "papel": "menu",
+   "tempo": 72,
+   "tonalidad": "D minor",
+   "segundos": 80,
+   "ambiente": "a lonely queen by a campfire under a blood moon, melancholic and heroic",
+   "instrumentos": [
+    "solo cello",
+    "hurdy-gurdy",
+    "low strings",
+    "soft choir",
+    "frame drum"
+   ]
+  },
+  {
+   "id": "dia",
+   "papel": "nivel",
+   "tempo": 96,
+   "tonalidad": "G major",
+   "segundos": 110,
+   "ambiente": "peaceful medieval village building at morning, hopeful and pastoral, busy work",
+   "instrumentos": [
+    "lute",
+    "recorder",
+    "fiddle",
+    "light percussion",
+    "harp"
+   ]
+  },
+  {
+   "id": "noche",
+   "papel": "nivel",
+   "tempo": 100,
+   "tonalidad": "E minor",
+   "segundos": 110,
+   "ambiente": "tense night siege, shadows approaching the walls, suspense and dread",
+   "instrumentos": [
+    "low strings ostinato",
+    "taiko drums",
+    "dark choir",
+    "horns",
+    "dulcimer"
+   ]
+  },
+  {
+   "id": "luna_roja",
+   "papel": "jefe",
+   "tempo": 132,
+   "tonalidad": "C minor",
+   "segundos": 100,
+   "ambiente": "blood moon onslaught, a giant monster attacks, epic and frantic battle",
+   "instrumentos": [
+    "full orchestra",
+    "war drums",
+    "choir",
+    "brass",
+    "distorted cello"
+   ]
+  },
+  {
+   "id": "victoria",
+   "papel": "victoria",
+   "tempo": 90,
+   "tonalidad": "D major",
+   "segundos": 14,
+   "bucle": false,
+   "ambiente": "dawn breaks, the valley is free, triumphant and warm",
+   "instrumentos": [
+    "brass",
+    "strings",
+    "choir",
+    "bells"
+   ]
+  }
+ ]
+}
