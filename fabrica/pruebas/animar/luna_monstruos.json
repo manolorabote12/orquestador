@@ -1,0 +1,455 @@
+{
+ "tipo_video": "A painted 2D dark fantasy video game character",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "lr_sombra",
+   "descripcion": "a hunched shadow demon creature made of black smoke with glowing red eyes and claws",
+   "ficha": "fabrica/pruebas/animar/luna/lr_sombra.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5100
+  },
+  {
+   "id": "lr_bruto",
+   "descripcion": "a huge hulking shadow brute monster with dark armor-like skin",
+   "ficha": "fabrica/pruebas/animar/luna/lr_bruto.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5101
+  },
+  {
+   "id": "lr_alado",
+   "descripcion": "a flying bat-winged shadow demon",
+   "ficha": "fabrica/pruebas/animar/luna/lr_alado.png",
+   "movimientos": {
+    "walk": {
+     "que": "flies forward toward the left, wings flapping, hovering, looping",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5102
+  },
+  {
+   "id": "lr_ahogado",
+   "descripcion": "a drowned rotting zombie with seaweed and wet rags",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ahogado.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5103
+  },
+  {
+   "id": "lr_golem",
+   "descripcion": "a lava rock golem with glowing cracks",
+   "ficha": "fabrica/pruebas/animar/luna/lr_golem.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5104
+  },
+  {
+   "id": "lr_lobo",
+   "descripcion": "a spectral blue frost wolf",
+   "ficha": "fabrica/pruebas/animar/luna/lr_lobo.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5105
+  },
+  {
+   "id": "lr_escorpion",
+   "descripcion": "a giant black shadow scorpion",
+   "ficha": "fabrica/pruebas/animar/luna/lr_escorpion.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5106
+  },
+  {
+   "id": "lr_espectro",
+   "descripcion": "a hooded floating ghost wraith",
+   "ficha": "fabrica/pruebas/animar/luna/lr_espectro.png",
+   "movimientos": {
+    "walk": {
+     "que": "flies forward toward the left, wings flapping, hovering, looping",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck, collapses and dissolves into black smoke and disappears",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 5107
+  },
+  {
+   "id": "lr_jefe_ciervo",
+   "descripcion": "a giant corrupted stag made of black smoke with burning red antlers",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ciervo.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 5108
+  },
+  {
+   "id": "lr_jefe_cienaga",
+   "descripcion": "a huge swamp hag giantess with root hair holding a green soul lantern",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_cienaga.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 5109
+  },
+  {
+   "id": "lr_jefe_ceniza",
+   "descripcion": "a colossal lava lizard dragon with cracked obsidian scales",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ceniza.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 5110
+  },
+  {
+   "id": "lr_jefe_nieve",
+   "descripcion": "an enormous ice wolf king with an ice crown",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_nieve.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 5111
+  },
+  {
+   "id": "lr_jefe_desierto",
+   "descripcion": "a gigantic scorpion emperor with golden armor plates",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_desierto.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 5112
+  },
+  {
+   "id": "lr_jefe_ruinas",
+   "descripcion": "a towering undead king in rusted armor with a ghostly crown and a great sword",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ruinas.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks forward toward the left in place with a heavy menacing gait, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "lunges and attacks to the left with a powerful strike, then returns to its pose",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 5113
+  },
+  {
+   "id": "lr_caballero",
+   "descripcion": "a golden armored knight with a sword",
+   "ficha": "fabrica/pruebas/animar/luna/lr_caballero.png",
+   "semilla": 5114,
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, cloak and hair sway gently in the wind",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "walks toward the right in place, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "swings his sword in a powerful slash to the right, then returns to guard",
+     "frames": 8,
+     "bucle": false
+    }
+   }
+  },
+  {
+   "id": "lr_bruja",
+   "descripcion": "a green robed swamp witch with a glowing staff",
+   "ficha": "fabrica/pruebas/animar/luna/lr_bruja.png",
+   "semilla": 5115,
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, cloak and hair sway gently in the wind",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "walks toward the right in place, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "raises her staff and casts a glowing green fireball to the right",
+     "frames": 8,
+     "bucle": false
+    }
+   }
+  },
+  {
+   "id": "lr_cazadora",
+   "descripcion": "a dark elf huntress with a longbow",
+   "ficha": "fabrica/pruebas/animar/luna/lr_cazadora.png",
+   "semilla": 5116,
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, cloak and hair sway gently in the wind",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "walks toward the right in place, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "draws her bow and shoots an arrow to the right, recoil, then reloads",
+     "frames": 8,
+     "bucle": false
+    }
+   }
+  },
+  {
+   "id": "lr_ingeniera",
+   "descripcion": "a dwarf engineer with goggles and a big crossbow",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ingeniera.png",
+   "semilla": 5117,
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, cloak and hair sway gently in the wind",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "walks toward the right in place, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "aims and fires her heavy crossbow to the right with strong recoil",
+     "frames": 8,
+     "bucle": false
+    }
+   }
+  },
+  {
+   "id": "lr_druida",
+   "descripcion": "an old druid with antlers and a glowing staff",
+   "ficha": "fabrica/pruebas/animar/luna/lr_druida.png",
+   "semilla": 5118,
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, cloak and hair sway gently in the wind",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "walks toward the right in place, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "raises his staff and summons swirling glowing green energy",
+     "frames": 8,
+     "bucle": false
+    }
+   }
+  }
+ ]
+}
