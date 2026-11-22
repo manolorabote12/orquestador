@@ -25,3 +25,9 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
   lava en los Picos), cielos y árboles propios de cada valle, números de daño, parón de impacto, sombras en
   el suelo, guía de los primeros días, brasas flotando en la portada. Dificultad: Ciénaga ×1,42, Picos ×1,95.
   Bot: valle 1 en 21 y 36 días; valle 2 en 17 y 19; valle 3 ganado en 14 / perdido en el 30.
+- v4 (22 nov): 6 valles (nuevos: Bosque Helado con lobos de escarcha, Cañón Dorado con escorpiones,
+  Ruinas del Rey con espectros; cielos y árboles propios), 6 héroes (nuevos: Monje del Alba, Ingeniera Brasa,
+  Druida del Roble), catapultas, 10 mejoras en el Altar, 15 logros con fragmentos. Integración: luz de ambiente
+  en sprites y suelo, hierba delante de los pies, bosque lejano con perspectiva atmosférica y bruma, árboles
+  sin tierra pegada, bordes de sprites limpios, humo suave. Valles duros: fuerza que sube en 8 noches y
+  empalizadas iniciales. Bot (con las mejoras que tendría un jugador desde el valle 4): 5 de 6 valles.
