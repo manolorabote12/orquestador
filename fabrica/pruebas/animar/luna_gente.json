@@ -1,0 +1,263 @@
+{
+ "tipo_video": "A painted 2D dark fantasy video game character",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "lr_aldeano",
+   "descripcion": "a poor medieval peasant villager",
+   "ficha": "fabrica/pruebas/animar/luna/lr_aldeano.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, cloak sways gently, small idle movements",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "walks toward the right in place, natural looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6100
+  },
+  {
+   "id": "lr_vagabundo",
+   "descripcion": "a ragged hooded beggar with a walking stick",
+   "ficha": "fabrica/pruebas/animar/luna/lr_vagabundo.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, cloak sways gently, small idle movements",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "limps slowly toward the right in place leaning on his stick, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6101
+  },
+  {
+   "id": "lr_arquero",
+   "descripcion": "a medieval archer in a green hood with a longbow",
+   "ficha": "fabrica/pruebas/animar/luna/lr_arquero.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks toward the right in place, natural looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "draws the bow and shoots an arrow to the right, then reloads",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 6102
+  },
+  {
+   "id": "lr_constructor",
+   "descripcion": "a medieval builder with a big hammer",
+   "ficha": "fabrica/pruebas/animar/luna/lr_constructor.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks toward the right in place, natural looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "swings his big hammer down hard in front of him, building, then lifts it again",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 6103
+  },
+  {
+   "id": "lr_granjero",
+   "descripcion": "a medieval farmer with a straw hat and a scythe",
+   "ficha": "fabrica/pruebas/animar/luna/lr_granjero.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks toward the right in place, natural looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "swings his scythe low in front of him harvesting wheat, then returns",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 6104
+  },
+  {
+   "id": "lr_lancero",
+   "descripcion": "a medieval pikeman with a long spear and shield",
+   "ficha": "fabrica/pruebas/animar/luna/lr_lancero.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks toward the right in place, natural looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "thrusts his long spear forward to the right with force, then pulls back",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 6105
+  },
+  {
+   "id": "lr_monje",
+   "descripcion": "a bald warrior monk in orange robes with a staff",
+   "ficha": "fabrica/pruebas/animar/luna/lr_monje.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in a martial arts stance, breathing, ready",
+     "frames": 10,
+     "bucle": true
+    },
+    "walk": {
+     "que": "walks toward the right in place, natural looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "spins his staff around his body in a fast whirlwind attack",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 6106
+  },
+  {
+   "id": "lr_reina",
+   "descripcion": "a young queen with a crown and lantern riding a white stag",
+   "ficha": "fabrica/pruebas/animar/luna/lr_reina.png",
+   "movimientos": {
+    "idle": {
+     "que": "the stag stands still breathing and shakes its head, the queen holds up her lantern",
+     "frames": 10,
+     "bucle": true
+    },
+    "run": {
+     "que": "gallops toward the right in place, the rider bounces with the mount, looping run cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6107
+  },
+  {
+   "id": "lr_reina_caballo",
+   "descripcion": "a young queen with a crown and lantern riding a black armored warhorse",
+   "ficha": "fabrica/pruebas/animar/luna/lr_reina_caballo.png",
+   "movimientos": {
+    "idle": {
+     "que": "the horse stands still breathing and stamps a hoof, the queen holds up her lantern",
+     "frames": 10,
+     "bucle": true
+    },
+    "run": {
+     "que": "gallops toward the right in place, the rider bounces with the mount, looping run cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6108
+  },
+  {
+   "id": "lr_reina_oso",
+   "descripcion": "a young queen with a crown and lantern riding a huge armored war bear",
+   "ficha": "fabrica/pruebas/animar/luna/lr_reina_oso.png",
+   "movimientos": {
+    "idle": {
+     "que": "the bear stands still breathing and growls, the queen holds up her lantern",
+     "frames": 10,
+     "bucle": true
+    },
+    "run": {
+     "que": "the bear runs toward the right in place with heavy strides, the rider bounces, looping run cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6109
+  },
+  {
+   "id": "lr_reina_grifo",
+   "descripcion": "a young queen with a crown and lantern riding a white griffin",
+   "ficha": "fabrica/pruebas/animar/luna/lr_reina_grifo.png",
+   "movimientos": {
+    "idle": {
+     "que": "the griffin stands still, ruffles its wings, the queen holds up her lantern",
+     "frames": 10,
+     "bucle": true
+    },
+    "run": {
+     "que": "the griffin runs toward the right in place flapping its wings, the rider bounces, looping run cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6110
+  },
+  {
+   "id": "lr_ciervo",
+   "descripcion": "a wild brown deer stag",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ciervo.png",
+   "movimientos": {
+    "walk": {
+     "que": "walks toward the right in place grazing calmly, looping walk cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6111
+  },
+  {
+   "id": "lr_mercader",
+   "descripcion": "a ghostly blue spectral merchant with a lantern",
+   "ficha": "fabrica/pruebas/animar/luna/lr_mercader.png",
+   "movimientos": {
+    "idle": {
+     "que": "floats in place, ghostly glow pulsing, swings his lantern gently",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6112
+  }
+ ]
+}
