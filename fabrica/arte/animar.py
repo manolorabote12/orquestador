@@ -64,9 +64,18 @@ def prompt_ficha(p: dict) -> str:
 		"background, no text, no shadow, no other characters, crisp clean outlines, high quality")
 
 
+def _anims(p: dict) -> dict:
+	"""Animaciones del personaje: las de serie o las suyas («movimientos»: {nombre: {que, frames, bucle...}})."""
+	if p.get("movimientos"):
+		return {k: {"frames": 10, "bucle": False, **v} for k, v in p["movimientos"].items()}
+	return ANIMACIONES
+
+
 def prompt_video(p: dict, anim: str) -> str:
 	nombre, _ = _chroma(p["estilo"], p["descripcion"])
-	return (f"A cartoon mobile game character ({p['descripcion'][:160]}) {ANIMACIONES[anim]['que']}. Smooth fluid animation, "
+	que = _anims(p)[anim]["que"]
+	tipo = p.get("tipo_video") or "A cartoon mobile game character"
+	return (f"{tipo} ({p['descripcion'][:160]}) {que}. Smooth fluid animation, "
 		f"the character keeps exactly the same design and colors, static camera, the plain flat {nombre} background never changes, "
 		"no other objects, 2D game sprite animation")
 
@@ -150,9 +159,12 @@ def animar(p: dict, carpeta: Path, cli) -> dict:
 	crear = json.loads((RAIZ / "plantillas" / "runpod" / "crear_zimage.json").read_text(encoding="utf-8"))
 	wan = json.loads((RAIZ / "plantillas" / "runpod" / "animar_wan.json").read_text(encoding="utf-8"))
 	semilla = int(p.get("semilla", 4242))
-	## 1 - Ficha nitida del personaje (la que se anima).
-	datos = cli.generar(crear, {"PROMPT": prompt_ficha(p), "SEED": semilla, "ANCHO": 1024, "ALTO": 1024})[0]
-	ficha = Image.open(io.BytesIO(datos)).convert("RGB")
+	## 1 - Ficha nitida del personaje (la que se anima): o se dibuja, o se usa la del juego («ficha»: PNG recortado).
+	if p.get("ficha"):
+		ficha = _ficha_propia(RAIZ.parent / p["ficha"], chroma)
+	else:
+		datos = cli.generar(crear, {"PROMPT": prompt_ficha(p), "SEED": semilla, "ANCHO": 1024, "ALTO": 1024})[0]
+		ficha = Image.open(io.BytesIO(datos)).convert("RGB")
 	ficha.save(carpeta / "ficha_croma.png")
 	limpia = recortar_fondo(ficha)
 	bb = post.caja(limpia)
@@ -161,7 +173,7 @@ def animar(p: dict, carpeta: Path, cli) -> dict:
 	limpia.save(carpeta / "ficha.png")
 	## Entrada del video: la ficha a 480 x 480 con su fondo croma.
 	cli.subir_imagen("ref.png", _png(ficha.resize((480, 480), Image.LANCZOS)))
-	for i, (anim, cfg) in enumerate(ANIMACIONES.items()):
+	for i, (anim, cfg) in enumerate(_anims(p).items()):
 		if p.get("animaciones") and anim not in p["animaciones"]:
 			continue
 		try:
@@ -192,6 +204,20 @@ def animar(p: dict, carpeta: Path, cli) -> dict:
 	return informe
 
 
+def _ficha_propia(ruta: Path, chroma: tuple[int, int, int]) -> Image.Image:
+	"""Un sprite ya recortado del juego, centrado sobre el croma (ocupa ~62% del alto, pies abajo)."""
+	spr = Image.open(ruta).convert("RGBA")
+	bb = spr.getbbox()
+	if bb:
+		spr = spr.crop(bb)
+	lado = 1024
+	esc = min(lado * 0.62 / spr.height, lado * 0.8 / spr.width)
+	spr = spr.resize((max(1, round(spr.width * esc)), max(1, round(spr.height * esc))), Image.LANCZOS)
+	fondo = Image.new("RGBA", (lado, lado), chroma + (255,))
+	fondo.alpha_composite(spr, ((lado - spr.width) // 2, round(lado * 0.86) - spr.height))
+	return fondo.convert("RGB")
+
+
 def _png(img: Image.Image) -> bytes:
 	b = io.BytesIO()
 	img.save(b, "PNG")
@@ -203,6 +229,19 @@ def main() -> int:
 	cli = hacer_cliente(os.environ.get("ORQ_COMFY", ""))
 	if hasattr(cli, "timeout"):
 		cli.timeout = 900.0
+	## Lote: {"personajes": [ficha, ficha...], "estilo"?, "tipo_video"?} -> una carpeta por personaje.
+	if p.get("personajes"):
+		hechos = 0
+		for q in p["personajes"]:
+			q = {"estilo": p.get("estilo", {}), "tipo_video": p.get("tipo_video"), **q}
+			try:
+				inf = animar(q, Path(sys.argv[2]) / q["id"], cli)
+			except TopeGPU as e:
+				print(f"[animar] tope de gasto: {e}", flush=True)
+				break
+			print(json.dumps(inf, ensure_ascii=False), flush=True)
+			hechos += bool(inf["animaciones"])
+		return 0 if hechos else 1
 	inf = animar(p, Path(sys.argv[2]), cli)
 	print(json.dumps(inf, ensure_ascii=False))
 	return 0 if inf["animaciones"] else 1

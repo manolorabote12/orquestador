@@ -1,0 +1,265 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_aldeano_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14000,
+   "recorte": true,
+   "prompt": "a poor medieval peasant villager man in a brown tunic, walking",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_aldeano_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14001,
+   "recorte": true,
+   "prompt": "a poor medieval peasant villager man in a brown tunic, walking",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_vagabundo_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14010,
+   "recorte": true,
+   "prompt": "a ragged hooded beggar vagabond with a patched cloak and a walking stick",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_vagabundo_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14011,
+   "recorte": true,
+   "prompt": "a ragged hooded beggar vagabond with a patched cloak and a walking stick",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_arquero_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14020,
+   "recorte": true,
+   "prompt": "a medieval archer in a green hood holding a longbow",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_arquero_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14021,
+   "recorte": true,
+   "prompt": "a medieval archer in a green hood holding a longbow",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_constructor_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14030,
+   "recorte": true,
+   "prompt": "a medieval builder carpenter with a big hammer on his shoulder and a leather apron",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_constructor_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14031,
+   "recorte": true,
+   "prompt": "a medieval builder carpenter with a big hammer on his shoulder and a leather apron",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_granjero_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14040,
+   "recorte": true,
+   "prompt": "a medieval farmer with a straw hat holding a scythe",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_granjero_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14041,
+   "recorte": true,
+   "prompt": "a medieval farmer with a straw hat holding a scythe",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_lancero_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14050,
+   "recorte": true,
+   "prompt": "a medieval pikeman soldier with a long spear, round shield and helmet",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_lancero_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14051,
+   "recorte": true,
+   "prompt": "a medieval pikeman soldier with a long spear, round shield and helmet",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_mercader_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14060,
+   "recorte": true,
+   "prompt": "a ghostly blue spectral traveling merchant with a big backpack and a lantern",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_mercader_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14061,
+   "recorte": true,
+   "prompt": "a ghostly blue spectral traveling merchant with a big backpack and a lantern",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_monje_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14070,
+   "recorte": true,
+   "prompt": "a bald warrior monk in orange robes holding a wooden staff, fighting stance",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_monje_1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 14071,
+   "recorte": true,
+   "prompt": "a bald warrior monk in orange robes holding a wooden staff, fighting stance",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_ciervo_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 14080,
+   "recorte": true,
+   "prompt": "a wild brown deer stag with antlers, walking",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_ciervo_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 14081,
+   "recorte": true,
+   "prompt": "a wild brown deer stag with antlers, walking",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14090,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a white stag with big antlers",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14091,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a white stag with big antlers",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_caballo_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14100,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a black armored warhorse",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_caballo_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14101,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a black armored warhorse",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_oso_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14110,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a huge brown armored war bear",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_oso_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14111,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a huge brown armored war bear",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_grifo_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14120,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a majestic white griffin with golden wings",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_grifo_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 14121,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a majestic white griffin with golden wings",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  }
+ ]
+}
