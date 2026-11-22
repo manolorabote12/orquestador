@@ -1,0 +1,525 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_cielo_dia_nieve",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 11000,
+   "recorte": false,
+   "prompt": "snowy frozen pine valley under a pale winter sky, distant white mountains at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_noche_nieve",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 11001,
+   "recorte": false,
+   "prompt": "frozen winter night with northern lights and a cold blue moon, snowy peaks at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_dia_desierto",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 11002,
+   "recorte": false,
+   "prompt": "golden desert canyon with red rock mesas under a hot hazy sky, distant dunes at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_noche_desierto",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 11003,
+   "recorte": false,
+   "prompt": "desert night with a huge orange moon and countless stars, mesas silhouettes at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_dia_ruinas",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 11004,
+   "recorte": false,
+   "prompt": "ancient overgrown castle ruins on a hill under a stormy purple sky, distant broken towers at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_cielo_noche_ruinas",
+   "motor": "qwen",
+   "ancho": 1344,
+   "alto": 768,
+   "semilla": 11005,
+   "recorte": false,
+   "prompt": "haunted night over ancient ruins with lightning and a violet moon, broken towers at the very bottom edge",
+   "estilo": "Moody painterly 2D side-scrolling game background, dark fantasy storybook, wide panorama, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "lr_arbol_nieve_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 896,
+   "semilla": 11006,
+   "recorte": true,
+   "prompt": "a single tall snow covered pine tree",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_nieve_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 896,
+   "semilla": 11007,
+   "recorte": true,
+   "prompt": "a single tall snow covered pine tree",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_desierto_0",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 768,
+   "semilla": 11016,
+   "recorte": true,
+   "prompt": "a single tall saguaro cactus",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_desierto_1",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 768,
+   "semilla": 11017,
+   "recorte": true,
+   "prompt": "a single tall saguaro cactus",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_ruinas_0",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 896,
+   "semilla": 11026,
+   "recorte": true,
+   "prompt": "a single broken ancient stone column covered in ivy",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_arbol_ruinas_1",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 896,
+   "semilla": 11027,
+   "recorte": true,
+   "prompt": "a single broken ancient stone column covered in ivy",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_lobo_0",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 384,
+   "semilla": 11036,
+   "recorte": true,
+   "prompt": "full body, a monstrous ice wolf made of frost and shadow with glowing blue eyes, running, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_lobo_1",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 384,
+   "semilla": 11037,
+   "recorte": true,
+   "prompt": "full body, a monstrous ice wolf made of frost and shadow with glowing blue eyes, running, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_escorpion_0",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 384,
+   "semilla": 11046,
+   "recorte": true,
+   "prompt": "full body, a giant black shadow scorpion with a glowing red stinger, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_escorpion_1",
+   "motor": "qwen",
+   "ancho": 576,
+   "alto": 384,
+   "semilla": 11047,
+   "recorte": true,
+   "prompt": "full body, a giant black shadow scorpion with a glowing red stinger, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_espectro_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11056,
+   "recorte": true,
+   "prompt": "full body, a floating ghostly wraith in tattered robes with glowing purple eyes, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_espectro_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11057,
+   "recorte": true,
+   "prompt": "full body, a floating ghostly wraith in tattered robes with glowing purple eyes, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_monje_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11066,
+   "recorte": true,
+   "prompt": "full body from head to feet, a bald warrior monk in orange robes holding a long staff, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_monje_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11067,
+   "recorte": true,
+   "prompt": "full body from head to feet, a bald warrior monk in orange robes holding a long staff, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_ingeniera_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11076,
+   "recorte": true,
+   "prompt": "full body from head to feet, a dwarf engineer woman with goggles and a mechanical crossbow, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_ingeniera_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11077,
+   "recorte": true,
+   "prompt": "full body from head to feet, a dwarf engineer woman with goggles and a mechanical crossbow, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_druida_0",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11086,
+   "recorte": true,
+   "prompt": "full body from head to feet, an old druid with antler crown and a staff of glowing leaves, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_druida_1",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 11087,
+   "recorte": true,
+   "prompt": "full body from head to feet, an old druid with antler crown and a staff of glowing leaves, facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_catapulta_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 448,
+   "semilla": 11096,
+   "recorte": true,
+   "prompt": "a medieval wooden catapult siege engine, side view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_catapulta_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 448,
+   "semilla": 11097,
+   "recorte": true,
+   "prompt": "a medieval wooden catapult siege engine, side view",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "cielo_coral",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 11106,
+   "recorte": false,
+   "prompt": "Wide landscape painting, a tropical sunset over turquoise lagoons with pink clouds, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame",
+   "estilo": "Dreamy painterly digital matte painting, soft volumetric light, rich atmospheric gradients, minimal detail near the bottom, high quality"
+  },
+  {
+   "id": "r_coral_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 11107,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of pink coral and seashells, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_coral_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 11117,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of pink coral and seashells, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_coral_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 11127,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of pink coral and seashells, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "cielo_otono",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 11137,
+   "recorte": false,
+   "prompt": "Wide landscape painting, a calm autumn sky over a lake with orange and red leaves drifting, distant red forests, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame",
+   "estilo": "Dreamy painterly digital matte painting, soft volumetric light, rich atmospheric gradients, minimal detail near the bottom, high quality"
+  },
+  {
+   "id": "r_otono_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 11138,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of orange autumn wood with red leaves, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_otono_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 11148,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of orange autumn wood with red leaves, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_otono_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 11158,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of orange autumn wood with red leaves, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "cielo_desierto",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 11168,
+   "recorte": false,
+   "prompt": "Wide landscape painting, a golden dusk sky over a desert oasis, distant dunes and palm silhouettes, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame",
+   "estilo": "Dreamy painterly digital matte painting, soft volumetric light, rich atmospheric gradients, minimal detail near the bottom, high quality"
+  },
+  {
+   "id": "r_desierto_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 11169,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of sandstone and gold, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_desierto_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 11179,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of sandstone and gold, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_desierto_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 11189,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of sandstone and gold, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "cielo_tormenta",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 11199,
+   "recorte": false,
+   "prompt": "Wide landscape painting, a dramatic stormy sky with lightning over a dark sea, distant cliffs, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame",
+   "estilo": "Dreamy painterly digital matte painting, soft volumetric light, rich atmospheric gradients, minimal detail near the bottom, high quality"
+  },
+  {
+   "id": "r_tormenta_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 11200,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of dark slate stone crackling with electric blue light, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_tormenta_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 11210,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of dark slate stone crackling with electric blue light, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_tormenta_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 11220,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of dark slate stone crackling with electric blue light, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "cielo_aurora",
+   "motor": "qwen",
+   "ancho": 896,
+   "alto": 768,
+   "semilla": 11230,
+   "recorte": false,
+   "prompt": "Wide landscape painting, a polar night sky with green and pink auroras over a frozen fjord, distant snowy peaks, the horizon line exactly at the bottom edge of the image, lots of open sky, no water, no people, no text, no frame",
+   "estilo": "Dreamy painterly digital matte painting, soft volumetric light, rich atmospheric gradients, minimal detail near the bottom, high quality"
+  },
+  {
+   "id": "r_aurora_roca_0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 11231,
+   "recorte": true,
+   "prompt": "a single low rounded boulder obstacle made of pale lilac crystal glowing with aurora colors, wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_aurora_tronco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 256,
+   "semilla": 11241,
+   "recorte": true,
+   "prompt": "a single long low horizontal fallen log barrier made of pale lilac crystal glowing with aurora colors, much wider than tall",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_aurora_muro_0",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 1024,
+   "semilla": 11251,
+   "recorte": true,
+   "prompt": "a single very tall narrow pillar made of pale lilac crystal glowing with aurora colors, much taller than wide, straight vertical",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_corredor_zorro_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 11261,
+   "recorte": true,
+   "prompt": "full body, a small girl runner wearing a fox mask and an orange cape, running pose, side view facing right",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_corredor_zorro_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 11262,
+   "recorte": true,
+   "prompt": "full body, a small girl runner wearing a fox mask and an orange cape, running pose, side view facing right",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_corredor_buho_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 11271,
+   "recorte": true,
+   "prompt": "full body, a small boy runner wearing an owl hood and a starry blue cloak, running pose, side view facing right",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_corredor_buho_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 11272,
+   "recorte": true,
+   "prompt": "full body, a small boy runner wearing an owl hood and a starry blue cloak, running pose, side view facing right",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_corredor_ciervo_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 11281,
+   "recorte": true,
+   "prompt": "full body, a small girl runner with deer antlers headband and a green leaf scarf, running pose, side view facing right",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  },
+  {
+   "id": "r_corredor_ciervo_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 11282,
+   "recorte": true,
+   "prompt": "full body, a small girl runner with deer antlers headband and a green leaf scarf, running pose, side view facing right",
+   "estilo": "2D mobile game sprite asset, painterly style, side view, the object is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground plane, no people, no frame, no glow behind"
+  }
+ ]
+}
