@@ -1,0 +1,195 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_ui_boton_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16000,
+   "recorte": true,
+   "prompt": "a wide horizontal rectangular game button plate made of dark blackened iron with an ornate old gold rim and small red gem studs at both ends, dark smooth empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "lr_ui_boton_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16001,
+   "recorte": true,
+   "prompt": "a wide horizontal rectangular game button plate made of dark blackened iron with an ornate old gold rim and small red gem studs at both ends, dark smooth empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "lr_ui_boton_oro_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16010,
+   "recorte": true,
+   "prompt": "a wide horizontal rectangular game button plate made of polished old gold with engraved filigree border and a red ruby at each end, smooth empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "lr_ui_boton_oro_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16011,
+   "recorte": true,
+   "prompt": "a wide horizontal rectangular game button plate made of polished old gold with engraved filigree border and a red ruby at each end, smooth empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "lr_ui_panel_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 16020,
+   "recorte": true,
+   "prompt": "a large rectangular dark fantasy game menu panel frame made of black iron with ornate gold filigree corners and red gems, dark worn leather empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "lr_ui_panel_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 16021,
+   "recorte": true,
+   "prompt": "a large rectangular dark fantasy game menu panel frame made of black iron with ornate gold filigree corners and red gems, dark worn leather empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "lr_ui_redondo_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 16030,
+   "recorte": true,
+   "prompt": "a round dark fantasy game button made of black iron with a gold rim and red gem studs, empty dark center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "lr_ui_redondo_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 16031,
+   "recorte": true,
+   "prompt": "a round dark fantasy game button made of black iron with a gold rim and red gem studs, empty dark center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_boton_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16040,
+   "recorte": true,
+   "prompt": "a wide horizontal wooden plank signboard button with iron nails at the corners and warm painted wood, empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_boton_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16041,
+   "recorte": true,
+   "prompt": "a wide horizontal wooden plank signboard button with iron nails at the corners and warm painted wood, empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_boton_oro_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16050,
+   "recorte": true,
+   "prompt": "a wide horizontal wooden plank signboard button painted warm golden yellow with iron nails at the corners, empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_boton_oro_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 16051,
+   "recorte": true,
+   "prompt": "a wide horizontal wooden plank signboard button painted warm golden yellow with iron nails at the corners, empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_panel_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 896,
+   "semilla": 16060,
+   "recorte": true,
+   "prompt": "a large rectangular sheet of old parchment paper inside a carved wooden frame with iron corner brackets, empty",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_panel_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 896,
+   "semilla": 16061,
+   "recorte": true,
+   "prompt": "a large rectangular sheet of old parchment paper inside a carved wooden frame with iron corner brackets, empty",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_cartel_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 16070,
+   "recorte": true,
+   "prompt": "a hanging wooden tavern signboard on two short chains, wide and empty, carved edges",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_cartel_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 320,
+   "semilla": 16071,
+   "recorte": true,
+   "prompt": "a hanging wooden tavern signboard on two short chains, wide and empty, carved edges",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_redondo_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 16080,
+   "recorte": true,
+   "prompt": "a round wooden barrel lid game button with iron ring rim, empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_redondo_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 16081,
+   "recorte": true,
+   "prompt": "a round wooden barrel lid game button with iron ring rim, empty center",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  },
+  {
+   "id": "p_ui_fama_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 16090,
+   "recorte": true,
+   "prompt": "a single game icon of a golden laurel wreath with a star",
+   "estilo": "2D video game user interface element, front view, flat orthographic, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background, no scenery, no shadow behind"
+  }
+ ]
+}
