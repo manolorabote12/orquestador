@@ -24,3 +24,4 @@
   Bot: 60 noches en 64 intentos (perdio la 18 una vez y la 47 tres), modos reto y eterna superados.
 - v7 (22 nov): chispazos de impacto al golpear y al recibir golpes (tamaño según el daño).
 - v8 (22 nov): arranque más rápido (Alba llega en la noche 1, Koji 3, Tumo 5, Nerea 7; arena desde la 4; 4 de ámbar al empezar para la taberna). Bot 20 noches sin perder.
+- v9 (22 nov): integración: sombra de contacto bajo cada héroe y monstruo, luz de cada marea sobre los sprites, selección como círculo de luz a los pies (no caja), bordes de todos los sprites oscurecidos y suavizados, retratos cortados fundidos por abajo con la niebla.
