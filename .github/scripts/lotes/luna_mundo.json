@@ -1,0 +1,335 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_capa_lejos_ciervo_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 13000,
+   "recorte": true,
+   "prompt": "green rolling hills, distant blue mountains, a waterfall, a far castle on a hill",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ciervo_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 13010,
+   "recorte": true,
+   "prompt": "dense pine forest edge with oaks, a wooden windmill and fields",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_cienaga_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 13020,
+   "recorte": true,
+   "prompt": "misty swamp with dead twisted trees, distant ruined tower in fog, grey green",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_cienaga_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 13030,
+   "recorte": true,
+   "prompt": "swamp reeds, crooked dead trees, broken wooden huts on stilts",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_ceniza_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 13040,
+   "recorte": true,
+   "prompt": "huge erupting volcanoes with glowing lava rivers, ash clouds, dark red rocks",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ceniza_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 13050,
+   "recorte": true,
+   "prompt": "burnt black trees, jagged obsidian rocks, glowing lava cracks",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_nieve_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 13060,
+   "recorte": true,
+   "prompt": "enormous snowy mountain peaks, frozen glacier, an ice palace far away",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_nieve_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 13070,
+   "recorte": true,
+   "prompt": "snow covered pine forest, frozen rocks, icicles",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_desierto_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 13080,
+   "recorte": true,
+   "prompt": "golden canyon cliffs and mesas, a giant ancient pyramid and a sphinx statue in the distance",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_desierto_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 13090,
+   "recorte": true,
+   "prompt": "sandstone arches, desert ruins with broken columns, palm trees",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_lejos_ruinas_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 13100,
+   "recorte": true,
+   "prompt": "a vast ruined gothic castle with towers on a mountain, purple dusk haze",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_capa_medio_ruinas_0",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 512,
+   "semilla": 13110,
+   "recorte": true,
+   "prompt": "crumbling castle walls, broken statues, overgrown arches and banners",
+   "estilo": "2D side-scrolling video game parallax background layer, painterly dark fantasy, wide panoramic side view, the sky is a flat solid pure magenta color, everything else is landscape, no characters, no text"
+  },
+  {
+   "id": "lr_hito_estatua_rey_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13120,
+   "recorte": true,
+   "prompt": "a giant ancient stone statue of a crowned king holding a sword, mossy, cracked",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_estatua_angel_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13130,
+   "recorte": true,
+   "prompt": "a tall weathered stone angel statue with folded wings on a pedestal",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_monolito_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13140,
+   "recorte": true,
+   "prompt": "a tall dark runic monolith stone glowing faint blue runes",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_arco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13150,
+   "recorte": true,
+   "prompt": "a ruined ancient stone archway with ivy, broken columns",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_torre_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13160,
+   "recorte": true,
+   "prompt": "a ruined stone watchtower, partly collapsed, with a tattered banner",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_molino_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13170,
+   "recorte": true,
+   "prompt": "an old wooden windmill with cloth sails",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_obelisco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13180,
+   "recorte": true,
+   "prompt": "a broken ancient obelisk with carved glyphs",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_cementerio_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13190,
+   "recorte": true,
+   "prompt": "a small old graveyard with crooked tombstones and a dead tree",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_dolmen_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13200,
+   "recorte": true,
+   "prompt": "an ancient stone dolmen circle, huge mossy standing stones",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_hito_barco_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 13210,
+   "recorte": true,
+   "prompt": "a wrecked old wooden ship half buried in the ground",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_arquero_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13220,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden market stall with a cloth awning, bows and quivers of arrows hanging on a rack",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_arquero_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13221,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden market stall with a cloth awning, bows and quivers of arrows hanging on a rack",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_constructor_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13230,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden market stall with a cloth awning, hammers, saws and planks on a rack",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_constructor_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13231,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden market stall with a cloth awning, hammers, saws and planks on a rack",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_granjero_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13240,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden market stall with a cloth awning, scythes, hoes and sacks of grain",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_granjero_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13241,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden market stall with a cloth awning, scythes, hoes and sacks of grain",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_lancero_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13250,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden weapon rack stall with a cloth awning, spears, pikes and shields",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_puesto_lancero_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 13251,
+   "recorte": true,
+   "prompt": "front side view, a small medieval wooden weapon rack stall with a cloth awning, spears, pikes and shields",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_portal2_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 896,
+   "semilla": 13260,
+   "recorte": true,
+   "prompt": "a huge ancient jagged black stone portal ring standing upright on rocky ground, carved runes, cracked; the inside of the ring is completely empty and shows the flat magenta background through it",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_portal2_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 896,
+   "semilla": 13261,
+   "recorte": true,
+   "prompt": "a huge ancient jagged black stone portal ring standing upright on rocky ground, carved runes, cracked; the inside of the ring is completely empty and shows the flat magenta background through it",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_portal2_2",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 896,
+   "semilla": 13262,
+   "recorte": true,
+   "prompt": "a huge ancient jagged black stone portal ring standing upright on rocky ground, carved runes, cracked; the inside of the ring is completely empty and shows the flat magenta background through it",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  }
+ ]
+}
