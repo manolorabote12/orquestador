@@ -1,0 +1,585 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_jefe_ciervo_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12000,
+   "recorte": true,
+   "prompt": "full body, a giant corrupted stag lord made of black smoke with burning red antlers, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_ciervo_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12001,
+   "recorte": true,
+   "prompt": "full body, a giant corrupted stag lord made of black smoke with burning red antlers, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_cienaga_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12010,
+   "recorte": true,
+   "prompt": "full body, a huge swamp hag giantess with roots for hair and a lantern of green souls, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_cienaga_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12011,
+   "recorte": true,
+   "prompt": "full body, a huge swamp hag giantess with roots for hair and a lantern of green souls, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_ceniza_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12020,
+   "recorte": true,
+   "prompt": "full body, a colossal lava dragon-lizard with cracked obsidian scales, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_ceniza_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12021,
+   "recorte": true,
+   "prompt": "full body, a colossal lava dragon-lizard with cracked obsidian scales, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_nieve_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12030,
+   "recorte": true,
+   "prompt": "full body, an enormous frost wolf king with an ice crown and frozen breath, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_nieve_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12031,
+   "recorte": true,
+   "prompt": "full body, an enormous frost wolf king with an ice crown and frozen breath, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_desierto_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12040,
+   "recorte": true,
+   "prompt": "full body, a gigantic shadow scorpion emperor with golden armor plates, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_desierto_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12041,
+   "recorte": true,
+   "prompt": "full body, a gigantic shadow scorpion emperor with golden armor plates, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_ruinas_0",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12050,
+   "recorte": true,
+   "prompt": "full body, a towering undead king in rusted armor with a ghostly crown and a great sword, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_jefe_ruinas_1",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12051,
+   "recorte": true,
+   "prompt": "full body, a towering undead king in rusted armor with a ghostly crown and a great sword, walking, facing left",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_montura_caballo_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 12060,
+   "recorte": true,
+   "prompt": "a black warhorse with silver armor, no rider, side view facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_montura_caballo_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 12061,
+   "recorte": true,
+   "prompt": "a black warhorse with silver armor, no rider, side view facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_montura_oso_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 12070,
+   "recorte": true,
+   "prompt": "a huge brown war bear with leather saddle, no rider, side view facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_montura_oso_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 12071,
+   "recorte": true,
+   "prompt": "a huge brown war bear with leather saddle, no rider, side view facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_montura_grifo_0",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 12080,
+   "recorte": true,
+   "prompt": "a majestic white griffin with golden wings folded, no rider, side view facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "lr_montura_grifo_1",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 12081,
+   "recorte": true,
+   "prompt": "a majestic white griffin with golden wings folded, no rider, side view facing right",
+   "estilo": "2D video game sprite asset, painterly dark fantasy style, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no ground plane, no frame, no vignette, no glow behind"
+  },
+  {
+   "id": "p_taberna",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12090,
+   "recorte": false,
+   "prompt": "a cozy medieval tavern hall with long wooden tables, a fireplace and barrels",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_cocina",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12091,
+   "recorte": false,
+   "prompt": "a medieval inn kitchen with a big hearth, hanging pots, bread and vegetables",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_dormitorio",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12092,
+   "recorte": false,
+   "prompt": "a small medieval inn bedroom with two beds, a candle and a window",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_alquimista",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12093,
+   "recorte": false,
+   "prompt": "an alchemist room with shelves of glowing potions, a cauldron and books",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_herreria",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12094,
+   "recorte": false,
+   "prompt": "a blacksmith forge room with an anvil, glowing furnace and weapons on the wall",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_templo",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12095,
+   "recorte": false,
+   "prompt": "a small candlelit chapel room with an altar, stained glass and a healing light",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_tablon",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12096,
+   "recorte": false,
+   "prompt": "an adventurers guild hall with a big quest board full of notes and maps",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_establo",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12097,
+   "recorte": false,
+   "prompt": "a stable room with hay, a horse stall and saddles",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_bodega",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12098,
+   "recorte": false,
+   "prompt": "a cellar room with wine barrels, crates and a trapdoor",
+   "estilo": "Cozy painterly storybook fantasy game art, warm candle light, rich detail, cutaway side view of a single room like a dollhouse, flat front, no people, no text, high quality"
+  },
+  {
+   "id": "p_fondo_dia",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 12099,
+   "recorte": false,
+   "prompt": "a winding dirt road through misty hills toward a distant dark dungeon mountain, morning light, wide vertical composition, lots of sky",
+   "estilo": "Moody painterly 2D game background, fantasy storybook, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "p_fondo_noche",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 12100,
+   "recorte": false,
+   "prompt": "a winding dirt road through misty hills toward a distant dark dungeon mountain glowing red, night with stars, wide vertical composition",
+   "estilo": "Moody painterly 2D game background, fantasy storybook, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "p_tejado",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 448,
+   "semilla": 12101,
+   "recorte": false,
+   "prompt": "the wooden shingle roof and chimney of a medieval inn with a hanging sign, front view, isolated on magenta background",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_guerrero_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12102,
+   "recorte": true,
+   "prompt": "full body from head to feet, a sturdy warrior adventurer with a sword and round shield, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_guerrero_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12103,
+   "recorte": true,
+   "prompt": "full body from head to feet, a sturdy warrior adventurer with a sword and round shield, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_maga_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12112,
+   "recorte": true,
+   "prompt": "full body from head to feet, a young mage adventurer woman with a staff and a starry robe, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_maga_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12113,
+   "recorte": true,
+   "prompt": "full body from head to feet, a young mage adventurer woman with a staff and a starry robe, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_picaro_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12122,
+   "recorte": true,
+   "prompt": "full body from head to feet, a sly rogue adventurer with a hood and two daggers, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_picaro_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12123,
+   "recorte": true,
+   "prompt": "full body from head to feet, a sly rogue adventurer with a hood and two daggers, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_cleriga_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12132,
+   "recorte": true,
+   "prompt": "full body from head to feet, a cleric adventurer woman with a mace and holy symbol, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_cleriga_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12133,
+   "recorte": true,
+   "prompt": "full body from head to feet, a cleric adventurer woman with a mace and holy symbol, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_cazador_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12142,
+   "recorte": true,
+   "prompt": "full body from head to feet, a ranger adventurer with a bow and a fur cloak, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_cazador_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12143,
+   "recorte": true,
+   "prompt": "full body from head to feet, a ranger adventurer with a bow and a fur cloak, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_bardo_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12152,
+   "recorte": true,
+   "prompt": "full body from head to feet, a cheerful bard adventurer with a lute and feathered hat, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_bardo_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12153,
+   "recorte": true,
+   "prompt": "full body from head to feet, a cheerful bard adventurer with a lute and feathered hat, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_posadera_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12162,
+   "recorte": true,
+   "prompt": "full body from head to feet, a friendly plump innkeeper woman with an apron holding a tankard, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_posadera_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12163,
+   "recorte": true,
+   "prompt": "full body from head to feet, a friendly plump innkeeper woman with an apron holding a tankard, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_cocinero_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12172,
+   "recorte": true,
+   "prompt": "full body from head to feet, a big inn cook with a ladle and chef hat, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_cocinero_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12173,
+   "recorte": true,
+   "prompt": "full body from head to feet, a big inn cook with a ladle and chef hat, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_alquimista_pj_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12182,
+   "recorte": true,
+   "prompt": "full body from head to feet, an old alchemist with goggles holding a glowing potion, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_alquimista_pj_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12183,
+   "recorte": true,
+   "prompt": "full body from head to feet, an old alchemist with goggles holding a glowing potion, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_herrero_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12192,
+   "recorte": true,
+   "prompt": "full body from head to feet, a muscular blacksmith with a hammer and leather apron, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_herrero_1",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 576,
+   "semilla": 12193,
+   "recorte": true,
+   "prompt": "full body from head to feet, a muscular blacksmith with a hammer and leather apron, standing, facing right",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_oro_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 12202,
+   "recorte": true,
+   "prompt": "a single game icon of a pile of shiny gold coins",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_gema_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 12212,
+   "recorte": true,
+   "prompt": "a single game icon of a big sparkling blue gem",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_pocion_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 12222,
+   "recorte": true,
+   "prompt": "a single game icon of a glowing red potion bottle",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_espada_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 12232,
+   "recorte": true,
+   "prompt": "a single game icon of a magic sword",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_cofre_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 12242,
+   "recorte": true,
+   "prompt": "a single game icon of a treasure chest overflowing with gold",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_calavera_0",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 12252,
+   "recorte": true,
+   "prompt": "a single game icon of a skull with a candle",
+   "estilo": "2D video game sprite asset, cozy painterly storybook fantasy style, warm colors, full body, the subject is completely isolated on a flat solid pure magenta background, no scenery, no frame, no glow behind"
+  },
+  {
+   "id": "p_titulo",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 12262,
+   "recorte": false,
+   "prompt": "a warm glowing medieval inn at dusk beside a road leading to a dark dungeon mountain, adventurers arriving, lanterns, epic cozy, lots of empty sky at the top for a title",
+   "estilo": "Moody painterly 2D game background, fantasy storybook, atmospheric, high quality, no characters, no text"
+  },
+  {
+   "id": "p_icono",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12263,
+   "recorte": false,
+   "prompt": "a cozy glowing medieval inn sign with a lantern and a tankard, bold simple centered composition",
+   "estilo": "Mobile game app icon, bold simple composition, strong silhouette readable at small size, rich warm colors, painterly, no text"
+  }
+ ]
+}
