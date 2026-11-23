@@ -36,3 +36,6 @@
 - v7 (23 nov): los 25 monstruos y jefes respiran y atacan con animación propia (Wan 2.2 local en RunPod);
   arreglado el Leviatán, que salía dentro de un cuadro rosa. Hojas en paleta de 256 colores: 5 veces menos peso.
   Bot: noches 1-3 ganadas.
+- v8 (23 nov): las 10 escenas y los 3 finales narrados con voz de farero viejo (Qwen3-TTS); muertes con juice
+  (destello, el cuerpo se deshace en niebla que sube; los jefes caen a cámara lenta con tres estallidos).
+  Bot: 60 noches en 61 intentos, reto, eterna y torre.
