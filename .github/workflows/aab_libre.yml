@@ -72,6 +72,16 @@ jobs:
         run: |
           pip install -q pillow
           cd juego
+          ## Binarios Android del plugin de AdMob (Poing Studios): el editor los baja solo; aqui, a mano.
+          VP=$(sed -n 's/^version="\(.*\)"/\1/p' addons/admob/plugin.cfg)
+          mkdir -p addons/admob/android/bin
+          for GV in 4.6.3 4.6.2 4.6.1 4.6.0; do
+            if wget -q "https://github.com/poingstudios/godot-admob-plugin/releases/download/v$VP/android-template-v$GV.zip" -O /tmp/admob.zip; then
+              unzip -qo /tmp/admob.zip -d addons/admob/android/bin && printf 'const VERSION := "v%s"\n' "$VP" > addons/admob/android/bin/package.gd
+              echo "::notice::AdMob Android v$VP (Godot $GV)"; break
+            fi
+          done
+          ls addons/admob/android/bin | head
           timeout 600 godot --headless --path . --import > /dev/null 2>&1 || true
           python3 - <<'PY'
           import json, os, re, sys
