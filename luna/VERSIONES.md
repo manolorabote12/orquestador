@@ -68,3 +68,4 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
 - v8 (23 nov): Reto de la luna diario (5 noches con una regla rara: Luna de sangre, La horda, Bolsa vacía o
   Eclipse perpetuo; racha de días = más fragmentos); el aliento del dragón lanza bolas de fuego pintadas en abanico.
   Bot: 6/6 valles y los 4 retos superados.
+- v8.1: los seis capítulos narrados con voz (Qwen3-TTS) y hojas de animación en paleta (proyecto de 101 a 72 MB).
