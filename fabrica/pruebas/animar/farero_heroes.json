@@ -1,0 +1,370 @@
+{
+ "tipo_video": "A painted 2D dark fantasy video game character, antique engraving style",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark nautical fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "h_ibsen",
+   "descripcion": "an old sea captain with a heavy iron anchor",
+   "ficha": "fabrica/pruebas/animar/farero/h_ibsen.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7100
+  },
+  {
+   "id": "h_alba",
+   "descripcion": "a nun healer in white robes with a star lantern",
+   "ficha": "fabrica/pruebas/animar/farero/h_alba.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7101
+  },
+  {
+   "id": "h_koji",
+   "descripcion": "a samurai duelist in red armor with a katana",
+   "ficha": "fabrica/pruebas/animar/farero/h_koji.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7102
+  },
+  {
+   "id": "h_tumo",
+   "descripcion": "a brass clockwork automaton",
+   "ficha": "fabrica/pruebas/animar/farero/h_tumo.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7103
+  },
+  {
+   "id": "h_nerea",
+   "descripcion": "a twilight huntress with a dark bow",
+   "ficha": "fabrica/pruebas/animar/farero/h_nerea.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7104
+  },
+  {
+   "id": "h_lyra",
+   "descripcion": "a young aeronaut girl with goggles and a compass",
+   "ficha": "fabrica/pruebas/animar/farero/h_lyra.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7105
+  },
+  {
+   "id": "h_bram",
+   "descripcion": "a burly blacksmith with a big hammer",
+   "ficha": "fabrica/pruebas/animar/farero/h_bram.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7106
+  },
+  {
+   "id": "h_mireia",
+   "descripcion": "a pearl diver woman with a harpoon",
+   "ficha": "fabrica/pruebas/animar/farero/h_mireia.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7107
+  },
+  {
+   "id": "h_ossian",
+   "descripcion": "a blind bard with a lute",
+   "ficha": "fabrica/pruebas/animar/farero/h_ossian.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7108
+  },
+  {
+   "id": "h_zahir",
+   "descripcion": "a desert alchemist with glass flasks",
+   "ficha": "fabrica/pruebas/animar/farero/h_zahir.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7109
+  },
+  {
+   "id": "h_hilda",
+   "descripcion": "a viking icebreaker woman with a great axe",
+   "ficha": "fabrica/pruebas/animar/farero/h_hilda.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7110
+  },
+  {
+   "id": "h_selene",
+   "descripcion": "an astronomer woman with a brass telescope",
+   "ficha": "fabrica/pruebas/animar/farero/h_selene.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7111
+  },
+  {
+   "id": "h_pip",
+   "descripcion": "a small bell ringer boy with a hand bell",
+   "ficha": "fabrica/pruebas/animar/farero/h_pip.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7112
+  },
+  {
+   "id": "h_morgana",
+   "descripcion": "a sea witch with a coral staff",
+   "ficha": "fabrica/pruebas/animar/farero/h_morgana.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7113
+  },
+  {
+   "id": "h_grog",
+   "descripcion": "a big ship cook with a ladle",
+   "ficha": "fabrica/pruebas/animar/farero/h_grog.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7114
+  },
+  {
+   "id": "h_sable",
+   "descripcion": "a pirate corsair woman with two sabers",
+   "ficha": "fabrica/pruebas/animar/farero/h_sable.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7115
+  },
+  {
+   "id": "h_tobias",
+   "descripcion": "a lamplighter with a long lit pole",
+   "ficha": "fabrica/pruebas/animar/farero/h_tobias.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7116
+  },
+  {
+   "id": "h_nanuk",
+   "descripcion": "an arctic harpooner in furs",
+   "ficha": "fabrica/pruebas/animar/farero/h_nanuk.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7117
+  },
+  {
+   "id": "h_grimm",
+   "descripcion": "an old gravedigger widow with a shovel",
+   "ficha": "fabrica/pruebas/animar/farero/h_grimm.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7118
+  },
+  {
+   "id": "h_kael",
+   "descripcion": "a ghostly spectral sailor with a cutlass",
+   "ficha": "fabrica/pruebas/animar/farero/h_kael.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing slowly, clothes and hair moving gently in the sea wind, subtle idle loop, stays centered",
+     "frames": 8,
+     "bucle": true
+    },
+    "attack": {
+     "que": "performs a powerful attack with their weapon or power, then returns to the starting pose, stays centered",
+     "frames": 8,
+     "bucle": false
+    }
+   },
+   "semilla": 7119
+  }
+ ]
+}
