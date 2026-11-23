@@ -21,3 +21,8 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
 - v4 (22 nov): 5 mundos nuevos (Laguna de Coral, Lago de Otoño, Oasis Dorado, Mar de la Tormenta con rayos, Fiordo de la Aurora) con cielos y obstáculos pintados y ambiente propio; 4 corredores (Lía; Kit del zorro +25% luces; Nilo del búho, poderes +40%; Brisa del ciervo, burbuja y salto mayor); 12 logros con premio. Bot: 4/4 carreras a 7200 m (los 10 mundos).
 - v4.1 (22 nov): integración: obstáculos con la luz de cada mundo, sombra de contacto y hierba en la base; bordes de todos los sprites oscurecidos y suavizados (sin halo); menús con sombra y marco.
 - v4.2 (22 nov): corredores fundidos por abajo.
+- v4.3 (23 nov): Lía pintada (adiós al monigote), corredores repintados (Kit, Nilo, Brisa) y dos nuevos
+  (Sol: empieza con turbo; Luna: estrellas más frecuentes y el doble de largas); monedas pintadas que giran;
+  iconos pintados de escudo e imán; potenciadores nuevos Turbo (velocidad x1,8 y atraviesa obstáculos) y
+  Estrella (invencible, obstáculos por los aires, luces x3); pantallas altas sin corte. Pendiente (v5):
+  animaciones, 30 obstáculos nuevos, capas por mundo, interfaz pintada, modos (lote reflejo_v2 a medias).
