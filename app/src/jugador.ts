@@ -26,6 +26,35 @@ export interface OpcionesJugador {
   alCerrar?: () => void;
   /** Página pública del juego: si en el móvil no arranca, se ofrece abrirla en el navegador. */
   web?: string | null;
+  /** Tu propio juego: botón «Pedir un cambio» mientras juegas; manda lo que escribes al taller de Chispa. */
+  pedirCambio?: (instruccion: string) => void;
+}
+
+const IDEAS_CAMBIO = ["Más fácil al principio", "Más rápido", "Más enemigos", "Otro color de fondo", "Música más épica", "Más premios"];
+
+/** Hoja para pedir un cambio sin dejar de mirar el juego. Lo que se escribe va con el contexto del momento. */
+function hojaCambio(op: OpcionesJugador, segundos: number, alEnviar: () => void): HTMLElement {
+  const texto = h("textarea", { rows: "3", maxlength: "400", placeholder: "¿Qué cambiarías? Ej.: el salto es muy corto",
+    "aria-label": "Qué cambiarías del juego" }) as HTMLTextAreaElement;
+  const chips = h("div", { class: "chips desliza", role: "list" }, ...IDEAS_CAMBIO.map((t) =>
+    h("button", { class: "chip", type: "button", onclick: () => { texto.value = texto.value ? `${texto.value}. ${t}` : t; texto.focus(); } }, t)));
+  const quitar = () => hoja.remove();
+  const enviar = h("button", { class: "btn btn-brass", type: "button", onclick: () => {
+    const t = texto.value.trim();
+    if (!t) { texto.focus(); return; }
+    const min = Math.floor(segundos / 60);
+    const momento = segundos > 5 ? ` (lo he visto jugando, al minuto ${min}:${String(Math.floor(segundos % 60)).padStart(2, "0")})` : "";
+    quitar();
+    alEnviar();
+    op.pedirCambio?.(t + momento);
+  } }, "Enviar a Chispa");
+  const hoja = h("div", { class: "player-cambio", role: "dialog", "aria-label": "Pedir un cambio" },
+    h("strong", {}, "Pedir un cambio"),
+    h("p", { class: "muted small" }, "Chispa te dirá lo que cuesta antes de hacer nada."),
+    texto, chips,
+    h("div", { class: "btn-row" }, h("button", { class: "btn btn-line", type: "button", onclick: quitar }, "Seguir jugando"), enviar));
+  setTimeout(() => texto.focus(), 30);
+  return hoja;
 }
 
 /** Página del iframe. Las URLs van como JSON escapado: nunca se interpretan como HTML. */
@@ -77,7 +106,14 @@ export function abrirJugador(op: OpcionesJugador): () => void {
   // el mismo juego arrancaba (12 nov). Se juega en el navegador del sistema, encima de la app; al
   // cerrarlo se vuelve a la app (y ahí sale, si toca, el anuncio entre partidas).
   if (Capacitor.isNativePlatform() && op.motor && op.pck && WEB) {
-    return jugarEnNavegador(op);
+    if (!op.pedirCambio) return jugarEnNavegador(op);
+    // En el navegador del sistema no hay botón encima: al volver se ofrece pedir el cambio.
+    const t0 = Date.now();
+    const fuera = op.alCerrar;
+    return jugarEnNavegador({ ...op, alCerrar: () => {
+      fuera?.();
+      if (Date.now() - t0 > 8000) document.body.append(hojaCambio(op, (Date.now() - t0) / 1000, () => undefined));
+    } });
   }
   const previo = document.activeElement as HTMLElement | null;
   let cerrado = false;
@@ -96,7 +132,12 @@ export function abrirJugador(op: OpcionesJugador): () => void {
   const sig = op.siguiente
     ? h("button", { class: "player-next", type: "button", onclick: () => { const ir = op.siguiente!; cerrar(); ir(); } }, "Siguiente ▸")
     : null;
-  const cabeza = h("div", { class: "player-bar" }, h("strong", {}, op.titulo), estado, sig, boton);
+  const t0 = Date.now();
+  const cambio = op.pedirCambio
+    ? h("button", { class: "player-next", type: "button", "aria-label": "Pedir un cambio del juego",
+      onclick: () => { if (!capa.querySelector(".player-cambio")) capa.append(hojaCambio(op, (Date.now() - t0) / 1000, cerrar)); } }, "✎ Pedir un cambio")
+    : null;
+  const cabeza = h("div", { class: "player-bar" }, h("strong", {}, op.titulo), estado, cambio, sig, boton);
   let cuerpo: HTMLElement;
   if (op.motor && op.pck) {
     const marco = h("iframe", {

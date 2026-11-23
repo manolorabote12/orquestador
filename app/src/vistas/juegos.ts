@@ -183,7 +183,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
 
   // ------------------------------------------------------------------ jugar sin instalar
 
-  async function jugar(p: Proyecto): Promise<void> {
+  async function jugar(p: Proyecto, pedirCambio?: (instruccion: string) => void): Promise<void> {
     const motor = app.api.motor();
     let pck: string | null = null;
     let portada: string | undefined;
@@ -195,7 +195,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       if (motor) return aviso(mensajeError(e, "No se pudo abrir el juego."));
     }
     try { localStorage.setItem(`orq-jugado-${p.id}`, "1"); } catch { /* sin almacenamiento */ }
-    abrirJugador({ motor, pck, titulo: p.titulo, portada });
+    abrirJugador({ motor, pck, titulo: p.titulo, portada, pedirCambio });
   }
 
   // ------------------------------------------------------------------ centro de lanzamiento
@@ -1790,6 +1790,8 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
     }
     if (!vivo) return;
     const volver = h("button", { class: "btn btn-line", onclick: () => void lista() }, svg(ICONOS.atras), "Mis juegos");
+    // Pedir un cambio desde dentro del juego: se rellena el taller y Chispa propone (con su coste).
+    let pedirDesdeJuego: ((t: string) => void) | undefined;
     // Borrador (boceto guardado gratis): se juega con los dibujos provisionales y desde aquí se fabrica
     // el juego completo. Sin taller, APK ni publicación hasta entonces.
     const borrador = p.files as unknown as { borrador?: boolean; preview?: string; idea?: string } | null;
@@ -1846,7 +1848,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
     const heroe = h("div", { class: "ficha-heroe" },
       h("div", { class: "detail-head" }, icono(p.files?.icono),
         h("div", {}, h("h2", {}, p.titulo), h("span", { class: "pill done" }, `versión ${p.version}`))),
-      h("button", { class: "btn btn-brass", style: "width:100%", onclick: () => void jugar(p) }, svg(ICONOS.jugar), "Jugar ya"));
+      h("button", { class: "btn btn-brass", style: "width:100%", onclick: () => void jugar(p, (t) => pedirDesdeJuego?.(t)) }, svg(ICONOS.jugar), "Jugar ya"));
     const fondoHeroe = (p.files?.capturas ?? [])[2] ?? (p.files?.capturas ?? [])[0];
     if (fondoHeroe) void app.api.url(fondoHeroe).then((u) => heroe.style.setProperty("--fondo", `url("${u}")`)).catch(() => undefined);
     else if (p.genero) heroe.style.setProperty("--fondo", `url("generos_arte/${p.genero}.webp")`);
@@ -1967,7 +1969,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       }).catch((e) => aviso(mensajeError(e, "No se pudo preparar el cambio.")));
     });
     const camino = seccionLanzamiento(p, (a) => {
-      if (a === "jugar") void jugar(p);
+      if (a === "jugar") void jugar(p, (t) => pedirDesdeJuego?.(t));
       else if (a === "lanzadera") app.ir("lanzadera");
       else if (a === "preparar") { mostrar("publicar"); void publicarJuego("primer_aab", "internal"); }
       else {
@@ -1995,6 +1997,8 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       chat.scrollTop = chat.scrollHeight;
       taller.scrollIntoView({ block: "end", behavior: "smooth" });
     }
+
+    pedirDesdeJuego = (t: string) => { entrada.value = t; mostrar("taller"); void pedir(); };
 
     async function pedir() {
       const texto = entrada.value.trim();
