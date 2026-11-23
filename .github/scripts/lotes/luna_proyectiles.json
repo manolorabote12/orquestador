@@ -1,0 +1,85 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_p_flecha",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 22000,
+   "recorte": true,
+   "prompt": "a wooden arrow with steel arrowhead and white feather fletching",
+   "estilo": "painterly dark fantasy video game projectile sprite, glowing, highly detailed, horizontal, pointing to the right, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_p_estrella",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 22001,
+   "recorte": true,
+   "prompt": "a magical silver arrow made of starlight with a glowing comet tail",
+   "estilo": "painterly dark fantasy video game projectile sprite, glowing, highly detailed, horizontal, pointing to the right, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_p_bola",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 22002,
+   "recorte": true,
+   "prompt": "a ball of swirling emerald green witch fire with a flaming tail",
+   "estilo": "painterly dark fantasy video game projectile sprite, glowing, highly detailed, horizontal, pointing to the right, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_p_virote",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 22003,
+   "recorte": true,
+   "prompt": "a heavy crossbow bolt with a glowing red-hot ember tip and sparks",
+   "estilo": "painterly dark fantasy video game projectile sprite, glowing, highly detailed, horizontal, pointing to the right, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_p_roca",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 22004,
+   "recorte": true,
+   "prompt": "a round flaming boulder with cracks of glowing lava, catapult ammunition",
+   "estilo": "painterly dark fantasy video game projectile sprite, glowing, highly detailed, horizontal, pointing to the right, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_p_fuego",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 22005,
+   "recorte": true,
+   "prompt": "a dragon fireball of orange lava fire with a long fiery tail",
+   "estilo": "painterly dark fantasy video game projectile sprite, glowing, highly detailed, horizontal, pointing to the right, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_impacto",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 22006,
+   "recorte": true,
+   "prompt": "a bright magical impact burst with white and golden sparks radiating outward",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_humo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 22007,
+   "recorte": true,
+   "prompt": "a puff of dark smoke with red embers dissolving",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  }
+ ]
+}
