@@ -1,0 +1,258 @@
+{
+ "tipo_video": "A painted 2D dark fantasy video game character",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "lr_sombra",
+   "descripcion": "a crouching shadow creature with long claws",
+   "ficha": "fabrica/pruebas/animar/luna/lr_sombra.png",
+   "movimientos": {
+    "walk": {
+     "que": "crawls forward toward the left on all fours, claws reaching forward one after another, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6401
+  },
+  {
+   "id": "lr_ahogado",
+   "descripcion": "a drowned undead walking corpse",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ahogado.png",
+   "movimientos": {
+    "walk": {
+     "que": "shambles forward toward the left, dragging one leg, arms swinging limply, clear alternating steps, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6402
+  },
+  {
+   "id": "lr_golem",
+   "descripcion": "a huge golem of burning rock",
+   "ficha": "fabrica/pruebas/animar/luna/lr_golem.png",
+   "movimientos": {
+    "walk": {
+     "que": "stomps forward toward the left with heavy alternating steps, lifting each massive leg clearly, ground shaking, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6403
+  },
+  {
+   "id": "lr_bruto",
+   "descripcion": "a hulking brute shadow monster",
+   "ficha": "fabrica/pruebas/animar/luna/lr_bruto.png",
+   "movimientos": {
+    "walk": {
+     "que": "lumbers forward toward the left with big heavy alternating steps, shoulders rolling, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6404
+  },
+  {
+   "id": "lr_lobo",
+   "descripcion": "a shadow wolf with glowing red eyes",
+   "ficha": "fabrica/pruebas/animar/luna/lr_lobo.png",
+   "movimientos": {
+    "walk": {
+     "que": "runs forward toward the left with a fast gallop, legs stretching and gathering, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "leaps forward to the left and bites with open jaws, then lands back in its pose",
+     "frames": 10,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6405
+  },
+  {
+   "id": "lr_jefe_ceniza",
+   "descripcion": "a huge lava dragon",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ceniza.png",
+   "movimientos": {
+    "walk": {
+     "que": "stalks forward toward the left with heavy steps, wings half open, lava dripping, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "rears up and breathes a stream of fire to the left, then returns to its pose",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6406
+  },
+  {
+   "id": "lr_jefe_ciervo",
+   "descripcion": "a giant boss monster",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ciervo.png",
+   "movimientos": {
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6410
+  },
+  {
+   "id": "lr_jefe_cienaga",
+   "descripcion": "a giant boss monster",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_cienaga.png",
+   "movimientos": {
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6411
+  },
+  {
+   "id": "lr_jefe_ceniza",
+   "descripcion": "a giant boss monster",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ceniza.png",
+   "movimientos": {
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6412
+  },
+  {
+   "id": "lr_jefe_nieve",
+   "descripcion": "a giant boss monster",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_nieve.png",
+   "movimientos": {
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6413
+  },
+  {
+   "id": "lr_jefe_desierto",
+   "descripcion": "a giant boss monster",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_desierto.png",
+   "movimientos": {
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6414
+  },
+  {
+   "id": "lr_jefe_ruinas",
+   "descripcion": "a giant boss monster",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ruinas.png",
+   "movimientos": {
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6415
+  },
+  {
+   "id": "lr_caballero",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_caballero.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place in a ready combat stance facing right, breathing, cloak and hair moving in the wind, weapon glinting, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6420
+  },
+  {
+   "id": "lr_bruja",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_bruja.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place in a ready combat stance facing right, breathing, cloak and hair moving in the wind, weapon glinting, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6421
+  },
+  {
+   "id": "lr_cazadora",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_cazadora.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place in a ready combat stance facing right, breathing, cloak and hair moving in the wind, weapon glinting, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6422
+  },
+  {
+   "id": "lr_ingeniera",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ingeniera.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place in a ready combat stance facing right, breathing, cloak and hair moving in the wind, weapon glinting, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6423
+  },
+  {
+   "id": "lr_druida",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_druida.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place in a ready combat stance facing right, breathing, cloak and hair moving in the wind, weapon glinting, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6424
+  }
+ ]
+}
