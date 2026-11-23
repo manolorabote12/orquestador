@@ -16,3 +16,7 @@ Goblins al Abismo sin Fondo). Vuelven con oro y fama... o no vuelven y entran en
   Pendiente: interfaz pintada (lote ui_luna_posada), traducciones EN/PT, animaciones de personajes.
 - v1.1 (23 nov): interfaz pintada (tablas de madera y pergamino), textos en tinta, EN/PT, pantallas altas.
 - v1.2 (23 nov): eventos nuevos (concierto del bardo: taberna x2 un minuto; mapa del tesoro: próximo botín x3).
+- v2 (23 nov): La Posada viva. Aventureros, posadera, cocinero y herrero animados (Wan 2.2); parroquianos
+  pintados que llenan la taberna y la cocina y brindan; crónicas ilustradas al volver de cada mazmorra (8
+  ilustraciones); miniaturas pintadas de las mazmorras; eventos con lámina (concierto, caravana, noble,
+  mapa del tesoro); botones de abajo arreglados; texturas comprimidas.
