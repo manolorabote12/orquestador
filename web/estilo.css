@@ -46,3 +46,10 @@ footer { max-width: 760px; margin: 0 auto; padding: 24px 16px 40px; color: var(-
 .pestanas { display: flex; gap: 8px; margin-top: 12px; }
 .pestanas button { background: transparent; color: var(--ink-dim); border: 1px solid rgba(232,240,250,.2); border-radius: 999px; padding: 6px 14px; font: 600 15px system-ui; cursor: pointer; }
 .pestanas button[aria-pressed="true"] { color: #1d1405; background: var(--brass); border-color: var(--brass); }
+.vitrina { display: grid; gap: 16px; margin-top: 16px; }
+.vitrina article { background: var(--paper-lift); border: 1px solid rgba(232, 240, 250, .14); border-radius: 14px; overflow: hidden; }
+.vitrina img { display: block; width: 100%; height: auto; }
+.vitrina article > div { padding: 14px 16px 16px; display: flex; flex-direction: column; gap: 4px; }
+.vitrina b { font-size: 19px; }
+.vitrina a { align-self: flex-start; margin-top: 6px; }
+@media (min-width: 700px) { .vitrina { grid-template-columns: 1fr 1fr; } }

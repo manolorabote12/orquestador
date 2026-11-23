@@ -15,6 +15,19 @@
   <p class="dim">Orquestador es una app para crear juegos de móvil con palabras: tú cuentas la idea y Chispa, la asistente, diseña los niveles, dibuja los personajes, compone la música y prueba el juego con bots antes de dártelo.</p>
   <p><a class="btn" id="play" href="#">Descargar en Google Play</a> <a class="btn" style="background:transparent;color:var(--brass-hi);border:1px solid var(--brass)" href="escaparate.html">Jugar juegos de la comunidad</a> <a class="btn" style="background:transparent;color:var(--ink);border:1px solid rgba(232,240,250,.4)" href="app/">Crear desde el navegador</a></p>
   <p><a href="crear/index.html">Todos los tipos de juego que puedes crear</a> · <a href="en/create/index.html">English</a></p>
+  <h2>Hechos con Orquestador</h2>
+  <p class="dim">Cuatro juegos completos fabricados con la misma tubería que usa la app. El código lo escribe Claude; las ilustraciones, Qwen-Image; las animaciones, Wan 2.2; la música, ACE-Step; y las voces, Qwen3-TTS. Bots que juegan miles de partidas los equilibran antes de publicarlos.</p>
+  <div class="vitrina">
+    <article><img src="juegos/luna.webp" alt="Bajo la Luna Roja: una reina a caballo bajo una luna roja" loading="lazy" width="1024" height="500">
+      <div><b>Bajo la Luna Roja</b><span class="dim">Construye de día y resiste de noche en seis valles, con jefes colosales, héroes y dragones.</span><a data-juego="lunaroja" hidden>Google Play</a></div></article>
+    <article><img src="juegos/posada.webp" alt="La Posada: aventureros caminando hacia una posada iluminada" loading="lazy" width="1024" height="500">
+      <div><b>La Posada del Último Camino</b><span class="dim">Dirige la última posada antes de la mazmorra: salas, aventureros, estaciones y leyendas.</span><a data-juego="posada" hidden>Google Play</a></div></article>
+    <article><img src="juegos/reflejo.webp" alt="El Reflejo: una niña corre sobre un lago y su reflejo corre debajo" loading="lazy" width="1024" height="500">
+      <div><b>El Reflejo</b><span class="dim">Corre en dos mundos a la vez y esquiva a los guardianes gigantes de diez mundos.</span><a data-juego="reflejo" hidden>Google Play</a></div></article>
+    <article><img src="juegos/farero.webp" alt="El Farero: un faro encendido entre la niebla y monstruos marinos" loading="lazy" width="1024" height="500">
+      <div><b>El Farero de la Niebla</b><span class="dim">Rol por turnos en un faro asediado por la niebla, con decisiones y tres finales.</span><a data-juego="farero" hidden>Google Play</a></div></article>
+  </div>
+  <h2>Qué hace la app por ti</h2>
   <div class="grid3">
     <div class="card"><b>Crea</b><br><span class="dim">Plataformas, hordas, puzles... con arte, música, efectos y voz hechos para tu idea.</span></div>
     <div class="card"><b>Cambia</b><br><span class="dim">“Hazlo más difícil”, “que el gato sea un robot”: cada cambio es una versión nueva y puedes volver atrás.</span></div>
@@ -26,6 +39,13 @@
   var url = (window.ORQ || {}).play || "";
   var b = document.getElementById("play");
   if (url && url.indexOf("__") !== 0) b.href = url; else b.remove();
+  // Enlaces a la ficha de cada juego: aparecen solos cuando exista (mismo dominio de Play).
+  document.querySelectorAll("[data-juego]").forEach(function (el) {
+    var id = "com.orquestador." + el.getAttribute("data-juego");
+    if (url && url.indexOf("__") !== 0 && (window.ORQ || {}).juegosEnPlay) {
+      el.href = "https://play.google.com/store/apps/details?id=" + id; el.hidden = false;
+    }
+  });
 </script>
 </body>
 </html>
