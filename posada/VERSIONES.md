@@ -24,3 +24,4 @@ Goblins al Abismo sin Fondo). Vuelven con oro y fama... o no vuelven y entran en
   pedidos del pueblo que dan gemas; Renombre: vender la posada y abrir otra en un camino nuevo con +10% de oro por sello.
   Bot (10 h): 8 salas, Fortaleza del Camino, 43 pedidos, 12 sellos al vender.
 - v3.1: la barra de arriba ya no corta la estación en pantallas anchas.
+- v3.2: icono nuevo (el posadero enano con su jarra).
