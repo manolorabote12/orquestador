@@ -1,0 +1,115 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "r_guardian_lago",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12000,
+   "recorte": true,
+   "prompt": "a colossal ethereal heron spirit made of warm sunset light and purple mist, wings spread, glowing orange eyes",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_bosque",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12001,
+   "recorte": true,
+   "prompt": "a colossal ancient stag spirit with huge mossy antlers and leaves, glowing green eyes",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_ciudad",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12002,
+   "recorte": true,
+   "prompt": "a colossal drowned stone colossus guardian statue with barnacles, glowing yellow eyes, arms raised",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_glaciar",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12003,
+   "recorte": true,
+   "prompt": "a colossal crystal ice serpent dragon spirit, translucent cyan ice scales, glowing eyes",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_cielo",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12004,
+   "recorte": true,
+   "prompt": "a colossal cosmic jellyfish spirit full of purple and pink stars, long glowing tentacles",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_coral",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12005,
+   "recorte": true,
+   "prompt": "a colossal sea turtle spirit with a pink coral reef shell and glowing cyan patterns",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_otono",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12006,
+   "recorte": true,
+   "prompt": "a colossal nine-tailed fox spirit made of autumn leaves and amber fire",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_desierto",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12007,
+   "recorte": true,
+   "prompt": "a colossal golden sand sphinx spirit with glowing turquoise eyes and hieroglyph markings",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_tormenta",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12008,
+   "recorte": true,
+   "prompt": "a colossal storm whale spirit made of dark clouds crackling with blue lightning",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_guardian_aurora",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12009,
+   "recorte": true,
+   "prompt": "a colossal owl spirit with feathers of green and teal aurora light, glowing white eyes",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  },
+  {
+   "id": "r_orbe",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 12100,
+   "recorte": true,
+   "prompt": "a single glowing magical energy orb projectile with a short comet tail pointing right, bright white core and soft light blue aura",
+   "estilo": "2D mobile game sprite asset, painterly style, the object is completely isolated on a flat solid pure magenta background, no scenery, no frame, no text"
+  }
+ ]
+}
