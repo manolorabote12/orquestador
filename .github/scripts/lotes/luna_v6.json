@@ -1,0 +1,235 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_mapa",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 1344,
+   "semilla": 21000,
+   "recorte": false,
+   "prompt": "an illustrated top-down fantasy kingdom map painted on dark parchment, six regions connected by a winding road: a green forest valley with a white stag, a misty swamp, a volcanic land of ash and lava, snowy mountains, a golden desert with dunes, and ancient ruins with a fallen castle, a huge blood red moon in the dark sky above the map",
+   "estilo": "Epic painterly dark fantasy illustrated map, rich detail, warm candlelight on parchment, high quality, no text, no letters, no labels"
+  },
+  {
+   "id": "esc_jefe_ciervo",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 21001,
+   "recorte": false,
+   "prompt": "a gigantic corrupted stag with burning red eyes and twisted black antlers charging out of a dark forest under a red moon",
+   "estilo": "Epic painterly dark fantasy illustration, rich detail, dramatic cinematic lighting with a huge blood red moon, deep shadows and glowing embers, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_jefe_cienaga",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 21002,
+   "recorte": false,
+   "prompt": "a terrifying swamp witch rising from black water surrounded by drowned undead under a red moon",
+   "estilo": "Epic painterly dark fantasy illustration, rich detail, dramatic cinematic lighting with a huge blood red moon, deep shadows and glowing embers, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_jefe_ceniza",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 21003,
+   "recorte": false,
+   "prompt": "a huge lava dragon spreading its wings over a burning village of ash under a red moon",
+   "estilo": "Epic painterly dark fantasy illustration, rich detail, dramatic cinematic lighting with a huge blood red moon, deep shadows and glowing embers, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_jefe_nieve",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 21004,
+   "recorte": false,
+   "prompt": "an enormous frost wolf king with an ice crown howling on a snowy peak under a red moon",
+   "estilo": "Epic painterly dark fantasy illustration, rich detail, dramatic cinematic lighting with a huge blood red moon, deep shadows and glowing embers, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_jefe_desierto",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 21005,
+   "recorte": false,
+   "prompt": "a colossal scorpion emperor with golden armor emerging from the desert sand under a red moon",
+   "estilo": "Epic painterly dark fantasy illustration, rich detail, dramatic cinematic lighting with a huge blood red moon, deep shadows and glowing embers, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_jefe_ruinas",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 21006,
+   "recorte": false,
+   "prompt": "a fallen undead king on a broken throne with a spectral guard in ancient ruins under a red moon",
+   "estilo": "Epic painterly dark fantasy illustration, rich detail, dramatic cinematic lighting with a huge blood red moon, deep shadows and glowing embers, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "lr_retrato_caballero",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 21007,
+   "recorte": true,
+   "prompt": "a noble knight in golden armor with a white cape, determined",
+   "estilo": "Painterly dark fantasy character portrait, bust from the chest up, facing the viewer three quarters, dramatic rim light, highly detailed face, isolated on a flat solid pure magenta background, no scenery, no text"
+  },
+  {
+   "id": "lr_retrato_bruja",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 21008,
+   "recorte": true,
+   "prompt": "a swamp witch with a green hood and glowing green eyes",
+   "estilo": "Painterly dark fantasy character portrait, bust from the chest up, facing the viewer three quarters, dramatic rim light, highly detailed face, isolated on a flat solid pure magenta background, no scenery, no text"
+  },
+  {
+   "id": "lr_retrato_monje",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 21009,
+   "recorte": true,
+   "prompt": "a bald warrior monk with an orange robe and a wooden staff",
+   "estilo": "Painterly dark fantasy character portrait, bust from the chest up, facing the viewer three quarters, dramatic rim light, highly detailed face, isolated on a flat solid pure magenta background, no scenery, no text"
+  },
+  {
+   "id": "lr_retrato_ingeniera",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 21010,
+   "recorte": true,
+   "prompt": "a red-bearded dwarf engineer woman with goggles and a crossbow",
+   "estilo": "Painterly dark fantasy character portrait, bust from the chest up, facing the viewer three quarters, dramatic rim light, highly detailed face, isolated on a flat solid pure magenta background, no scenery, no text"
+  },
+  {
+   "id": "lr_retrato_druida",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 21011,
+   "recorte": true,
+   "prompt": "an old druid with antlers and a moss cloak",
+   "estilo": "Painterly dark fantasy character portrait, bust from the chest up, facing the viewer three quarters, dramatic rim light, highly detailed face, isolated on a flat solid pure magenta background, no scenery, no text"
+  },
+  {
+   "id": "lr_retrato_cazadora",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 640,
+   "semilla": 21012,
+   "recorte": true,
+   "prompt": "a star huntress in dark blue leather with a silver bow",
+   "estilo": "Painterly dark fantasy character portrait, bust from the chest up, facing the viewer three quarters, dramatic rim light, highly detailed face, isolated on a flat solid pure magenta background, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_aurora",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 21013,
+   "recorte": true,
+   "prompt": "a wide golden shockwave of dawn light",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_verde",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 21014,
+   "recorte": true,
+   "prompt": "a big green fireball with emerald flames",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_torbellino",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 21015,
+   "recorte": true,
+   "prompt": "a spinning whirlwind of orange wind and dust",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_bomba",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 21016,
+   "recorte": true,
+   "prompt": "an exploding ember bomb with sparks and smoke",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_raices",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 21017,
+   "recorte": true,
+   "prompt": "twisting magical green roots bursting from the ground",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_fx_estrellas",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 21018,
+   "recorte": true,
+   "prompt": "a falling rain of glowing silver stars",
+   "estilo": "painterly dark fantasy video game spell effect, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery, no text"
+  },
+  {
+   "id": "lr_reina_lobo",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 21019,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a huge white frost wolf with icy fur",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_reina_dragon",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 21020,
+   "recorte": true,
+   "prompt": "a queen riding a mount, a young queen in a dark hooded cloak with a golden crown and a lantern, riding a small crimson dragon with spread wings",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, full body from head to feet, side view facing right, the whole character including the head is fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_ariete",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 512,
+   "semilla": 21021,
+   "recorte": true,
+   "prompt": "a monstrous battering ram on wheels pushed by shadow creatures, with a skull-shaped iron head",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, side view facing right, facing left, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "lr_torre_asedio",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 768,
+   "semilla": 21022,
+   "recorte": true,
+   "prompt": "a tall wooden siege tower covered in bones and dark banners, on wheels",
+   "estilo": "2D video game character sprite, painterly dark fantasy style, side view facing right, facing left, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  }
+ ]
+}
