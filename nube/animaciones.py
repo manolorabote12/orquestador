@@ -52,6 +52,8 @@ def main() -> int:
 		print(json.dumps(r))
 	elif accion == "endpoint":
 		print(endpoint()["id"])
+	elif accion == "endpoint_voces":
+		print(endpoint("orq-voces")["id"])
 	else:
 		print(__doc__)
 		return 2

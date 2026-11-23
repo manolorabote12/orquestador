@@ -1,0 +1,88 @@
+{
+ "voz": "An old weathered male lighthouse keeper telling a story by the fire, calm deep slightly hoarse voice, slow and mysterious, clear Castilian Spanish pronunciation",
+ "idioma": "es",
+ "lineas": [
+  {
+   "id": "far_esc_naufragos",
+   "texto": "Luz para los náufragos. La tormenta empuja un barco contra los arrecifes. Desde la cubierta, alguien agita un farol pidiendo luz. Si enciendes el faro a tope, gastarás el aceite de esta noche."
+  },
+  {
+   "id": "far_esc_campana",
+   "texto": "La campana sumergida. Bajo el faro hay una cripta inundada. En el centro cuelga una campana verde que tañe sola, y los ahogados la escuchan con los ojos abiertos."
+  },
+  {
+   "id": "far_esc_corsaria",
+   "texto": "El pacto de la Corsaria. La capitana Sable atraca en tu muelle con un saco de oro. Quiere que esta noche apagues el faro una hora para que pase su contrabando."
+  },
+  {
+   "id": "far_esc_guardia",
+   "texto": "La Guardia del Puerto. Los guardias del puerto suben al faro con faroles y mosquetes. El sargento te mira de arriba abajo."
+  },
+  {
+   "id": "far_esc_nino",
+   "texto": "El niño del barco de papel. En la orilla, un niño echa barcos de papel al mar. Dice que su padre era el capitán del barco que pidió luz."
+  },
+  {
+   "id": "far_esc_niebla_habla",
+   "texto": "La niebla habla. La niebla toma la forma de un rostro viejo. Te ofrece devolverte a alguien que perdiste... a cambio de un recuerdo."
+  },
+  {
+   "id": "far_esc_tormenta",
+   "texto": "La serpiente de la tormenta. Una serpiente de mar del tamaño de un barco se enrosca alrededor del faro vecino. Su luz parpadea."
+  },
+  {
+   "id": "far_esc_ballena",
+   "texto": "El cementerio de ballenas. La marea baja deja al descubierto el esqueleto de una ballena gigante. Entre sus costillas brillan velas que nadie encendió."
+  },
+  {
+   "id": "far_esc_traicion",
+   "texto": "Traición en el faro. Al subir encuentras a una figura encapuchada robando aceite de la lámpara. Es uno de los tuyos."
+  },
+  {
+   "id": "far_esc_ultima",
+   "texto": "La última marea. La niebla negra se acerca por última vez. Antes de encender, tienes que decidir qué harás cuando pase... si pasa."
+  },
+  {
+   "id": "far_fin_eterno",
+   "texto": "El Faro Eterno. Cuando sale el sol, la niebla se retira hasta el horizonte y no vuelve. Los barcos regresan al puerto guiados por tu luz. Dicen que, desde entonces, el faro nunca se ha apagado."
+  },
+  {
+   "id": "far_fin_niebla",
+   "texto": "La Niebla Gana. La lámpara sigue encendida, pero ya no es la tuya. Ahora eres tú quien camina dentro de la niebla, y los fareros de otras islas cuentan historias del guardián gris que tañe campanas bajo el agua."
+  },
+  {
+   "id": "far_fin_barco",
+   "texto": "El Último Barco. Al amanecer zarpáis todos juntos. El faro queda atrás, encendido una última vez para despediros. Nadie sabe adónde llevará la marea, pero por primera vez no tienes miedo de averiguarlo."
+  },
+  {
+   "id": "lr_cap_0",
+   "texto": "Capítulo uno. La Luna Roja se alzó sobre tu reino y de la tierra brotaron grietas. Aquí, en el valle donde naciste, empieza todo: enciende el fuego, reúne a tu gente y cierra las grietas antes de que el Ciervo Corrupto despierte.",
+   "voz": "A warm mature female storyteller narrating a dark medieval fantasy legend, soft and haunting, slow pace, clear Castilian Spanish pronunciation"
+  },
+  {
+   "id": "lr_cap_1",
+   "texto": "Capítulo dos. El agua de la ciénaga guarda a los que se ahogaron huyendo de la luna. Su bruja los llama cada noche. Si cierras sus grietas, quizá por fin descansen.",
+   "voz": "A warm mature female storyteller narrating a dark medieval fantasy legend, soft and haunting, slow pace, clear Castilian Spanish pronunciation"
+  },
+  {
+   "id": "lr_cap_2",
+   "texto": "Capítulo tres. En los Picos de Ceniza la tierra todavía arde. El Dragón de Lava duerme sobre las brasas de una aldea que ya no existe. Tus héroes dicen que de aquí salió la primera grieta.",
+   "voz": "A warm mature female storyteller narrating a dark medieval fantasy legend, soft and haunting, slow pace, clear Castilian Spanish pronunciation"
+  },
+  {
+   "id": "lr_cap_3",
+   "texto": "Capítulo cuatro. El invierno no termina en el Bosque Helado. Los lobos de escarcha cazan en silencio y su rey aúlla a la luna cuando huele fuego. Mantén la hoguera viva.",
+   "voz": "A warm mature female storyteller narrating a dark medieval fantasy legend, soft and haunting, slow pace, clear Castilian Spanish pronunciation"
+  },
+  {
+   "id": "lr_cap_4",
+   "texto": "Capítulo cinco. Bajo la arena del Cañón Dorado duerme un imperio de escorpiones. Cuando la luna se tiñe de rojo, su emperador sale a reclamar lo que fue suyo.",
+   "voz": "A warm mature female storyteller narrating a dark medieval fantasy legend, soft and haunting, slow pace, clear Castilian Spanish pronunciation"
+  },
+  {
+   "id": "lr_cap_5",
+   "texto": "Capítulo seis. Las Ruinas del Rey son el último valle. Aquí cayó tu padre, y aquí su espectro sigue sentado en el trono. Cierra la última grieta y la Luna Roja se apagará para siempre.",
+   "voz": "A warm mature female storyteller narrating a dark medieval fantasy legend, soft and haunting, slow pace, clear Castilian Spanish pronunciation"
+  }
+ ]
+}
