@@ -37,3 +37,6 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
 - v6 (23 nov): los 6 corredores corren de verdad (hojas de carrera de 12 fotogramas animadas con IA local);
   cámara lenta al rozar un obstáculo, anillos de luz al recoger luces y líneas de velocidad a toda marcha.
   Bot: 4/4 carreras a 7200 m.
+- v7 (23 nov): un guardián gigante al final de cada mundo (garza de luz, ciervo del bosque, coloso hundido, serpiente
+  de hielo, medusa cósmica, tortuga de coral, zorro de otoño, esfinge, ballena de tormenta y búho de aurora) que lanza
+  orbes: salta o cruza al reflejo. Si no te toca, +luces y logro. Bot: 3 de 4 carreras a 7200 m y 10 guardianes en cada una.
