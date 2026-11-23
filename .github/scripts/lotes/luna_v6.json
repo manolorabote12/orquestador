@@ -4,11 +4,11 @@
   {
    "id": "lr_mapa",
    "motor": "qwen",
-   "ancho": 768,
-   "alto": 1344,
+   "ancho": 1344,
+   "alto": 768,
    "semilla": 21000,
    "recorte": false,
-   "prompt": "an illustrated top-down fantasy kingdom map painted on dark parchment, six regions connected by a winding road: a green forest valley with a white stag, a misty swamp, a volcanic land of ash and lava, snowy mountains, a golden desert with dunes, and ancient ruins with a fallen castle, a huge blood red moon in the dark sky above the map",
+   "prompt": "an illustrated wide panoramic top-down fantasy kingdom map painted on dark parchment, six regions connected by a winding road: a green forest valley with a white stag, a misty swamp, a volcanic land of ash and lava, snowy mountains, a golden desert with dunes, and ancient ruins with a fallen castle, a huge blood red moon in the dark sky above the map",
    "estilo": "Epic painterly dark fantasy illustrated map, rich detail, warm candlelight on parchment, high quality, no text, no letters, no labels"
   },
   {
