@@ -47,3 +47,14 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
 - v5.1 (23 nov): 15 animaciones nuevas con Wan 2.2: los 5 héroes (caballero, bruja, cazadora, druida,
   ingeniera) andan y atacan, y los jefes del desierto, las ruinas y la nieve ya se mueven al atacar.
   Bot: 5/6 valles.
+- v6 (23 nov): la gran actualización. Héroes que suben de nivel (se guarda), talento a nivel 3 y definitiva
+  que se carga de noche y se lanza desde su retrato pintado; Salón de los héroes. Mapa del reino pintado como
+  menú; capítulos con lámina e historia al empezar cada valle (y su música). Jefes de película: cinemática,
+  barra grande, tercera fase «furia final» y muerte animada. Monturas con poder (Galope, Zarpazo, Vuelo,
+  Aullido, Aliento de fuego) y dos nuevas animadas: lobo de escarcha y dragón carmesí. Asedios (arietes y
+  torres de asedio animados), élites con aura, clima por noche (tormenta con rayos, niebla, eclipse),
+  eventos de día (refugiados, lluvia de estrellas, ciervo blanco, cofre perdido) y bestiario.
+  Juice: proyectiles pintados con estela, críticos, retroceso, chispas, números que saltan, humo al morir,
+  efectos de habilidad animados con Wan. Animaciones rehechas (andares a 12 fotogramas, conjuros de los
+  héroes, guardia quieta, aldeanos, lobo y Dragón de Lava). Música propia para cada valle.
+  Bot: 5/6 valles.
