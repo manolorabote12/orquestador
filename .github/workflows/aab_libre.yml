@@ -79,10 +79,12 @@ jobs:
           python3 -c "import json;[print('release', r.get('tag_name'), [a['name'] for a in r.get('assets',[])]) for r in json.load(open('/tmp/rel.json'))]" || head -c 400 /tmp/rel.json
           URL=$(python3 -c "
           import json,sys
-          rs=[r for r in json.load(open('/tmp/rel.json')) if r.get('tag_name','').lstrip('v')=='$VP'] or []
+          R=json.load(open('/tmp/rel.json'))
+          mayor='$VP'.split('.')[0]
+          rs=[r for r in R if r.get('tag_name','').lstrip('v')=='$VP'] or [r for r in R if r.get('tag_name','').lstrip('v').startswith('$VP')] or [r for r in R if r.get('tag_name','').lstrip('v').split('.')[0]==mayor and 'nightly' not in r.get('tag_name','')][:1]
           a=[x['browser_download_url'] for r in rs for x in r.get('assets',[]) if 'android' in x['name'].lower() and x['name'].endswith('.zip')]
           print('\\n'.join(a), file=sys.stderr)
-          m=[u for u in a if '4.6' in u] or [u for u in a if '4.5' in u] or a
+          m=[u for u in a if u.endswith('android-template-v4.6.3.zip')] or [u for u in a if '4.6' in u] or a
           print(sorted(m)[-1] if m else '')")
           if [ -n "$URL" ] && wget -q "$URL" -O /tmp/admob.zip; then
             unzip -qo /tmp/admob.zip -d /tmp/admob_x
