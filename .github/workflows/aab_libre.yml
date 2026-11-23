@@ -1,0 +1,124 @@
+name: "AAB de un juego libre (Google Play)"
+# El .aab firmado para Google Play de un juego del Estudio libre: toma <nombre>/proyecto.zip de la rama
+# «libre», lo compila con Gradle (API 36), mete los anuncios de AdMob si se dan sus ids (si no, va SIN
+# anuncios, nunca con los de prueba) y lo firma con la llave de subida (ORQ_APP_KEYSTORE_B64/_PASS, alias
+# «subida»). Sale en la rama «aab-<nombre>».
+
+on:
+  workflow_dispatch:
+    inputs:
+      nombre:
+        description: "Carpeta del juego en la rama libre (p. ej. farero)"
+        required: true
+      titulo:
+        description: "Nombre que se ve en el movil"
+        required: true
+      paquete:
+        description: "Identificador (p. ej. com.orquestador.farero)"
+        required: true
+      version:
+        description: "versionCode (sube en cada subida a Play)"
+        required: true
+        default: "1"
+      admob:
+        description: 'Ids de AdMob en JSON: {"app_id":"ca-app-pub-...~...","interstitial":"ca-app-pub-.../...","rewarded":"ca-app-pub-.../..."} (vacio = sin anuncios)'
+        required: false
+        default: ""
+
+jobs:
+  aab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            fabrica/play
+            fabrica/iconos.py
+      - name: Proyecto
+        env:
+          NOMBRE: ${{ inputs.nombre }}
+        run: |
+          git init -q libre && cd libre
+          git fetch -q --depth 1 "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" libre
+          git checkout -q FETCH_HEAD -- "$NOMBRE/proyecto.zip"
+          mkdir -p ../juego && cd ../juego && unzip -q "../libre/$NOMBRE/proyecto.zip"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Godot, plantillas y SDK 36
+        run: |
+          V=4.6.3
+          wget -q https://github.com/godotengine/godot/releases/download/${V}-stable/Godot_v${V}-stable_linux.x86_64.zip -O /tmp/g.zip
+          unzip -q /tmp/g.zip -d /tmp/g && sudo mv /tmp/g/Godot_v${V}-stable_linux.x86_64 /usr/local/bin/godot
+          wget -q https://github.com/godotengine/godot/releases/download/${V}-stable/Godot_v${V}-stable_export_templates.tpz -O /tmp/t.zip
+          mkdir -p ~/.local/share/godot/export_templates/${V}.stable && unzip -q /tmp/t.zip -d /tmp/t
+          mv /tmp/t/templates/android_* /tmp/t/templates/version.txt ~/.local/share/godot/export_templates/${V}.stable/
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" > /dev/null || true
+          mkdir -p ~/.local/share/godot/keystores ~/.config/godot
+          keytool -genkeypair -v -keystore ~/.local/share/godot/keystores/debug.keystore -storepass android -alias androiddebugkey \
+            -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" > /dev/null 2>&1
+          printf '[gd_resource type="EditorSettings" format=3]\n\n[resource]\nexport/android/android_sdk_path = "%s"\nexport/android/java_sdk_path = "%s"\nexport/android/debug_keystore = "%s"\nexport/android/debug_keystore_user = "androiddebugkey"\nexport/android/debug_keystore_pass = "android"\n' \
+            "$ANDROID_HOME" "$JAVA_HOME" "$HOME/.local/share/godot/keystores/debug.keystore" > ~/.config/godot/editor_settings-4.6.tres
+      - name: Preparar (Gradle, paquete, version y anuncios)
+        env:
+          TITULO: ${{ inputs.titulo }}
+          PAQUETE: ${{ inputs.paquete }}
+          VERSION: ${{ inputs.version }}
+          ADMOB: ${{ inputs.admob }}
+        run: |
+          pip install -q pillow
+          cd juego
+          timeout 600 godot --headless --path . --import > /dev/null 2>&1 || true
+          timeout 600 godot --headless --path . --install-android-build-template --quit > /dev/null 2>&1 || true
+          test -d android/build || { echo "::error::No se instalo la plantilla de Android"; exit 1; }
+          python3 - <<'PY'
+          import json, os, re, sys
+          from pathlib import Path
+          sys.path.insert(0, os.path.join(os.environ["GITHUB_WORKSPACE"], "fabrica"))
+          from play import anuncios
+          import iconos
+          p = Path(".")
+          v = int(os.environ["VERSION"])
+          iconos.poner_opciones_android(p, {
+              "gradle_build/use_gradle_build": True, "gradle_build/export_format": 1,
+              "gradle_build/min_sdk": "24", "gradle_build/target_sdk": "36",
+              "package/unique_name": os.environ["PAQUETE"], "package/name": os.environ["TITULO"],
+              "package/signed": True, "version/code": v, "version/name": f"1.{max(0, v - 1)}"})
+          s = (p / "project.godot").read_text(encoding="utf-8")
+          s = re.sub(r'config/name="[^"]*"', 'config/name="%s"' % os.environ["TITULO"], s)
+          (p / "project.godot").write_text(s, encoding="utf-8")
+          cfg = json.loads(os.environ["ADMOB"]) if os.environ.get("ADMOB", "").strip() else None
+          if cfg and anuncios.validar(cfg):
+              print("::error::" + "; ".join(anuncios.validar(cfg))); sys.exit(1)
+          if (p / "game.json").exists():
+              con = anuncios.aplicar(p, cfg)
+              print("::notice::Anuncios reales: %s" % ("si" if con else "no (sin ids de AdMob)"))
+          PY
+      - name: Compilar y firmar
+        env:
+          LLAVE: ${{ secrets.ORQ_APP_KEYSTORE_B64 }}
+          CLAVE: ${{ secrets.ORQ_APP_KEYSTORE_PASS }}
+          NOMBRE: ${{ inputs.nombre }}
+        run: |
+          test -n "$LLAVE" || { echo "::error::Falta el secreto ORQ_APP_KEYSTORE_B64"; exit 1; }
+          echo "$LLAVE" | base64 -d > "$RUNNER_TEMP/subida.jks"
+          cd juego && mkdir -p ../aab
+          GODOT_ANDROID_KEYSTORE_RELEASE_PATH="$RUNNER_TEMP/subida.jks" GODOT_ANDROID_KEYSTORE_RELEASE_USER=subida \
+          GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$CLAVE" \
+            timeout 2400 godot --headless --path . --export-release Android "../aab/$NOMBRE.aab" 2>&1 | tail -30
+          rm -f "$RUNNER_TEMP/subida.jks"
+          ls -la ../aab
+          test -s "../aab/$NOMBRE.aab"
+      - name: Guardar el aab
+        env:
+          NOMBRE: ${{ inputs.nombre }}
+        run: |
+          cd aab
+          git init -q -b "aab-$NOMBRE" && git add -A
+          git -c user.name=orquestador -c user.email=orquestador@users.noreply.github.com commit -qm "AAB $NOMBRE v${{ inputs.version }}"
+          git push -qf "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" "aab-$NOMBRE"
+          echo "::notice::AAB en la rama aab-$NOMBRE: $(ls -la)"
