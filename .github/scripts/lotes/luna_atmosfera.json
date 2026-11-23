@@ -1,0 +1,505 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "lr_bio_prado_lejos",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 512,
+   "semilla": 23000,
+   "recorte": true,
+   "prompt": "distant rolling green meadow hills with scattered trees and a tiny village far away",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_bio_prado_medio",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 512,
+   "semilla": 23001,
+   "recorte": true,
+   "prompt": "green grassy hills with wildflowers, lone old oak trees and stone walls",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_bio_bosque_lejos",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 512,
+   "semilla": 23002,
+   "recorte": true,
+   "prompt": "dense deep forest canopy, layers of tall dark trees",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_bio_bosque_medio",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 512,
+   "semilla": 23003,
+   "recorte": true,
+   "prompt": "tall dark forest tree trunks with ferns, moss and hanging vines",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_bio_lago_lejos",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 512,
+   "semilla": 23004,
+   "recorte": true,
+   "prompt": "the far shore of a lake with a pine forest and misty cliffs, no water",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_bio_montana_medio",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 512,
+   "semilla": 23005,
+   "recorte": true,
+   "prompt": "rocky cliffs with pine trees and thin waterfalls",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_bio_antiguo_medio",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 512,
+   "semilla": 23006,
+   "recorte": true,
+   "prompt": "an ancient gigantic forest with huge twisted trees, roots and overgrown stone ruins",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_bio_montana_lejos",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 640,
+   "semilla": 23007,
+   "recorte": true,
+   "prompt": "a majestic giant mountain range with snowy peaks and glaciers",
+   "estilo": "painterly dark fantasy 2D side-scroller parallax background layer, wide panoramic strip, the subject fills the whole width and the bottom edge, irregular natural silhouette on top, rich detail, soft atmospheric light, isolated on a flat solid pure magenta background above the silhouette, no sky, no text"
+  },
+  {
+   "id": "lr_cerca_ramas",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 384,
+   "semilla": 23008,
+   "recorte": true,
+   "prompt": "dark tree branches and leaves hanging down from the top edge, framing",
+   "estilo": "painterly dark fantasy 2D side-scroller foreground layer, wide panoramic strip, dark close silhouettes, isolated on a flat solid pure magenta background, no text"
+  },
+  {
+   "id": "lr_cerca_hierba",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 384,
+   "semilla": 23009,
+   "recorte": true,
+   "prompt": "a strip of tall wild grass and flowers at the bottom edge",
+   "estilo": "painterly dark fantasy 2D side-scroller foreground layer, wide panoramic strip, dark close silhouettes, isolated on a flat solid pure magenta background, no text"
+  },
+  {
+   "id": "lr_cerca_helechos",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 384,
+   "semilla": 23010,
+   "recorte": true,
+   "prompt": "a strip of big ferns and bushes at the bottom edge",
+   "estilo": "painterly dark fantasy 2D side-scroller foreground layer, wide panoramic strip, dark close silhouettes, isolated on a flat solid pure magenta background, no text"
+  },
+  {
+   "id": "lr_cerca_juncos",
+   "motor": "qwen",
+   "ancho": 1536,
+   "alto": 384,
+   "semilla": 23011,
+   "recorte": true,
+   "prompt": "a strip of reeds and cattails at the bottom edge",
+   "estilo": "painterly dark fantasy 2D side-scroller foreground layer, wide panoramic strip, dark close silhouettes, isolated on a flat solid pure magenta background, no text"
+  },
+  {
+   "id": "lr_d_flores",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 23012,
+   "recorte": true,
+   "prompt": "a patch of colorful wildflowers",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_roca_musgo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 23013,
+   "recorte": true,
+   "prompt": "a big boulder covered in moss",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_carro",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 448,
+   "semilla": 23014,
+   "recorte": true,
+   "prompt": "an old broken wooden cart",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_espantapajaros",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 640,
+   "semilla": 23015,
+   "recorte": true,
+   "prompt": "a creepy scarecrow on a pole",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_colmenas",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 448,
+   "semilla": 23016,
+   "recorte": true,
+   "prompt": "straw beehives on a wooden stand",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_valla",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 320,
+   "semilla": 23017,
+   "recorte": true,
+   "prompt": "an old wooden fence",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_pozo",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 576,
+   "semilla": 23018,
+   "recorte": true,
+   "prompt": "an old stone well with a wooden roof",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_pajar",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 448,
+   "semilla": 23019,
+   "recorte": true,
+   "prompt": "a haystack",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_setas",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 384,
+   "semilla": 23020,
+   "recorte": true,
+   "prompt": "a cluster of glowing blue magical mushrooms",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_tronco",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 320,
+   "semilla": 23021,
+   "recorte": true,
+   "prompt": "a fallen mossy tree log",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_tocon",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 384,
+   "semilla": 23022,
+   "recorte": true,
+   "prompt": "an old tree stump with roots",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_arbusto",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 23023,
+   "recorte": true,
+   "prompt": "a thick dark green bush",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_arbol_gigante",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 1024,
+   "semilla": 23024,
+   "recorte": true,
+   "prompt": "a gigantic ancient twisted oak tree",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_pino",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 896,
+   "semilla": 23025,
+   "recorte": true,
+   "prompt": "a tall dark pine tree",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_juncos",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 448,
+   "semilla": 23026,
+   "recorte": true,
+   "prompt": "reeds and cattails",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_barca",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 320,
+   "semilla": 23027,
+   "recorte": true,
+   "prompt": "a small wooden rowboat",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_embarcadero",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 23028,
+   "recorte": true,
+   "prompt": "a small wooden pier",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_roca_grande",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 512,
+   "semilla": 23029,
+   "recorte": true,
+   "prompt": "a huge grey rock formation",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_cascada",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 896,
+   "semilla": 23030,
+   "recorte": true,
+   "prompt": "a tall narrow waterfall falling from a rock cliff",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_columna",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 640,
+   "semilla": 23031,
+   "recorte": true,
+   "prompt": "a broken ancient stone column with ivy",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_arco",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 640,
+   "semilla": 23032,
+   "recorte": true,
+   "prompt": "a ruined ancient stone arch with ivy",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_estatua_caida",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 384,
+   "semilla": 23033,
+   "recorte": true,
+   "prompt": "a fallen broken stone statue of a knight",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_tumba",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 512,
+   "semilla": 23034,
+   "recorte": true,
+   "prompt": "an old gravestone with a celtic cross",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_altar_cristal",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 512,
+   "semilla": 23035,
+   "recorte": true,
+   "prompt": "a stone altar with a glowing blue crystal",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_farol_piedra",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 512,
+   "semilla": 23036,
+   "recorte": true,
+   "prompt": "a stone lantern with a warm glowing flame",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_antorcha",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 640,
+   "semilla": 23037,
+   "recorte": true,
+   "prompt": "a burning torch on a wooden pole",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_cristales",
+   "motor": "qwen",
+   "ancho": 448,
+   "alto": 448,
+   "semilla": 23038,
+   "recorte": true,
+   "prompt": "glowing purple crystals growing from a rock",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_tienda",
+   "motor": "qwen",
+   "ancho": 640,
+   "alto": 448,
+   "semilla": 23039,
+   "recorte": true,
+   "prompt": "a hunter's canvas tent with a small campfire",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_puente",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 384,
+   "semilla": 23040,
+   "recorte": true,
+   "prompt": "an old wooden rope bridge section",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_menhir",
+   "motor": "qwen",
+   "ancho": 320,
+   "alto": 640,
+   "semilla": 23041,
+   "recorte": true,
+   "prompt": "a tall standing stone with glowing runes",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_huesos",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 384,
+   "semilla": 23042,
+   "recorte": true,
+   "prompt": "a pile of bones and a giant skull",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_d_carro_mercader",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 512,
+   "semilla": 23043,
+   "recorte": true,
+   "prompt": "a covered merchant wagon",
+   "estilo": "2D side-scroller game prop sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_f_pajaro",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 256,
+   "semilla": 23044,
+   "recorte": true,
+   "prompt": "a black crow flying with wings spread",
+   "estilo": "2D side-scroller game animal sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_f_conejo",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 256,
+   "semilla": 23045,
+   "recorte": true,
+   "prompt": "a small brown rabbit sitting",
+   "estilo": "2D side-scroller game animal sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_f_buho",
+   "motor": "qwen",
+   "ancho": 256,
+   "alto": 320,
+   "semilla": 23046,
+   "recorte": true,
+   "prompt": "an owl perched on a branch",
+   "estilo": "2D side-scroller game animal sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_f_murcielago",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 256,
+   "semilla": 23047,
+   "recorte": true,
+   "prompt": "a bat flying with wings spread",
+   "estilo": "2D side-scroller game animal sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_f_pez",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 256,
+   "semilla": 23048,
+   "recorte": true,
+   "prompt": "a silver fish leaping out of the water",
+   "estilo": "2D side-scroller game animal sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  },
+  {
+   "id": "lr_f_ciervo_blanco",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 23049,
+   "recorte": true,
+   "prompt": "a majestic white stag",
+   "estilo": "2D side-scroller game animal sprite, painterly dark fantasy style, side view, the whole object fully visible, completely isolated on a flat solid pure magenta background, no ground, no scenery, no frame, no text"
+  }
+ ]
+}
