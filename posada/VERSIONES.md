@@ -15,3 +15,4 @@ Goblins al Abismo sin Fondo). Vuelven con oro y fama... o no vuelven y entran en
   ACE-Step. Bot de 10 horas: todas las salas a las 4,7 h, Fortaleza del Camino a las 5,3 h, Leyenda >10 h.
   Pendiente: interfaz pintada (lote ui_luna_posada), traducciones EN/PT, animaciones de personajes.
 - v1.1 (23 nov): interfaz pintada (tablas de madera y pergamino), textos en tinta, EN/PT, pantallas altas.
+- v1.2 (23 nov): eventos nuevos (concierto del bardo: taberna x2 un minuto; mapa del tesoro: próximo botín x3).

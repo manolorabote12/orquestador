@@ -26,3 +26,7 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
   iconos pintados de escudo e imán; potenciadores nuevos Turbo (velocidad x1,8 y atraviesa obstáculos) y
   Estrella (invencible, obstáculos por los aires, luces x3); pantallas altas sin corte. Pendiente (v5):
   animaciones, 30 obstáculos nuevos, capas por mundo, interfaz pintada, modos (lote reflejo_v2 a medias).
+- v4.4 (23 nov): modo Contrarreloj (90 s, las luces dan tiempo y chocar lo quita, récord propio); peces
+  más justos (no hacen daño a ras de agua, caja de choque ajustada, los del mismo patrón van sincronizados);
+  gracia de 0,8 s al acabarse turbo/estrella; simulación del bot con «Agua en calma»; escena escalada en
+  pantallas altas. Bot: 8/8 carreras a 7200 m.
