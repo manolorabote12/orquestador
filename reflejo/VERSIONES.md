@@ -30,3 +30,7 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
   más justos (no hacen daño a ras de agua, caja de choque ajustada, los del mismo patrón van sincronizados);
   gracia de 0,8 s al acabarse turbo/estrella; simulación del bot con «Agua en calma»; escena escalada en
   pantallas altas. Bot: 8/8 carreras a 7200 m.
+- v5 (23 nov): todo pintado. 30 obstáculos nuevos (3 por mundo: seta, cofre, faro, ola, muñeco de nieve,
+  carretilla...) que se alternan con las rocas; panoramas pintados de cada mundo en el horizonte, con
+  parallax y su reflejo; botones de nácar y ámbar pintados; iconos pintados de turbo, estrella y eco.
+  Bot: 4/4 carreras a 7200 m.
