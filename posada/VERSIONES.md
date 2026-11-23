@@ -14,3 +14,4 @@ Goblins al Abismo sin Fondo). Vuelven con oro y fama... o no vuelven y entran en
   15 logros, regalo diario. Arte RunPod (salas en corte, 10 personajes, iconos, portada, icono) y 5 músicas
   ACE-Step. Bot de 10 horas: todas las salas a las 4,7 h, Fortaleza del Camino a las 5,3 h, Leyenda >10 h.
   Pendiente: interfaz pintada (lote ui_luna_posada), traducciones EN/PT, animaciones de personajes.
+- v1.1 (23 nov): interfaz pintada (tablas de madera y pergamino), textos en tinta, EN/PT, pantallas altas.

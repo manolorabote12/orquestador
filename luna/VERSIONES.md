@@ -31,3 +31,16 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
   en sprites y suelo, hierba delante de los pies, bosque lejano con perspectiva atmosférica y bruma, árboles
   sin tierra pegada, bordes de sprites limpios, humo suave. Valles duros: fuerza que sube en 8 noches y
   empalizadas iniciales. Bot (con las mejoras que tendría un jugador desde el valle 4): 5 de 6 valles.
+- v5 (23 nov, noche; feedback de Daniel con capturas del móvil): sin franja gris en móviles alargados
+  (ancho real del viewport); mapa el doble de largo (grietas a mitad de camino, tierra salvaje detrás con
+  cofres y campamento); capas de fondo pintadas por valle (cascada y castillo, ciénaga, volcanes con lava,
+  palacio de hielo, pirámide y esfinge, castillo gótico) + capa media (bosque y molino, árboles quemados,
+  ruinas, palmeras) en espejo sin costuras; monumentos (estatua del rey, ángel, monolito, obelisco, molino,
+  torre, arco, barco); agua en primer plano que refleja el mundo (shader con ondas y brillos; lava en
+  Ceniza, calma en Nieve, sin agua en el desierto); portal nuevo (anillo de piedra) con espiral que gira,
+  ruge, tiembla y escupe criaturas que crecen desde el remolino; puestos pintados; fin del parpadeo del
+  fondo (siluetas suaves); arreglo del volteo de sprites (Rect2 negativo los desplazaba); jefes únicos por
+  valle con habilidad y fase 2 (embestida, invocar ahogados, lluvia de fuego, aliento helado, enterrarse,
+  guardia de espectros); 3 monturas en el altar (reina montada en caballo, oso o grifo con ventajas);
+  personajes repintados (sin cabezas cortadas) y animados con Wan 2.2 (51 hojas: andar, atacar, morir,
+  galope de la reina...); interfaz pintada (hierro negro, oro y rubíes). Bot: 5/6 valles.
