@@ -58,3 +58,10 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
   efectos de habilidad animados con Wan. Animaciones rehechas (andares a 12 fotogramas, conjuros de los
   héroes, guardia quieta, aldeanos, lobo y Dragón de Lava). Música propia para cada valle.
   Bot: 5/6 valles.
+- v7 (23 nov): «Atmósfera». Mundo mucho más grande (10.200 por lado) y por zonas: pueblo, prados verdes,
+  bosque con rayos de sol, bosque profundo en penumbra (también de día), lago, acantilados con montañas
+  gigantes nevadas al fondo y bosque antiguo con ruinas. Capas pintadas por zona, unos 30 decorados
+  pintados (setas y cristales que brillan, faroles, menhires con runas, árboles gigantes, pozos...), luces
+  del decorado de noche, ojos rojos en el bosque, murciélagos, cuervos que levantan el vuelo al pasar, camino
+  de luz de la luna sobre el agua y cofres antiguos en las tierras salvajes (con fragmentos).
+  Bot: 6/6 valles.
