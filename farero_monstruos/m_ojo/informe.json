@@ -1,0 +1,21 @@
+{
+ "personaje": "m_ojo",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 83.5,
+ "usd": 0.4961,
+ "segundos_gpu": 1333.6
+}

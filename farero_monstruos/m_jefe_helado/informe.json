@@ -1,0 +1,21 @@
+{
+ "personaje": "m_jefe_helado",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 86.7,
+ "usd": 0.7047,
+ "segundos_gpu": 1894.5
+}

@@ -1,0 +1,21 @@
+{
+ "personaje": "m_jefe_coral",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 86.9,
+ "usd": 0.675,
+ "segundos_gpu": 1814.5
+}

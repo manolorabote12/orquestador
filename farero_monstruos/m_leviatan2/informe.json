@@ -1,0 +1,21 @@
+{
+ "personaje": "m_leviatan2",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 87.2,
+ "usd": 0.616,
+ "segundos_gpu": 1655.8
+}

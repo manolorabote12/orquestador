@@ -1,0 +1,21 @@
+{
+ "personaje": "m_tripulante",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 86.8,
+ "usd": 0.4676,
+ "segundos_gpu": 1257.1
+}

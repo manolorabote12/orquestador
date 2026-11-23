@@ -1,0 +1,21 @@
+{
+ "personaje": "m_espectro",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 87.1,
+ "usd": 0.0866,
+ "segundos_gpu": 232.9
+}

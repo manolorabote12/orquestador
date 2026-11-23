@@ -1,0 +1,21 @@
+{
+ "personaje": "m_medusa",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 81.0,
+ "usd": 0.1715,
+ "segundos_gpu": 461.1
+}

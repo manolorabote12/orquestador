@@ -1,0 +1,21 @@
+{
+ "personaje": "m_ahogado",
+ "animaciones": {
+  "idle": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": true
+  },
+  "attack": {
+   "frames": 10,
+   "video_frames": 33,
+   "fps": 10,
+   "bucle": false
+  }
+ },
+ "errores": {},
+ "segundos": 83.6,
+ "usd": 0.1149,
+ "segundos_gpu": 309.0
+}

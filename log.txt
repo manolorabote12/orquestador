@@ -1,0 +1,75 @@
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_sombra", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 87.1, "usd": 0.0288, "segundos_gpu": 77.4}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_rondador", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 83.7, "usd": 0.0574, "segundos_gpu": 154.2}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_espectro", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 87.1, "usd": 0.0866, "segundos_gpu": 232.9}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_ahogado", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 83.6, "usd": 0.1149, "segundos_gpu": 309.0}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_arpia", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.6, "usd": 0.1434, "segundos_gpu": 385.4}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_medusa", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 81.0, "usd": 0.1715, "segundos_gpu": 461.1}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_tentaculo", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.6, "usd": 0.2011, "segundos_gpu": 540.6}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_golem_coral", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.5, "usd": 0.2299, "segundos_gpu": 618.1}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_sirena", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 85.3, "usd": 0.2589, "segundos_gpu": 696.0}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_cangrejo_rojo", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.7, "usd": 0.2886, "segundos_gpu": 775.8}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_anguila", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.7, "usd": 0.3184, "segundos_gpu": 855.8}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_pescador", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.6, "usd": 0.3478, "segundos_gpu": 934.9}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_lobo_hielo", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.8, "usd": 0.3778, "segundos_gpu": 1015.6}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_morsa", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 93.3, "usd": 0.4087, "segundos_gpu": 1098.7}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_llorona", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 89.6, "usd": 0.439, "segundos_gpu": 1180.1}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_tripulante", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.8, "usd": 0.4676, "segundos_gpu": 1257.1}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_ojo", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 83.5, "usd": 0.4961, "segundos_gpu": 1333.6}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_polilla", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 87.0, "usd": 0.5257, "segundos_gpu": 1413.1}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_caballero", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 89.9, "usd": 0.5561, "segundos_gpu": 1494.8}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_eco", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.4, "usd": 0.5858, "segundos_gpu": 1574.7}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_leviatan2", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 87.2, "usd": 0.616, "segundos_gpu": 1655.8}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_jefe_tormenta", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.7, "usd": 0.6457, "segundos_gpu": 1735.6}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_jefe_coral", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.9, "usd": 0.675, "segundos_gpu": 1814.5}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_jefe_helado", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 86.7, "usd": 0.7047, "segundos_gpu": 1894.5}
+[animar] idle: 33 fotogramas -> 10 en la hoja
+[animar] attack: 33 fotogramas -> 10 en la hoja
+{"personaje": "m_jefe_eclipse", "animaciones": {"idle": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": true}, "attack": {"frames": 10, "video_frames": 33, "fps": 10, "bucle": false}}, "errores": {}, "segundos": 93.1, "usd": 0.7365, "segundos_gpu": 1979.8}
