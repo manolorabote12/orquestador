@@ -34,3 +34,6 @@ saltar; tocar el otro lado = cruzar al reflejo. Lo que bloquea un mundo no siemp
   carretilla...) que se alternan con las rocas; panoramas pintados de cada mundo en el horizonte, con
   parallax y su reflejo; botones de nácar y ámbar pintados; iconos pintados de turbo, estrella y eco.
   Bot: 4/4 carreras a 7200 m.
+- v6 (23 nov): los 6 corredores corren de verdad (hojas de carrera de 12 fotogramas animadas con IA local);
+  cámara lenta al rozar un obstáculo, anillos de luz al recoger luces y líneas de velocidad a toda marcha.
+  Bot: 4/4 carreras a 7200 m.
