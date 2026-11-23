@@ -1,0 +1,195 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "esc_m_cueva",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24000,
+   "recorte": false,
+   "prompt": "a party of four adventurers with torches fighting goblins in a damp cave full of treasure",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_m_cripta",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24001,
+   "recorte": false,
+   "prompt": "adventurers exploring a forgotten crypt with sarcophagi and skeletons rising, green ghostly light",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_m_aranas",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24002,
+   "recorte": false,
+   "prompt": "adventurers cutting through giant spider webs in a dark enchanted forest with huge spiders",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_m_minas",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24003,
+   "recorte": false,
+   "prompt": "adventurers in abandoned dwarven mines with rails, lanterns, glowing gems and a stone golem",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_m_torre",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24004,
+   "recorte": false,
+   "prompt": "adventurers climbing a twisted witch tower with floating potions and a cackling witch",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_m_hidra",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24005,
+   "recorte": false,
+   "prompt": "adventurers battling a many-headed hydra in a misty swamp",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_m_dragon",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24006,
+   "recorte": false,
+   "prompt": "adventurers facing a huge red dragon on a mountain of gold",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_m_abismo",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24007,
+   "recorte": false,
+   "prompt": "adventurers descending into a bottomless abyss with glowing runes and eldritch tentacles",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_p_regreso",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24008,
+   "recorte": false,
+   "prompt": "a party of tired but happy adventurers returning to a warm medieval inn at dusk carrying a treasure chest, the innkeeper waving",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_p_caravana",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24009,
+   "recorte": false,
+   "prompt": "a merchant caravan with wagons arriving at a medieval fantasy inn",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_p_noble",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24010,
+   "recorte": false,
+   "prompt": "a haughty noble lady with guards entering a cozy fantasy tavern",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_p_concierto",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24011,
+   "recorte": false,
+   "prompt": "a bard playing the lute on a tavern table while patrons dance and cheer",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "esc_p_mapa",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 24012,
+   "recorte": false,
+   "prompt": "an old treasure map spread on a tavern table with candles and coins",
+   "estilo": "Warm painterly fantasy storybook illustration, rich detail, cinematic lighting, cozy medieval fantasy tavern world, high quality, no text, no letters"
+  },
+  {
+   "id": "p_cliente_campesino",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 768,
+   "semilla": 24013,
+   "recorte": true,
+   "prompt": "a cheerful peasant with a straw hat",
+   "estilo": "2D video game character sprite, warm painterly medieval fantasy storybook style, full body from head to feet, standing, facing the viewer three quarters, the whole character fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame"
+  },
+  {
+   "id": "p_cliente_mercader",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 768,
+   "semilla": 24014,
+   "recorte": true,
+   "prompt": "a plump merchant with a fur hat and a purse",
+   "estilo": "2D video game character sprite, warm painterly medieval fantasy storybook style, full body from head to feet, standing, facing the viewer three quarters, the whole character fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame"
+  },
+  {
+   "id": "p_cliente_noble",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 768,
+   "semilla": 24015,
+   "recorte": true,
+   "prompt": "an elegant noble with a feathered hat",
+   "estilo": "2D video game character sprite, warm painterly medieval fantasy storybook style, full body from head to feet, standing, facing the viewer three quarters, the whole character fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame"
+  },
+  {
+   "id": "p_cliente_enana",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 768,
+   "semilla": 24016,
+   "recorte": true,
+   "prompt": "a dwarf woman with braided beard and a big mug",
+   "estilo": "2D video game character sprite, warm painterly medieval fantasy storybook style, full body from head to feet, standing, facing the viewer three quarters, the whole character fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame"
+  },
+  {
+   "id": "p_cliente_monje",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 768,
+   "semilla": 24017,
+   "recorte": true,
+   "prompt": "a traveling monk with a hood and a staff",
+   "estilo": "2D video game character sprite, warm painterly medieval fantasy storybook style, full body from head to feet, standing, facing the viewer three quarters, the whole character fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame"
+  },
+  {
+   "id": "p_cliente_juglar",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 768,
+   "semilla": 24018,
+   "recorte": true,
+   "prompt": "a jester with bells and colorful clothes",
+   "estilo": "2D video game character sprite, warm painterly medieval fantasy storybook style, full body from head to feet, standing, facing the viewer three quarters, the whole character fully visible with empty space above the head, completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame"
+  }
+ ]
+}
