@@ -1,0 +1,2 @@
+Cinzel (Natanael Gama) y Nunito (Vernon Adams, Cyreal, Jacques Le Bailly): SIL Open Font License 1.1.
+Copias en TTF de los paquetes @fontsource/cinzel y @fontsource/nunito (subconjunto latino).

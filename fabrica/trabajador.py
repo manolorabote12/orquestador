@@ -695,6 +695,26 @@ def atender_libre(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> 
 		for f in sorted((proyecto / "build" / "libre_fotos").glob("*.png"))[:6]:
 			archivos["capturas"].append(sb.subir(f"{carpeta}/capturas/{f.name}", f))
 		archivos["icono"] = sb.subir(f"{carpeta}/icono.png", proyecto / "icon.png")
+		## Ficha de Google Play (el boton «Ficha» de la app): capturas con titular, grafico destacado, icono y
+		## textos. No para el juego si algo falla.
+		try:
+			import zipfile
+			from play import kit_tienda
+			kit = kit_tienda.generar(proyecto, titulo, inf.get("tienda"), tmp / "tienda")
+			lema = str((inf.get("tienda") or {}).get("lema") or "")[:80]
+			(tmp / "tienda" / "textos.txt").write_text(f"Titulo: {titulo}\n\nDescripcion breve: {lema}\n\nDescripcion: {inf.get('resumen', '')}\n",
+				encoding="utf-8")
+			zf = tmp / "ficha_google_play.zip"
+			with zipfile.ZipFile(zf, "w", zipfile.ZIP_DEFLATED) as z:
+				for f in kit["capturas"]:
+					z.write(f, f"capturas/{f.name}")
+				if kit["destacada"]:
+					z.write(kit["destacada"], "grafico_destacado_1024x500.png")
+				z.write(proyecto / "icon.png", "icono_512.png")
+				z.write(tmp / "tienda" / "textos.txt", "textos.txt")
+			archivos["ficha"] = sb.subir(f"{carpeta}/ficha_google_play.zip", zf)
+		except Exception as e:  # noqa: BLE001
+			print(f"[trabajador] ficha de tienda: {e}", flush=True)
 		(proyecto / "fabrica" / "informe.json").write_text(json.dumps(inf, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
 		archivos["informe"] = sb.subir(f"{carpeta}/informe.json", proyecto / "fabrica" / "informe.json")
 		nombre = slug + "_godot.zip"

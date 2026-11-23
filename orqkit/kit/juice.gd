@@ -71,6 +71,70 @@ func squash(node: Node2D, amount: Vector2, seconds: float = 0.14) -> void:
 	tween.tween_property(node, "scale", Vector2.ONE, seconds)
 
 
+## 5b - Muerte con oficio (23 nov, recetas de los 4 juegos): destello blanco, el cuerpo se estira hacia
+## arriba y se deshace en niebla que sube. Los jefes (grande=true) caen a camara lenta con tres estallidos
+## y temblor fuerte. El nodo se libera al acabar si liberar=true.
+func muerte(item: CanvasItem, parent: Node, at: Vector2, col: Color = Color(0.85, 0.92, 1.0), grande: bool = false, liberar: bool = true) -> void:
+	if item != null and is_instance_valid(item):
+		item.modulate = Color(4, 4, 4, 1)
+		var dur: float = 1.5 if grande else 0.65
+		var tw: Tween = item.create_tween()
+		tw.tween_property(item, "modulate", Color(1.4, 1.5, 1.7, 1.0), 0.1)
+		if item is Node2D or item is Control:
+			tw.tween_property(item, "scale", Vector2(0.55, 1.35) * item.get("scale"), dur).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
+			tw.parallel().tween_property(item, "position:y", item.get("position").y - (80.0 if grande else 44.0), dur).set_trans(Tween.TRANS_SINE)
+		tw.parallel().tween_property(item, "modulate", Color(col.r, col.g, col.b, 0.0), dur)
+		if liberar:
+			tw.tween_callback(item.queue_free)
+	if parent == null:
+		return
+	_niebla(parent, at, col, 42 if grande else 20, grande)
+	if grande:
+		shake(0.8)
+		camara_lenta(0.35, 0.9)
+		for k: int in 3:
+			get_tree().create_timer(0.12 + 0.18 * k, true, false, true).timeout.connect(func() -> void:
+				if is_instance_valid(parent):
+					burst(parent, at + Vector2(randf_range(-80, 80), randf_range(-110, 30)), col.lerp(Color(1, 0.85, 0.5), 0.5), 18, 320.0))
+	else:
+		shake(0.2)
+
+
+## 5c - Camara lenta (rozar un obstaculo, matar a un jefe). Respeta la velocidad que hubiera (los bots
+## aceleran el tiempo): la multiplica y la devuelve tal cual al acabar.
+func camara_lenta(factor: float = 0.35, seconds: float = 0.6) -> void:
+	var antes: float = Engine.time_scale
+	Engine.time_scale = antes * factor
+	get_tree().create_timer(seconds, true, false, true).timeout.connect(func() -> void: Engine.time_scale = antes)
+
+
+func _niebla(parent: Node, at: Vector2, col: Color, n: int, grande: bool) -> void:
+	var p: CPUParticles2D = CPUParticles2D.new()
+	p.position = at
+	p.one_shot = true
+	p.explosiveness = 0.55
+	p.amount = n
+	p.lifetime = 1.6 if grande else 1.1
+	p.emission_shape = CPUParticles2D.EMISSION_SHAPE_SPHERE
+	p.emission_sphere_radius = 70.0 if grande else 36.0
+	p.direction = Vector2(0, -1)
+	p.spread = 35.0
+	p.initial_velocity_min = 40.0
+	p.initial_velocity_max = 140.0
+	p.gravity = Vector2(0, -120)
+	p.texture = dot_texture()
+	p.scale_amount_min = 0.5
+	p.scale_amount_max = 1.4 if grande else 0.9
+	var g: Gradient = Gradient.new()
+	g.set_color(0, Color(col.lerp(Color.WHITE, 0.4), 0.85))
+	g.set_color(1, Color(col, 0.0))
+	p.color_ramp = g
+	p.z_index = 20
+	parent.add_child(p)
+	p.emitting = true
+	p.finished.connect(p.queue_free)
+
+
 ## 6 - Estallido de particulas (pisoton, golpe, recoger). Se borra solo al terminar.
 ## Acabado de estudio: trozos redondos que encogen y se apagan, chispas brillantes en modo
 ## aditivo y, en los golpes grandes, una onda expansiva.

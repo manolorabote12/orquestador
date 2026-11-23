@@ -40,6 +40,8 @@ from libre import piezas  # noqa: E402
 MODELO = os.environ.get("ORQ_MODELO_ESTUDIO", os.environ.get("ORQ_MODELO_SUPERIOR", "claude-sonnet-5-5"))
 MAX_TURNOS = int(os.environ.get("ORQ_ESTUDIO_TURNOS", "90"))
 USD_IMAGEN = 0.006
+USD_ANIMACION = 0.03
+USD_VOZ = 0.008
 
 NEGRA = [r"\bOS\.(execute|create_process|shell_open|kill|create_instance|move_to_trash|get_environment|set_environment)",
 	r"\bDirAccess\b", r"\bHTTPRequest\b", r"\bHTTPClient\b", r"\bStreamPeer", r"\bPacketPeer", r"\bTCPServer\b",
@@ -109,6 +111,24 @@ Lecciones del estudio (juegos que ya se probaron en moviles de verdad):
   eventos que cambian el dia, clima con efecto en el juego, enemigos de elite, modos (infinito, reto, torre),
   decisiones con consecuencias y un bestiario o coleccion. Ajusta la dificultad con el bot tras cada novedad.
 
+Recetas de los juegos top del estudio (23 nov: Bajo la Luna Roja, La Posada, El Reflejo, El Farero):
+- Personajes y monstruos ANIMADOS: pintalos con dibujar (recorte=true, cuerpo entero, de perfil mirando a la derecha) y
+  luego animar con 2-4 movimientos (idle siempre; attack, death, run o cast segun el juego). Se usan con
+  Hoja.crear(id, [anims], alto_px): mide al personaje de verdad y lo apoya en sus pies. Si en una hoja el bicho se
+  convierte en otro, no uses esa animacion. Los andares necesitan «strictly in side profile, clear steps».
+- Muertes: Juice.muerte(nodo, padre, posicion, color, es_jefe) (destello, se deshace en niebla; los jefes, a camara
+  lenta). Camara lenta puntual con Juice.camara_lenta (respeta la velocidad del bot). Nunca Engine.time_scale = 1.0 a pelo.
+- Historia y capitulos con voz: narrar (frases cortas, la misma voz descrita igual en todo el juego) y que suene al
+  aparecer la escena ilustrada.
+- Poderes de area: varios proyectiles pintados en abanico que revientan al tocar el suelo, no explosiones de la nada.
+  Ataques de jefe con aviso: marca donde va a caer antes de que caiga.
+- Modos que hacen volver: reto diario (igual para todos segun la fecha, con una regla rara y racha de dias), prestigio
+  (empezar de nuevo con un bono permanente), estaciones o eventos que cambian las reglas. Que tu bot pruebe tambien los modos.
+- Pantallas grandes: las fotos de recorrer salen a 1080 px. Si usas BackBufferCopy, en modo VIEWPORT (en RECT el rect es
+  en pixeles de pantalla y en moviles grandes solo se copia un trozo). Textos de barras con clip_text y anchos que quepan.
+- Al terminar, rellena «tienda»: un lema con gancho y un titular corto para cada una de las primeras fotos de recorrer
+  (salen en la ficha de Google Play con ese texto encima).
+
 Usa piezas para ver lo que ya existe en el kit (guardar, sonido, efectos, anuncios, textos) en vez de
 reescribirlo. Lee los archivos del kit que necesites con leer (res://kit/...), pero escribe solo en libre/."""
 
@@ -132,12 +152,32 @@ HERRAMIENTAS = [
 			"prompt": {"type": "string", "description": "en ingles: que se ve y en que estilo; sin texto en la imagen"},
 			"ancho": {"type": "integer", "minimum": 256, "maximum": 1536}, "alto": {"type": "integer", "minimum": 256, "maximum": 1536},
 			"recorte": {"type": "boolean", "description": "pieza suelta: se pinta sobre croma y se recorta el fondo"}}}},
+	{"name": "animar", "description": "Anima un personaje o monstruo YA pintado (con dibujar y recorte=true) con una IA de video. "
+		"Deja hojas de sprites en res://assets/libre/anim/<id>_<anim>.png (celdas de 256x256 en fila, pies abajo) para usar con "
+		"Hoja.crear(id, [anims], alto_px). Veras la hoja: si el bicho se transforma en otro, no uses esa animacion.",
+		"input_schema": {"type": "object", "required": ["id", "imagen", "descripcion", "anims"], "properties": {
+			"id": {"type": "string", "description": "nombre corto, minusculas y _ (p. ej. heroe, lobo)"},
+			"imagen": {"type": "string", "description": "res://assets/libre/<pieza>.png recortada, de cuerpo entero"},
+			"descripcion": {"type": "string", "description": "en ingles, quien es (p. ej. a knight in silver armor with a red cape)"},
+			"anims": {"type": "array", "maxItems": 4, "items": {"type": "object", "required": ["nombre", "que"], "properties": {
+				"nombre": {"type": "string", "description": "idle | run | walk | attack | cast | hurt | death | victory | otro"},
+				"que": {"type": "string", "description": "en ingles, el movimiento (p. ej. swings the sword forward to the right in a strong slash, then returns to its pose)"},
+				"bucle": {"type": "boolean"}}}}}}},
+	{"name": "narrar", "description": "Graba una frase con voz (IA de voz, en espanol) y la deja en res://assets/libre/voces/<id>.ogg. "
+		"Para historia, capitulos, finales o un narrador; suena con Audio.play_voice(\"<id>\") si la anades al manifest o con un AudioStreamPlayer.",
+		"input_schema": {"type": "object", "required": ["id", "texto", "voz"], "properties": {
+			"id": {"type": "string"}, "texto": {"type": "string", "description": "lo que dice (maximo 400 caracteres)"},
+			"voz": {"type": "string", "description": "en ingles, como es la voz (p. ej. an old weathered male sailor, calm and deep, clear Castilian Spanish)"}}}},
 	{"name": "probar", "description": "Prueba el juego en Godot: compilar | recorrer (fotos) | mono | bot | todo.",
 		"input_schema": {"type": "object", "required": ["que"], "properties": {"que": {"enum": ["compilar", "recorrer", "mono", "bot", "todo"]}}}},
 	{"name": "terminar", "description": "Entrega el juego (solo con 'todo' limpio).",
 		"input_schema": {"type": "object", "required": ["resumen", "huella"], "properties": {
 			"titulo": {"type": "string", "description": "Nombre del juego (corto, con gancho, sin copiar a otros)."},
 			"resumen": {"type": "string", "description": "Que juego es, en 3-5 frases para el jugador."},
+			"tienda": {"type": "object", "description": "Para la ficha de Google Play y sus capturas.", "properties": {
+				"lema": {"type": "string", "description": "una frase de gancho (maximo 50 caracteres)"},
+				"titulares": {"type": "array", "maxItems": 6, "items": {"type": "string"},
+					"description": "un titular corto (maximo 40 caracteres) por cada una de las primeras fotos de recorrer, en su orden"}}},
 			"huella": {"type": "object", "required": ["metafora", "navegacion", "estructura", "estetica", "mecanica"], "properties": {
 				"metafora": {"type": "string"}, "navegacion": {"type": "string"}, "estructura": {"type": "string"},
 				"estetica": {"type": "string"}, "mecanica": {"type": "string"}}}}}},
@@ -145,7 +185,7 @@ HERRAMIENTAS = [
 
 
 ## Pasos que la app ensena mientras el estudio trabaja (mismos nombres que su lista de pasos).
-FASE = {"escribir": "programar", "anadir": "programar", "editar": "programar", "dibujar": "arte", "probar": "pruebas"}
+FASE = {"escribir": "programar", "anadir": "programar", "editar": "programar", "dibujar": "arte", "animar": "arte", "narrar": "arte", "probar": "pruebas"}
 
 
 class Estudio:
@@ -357,6 +397,81 @@ class Estudio:
 		return [{"type": "text", "text": f"Guardado res://assets/libre/{nombre}.png ({img.size[0]}x{img.size[1]}). Asi ha quedado:"},
 			_imagen(img, 384)]
 
+	def _cli_gpu(self):
+		if self.cli_img is None:
+			from arte.runpod import cliente
+			self.cli_img = cliente(os.environ.get("ORQ_COMFY", ""))
+			if hasattr(self.cli_img, "timeout"):
+				self.cli_img.timeout = 900.0
+		return self.cli_img
+
+	def t_animar(self, id: str, imagen: str, descripcion: str, anims: list) -> list:
+		"""Wan 2.2 sobre la pieza ya pintada. Hojas en paleta de 256 colores (5 veces menos peso, igual a la vista)."""
+		from PIL import Image
+		from arte import animar as anim_mod
+		anims = [a for a in (anims or []) if isinstance(a, dict) and a.get("nombre")][:4]
+		if not anims:
+			return [{"type": "text", "text": "Dime al menos una animacion (nombre y que)."}]
+		if self.usd() + USD_ANIMACION * len(anims) > self.tope:
+			return [{"type": "text", "text": "Sin presupuesto para animar tantas: pide menos o ninguna."}]
+		nombre = re.sub(r"[^a-z0-9_]", "_", id.lower())[:30] or "personaje"
+		src = self._ruta(imagen)
+		if not src.exists():
+			return [{"type": "text", "text": f"No existe {imagen}: pintala antes con dibujar (recorte=true)."}]
+		movs = {re.sub(r"[^a-z0-9_]", "_", str(a["nombre"]).lower())[:20]: {"que": str(a.get("que", ""))[:300],
+			"frames": 12 if str(a["nombre"]) in ("idle", "run", "walk") else 10,
+			"bucle": bool(a.get("bucle", str(a["nombre"]) in ("idle", "run", "walk", "victory"))),
+			**({"desde": 4, "hasta": 28} if str(a["nombre"]) in ("run", "walk") else {})} for a in anims}
+		tmp = self.p / "build" / "animar" / nombre
+		shutil.rmtree(tmp, ignore_errors=True)
+		try:
+			inf = anim_mod.animar({"id": nombre, "descripcion": descripcion[:200], "estilo": {}, "ficha": str(src),
+				"movimientos": movs, "semilla": abs(hash(nombre)) % 100000}, tmp, self._cli_gpu())
+		except Exception as e:  # noqa: BLE001
+			return [{"type": "text", "text": f"No se pudo animar: {str(e)[:200]}"}]
+		hechas = list(inf.get("animaciones", {}))
+		self.usd_img += float(inf.get("usd") or USD_ANIMACION * len(hechas))
+		dest = self.p / "assets" / "libre" / "anim"
+		dest.mkdir(parents=True, exist_ok=True)
+		partes: list = []
+		for a in hechas:
+			hoja = Image.open(tmp / f"{a}.png").convert("RGBA")
+			hoja.quantize(256, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE).save(dest / f"{nombre}_{a}.png", optimize=True)
+			muestra = Image.new("RGBA", hoja.size, (70, 90, 120, 255))
+			muestra.alpha_composite(hoja)
+			muestra.thumbnail((1280, 128))
+			partes += [{"type": "text", "text": f"res://assets/libre/anim/{nombre}_{a}.png ({hoja.width // 256} fotogramas):"}, _imagen(muestra, 1280)]
+		self._evento("arte", "ok", f"He animado a «{nombre.replace('_', ' ')}»: {', '.join(hechas) or 'nada'}")
+		errores = inf.get("errores") or {}
+		cab = f"Animado {nombre}: {', '.join(hechas) or 'ninguna'}." + (f" Fallaron: {errores}" if errores else "") + \
+			f" Usalo con Hoja.crear(\"{nombre}\", {json.dumps(hechas)}, alto_px). Mira cada hoja: si el personaje cambia de forma, no uses esa."
+		return [{"type": "text", "text": cab}] + partes
+
+	def t_narrar(self, id: str, texto: str, voz: str) -> str:
+		"""Qwen3-TTS (VoiceDesign) en el endpoint de voces de RunPod."""
+		import base64
+		from arte import voces_ia
+		destino = cadena.destino_voces(os.environ.get("ORQ_COMFY", ""))
+		if not destino:
+			return "La voz no esta disponible en este servidor: sigue sin narracion (texto en pantalla)."
+		if self.usd() + USD_VOZ > self.tope:
+			return "Sin presupuesto para mas voces."
+		nombre = re.sub(r"[^a-z0-9_]", "_", id.lower())[:40] or "voz"
+		try:
+			from arte.runpod import RunPodCliente
+			cli = RunPodCliente(destino, timeout=600)
+			r = cli.trabajo({"motor": "qwen", "texto": texto[:400], "idioma": "es", "voz": voz[:300]})
+			if r.get("error") or not r.get("audio"):
+				return f"No se pudo narrar: {str(r.get('error') or 'sin audio')[:200]}"
+			dest = self.p / "assets" / "libre" / "voces" / f"{nombre}.ogg"
+			dest.parent.mkdir(parents=True, exist_ok=True)
+			voces_ia.procesar(base64.b64decode(r["audio"]), 1.0, False, dest)
+		except Exception as e:  # noqa: BLE001
+			return f"No se pudo narrar: {str(e)[:200]}"
+		self.usd_img += float(getattr(cli, "usd", 0.0) or USD_VOZ)
+		self._evento("arte", "ok", f"He grabado la voz «{nombre.replace('_', ' ')}»")
+		return f"Guardado res://assets/libre/voces/{nombre}.ogg. Reproducelo con un AudioStreamPlayer (load de esa ruta) cuando salga el texto."
+
 	def t_probar(self, que: str) -> list:
 		partes: list = []
 		resumen: dict = {}
@@ -368,7 +483,9 @@ class Estudio:
 			elif paso == "recorrer":
 				fotos = self.p / "build" / "libre_fotos"
 				shutil.rmtree(fotos, ignore_errors=True)
-				out = self._godot("--resolution", "1280x720" if self.horizontal else "720x1280", "res://qa/libre.tscn", "--", "--modo=recorrer", f"--out={fotos}", display=True, timeout=300)
+				## A 1080 (como la mayoria de moviles): lo que solo falla en pantallas grandes (BackBufferCopy en modo RECT,
+				## posiciones en pixeles fijos) se ve aqui y no en la tienda.
+				out = self._godot("--resolution", "1920x1080" if self.horizontal else "1080x1920", "res://qa/libre.tscn", "--", "--modo=recorrer", f"--out={fotos}", display=True, timeout=300)
 			elif paso == "mono":
 				out = self._godot("res://qa/libre.tscn", "--", "--modo=mono", "--segundos=45", timeout=180)
 			else:
@@ -427,7 +544,7 @@ class Estudio:
 					fotos.append(r)
 		self._evento("pruebas", "ok" if ok else "aviso", msg, **({"fotos": fotos} if fotos else {}))
 
-	def t_terminar(self, resumen: str, huella, titulo: str = "") -> str:
+	def t_terminar(self, resumen: str, huella, titulo: str = "", tienda: dict | None = None) -> str:
 		if isinstance(huella, str):
 			import ast
 			try:
@@ -436,7 +553,8 @@ class Estudio:
 				huella = {"descripcion": huella[:600]}
 		if not self.ultimo_todo or not all(self.ultimo_todo.get(k) for k in ("compilar", "recorrer", "mono", "bot")):
 			return "Todavia no: pasa probar('todo') limpio (compilar, recorrer, mono y bot) y luego terminas."
-		self.fin = {"resumen": resumen, "huella": huella, **({"titulo": titulo.strip()[:40]} if titulo.strip() else {})}
+		self.fin = {"resumen": resumen, "huella": huella, **({"titulo": titulo.strip()[:40]} if titulo.strip() else {}),
+			**({"tienda": tienda} if isinstance(tienda, dict) else {})}
 		return "Entregado."
 
 	def _importar(self) -> None:

@@ -191,7 +191,7 @@ def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProces
 	xvfb = shutil.which("Xvfb")
 	if not xvfb:
 		if shutil.which("xvfb-run"):
-			return subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd, capture_output=True, text=True, timeout=timeout)
+			return subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 1920x1920x24"] + cmd, capture_output=True, text=True, timeout=timeout)
 		return subprocess.CompletedProcess(cmd, 1, "", "No hay Xvfb (pantalla virtual) instalado")
 	os.makedirs("/tmp/.X11-unix", mode=0o1777, exist_ok=True)
 	errores = []
@@ -206,7 +206,7 @@ def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProces
 			k = cmd.index("--rendering-driver")
 			orden = cmd[:k + 1] + ["opengl3_es"] + cmd[k + 2:]
 		num = next((n for n in range(90, 140) if not os.path.exists(f"/tmp/.X11-unix/X{n}") and not os.path.exists(f"/tmp/.X{n}-lock")), 99)
-		srv = subprocess.Popen([xvfb, f":{num}", "-screen", "0", "800x1400x24", "-nolisten", "tcp", "-ac", "-noreset", *extra],
+		srv = subprocess.Popen([xvfb, f":{num}", "-screen", "0", "1920x1920x24", "-nolisten", "tcp", "-ac", "-noreset", *extra],
 			stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True, env=dict(os.environ, **entorno_x))
 		try:
 			for _ in range(50):
@@ -230,7 +230,7 @@ def _con_pantalla_virtual(cmd: list, timeout: int) -> subprocess.CompletedProces
 				except subprocess.TimeoutExpired:
 					srv.kill()
 	if shutil.which("xvfb-run"):
-		r = subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 800x1400x24"] + cmd, capture_output=True, text=True, timeout=timeout)
+		r = subprocess.run(["xvfb-run", "-a", "-s", "-screen 0 1920x1920x24"] + cmd, capture_output=True, text=True, timeout=timeout)
 		if r.returncode == 0:
 			return r
 		errores.append("xvfb-run: " + (r.stderr or "")[-300:])
