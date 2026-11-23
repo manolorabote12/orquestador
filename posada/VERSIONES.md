@@ -20,3 +20,6 @@ Goblins al Abismo sin Fondo). Vuelven con oro y fama... o no vuelven y entran en
   pintados que llenan la taberna y la cocina y brindan; crónicas ilustradas al volver de cada mazmorra (8
   ilustraciones); miniaturas pintadas de las mazmorras; eventos con lámina (concierto, caravana, noble,
   mapa del tesoro); botones de abajo arreglados; texturas comprimidas.
+- v3 (23 nov): cuatro estaciones con su clima (pétalos, polvo dorado, hojas, nieve) y efecto en el negocio;
+  pedidos del pueblo que dan gemas; Renombre: vender la posada y abrir otra en un camino nuevo con +10% de oro por sello.
+  Bot (10 h): 8 salas, Fortaleza del Camino, 43 pedidos, 12 sellos al vender.

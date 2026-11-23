@@ -65,3 +65,6 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
   del decorado de noche, ojos rojos en el bosque, murciélagos, cuervos que levantan el vuelo al pasar, camino
   de luz de la luna sobre el agua y cofres antiguos en las tierras salvajes (con fragmentos).
   Bot: 6/6 valles.
+- v8 (23 nov): Reto de la luna diario (5 noches con una regla rara: Luna de sangre, La horda, Bolsa vacía o
+  Eclipse perpetuo; racha de días = más fragmentos); el aliento del dragón lanza bolas de fuego pintadas en abanico.
+  Bot: 6/6 valles y los 4 retos superados.
