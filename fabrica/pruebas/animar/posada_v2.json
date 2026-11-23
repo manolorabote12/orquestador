@@ -1,0 +1,140 @@
+{
+ "tipo_video": "A painted 2D medieval fantasy storybook game character",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "warm painterly storybook fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "p_guerrero",
+   "descripcion": "a warrior adventurer",
+   "ficha": "fabrica/pruebas/animar/posada/p_guerrero.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands relaxed in a tavern, shifts weight, adjusts the sword on the shoulder, breathing, small natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6700
+  },
+  {
+   "id": "p_maga",
+   "descripcion": "a mage adventurer",
+   "ficha": "fabrica/pruebas/animar/posada/p_maga.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in a tavern, a small magical light swirls in her hand, robe moving gently, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6701
+  },
+  {
+   "id": "p_picaro",
+   "descripcion": "a rogue adventurer",
+   "ficha": "fabrica/pruebas/animar/posada/p_picaro.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands leaning, flips a gold coin in the hand and catches it, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6702
+  },
+  {
+   "id": "p_cleriga",
+   "descripcion": "a cleric adventurer",
+   "ficha": "fabrica/pruebas/animar/posada/p_cleriga.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands calmly, holy symbol glowing softly, praying gesture, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6703
+  },
+  {
+   "id": "p_cazador",
+   "descripcion": "a hunter adventurer",
+   "ficha": "fabrica/pruebas/animar/posada/p_cazador.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands checking the bowstring, looking around, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6704
+  },
+  {
+   "id": "p_alquimista_pj",
+   "descripcion": "an alchemist adventurer",
+   "ficha": "fabrica/pruebas/animar/posada/p_alquimista_pj.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands shaking a small bubbling potion flask, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6705
+  },
+  {
+   "id": "p_bardo",
+   "descripcion": "a bard adventurer",
+   "ficha": "fabrica/pruebas/animar/posada/p_bardo.png",
+   "movimientos": {
+    "idle": {
+     "que": "plays the lute happily, tapping the foot to the rhythm, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6706
+  },
+  {
+   "id": "p_posadera",
+   "descripcion": "an innkeeper woman",
+   "ficha": "fabrica/pruebas/animar/posada/p_posadera.png",
+   "movimientos": {
+    "idle": {
+     "que": "wipes a mug with a cloth and smiles, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6707
+  },
+  {
+   "id": "p_cocinero",
+   "descripcion": "a tavern cook",
+   "ficha": "fabrica/pruebas/animar/posada/p_cocinero.png",
+   "movimientos": {
+    "idle": {
+     "que": "stirs a big pot with a ladle and tastes it, natural idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6708
+  },
+  {
+   "id": "p_herrero",
+   "descripcion": "a blacksmith",
+   "ficha": "fabrica/pruebas/animar/posada/p_herrero.png",
+   "movimientos": {
+    "idle": {
+     "que": "hammers on an anvil with sparks flying, natural work loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6709
+  }
+ ]
+}
