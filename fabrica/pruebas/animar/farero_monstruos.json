@@ -1,0 +1,460 @@
+{
+ "tipo_video": "A painted 2D dark nautical fantasy video game monster",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark nautical fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "m_sombra",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_sombra.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6900
+  },
+  {
+   "id": "m_rondador",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_rondador.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6901
+  },
+  {
+   "id": "m_espectro",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_espectro.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6902
+  },
+  {
+   "id": "m_ahogado",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_ahogado.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6903
+  },
+  {
+   "id": "m_arpia",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_arpia.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6904
+  },
+  {
+   "id": "m_medusa",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_medusa.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6905
+  },
+  {
+   "id": "m_tentaculo",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_tentaculo.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6906
+  },
+  {
+   "id": "m_golem_coral",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_golem_coral.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6907
+  },
+  {
+   "id": "m_sirena",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_sirena.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6908
+  },
+  {
+   "id": "m_cangrejo_rojo",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_cangrejo_rojo.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6909
+  },
+  {
+   "id": "m_anguila",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_anguila.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6910
+  },
+  {
+   "id": "m_pescador",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_pescador.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6911
+  },
+  {
+   "id": "m_lobo_hielo",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_lobo_hielo.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6912
+  },
+  {
+   "id": "m_morsa",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_morsa.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6913
+  },
+  {
+   "id": "m_llorona",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_llorona.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6914
+  },
+  {
+   "id": "m_tripulante",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_tripulante.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6915
+  },
+  {
+   "id": "m_ojo",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_ojo.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6916
+  },
+  {
+   "id": "m_polilla",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_polilla.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6917
+  },
+  {
+   "id": "m_caballero",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_caballero.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6918
+  },
+  {
+   "id": "m_eco",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_eco.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6919
+  },
+  {
+   "id": "m_leviatan2",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_leviatan2.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6920
+  },
+  {
+   "id": "m_jefe_tormenta",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_jefe_tormenta.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6921
+  },
+  {
+   "id": "m_jefe_coral",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_jefe_coral.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6922
+  },
+  {
+   "id": "m_jefe_helado",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_jefe_helado.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6923
+  },
+  {
+   "id": "m_jefe_eclipse",
+   "descripcion": "a dark nautical fantasy monster",
+   "ficha": "fabrica/pruebas/animar/farero_m/m_jefe_eclipse.png",
+   "movimientos": {
+    "idle": {
+     "que": "hovers or stands in place menacingly, breathing, swaying slightly, tendrils or cloth moving, subtle idle loop, stays centered",
+     "frames": 10,
+     "bucle": true
+    },
+    "attack": {
+     "que": "lunges forward toward the viewer and strikes with claws, jaws or magic, then returns to its pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6924
+  }
+ ]
+}
