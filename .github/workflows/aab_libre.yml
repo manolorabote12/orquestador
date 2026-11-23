@@ -73,8 +73,6 @@ jobs:
           pip install -q pillow
           cd juego
           timeout 600 godot --headless --path . --import > /dev/null 2>&1 || true
-          timeout 600 godot --headless --path . --install-android-build-template --quit > /dev/null 2>&1 || true
-          test -d android/build || { echo "::error::No se instalo la plantilla de Android"; exit 1; }
           python3 - <<'PY'
           import json, os, re, sys
           from pathlib import Path
@@ -109,7 +107,7 @@ jobs:
           cd juego && mkdir -p ../aab
           GODOT_ANDROID_KEYSTORE_RELEASE_PATH="$RUNNER_TEMP/subida.jks" GODOT_ANDROID_KEYSTORE_RELEASE_USER=subida \
           GODOT_ANDROID_KEYSTORE_RELEASE_PASSWORD="$CLAVE" \
-            timeout 2400 godot --headless --path . --export-release Android "../aab/$NOMBRE.aab" 2>&1 | tail -30
+            timeout 2400 godot --headless --path . --install-android-build-template --export-release Android "../aab/$NOMBRE.aab" 2>&1 | tail -40
           rm -f "$RUNNER_TEMP/subida.jks"
           ls -la ../aab
           test -s "../aab/$NOMBRE.aab"
