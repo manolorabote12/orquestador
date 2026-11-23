@@ -1,0 +1,25 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "icono_posada",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 13001,
+   "recorte": false,
+   "prompt": "mobile game app icon: a cozy medieval fantasy inn at dusk with warm glowing windows, a hanging wooden sign shaped like a beer tankard, a lantern, mountains and a dark dungeon entrance behind, centered composition, bold readable silhouette, rich warm colors",
+   "estilo": "polished painterly mobile game icon art, full bleed square illustration, high contrast, no text, no letters, no border, no frame"
+  },
+  {
+   "id": "icono_posada_b",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 1024,
+   "semilla": 13002,
+   "recorte": false,
+   "prompt": "mobile game app icon: close-up of a smiling dwarf innkeeper raising a foaming tankard in front of a glowing tavern fireplace, adventurer swords on the wall, centered, bold readable silhouette, warm colors",
+   "estilo": "polished painterly mobile game icon art, full bleed square illustration, high contrast, no text, no letters, no border, no frame"
+  }
+ ]
+}
