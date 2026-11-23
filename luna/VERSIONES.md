@@ -44,3 +44,6 @@ lancero) y construir; de noche las sombras salen de las grietas de los dos extre
   guardia de espectros); 3 monturas en el altar (reina montada en caballo, oso o grifo con ventajas);
   personajes repintados (sin cabezas cortadas) y animados con Wan 2.2 (51 hojas: andar, atacar, morir,
   galope de la reina...); interfaz pintada (hierro negro, oro y rubíes). Bot: 5/6 valles.
+- v5.1 (23 nov): 15 animaciones nuevas con Wan 2.2: los 5 héroes (caballero, bruja, cazadora, druida,
+  ingeniera) andan y atacan, y los jefes del desierto, las ruinas y la nieve ya se mueven al atacar.
+  Bot: 5/6 valles.
