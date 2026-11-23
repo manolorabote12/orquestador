@@ -75,12 +75,21 @@ jobs:
           ## Binarios Android del plugin de AdMob (Poing Studios): el editor los baja solo; aqui, a mano.
           VP=$(sed -n 's/^version="\(.*\)"/\1/p' addons/admob/plugin.cfg)
           mkdir -p addons/admob/android/bin
-          for GV in 4.6.3 4.6.2 4.6.1 4.6.0; do
-            if wget -q "https://github.com/poingstudios/godot-admob-plugin/releases/download/v$VP/android-template-v$GV.zip" -O /tmp/admob.zip; then
-              unzip -qo /tmp/admob.zip -d addons/admob/android/bin && printf 'const VERSION := "v%s"\n' "$VP" > addons/admob/android/bin/package.gd
-              echo "::notice::AdMob Android v$VP (Godot $GV)"; break
-            fi
-          done
+          URL=$(curl -s "https://api.github.com/repos/poingstudios/godot-admob-plugin/releases/tags/v$VP" | python3 -c "
+          import json,sys
+          a=[x['browser_download_url'] for x in json.load(sys.stdin).get('assets',[]) if 'android' in x['name'].lower() and x['name'].endswith('.zip')]
+          print('\\n'.join(a), file=sys.stderr)
+          m=[u for u in a if '4.6' in u] or [u for u in a if '4.5' in u] or a
+          print(sorted(m)[-1] if m else '')")
+          if [ -n "$URL" ] && wget -q "$URL" -O /tmp/admob.zip; then
+            unzip -qo /tmp/admob.zip -d /tmp/admob_x
+            ## El zip puede traer la carpeta addons/admob/android/bin entera o solo su contenido.
+            if [ -d /tmp/admob_x/addons/admob/android/bin ]; then cp -r /tmp/admob_x/addons/admob/android/bin/. addons/admob/android/bin/; else cp -r /tmp/admob_x/. addons/admob/android/bin/; fi
+            printf 'const VERSION := "v%s"\n' "$VP" > addons/admob/android/bin/package.gd
+            echo "::notice::AdMob Android: $URL"
+          else
+            echo "::warning::No encontre los binarios Android de AdMob v$VP"
+          fi
           ls addons/admob/android/bin | head
           timeout 600 godot --headless --path . --import > /dev/null 2>&1 || true
           python3 - <<'PY'
