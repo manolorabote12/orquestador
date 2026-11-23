@@ -1,0 +1,255 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "esc_naufragos",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18000,
+   "recorte": false,
+   "prompt": "a sinking ship in a violent storm at night signaling a lonely lighthouse on a cliff, desperate sailors in lifeboats",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_corsaria",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18001,
+   "recorte": false,
+   "prompt": "a proud female pirate captain with a red coat offering a pouch of gold on a foggy pier at night, smuggling crates behind her",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_niebla_habla",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18002,
+   "recorte": false,
+   "prompt": "a giant ghostly face formed of fog rising from the sea in front of the lighthouse keeper holding a lantern",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_campana",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18003,
+   "recorte": false,
+   "prompt": "a sunken church bell ringing under green water, drowned souls listening around it",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_guardia",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18004,
+   "recorte": false,
+   "prompt": "harbor guards in oilskin coats marching to the lighthouse with rifles and lanterns",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_nino",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18005,
+   "recorte": false,
+   "prompt": "a lost child with a paper boat standing alone on a rocky shore in the mist at dawn",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_ballena",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18006,
+   "recorte": false,
+   "prompt": "a colossal ancient whale skeleton glowing in the fog near the island",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_traicion",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18007,
+   "recorte": false,
+   "prompt": "a hooded figure secretly extinguishing the lighthouse lamp at night",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_faro_eterno",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18008,
+   "recorte": false,
+   "prompt": "a triumphant lighthouse beam piercing the fog at dawn, ships safely returning, golden light",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_niebla_gana",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18009,
+   "recorte": false,
+   "prompt": "the lighthouse swallowed by black fog, the keeper becoming a ghostly guardian with glowing eyes",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_ultimo_barco",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18010,
+   "recorte": false,
+   "prompt": "a small boat leaving the island at sunrise with survivors, the abandoned lighthouse behind",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "esc_tormenta",
+   "motor": "qwen",
+   "ancho": 1024,
+   "alto": 576,
+   "semilla": 18011,
+   "recorte": false,
+   "prompt": "a monstrous sea serpent rising from storm waves attacking the lighthouse rocks",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, cinematic wide scene, no text, no letters"
+  },
+  {
+   "id": "fx_tajo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18012,
+   "recorte": true,
+   "prompt": "a sweeping golden sword slash arc",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_luz",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18013,
+   "recorte": true,
+   "prompt": "a beam burst of holy lighthouse light rays",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_fuego",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18014,
+   "recorte": true,
+   "prompt": "a swirling fireball explosion",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_hielo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18015,
+   "recorte": true,
+   "prompt": "a burst of jagged ice crystals and frost",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_veneno",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18016,
+   "recorte": true,
+   "prompt": "a cloud of toxic green poison bubbles",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_cura",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18017,
+   "recorte": true,
+   "prompt": "a ring of soft healing green and gold sparkles with leaves",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_escudo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18018,
+   "recorte": true,
+   "prompt": "a glowing translucent blue protective shield dome",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_rayo",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18019,
+   "recorte": true,
+   "prompt": "a crackling purple lightning bolt strike",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_ola",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18020,
+   "recorte": true,
+   "prompt": "a crashing magical sea wave of water",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "fx_sombra",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 18021,
+   "recorte": true,
+   "prompt": "a vortex of black shadow tendrils with violet glow",
+   "estilo": "Dark gothic nautical storybook illustration, detailed ink engraving linework with fine crosshatching, muted painterly colors with warm amber lamplight accents, Victorian seafaring era, high quality, a single magical spell effect for a video game, glowing, dynamic, centered, isolated on a flat solid pure magenta background, no characters, no scenery"
+  },
+  {
+   "id": "f_ui_boton",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 18022,
+   "recorte": true,
+   "prompt": "a wide horizontal plank of dark weathered ship wood with brass corner plates and rope edges, empty center",
+   "estilo": "Dark nautical 2D game user interface element, front view, flat, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background"
+  },
+  {
+   "id": "f_ui_boton_oro",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 18023,
+   "recorte": true,
+   "prompt": "a wide horizontal polished brass nameplate with rivets and engraved nautical border, empty center",
+   "estilo": "Dark nautical 2D game user interface element, front view, flat, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background"
+  },
+  {
+   "id": "f_ui_panel",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 896,
+   "semilla": 18024,
+   "recorte": true,
+   "prompt": "a large rectangular old nautical chart parchment with a dark wooden ship frame, brass compass rose corners and rope trim, empty",
+   "estilo": "Dark nautical 2D game user interface element, front view, flat, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background"
+  }
+ ]
+}
