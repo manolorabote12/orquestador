@@ -130,6 +130,8 @@ def recortar(frames: list[Image.Image], chroma: tuple[int, int, int], ref_alto: 
 	y1 = max(c[3] for c in cajas)
 	alto = ref_alto or (y1 - y0)
 	escala = (CELDA * 0.72) / max(alto, 1)
+	## Cuerpos anchos (lobos, dragones, arietes): que quepan a lo ancho en vez de cortarse por los lados.
+	escala = min(escala, (CELDA * 0.97) / max(x1 - x0, 1))
 	out = []
 	for f in limpios:
 		tramo = f.crop((x0, y0, x1, y1))

@@ -1,0 +1,95 @@
+{
+ "familia": "dark medieval fantasy orchestral with folk instruments, atmospheric and epic",
+ "pistas": [
+  {
+   "id": "dia_cienaga",
+   "papel": "nivel",
+   "tempo": 84,
+   "tonalidad": "D dorian",
+   "segundos": 100,
+   "ambiente": "misty swamp at dawn, eerie but hopeful, frogs and mist, building a camp",
+   "instrumentos": [
+    "low whistle",
+    "nyckelharpa",
+    "soft strings",
+    "marsh ambience percussion",
+    "harp"
+   ]
+  },
+  {
+   "id": "dia_ceniza",
+   "papel": "nivel",
+   "tempo": 92,
+   "tonalidad": "A minor",
+   "segundos": 100,
+   "ambiente": "volcanic ash land, smoldering ruins, determined rebuilding, heavy and warm",
+   "instrumentos": [
+    "cello",
+    "bodhran",
+    "low brass",
+    "hurdy-gurdy",
+    "anvil percussion"
+   ]
+  },
+  {
+   "id": "dia_nieve",
+   "papel": "nivel",
+   "tempo": 80,
+   "tonalidad": "F# minor",
+   "segundos": 100,
+   "ambiente": "frozen forest under snow, crystalline and cold, quiet resilience",
+   "instrumentos": [
+    "celesta",
+    "glass harmonica",
+    "strings tremolo",
+    "wooden flute",
+    "soft timpani"
+   ]
+  },
+  {
+   "id": "dia_desierto",
+   "papel": "nivel",
+   "tempo": 100,
+   "tonalidad": "D phrygian dominant",
+   "segundos": 100,
+   "ambiente": "golden desert canyon, sun and dunes, exotic and adventurous",
+   "instrumentos": [
+    "oud",
+    "ney flute",
+    "darbuka",
+    "strings",
+    "frame drum"
+   ]
+  },
+  {
+   "id": "dia_ruinas",
+   "papel": "nivel",
+   "tempo": 76,
+   "tonalidad": "C minor",
+   "segundos": 100,
+   "ambiente": "ancient ruins of a fallen kingdom, ghosts of glory, solemn and majestic",
+   "instrumentos": [
+    "pipe organ",
+    "choir",
+    "solo violin",
+    "low brass",
+    "bells"
+   ]
+  },
+  {
+   "id": "capitulo",
+   "papel": "menu",
+   "tempo": 70,
+   "tonalidad": "E minor",
+   "segundos": 45,
+   "ambiente": "a new chapter begins in a dark fairy tale, storytelling, mysterious and epic build",
+   "instrumentos": [
+    "harp",
+    "solo cello",
+    "choir",
+    "strings swell",
+    "timpani"
+   ]
+  }
+ ]
+}

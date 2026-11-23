@@ -1,0 +1,203 @@
+{
+ "tipo_video": "A painted 2D dark fantasy video game character",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "lr_lobo",
+   "descripcion": "a shadow wolf",
+   "ficha": "fabrica/pruebas/animar/luna/lr_lobo.png",
+   "movimientos": {
+    "walk": {
+     "que": "runs forward toward the left with a fast gallop, legs stretching and gathering, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "leaps forward to the left and bites with open jaws, then lands back in its pose",
+     "frames": 10,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6601
+  },
+  {
+   "id": "lr_jefe_ceniza",
+   "descripcion": "a huge lava dragon",
+   "ficha": "fabrica/pruebas/animar/luna/lr_jefe_ceniza.png",
+   "movimientos": {
+    "walk": {
+     "que": "stalks forward toward the left with heavy steps, wings folded, lava dripping, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    },
+    "attack": {
+     "que": "rears up and breathes a stream of fire to the left, then returns to its pose",
+     "frames": 10,
+     "bucle": false
+    },
+    "death": {
+     "que": "is struck by a final blow, staggers, falls to the ground and dissolves into black smoke and red embers",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6602
+  },
+  {
+   "id": "lr_ariete",
+   "descripcion": "a battering ram on wheels",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ariete.png",
+   "movimientos": {
+    "walk": {
+     "que": "the battering ram rolls forward toward the left pushed from behind, wheels turning, seen strictly from the side in profile facing left, the body never turns toward the camera, looping cycle, stays centered",
+     "frames": 8,
+     "bucle": true
+    }
+   },
+   "semilla": 6603
+  },
+  {
+   "id": "lr_caballero",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_caballero.png",
+   "movimientos": {
+    "cast": {
+     "que": "raises his sword to the sky, golden light gathers around him and he slams it down, facing right, then returns to the ready pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6610
+  },
+  {
+   "id": "lr_bruja",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_bruja.png",
+   "movimientos": {
+    "cast": {
+     "que": "raises both arms and conjures a huge swirling green fire above her head, facing right, then returns to the ready pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6611
+  },
+  {
+   "id": "lr_monje",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_monje.png",
+   "movimientos": {
+    "cast": {
+     "que": "spins his staff in a fast whirl around his body, dust swirling, facing right, then returns to the ready pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6612
+  },
+  {
+   "id": "lr_ingeniera",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ingeniera.png",
+   "movimientos": {
+    "cast": {
+     "que": "loads and throws a big glowing ember bomb forward to the right, facing right, then returns to the ready pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6613
+  },
+  {
+   "id": "lr_druida",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_druida.png",
+   "movimientos": {
+    "cast": {
+     "que": "plants his staff in the ground and green magical roots and light rise around him, facing right, then returns to the ready pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6614
+  },
+  {
+   "id": "lr_cazadora",
+   "descripcion": "a fantasy hero",
+   "ficha": "fabrica/pruebas/animar/luna/lr_cazadora.png",
+   "movimientos": {
+    "cast": {
+     "que": "aims her bow at the sky and releases a glowing arrow of starlight upward, facing right, then returns to the ready pose, stays centered",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6615
+  },
+  {
+   "id": "lr_arquero",
+   "descripcion": "a medieval villager",
+   "ficha": "fabrica/pruebas/animar/luna/lr_arquero.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, looking around, small natural idle movements, clothes moving in the wind, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6620
+  },
+  {
+   "id": "lr_lancero",
+   "descripcion": "a medieval villager",
+   "ficha": "fabrica/pruebas/animar/luna/lr_lancero.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, looking around, small natural idle movements, clothes moving in the wind, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6621
+  },
+  {
+   "id": "lr_constructor",
+   "descripcion": "a medieval villager",
+   "ficha": "fabrica/pruebas/animar/luna/lr_constructor.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, looking around, small natural idle movements, clothes moving in the wind, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6622
+  },
+  {
+   "id": "lr_granjero",
+   "descripcion": "a medieval villager",
+   "ficha": "fabrica/pruebas/animar/luna/lr_granjero.png",
+   "movimientos": {
+    "idle": {
+     "que": "stands in place breathing, looking around, small natural idle movements, clothes moving in the wind, stays centered",
+     "frames": 10,
+     "bucle": true
+    }
+   },
+   "semilla": 6623
+  }
+ ]
+}
