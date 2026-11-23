@@ -1,0 +1,465 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "r_pw_turbo",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 17100,
+   "recorte": true,
+   "prompt": "a game power up icon: a pair of winged golden running boots",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "r_pw_estrella",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 17110,
+   "recorte": true,
+   "prompt": "a game power up icon: a big shining rainbow star with a smiling glow",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "r_pw_eco",
+   "motor": "qwen",
+   "ancho": 384,
+   "alto": 384,
+   "semilla": 17120,
+   "recorte": true,
+   "prompt": "a game power up icon: a violet mirror shard glowing",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_lago_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17130,
+   "recorte": true,
+   "prompt": "a big mossy log, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_lago_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17140,
+   "recorte": true,
+   "prompt": "a stone lantern, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_lago_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17150,
+   "recorte": true,
+   "prompt": "a reed bush with a heron statue, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_bosque_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17160,
+   "recorte": true,
+   "prompt": "a giant red mushroom, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_bosque_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17170,
+   "recorte": true,
+   "prompt": "a gnarled tree stump with roots, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_bosque_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17180,
+   "recorte": true,
+   "prompt": "a fallen mossy column, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_ciudad_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17190,
+   "recorte": true,
+   "prompt": "a broken stone fountain, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_ciudad_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17200,
+   "recorte": true,
+   "prompt": "a stack of old crates and barrels, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_ciudad_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17210,
+   "recorte": true,
+   "prompt": "a toppled bronze bell, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_glaciar_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17220,
+   "recorte": true,
+   "prompt": "a jagged ice crystal spike, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_glaciar_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17230,
+   "recorte": true,
+   "prompt": "a frozen snowman, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_glaciar_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17240,
+   "recorte": true,
+   "prompt": "a block of blue ice with a fish inside, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_cielo_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17250,
+   "recorte": true,
+   "prompt": "a floating cloud with a tiny rainbow, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_cielo_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17260,
+   "recorte": true,
+   "prompt": "a golden weather vane, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_cielo_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17270,
+   "recorte": true,
+   "prompt": "a hot air balloon basket, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_coral_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17280,
+   "recorte": true,
+   "prompt": "a pink coral reef rock, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_coral_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17290,
+   "recorte": true,
+   "prompt": "a giant clam shell, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_coral_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17300,
+   "recorte": true,
+   "prompt": "a sunken treasure chest, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_otono_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17310,
+   "recorte": true,
+   "prompt": "a pile of orange autumn leaves with a pumpkin, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_otono_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17320,
+   "recorte": true,
+   "prompt": "a wooden scarecrow, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_otono_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17330,
+   "recorte": true,
+   "prompt": "a rusty old wheelbarrow, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_desierto_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17340,
+   "recorte": true,
+   "prompt": "a cactus with flowers, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_desierto_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17350,
+   "recorte": true,
+   "prompt": "an ancient sandstone statue head, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_desierto_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17360,
+   "recorte": true,
+   "prompt": "a pile of desert jars, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_tormenta_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17370,
+   "recorte": true,
+   "prompt": "a broken ship mast with torn sail, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_tormenta_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17380,
+   "recorte": true,
+   "prompt": "a lighthouse buoy with a red light, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_tormenta_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17390,
+   "recorte": true,
+   "prompt": "a crashing wave rock, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_aurora_n0",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17400,
+   "recorte": true,
+   "prompt": "a carved viking runestone, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_aurora_n1",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17410,
+   "recorte": true,
+   "prompt": "a snowy pine with lights, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "o_aurora_n2",
+   "motor": "qwen",
+   "ancho": 512,
+   "alto": 512,
+   "semilla": 17420,
+   "recorte": true,
+   "prompt": "a frozen dragon skull, a game obstacle",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D video game sprite, side view, the subject is completely isolated on a flat solid pure magenta background, no scenery, no ground, no frame, no glow behind"
+  },
+  {
+   "id": "r_capa_lago",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17430,
+   "recorte": false,
+   "prompt": "a calm lake shore with reeds, willows and a far wooden pier",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_bosque",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17440,
+   "recorte": false,
+   "prompt": "a flooded enchanted forest with giant trees and glowing mushrooms",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_ciudad",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17450,
+   "recorte": false,
+   "prompt": "a sunken old city with towers and arches half under water",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_glaciar",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17460,
+   "recorte": false,
+   "prompt": "crystal ice cliffs and glaciers",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_cielo",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17470,
+   "recorte": false,
+   "prompt": "floating islands with waterfalls in the sky",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_coral",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17480,
+   "recorte": false,
+   "prompt": "tropical lagoon with coral rocks and palm trees",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_otono",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17490,
+   "recorte": false,
+   "prompt": "autumn forest with orange trees and a little stone bridge",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_desierto",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17500,
+   "recorte": false,
+   "prompt": "golden dunes, an oasis with palms and a far temple",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_tormenta",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17510,
+   "recorte": false,
+   "prompt": "stormy sea cliffs with a lighthouse and wrecked ships",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_capa_aurora",
+   "motor": "qwen",
+   "ancho": 2048,
+   "alto": 640,
+   "semilla": 17520,
+   "recorte": false,
+   "prompt": "snowy fjord mountains with a wooden village",
+   "estilo": "dreamy painterly storybook 2D game art, twilight colors, soft glowing light, rich detail, 2D side-scrolling game parallax layer, a long horizontal strip of landscape seen from the side, isolated: the whole upper half of the image and everything behind the landscape is a perfectly flat plain solid pure green #00FF00 background, no sky, no clouds, no text"
+  },
+  {
+   "id": "r_ui_boton",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 17530,
+   "recorte": true,
+   "prompt": "a wide horizontal rounded game button made of glowing pale moonstone with a soft violet and gold rim, empty center",
+   "estilo": "dreamy twilight 2D game user interface element, front view, flat, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background"
+  },
+  {
+   "id": "r_ui_boton_oro",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 224,
+   "semilla": 17540,
+   "recorte": true,
+   "prompt": "a wide horizontal rounded game button made of warm glowing sunset amber glass with a gold rim, empty center",
+   "estilo": "dreamy twilight 2D game user interface element, front view, flat, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background"
+  },
+  {
+   "id": "r_ui_panel",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 896,
+   "semilla": 17550,
+   "recorte": true,
+   "prompt": "a large rectangular game menu panel of deep twilight blue glass with silver crescent moon corners and a thin gold border, empty",
+   "estilo": "dreamy twilight 2D game user interface element, front view, flat, centered, empty with no text and no letters, completely isolated on a flat solid pure magenta background"
+  }
+ ]
+}
