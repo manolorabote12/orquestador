@@ -33,6 +33,10 @@ const ARCHIVOS: Record<string, string> = {
   "demo/capturas/4_juego.jpg": c4,
   "demo/capturas/5_resultado.jpg": c5,
   "demo/icono.png": icono,
+  "demo/bitacora/1.webp": "generos_arte/reino.webp",
+  "demo/bitacora/2.webp": "generos_arte/rpg.webp",
+  "demo/bitacora/3.webp": "generos_arte/torres.webp",
+  "demo/bitacora/4.webp": "generos_arte/aldea.webp",
   "demo/clip_vertical.mp4": mkReto,
   "demo/marketing/reto.mp4": mkReto,
   "demo/marketing/curiosidad.mp4": mkCuriosidad,
@@ -93,6 +97,25 @@ const GUION_MARKETING: [number, Evento][] = [
   [0.4, { paso: "montaje", estado: "inicio", mensaje: "Montando vídeos: subtítulos, voz en off, música y cartel final..." }],
   [3.4, { paso: "montaje", estado: "ok", mensaje: "3 vídeos listos" }],
   [0.6, { paso: "subida", estado: "ok", mensaje: "Vídeos guardados" }],
+];
+
+// Juego a medida (demostración): el estudio cuenta lo que hace con fotos de lo que pinta y de las pruebas.
+const GUION_LIBRE: [number, Evento][] = [
+  [0.4, { paso: "diseno", estado: "inicio", mensaje: "Estoy pensando tu juego: el bucle, las pantallas y su estética" }],
+  [2.2, { paso: "diseno", estado: "info", mensaje: "Un reino que se defiende de noche: de día construyes, de noche aguantas. La reina va a caballo." }],
+  [1.6, { paso: "arte", estado: "ok", mensaje: "He pintado «fondo valle»", foto: "demo/bitacora/1.webp" }],
+  [1.4, { paso: "arte", estado: "ok", mensaje: "He pintado «reina»", foto: "demo/bitacora/2.webp" }],
+  [1.8, { paso: "programar", estado: "info", mensaje: "Escribo el bucle de día y noche y la hoguera que crece" }],
+  [2.0, { paso: "pruebas", estado: "ok", mensaje: "Compilar: bien" }],
+  [1.6, { paso: "pruebas", estado: "ok", mensaje: "Recorrer todas las pantallas: bien", fotos: ["demo/bitacora/3.webp"] }],
+  [0.8, { paso: "boceto", estado: "ok", mensaje: "¡Ya puedes jugarlo mientras sigo!", boceto: "demo/web/boceto.pck" }],
+  [1.8, { paso: "arte", estado: "ok", mensaje: "He pintado «botón de hierro»", foto: "demo/bitacora/4.webp" }],
+  [1.6, { paso: "programar", estado: "info", mensaje: "Monto los menús con su propio estilo y las monturas" }],
+  [2.2, { paso: "bot", estado: "aviso", mensaje: "El bot se ha atascado: lo arreglo: la noche 3 llega demasiado fuerte" }],
+  [2.0, { paso: "bot", estado: "ok", mensaje: "El bot se lo ha pasado: 6 noches sin perder la hoguera" }],
+  [0.8, { paso: "boceto", estado: "ok", mensaje: "Versión nueva para jugar, con lo último que he hecho", boceto: "demo/web/boceto.pck", arte: true }],
+  [1.4, { paso: "apk", estado: "ok", mensaje: "APK listo" }],
+  [0.8, { paso: "subida", estado: "ok", mensaje: "Juego guardado", titulo: "Bajo la Luna Roja" }],
 ];
 
 const GUION: [number, Evento][] = [
@@ -268,7 +291,7 @@ function cargar(): Guardado {
   } catch {
     /* sin almacenamiento: empezamos de cero */
   }
-  return { email: null, tuercas: 120, trabajos: [], proyectos: [], planes: {} };
+  return { email: null, tuercas: 200, trabajos: [], proyectos: [], planes: {} };
 }
 
 export class Demo implements Backend {
@@ -443,7 +466,7 @@ export class Demo implements Backend {
     }
     const premium = !!this.s.premium;
     try { localStorage.removeItem(CLAVE); } catch { /* sin almacenamiento */ }
-    this.s = { email: null, tuercas: 120, trabajos: [], proyectos: [], planes: {} };
+    this.s = { email: null, tuercas: 200, trabajos: [], proyectos: [], planes: {} };
     return { premium_activo: premium };
   }
   async tuercas() {
@@ -506,14 +529,30 @@ export class Demo implements Backend {
     return { job_id: t.id, credits: this.s.tuercas };
   }
 
-  private async fabricar(id: string) {
+  async encargarLibre(idea: string, entrevista: Record<string, string>) {
+    void entrevista;
+    if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
+    if (this.s.tuercas < 150) throw new ErrorApp("No tienes tuercas suficientes para un juego a medida.");
+    this.s.tuercas -= 150;
+    this.mov(-150, "game_libre", idea.slice(0, 60));
+    const t: Trabajo = {
+      id: "demo-" + Date.now(), kind: "game", project_id: null, status: "queued", created_at: new Date().toISOString(), idea: idea.trim(),
+      progress: [], result: null, error: null, refunded: false, titulo: null,
+    };
+    this.s.trabajos.unshift(t);
+    this.guardar();
+    void this.fabricar(t.id, GUION_LIBRE);
+    return { job_id: t.id, credits: this.s.tuercas };
+  }
+
+  private async fabricar(id: string, guion: [number, Evento][] = GUION) {
     if (this.enMarcha.has(id)) return;
     this.enMarcha.add(id);
     await espera(900);
     const t = this.s.trabajos.find((x) => x.id === id);
     if (!t) return;
     t.status = "running";
-    for (const [seg, ev] of GUION) {
+    for (const [seg, ev] of guion) {
       await espera(seg * 1000);
       t.progress = [...t.progress, { ...ev, t: Date.now() / 1000 }];
       if (ev.titulo) t.titulo = ev.titulo;

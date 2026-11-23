@@ -1293,3 +1293,27 @@ details.como summary { cursor: pointer; color: var(--brass-hi); font-weight: 700
 .experto-paso { margin: 12px 0; }
 .experto-paso > strong { display: block; margin-bottom: 4px; }
 .codigo-enlace { display: inline-block; margin-top: 8px; padding: 8px 12px; border-radius: 10px; font-size: 1.15rem; letter-spacing: 0.12em; background: rgba(255, 255, 255, 0.08); user-select: all; }
+
+/* ---------- Juego a medida: modos, entrevista y bitácora (23 nov 2026) ---------- */
+.modos { margin: 4px 0 12px; }
+.modos .chip { font-weight: 700; padding: 10px 16px; }
+.entrevista-caja { margin: 12px 0 4px; }
+.entrevista { display: grid; gap: 14px; margin-top: 8px; }
+.pregunta { padding: 12px; border-radius: var(--radius); background: var(--paper-lift); border: 1px solid var(--grid-strong); }
+.pregunta-texto { margin: 0 0 4px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.pregunta-num { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--brass);
+  color: var(--paper-deep); font-family: var(--display); font-size: 14px; flex: none; }
+.pregunta .chips { margin: 8px 0; }
+.pregunta input[type="text"] { width: 100%; }
+.bitacora { display: grid; gap: 10px; margin: 14px 0 4px; max-height: 420px; overflow: auto; padding-right: 4px; }
+.bitacora-item { padding: 10px 12px; border-radius: var(--radius); background: var(--paper-lift); border-left: 3px solid var(--ok);
+  animation: bitacora-entra 0.35s ease-out; }
+.bitacora-item.info { border-left-color: var(--ink-faint); }
+.bitacora-item.aviso { border-left-color: var(--brass-hi); }
+.bitacora-item p { margin: 0; }
+.bitacora-fotos { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; }
+.bitacora-foto { height: 120px; width: auto; border-radius: 6px; background: var(--paper-deep); flex: none; }
+@keyframes bitacora-entra { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .bitacora-item { animation: none; } }
+.entrevista { grid-template-columns: minmax(0, 1fr); }
+.pregunta { min-width: 0; overflow: hidden; }

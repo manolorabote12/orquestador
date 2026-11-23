@@ -17,6 +17,7 @@ Ciclo:
 import argparse
 import json
 import mimetypes
+import re
 import os
 import shutil
 import socket
@@ -637,7 +638,93 @@ def atender_previa(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) ->
 		shutil.rmtree(tmp, ignore_errors=True)
 
 
+## Huellas de los juegos a medida ya hechos: el siguiente no puede parecerse a ninguno.
+HUELLAS_LIBRE = Path(__file__).resolve().parent / "libre" / "huellas.json"
+
+
+def atender_libre(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
+	"""Juego a medida: el Agente Estudio lo crea entero desde la idea y la entrevista, contando cada paso a
+	la app (frases, fotos del arte y de las pruebas, bocetos jugables). Al final: APK, web, icono y proyecto."""
+	from libre import agente
+	job = trabajo["job_id"]
+	usuario = trabajo["user_id"]
+	detalle = trabajo.get("detail") or {}
+	entrevista = {k: str(v)[:300] for k, v in (detalle.get("entrevista") or {}).items() if isinstance(v, str)}
+	idea = str(trabajo.get("idea") or detalle.get("idea") or "")[:700]
+	horizontal = "horizontal" in entrevista.get("orientacion", "").lower()
+	gasto_t0 = time.time()
+	avisar = oyente_progreso(sb, job, ("paso", "estado", "mensaje", "t", "titulo", "boceto", "arte", "foto", "fotos"))
+	cadena.oyentes.append(avisar)
+	tmp = Path(tempfile.mkdtemp(prefix="orq_libre_"))
+	estudio = None
+	try:
+		proyecto = tmp / "juego"
+		titulo = (entrevista.get("titulo") or "Mi juego")[:40]
+		agente.preparar(proyecto, titulo, idea, horizontal=horizontal)
+		if os.environ.get("ORQ_SANDBOX"):
+			import cambio
+			cadena.SANDBOX = cambio._sandbox_listo(proyecto)
+		huellas = json.loads(HUELLAS_LIBRE.read_text(encoding="utf-8")) if HUELLAS_LIBRE.exists() else []
+
+		def subir(local: Path, nombre: str) -> str | None:
+			return sb.subir(f"{usuario}/{job}/{nombre}", local)
+		tope = float(os.environ.get("ORQ_TOPE_LIBRE_USD") or "6")
+		estudio = agente.Estudio(proyecto, idea, titulo, tope, huellas, tmp / "estudio", entrevista=entrevista, subir=subir,
+			boceto=bool(opciones.web), horizontal=horizontal)
+		inf = estudio.ejecutar()
+		if not inf.get("ok"):
+			raise cadena.ErrorCadena("El estudio no pudo terminar el juego" + (f": {inf['error']}" if inf.get("error") else " (no pasó las pruebas)"))
+		titulo = str(inf.get("titulo") or titulo)
+		slug = re.sub(r"[^a-z0-9]+", "_", titulo.lower()).strip("_")[:24] or "juego"
+		cadena.ajustar_proyecto(proyecto, titulo, slug)
+		icono = proyecto / "assets" / "libre" / "icono.png"
+		if icono.exists():
+			from PIL import Image
+			Image.open(icono).convert("RGBA").resize((512, 512)).save(proyecto / "icon.png")
+		cadena.evento("apk", "inicio", "Empaquetando el APK para Android...")
+		apk = cadena.exportar_apk(proyecto, slug) if opciones.apk else None
+		cadena.evento("apk", "ok", "APK listo")
+		web = cadena.exportar_web(proyecto) if opciones.web else None
+		carpeta = f"{usuario}/{job}/v1"
+		cadena.evento("subida", "inicio", "Guardando tu juego en la nube...")
+		archivos: dict = {"capturas": [], "version": 1, "libre": True}
+		if apk:
+			archivos["apk"] = sb.subir(f"{carpeta}/{apk.name}", apk)
+		if web:
+			archivos["web"] = sb.subir(f"{carpeta}/web/index.pck", web)
+		for f in sorted((proyecto / "build" / "libre_fotos").glob("*.png"))[:6]:
+			archivos["capturas"].append(sb.subir(f"{carpeta}/capturas/{f.name}", f))
+		archivos["icono"] = sb.subir(f"{carpeta}/icono.png", proyecto / "icon.png")
+		(proyecto / "fabrica" / "informe.json").write_text(json.dumps(inf, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
+		archivos["informe"] = sb.subir(f"{carpeta}/informe.json", proyecto / "fabrica" / "informe.json")
+		nombre = slug + "_godot.zip"
+		archivos["proyecto"] = sb.subir(f"{carpeta}/{nombre}", comprimir_proyecto(proyecto, tmp / nombre))
+		cadena.evento("subida", "ok", "Juego guardado")
+		spec = {"titulo": titulo, "libre": True, "resumen": inf.get("resumen", ""), "huella": inf.get("huella", {}), "entrevista": entrevista}
+		coste = round(float(inf.get("usd") or 0) + (time.time() - gasto_t0) * CPU_USD_SEG, 4)
+		sb.rpc("complete_game_job", p_job=job, p_cost_usd=coste, p_units=0, p_title=titulo, p_spec=spec, p_files=archivos)
+		## La huella se guarda para que el siguiente juego no se le parezca.
+		if inf.get("huella"):
+			HUELLAS_LIBRE.write_text(json.dumps((huellas + [inf["huella"]])[-40:], ensure_ascii=False, indent=1), encoding="utf-8")
+		borrar_seguro(sb, [f"{usuario}/{job}/boceto/index.pck"])
+		cadena.evento("fin", "ok", f"«{titulo}» está listo")
+		print(f"[trabajador] juego a medida listo {job}: {titulo} ({coste} $)", flush=True)
+	except Exception as e:  # noqa: BLE001 - cualquier fallo se devuelve al usuario
+		traceback.print_exc()
+		motivo = (str(e)[:400] or e.__class__.__name__)
+		coste = round((estudio.usd() if estudio else 0.0) + (time.time() - gasto_t0) * CPU_USD_SEG, 4)
+		try:
+			sb.rpc("fail_job", p_job=job, p_error=motivo, p_cost_usd=coste, p_refund=True)
+		except Exception as e2:  # noqa: BLE001
+			print(f"[trabajador] no se pudo cerrar el trabajo {job}: {e2}", flush=True)
+	finally:
+		cadena.oyentes.remove(avisar)
+		shutil.rmtree(tmp, ignore_errors=True)
+
+
 def atender(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> None:
+	if trabajo.get("kind") == "game" and (trabajo.get("detail") or {}).get("modo") == "libre":
+		return atender_libre(sb, trabajo, opciones)
 	if trabajo.get("kind") in ("game_change", "game_restore", "game_mod"):
 		return atender_cambio(sb, trabajo, opciones)
 	if trabajo.get("kind") == "game_marketing":

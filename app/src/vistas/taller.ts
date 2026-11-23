@@ -14,6 +14,10 @@ import { USOS, infoUso, type Uso } from "../usos";
 import { abrirSeccion } from "./juegos";
 import { fanfarria, musica, sonar } from "../sonido";
 import { chispas } from "../efectos";
+import { crearEntrevista } from "../entrevista";
+
+/** Juego a medida (estudio, sin plantilla): precio orientativo; el de verdad lo pone el servidor (pricing.game_libre). */
+const PRECIO_LIBRE = 150;
 
 // Dos engranajes de latón engranados (el pequeño gira al revés y más deprisa).
 const DIENTES = (n: number, r: number) => Array.from({ length: n }, (_, i) =>
@@ -196,6 +200,17 @@ const CATALOGO_ID: string[] = ["plataformas", "runner", "volador", "saltos", "co
 const DESTACADOS: [string, string][] = [["plataformas", "Plataformas"], ["rpg", "RPG de batallas"], ["reino", "Reino y conquista"],
   ["royale", "Battle royale"], ["supervivencia", "Supervivencia"], ["horda", "Hordas"], ["carreras", "Carreras"],
   ["puzle", "Puzle de combinar"], ["torres", "Defensa de torres"], ["tycoon", "Tycoon"], ["fusion", "Fusión"], ["runner", "Runner"]];
+
+// Juego a medida: lo que hace el estudio, en el orden en que suele hacerlo (vuelve atrás cuando algo falla).
+const PASOS_LIBRE: [string, string][] = [
+  ["diseno", "Pensar el juego"],
+  ["arte", "Pintar el arte"],
+  ["programar", "Programar"],
+  ["pruebas", "Probar pantallas"],
+  ["bot", "El bot lo juega"],
+  ["apk", "APK para Android"],
+  ["subida", "Guardar en la nube"],
+];
 
 const PASOS: [string, string][] = [
   ["diseno", "Diseño del juego"],
@@ -442,18 +457,52 @@ export function vistaTaller(app: App): VistaHecha {
   const mas = h("details", { class: "tipos mas-formas" }, h("summary", {}, "Más formas de empezar: plantillas, ideas originales, género nuevo"),
     ganchos, plantillas, aMedidaFila);
   // Compositor: la idea es lo primero y los botones van pegados a ella (como en los creadores de juegos con IA).
+  // Dos formas de crear: a medida (el estudio lo hace desde cero con tu entrevista, sin plantilla) o rápido
+  // (la fábrica de siempre, con géneros y plantillas probadas).
+  let libre = true;
+  const entrevista = crearEntrevista();
+  const cajaEntrevista = h("div", { class: "entrevista-caja" },
+    h("h3", { class: "composer-sub" }, "Cuéntame tu juego"),
+    h("p", { class: "muted small" }, "Con tus respuestas escribo la biblia del juego. Lo pinto, lo programo y lo pruebo desde cero: verás cómo se monta y podrás jugarlo antes de que termine."),
+    entrevista.el);
+  entrevista.alCambiar(() => actualizar());
+  const modoLibre = h("button", { class: "chip", type: "button", "aria-pressed": "true" }, "A medida") as HTMLButtonElement;
+  const modoRapido = h("button", { class: "chip", type: "button", "aria-pressed": "false" }, "Rápido con plantilla") as HTMLButtonElement;
+  const modos = h("div", { class: "chips modos", role: "group", "aria-label": "Cómo crear el juego" }, modoLibre, modoRapido);
+  const soloRapido: HTMLElement[] = [];
+  function ponerModo(l: boolean) {
+    libre = l;
+    modoLibre.setAttribute("aria-pressed", String(l));
+    modoRapido.setAttribute("aria-pressed", String(!l));
+    cajaEntrevista.hidden = !l;
+    for (const el of soloRapido) el.hidden = l;
+    precio.lastChild!.textContent = String(l ? PRECIO_LIBRE : app.precio);
+    fabricar.firstChild!.textContent = l ? "Crear a medida" : "Fabricar";
+    const coste = l ? PRECIO_LIBRE : app.precio;
+    nota.textContent = app.tuercas >= coste
+      ? `Cuesta ${coste} tuercas · tienes ${app.tuercas} · te quedarán ${app.tuercas - coste}. Se cobra al empezar; si la fábrica falla, te las devolvemos.` + (l ? "" : " Probar gratis no cuesta nada.")
+      : `Cuesta ${coste} tuercas · tienes ${app.tuercas}: te faltan ${coste - app.tuercas}.` + (l ? "" : " Puedes probar gratis el boceto mientras tanto.");
+    chispa.decir(l ? "Te hago unas preguntas y lo creo desde cero, solo para ti. Verás cómo se monta." : "Elige un tipo o una plantilla y lo fabrico rápido.", "happy");
+    actualizar();
+  }
+  modoLibre.addEventListener("click", () => ponerModo(true));
+  modoRapido.addEventListener("click", () => ponerModo(false));
+  const subIdeas = h("h3", { class: "composer-sub" }, "Ideas para empezar");
+  const subTipos = h("h3", { class: "composer-sub" }, "O elige un tipo");
+  soloRapido.push(usos, verPrevia, subIdeas, chips, subTipos, rapidos, tipos, mas, destacados);
   const form = h("section", { class: "sheet plano composer" },
     h("div", { class: "sheet-head" }, h("h2", {}, "¿Qué juego fabricamos?"), cuenta),
-    usos, idea, marca,
+    modos, usos, idea, marca, cajaEntrevista,
     h("div", { class: "btn-row composer-acciones" }, verPrevia, fabricar), previaCaja, estado, nota,
-    h("h3", { class: "composer-sub" }, "Ideas para empezar"), chips,
-    h("h3", { class: "composer-sub" }, "O elige un tipo"), rapidos, tipos, mas);
+    subIdeas, chips, subTipos, rapidos, tipos, mas);
+  queueMicrotask(() => ponerModo(true));
 
   function actualizar() {
     const n = idea.value.trim().length;
     cuenta.textContent = `${idea.value.length}/600`;
-    const falta = app.precio - app.tuercas;
-    fabricar.disabled = n < 15 || falta > 0;
+    const falta = (libre ? PRECIO_LIBRE : app.precio) - app.tuercas;
+    const sinContestar = libre ? entrevista.falta() : null;
+    fabricar.disabled = n < 15 || falta > 0 || sinContestar !== null;
     verPrevia.disabled = n < 15 || dejarPrevia !== null;
     estado.className = "status";
     if (falta > 0) {
@@ -461,6 +510,8 @@ export function vistaTaller(app: App): VistaHecha {
       estado.textContent = `Te faltan ${falta} tuercas. Consíguelas en la pestaña Tuercas.`;
     } else if (n > 0 && n < 15) {
       estado.textContent = "Cuéntame un poco más (mínimo 15 letras).";
+    } else if (n >= 15 && sinContestar) {
+      estado.textContent = `Me falta saber: ${sinContestar}`;
     } else {
       estado.textContent = "";
     }
@@ -591,7 +642,9 @@ export function vistaTaller(app: App): VistaHecha {
     chispa.decir("¡Allá vamos! Llevo tu idea a la fábrica.", "thinking");
     try {
       void prepararAvisos();
-      const r = await app.api.encargar(previa && previaId ? previa.texto : ideaMarcada(), previaId);
+      const r = libre
+        ? await app.api.encargarLibre(idea.value.trim(), entrevista.valores())
+        : await app.api.encargar(previa && previaId ? previa.texto : ideaMarcada(), previaId);
       quitarPrevia();
       aMedida.checked = false;
       app.ponerTuercas(r.credits);
@@ -616,6 +669,33 @@ export function vistaTaller(app: App): VistaHecha {
     const li = h("li", { class: "step", "data-paso": id }, h("span", { class: "dot" }), h("span", { class: "step-nombre" }, nombre), h("span", { class: "time" }));
     filas.set(id, li);
     pasos.append(li);
+  }
+  const pasosLibre = h("ul", { class: "steps", hidden: true });
+  const filasLibre = new Map<string, HTMLLIElement>();
+  for (const [id, nombre] of PASOS_LIBRE) {
+    const li = h("li", { class: "step", "data-paso": id }, h("span", { class: "dot" }), h("span", { class: "step-nombre" }, nombre), h("span", { class: "time" }));
+    filasLibre.set(id, li);
+    pasosLibre.append(li);
+  }
+  // Bitácora del juego a medida: lo que dice el estudio, con fotos de lo que pinta y de las pantallas.
+  const bitacora = h("div", { class: "bitacora", "aria-live": "polite", hidden: true });
+  const urlsFoto = new Map<string, string>();
+  function fotoBitacora(ruta: string): HTMLElement {
+    const img = h("img", { class: "bitacora-foto", alt: "", loading: "lazy", decoding: "async" }) as HTMLImageElement;
+    const ya = urlsFoto.get(ruta);
+    if (ya) img.src = ya;
+    else void app.api.url(ruta).then((u) => { urlsFoto.set(ruta, u); img.src = u; }).catch(() => img.remove());
+    return img;
+  }
+  let vistosBitacora = 0;
+  function pintarBitacora(t: Trabajo) {
+    if (t.progress.length < vistosBitacora) { bitacora.replaceChildren(); vistosBitacora = 0; }
+    for (const e of t.progress.slice(vistosBitacora)) {
+      const fotos = [...(e.foto ? [e.foto] : []), ...(e.fotos ?? [])];
+      bitacora.prepend(h("div", { class: "bitacora-item " + (e.estado === "aviso" ? "aviso" : e.estado === "info" ? "info" : "ok") },
+        h("p", {}, e.mensaje), fotos.length ? h("div", { class: "bitacora-fotos" }, ...fotos.map(fotoBitacora)) : ""));
+    }
+    vistosBitacora = t.progress.length;
   }
   const tiempo = h("span", { class: "tag" }, "0:00");
   const registro = h("div", { class: "log", "aria-live": "off" });
@@ -650,7 +730,7 @@ export function vistaTaller(app: App): VistaHecha {
     escPct, escPaso);
   const registroPlegado = h("details", { class: "esc-registro" }, h("summary", {}, "Ver lo que hace la fábrica"), registro);
   const banco = h("section", { class: "sheet banco", hidden: true },
-    h("div", { class: "sheet-head" }, titulo, tiempo), escenario, maquina, pasos, jugarBoceto, escFrase, registroPlegado);
+    h("div", { class: "sheet-head" }, titulo, tiempo), escenario, maquina, pasos, pasosLibre, jugarBoceto, bitacora, escFrase, registroPlegado);
   // Curiosidades mientras se espera (rotan cada 9 s).
   const CURIOSIDADES = [
     "Cada nivel lo juega un bot antes de dártelo: si el bot no puede pasarlo, se rehace.",
@@ -679,6 +759,7 @@ export function vistaTaller(app: App): VistaHecha {
     }
   }
   const POSE_PASO: Record<string, Pose> = { diseno: "pensando", niveles: "trabajando", arte: "trabajando", validacion: "jugando",
+    programar: "trabajando", pruebas: "jugando", bot: "jugando",
     apk: "cohete", ficha: "trabajando", clip: "jugando", subida: "cohete" };
 
   // ------------------------------------------------------------ resultado
@@ -690,23 +771,37 @@ export function vistaTaller(app: App): VistaHecha {
     raiz.classList.add("fabricando");
     banco.hidden = false;
     titulo.textContent = t.titulo ? t.titulo : "Fabricando";
+    // Juego a medida: sus propios pasos y la bitácora con fotos (el estudio va y vuelve entre pasos).
+    const esLibre = t.progress.some((e) => e.paso === "programar" || e.paso === "pruebas" || e.estado === "info");
+    const LISTA = esLibre ? PASOS_LIBRE : PASOS;
+    const FILAS = esLibre ? filasLibre : filas;
+    pasos.hidden = esLibre;
+    pasosLibre.hidden = !esLibre;
+    bitacora.hidden = !esLibre;
+    if (esLibre) pintarBitacora(t);
     const hechos = new Set(t.progress.filter((e) => e.estado === "ok").map((e) => e.paso));
     const empezados = new Set(t.progress.map((e) => e.paso));
     const avisos = new Set(t.progress.filter((e) => e.estado === "aviso").map((e) => e.paso));
     let activoPuesto = false;
-    for (const [id] of PASOS) {
-      const li = filas.get(id)!;
+    // En el estudio el paso «de ahora» es el del último aviso (vuelve a programar tras probar, etc.).
+    const ultimoPaso = [...t.progress].reverse().find((e) => FILAS.has(e.paso))?.paso;
+    for (const [id] of LISTA) {
+      const li = FILAS.get(id)!;
       li.className = "step";
-      if (hechos.has(id) || (t.status === "done")) li.classList.add("done");
-      else if (empezados.has(id) && t.status === "running" && !activoPuesto) {
+      if (esLibre && t.status === "running" && id === ultimoPaso) {
+        li.classList.add("active");
+        if (avisos.has(id)) li.classList.add("warn");
+        activoPuesto = true;
+      } else if (hechos.has(id) || (t.status === "done")) li.classList.add("done");
+      else if (!esLibre && empezados.has(id) && t.status === "running" && !activoPuesto) {
         li.classList.add("active");
         if (avisos.has(id)) li.classList.add("warn");
         activoPuesto = true;
       }
     }
     // Avance: cada paso terminado empuja la barra y suena la carraca (solo los nuevos).
-    const nHechos = t.status === "done" ? PASOS.length : PASOS.filter(([id]) => hechos.has(id)).length;
-    const pct = Math.round((nHechos / PASOS.length) * 100);
+    const nHechos = t.status === "done" ? LISTA.length : LISTA.filter(([id]) => hechos.has(id)).length;
+    const pct = Math.round((nHechos / LISTA.length) * 100);
     (barra.firstElementChild as HTMLElement).style.width = `${pct}%`;
     porcentaje.textContent = `${pct} %`;
     // Escenario: anillo, porcentaje, paso de ahora y la pose de Chispa que toca.
@@ -714,7 +809,7 @@ export function vistaTaller(app: App): VistaHecha {
     const pctVisto = t.status === "done" ? 100 : Math.min(99, pct + (t.status === "running" ? 4 : 0));
     anillo.querySelector(".esc-lleno")?.setAttribute("stroke-dasharray", `${pctVisto} 100`);
     escPct.textContent = `${pctVisto} %`;
-    const activo = PASOS.find(([id]) => filas.get(id)!.classList.contains("active"));
+    const activo = LISTA.find(([id]) => FILAS.get(id)!.classList.contains("active"));
     escPaso.textContent = t.status === "queued" ? "En la cola de la fábrica..." : activo ? activo[1] + "..." : t.status === "done" ? "¡Terminado!" : "Arrancando las máquinas...";
     const pose: Pose = t.status === "queued" ? "durmiendo" : activo ? (POSE_PASO[activo[0]] ?? "trabajando") : "trabajando";
     if (escChispa.dataset.pose !== pose) {

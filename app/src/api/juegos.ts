@@ -19,6 +19,10 @@ export interface Evento {
   arte?: boolean;
   /** Paquete web de un cambio ya probado por los bots: se puede jugar mientras se termina el APK. */
   adelanto?: string;
+  /** Juego a medida: miniatura de lo que el estudio acaba de pintar (ruta en la nube). */
+  foto?: string;
+  /** Juego a medida: capturas de las pantallas tal como están ahora (rutas en la nube). */
+  fotos?: string[];
 }
 
 export interface Resultado {
@@ -157,6 +161,8 @@ function aTrabajo(f: FilaTrabajo): Trabajo {
 export interface ApiJuegos {
   /** Encarga el juego; con previaId se fabrica el diseño de esa vista previa (el que el jugador aprobó). */
   encargar(idea: string, previaId?: string): Promise<{ job_id: string; credits: number }>;
+  /** Juego a medida (sin plantilla): el estudio lo crea desde la idea y la entrevista, contando cada paso. */
+  encargarLibre(idea: string, entrevista: Record<string, string>): Promise<{ job_id: string; credits: number }>;
   /** Vista previa gratis: la fábrica piensa solo el diseño (un minuto). Se sigue con seguir(job_id). */
   vistaPrevia(idea: string): Promise<{ job_id: string }>;
   /** Guarda gratis el boceto de una vista previa en Mis juegos (borrador: se juega, sin APK). */
@@ -199,6 +205,22 @@ export function supaJuegos(con: Conexion): ApiJuegos {
   const api: ApiJuegos = {
     async encargar(idea: string, previaId?: string) {
       const { data, error } = await con.sb.functions.invoke("create-game", { body: previaId ? { idea, preview_id: previaId } : { idea } });
+      if (error) {
+        let msg = "No se pudo encargar el juego.";
+        if (error instanceof FunctionsHttpError) {
+          try {
+            msg = ((await error.context.json()) as { message?: string }).message ?? msg;
+          } catch {
+            /* respuesta sin JSON */
+          }
+        }
+        throw new ErrorApp(msg);
+      }
+      return data as { job_id: string; credits: number };
+    },
+
+    async encargarLibre(idea: string, entrevista: Record<string, string>) {
+      const { data, error } = await con.sb.functions.invoke("create-game", { body: { idea, modo: "libre", entrevista } });
       if (error) {
         let msg = "No se pudo encargar el juego.";
         if (error instanceof FunctionsHttpError) {

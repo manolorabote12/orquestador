@@ -11,6 +11,9 @@
 // Vista previa gratis (ver el diseño antes de pagar):
 //   { "idea": "texto", "preview": true }        -> encola solo el diseño (0 tuercas)
 //   { "idea": "texto", "preview_id": "<uuid>" } -> cobra y fabrica con el diseño de esa vista previa
+//
+// Juego a medida (sin plantilla, lo crea el Agente Estudio):
+//   { "idea": "texto", "modo": "libre", "entrevista": { genero, fantasia, mecanica, unico, ... } }
 
 import { GENEROS_ETIQUETA, PLANTILLAS } from "../_shared/cambios-datos.ts";
 import { adminClient, CORS, reply, sessionUser } from "../_shared/http.ts";
@@ -26,6 +29,9 @@ const ERRORS: Record<string, { status: number; message: string }> = {
   unknown_user:         { status: 401, message: "Vuelve a iniciar sesión." },
   bad_preview:          { status: 400, message: "Ese diseño ya no está disponible (dura 2 días). Pide uno nuevo: es gratis." },
 };
+
+// Entrevista del juego a medida: lo que la app pregunta antes de fabricar (ver app/src/entrevista.ts).
+const PREGUNTAS = ["genero", "fantasia", "mecanica", "unico", "referencias", "estetica", "orientacion", "publico"] as const;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -50,9 +56,21 @@ Deno.serve(async (req) => {
   const previa = body.preview === true;
   const previaId = typeof body.preview_id === "string" ? body.preview_id : "";
   if (previaId && !UUID.test(previaId)) return reply(400, { error: "bad_preview", message: ERRORS.bad_preview.message });
+  // Juego a medida: el Agente Estudio lo crea entero desde la idea y la entrevista (sin plantilla).
+  // Solo se aceptan las preguntas conocidas, como texto corto (la fábrica las trata como datos).
+  const libre = body.modo === "libre";
+  const entrevista: Record<string, string> = {};
+  if (libre && body.entrevista && typeof body.entrevista === "object") {
+    for (const k of PREGUNTAS) {
+      const v = (body.entrevista as Record<string, unknown>)[k];
+      if (typeof v === "string" && v.trim()) entrevista[k] = v.trim().slice(0, 300);
+    }
+  }
   const { data, error } = previa
     ? await adminClient().rpc("queue_preview", { p_user: user.id, p_idea: idea })
-    : await adminClient().rpc("queue_game", { p_user: user.id, p_idea: idea, ...(previaId ? { p_preview: previaId } : {}) });
+    : libre
+      ? await adminClient().rpc("queue_libre", { p_user: user.id, p_idea: idea, p_entrevista: entrevista })
+      : await adminClient().rpc("queue_game", { p_user: user.id, p_idea: idea, ...(previaId ? { p_preview: previaId } : {}) });
   if (error) {
     const code = Object.keys(ERRORS).find((k) => error.message.includes(k));
     if (code) return reply(ERRORS[code].status, { error: code, message: ERRORS[code].message });
