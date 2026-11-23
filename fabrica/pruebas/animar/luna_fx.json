@@ -1,0 +1,88 @@
+{
+ "tipo_video": "A painted 2D video game magic effect animation",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark fantasy 2D game VFX",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "lr_fx_aurora",
+   "descripcion": "a magical spell effect",
+   "ficha": "fabrica/pruebas/animar/luna_fx/lr_fx_aurora.png",
+   "movimientos": {
+    "anim": {
+     "que": "the golden shockwave of light bursts outward in a ring, expands and fades away, centered, no camera movement",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6500
+  },
+  {
+   "id": "lr_fx_verde",
+   "descripcion": "a magical spell effect",
+   "ficha": "fabrica/pruebas/animar/luna_fx/lr_fx_verde.png",
+   "movimientos": {
+    "anim": {
+     "que": "the green fireball explodes into a burst of emerald flames that expand and fade, centered, no camera movement",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6501
+  },
+  {
+   "id": "lr_fx_torbellino",
+   "descripcion": "a magical spell effect",
+   "ficha": "fabrica/pruebas/animar/luna_fx/lr_fx_torbellino.png",
+   "movimientos": {
+    "anim": {
+     "que": "the whirlwind spins fast, grows and then dissipates into dust, centered, no camera movement",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6502
+  },
+  {
+   "id": "lr_fx_bomba",
+   "descripcion": "a magical spell effect",
+   "ficha": "fabrica/pruebas/animar/luna_fx/lr_fx_bomba.png",
+   "movimientos": {
+    "anim": {
+     "que": "the bomb explodes in a big fiery blast with sparks and smoke that expands and fades, centered, no camera movement",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6503
+  },
+  {
+   "id": "lr_fx_raices",
+   "descripcion": "a magical spell effect",
+   "ficha": "fabrica/pruebas/animar/luna_fx/lr_fx_raices.png",
+   "movimientos": {
+    "anim": {
+     "que": "magical roots burst up from the ground, writhe and then sink back, centered, no camera movement",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6504
+  },
+  {
+   "id": "lr_fx_estrellas",
+   "descripcion": "a magical spell effect",
+   "ficha": "fabrica/pruebas/animar/luna_fx/lr_fx_estrellas.png",
+   "movimientos": {
+    "anim": {
+     "que": "glowing stars rain down, sparkle brightly and fade, centered, no camera movement",
+     "frames": 10,
+     "bucle": false
+    }
+   },
+   "semilla": 6505
+  }
+ ]
+}
