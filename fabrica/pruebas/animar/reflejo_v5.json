@@ -1,0 +1,100 @@
+{
+ "tipo_video": "A painted 2D storybook video game character",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly storybook 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "r_lia",
+   "descripcion": "a young girl runner with a long red scarf",
+   "ficha": "fabrica/pruebas/animar/reflejo/r_lia.png",
+   "movimientos": {
+    "run": {
+     "que": "runs fast toward the right in place in a smooth looping run cycle, seen strictly from the side in profile, legs and arms clearly alternating, scarf and hair flowing back in the wind, the body never turns toward the camera, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6800
+  },
+  {
+   "id": "r_corredor_zorro",
+   "descripcion": "a girl runner with a fox companion",
+   "ficha": "fabrica/pruebas/animar/reflejo/r_corredor_zorro.png",
+   "movimientos": {
+    "run": {
+     "que": "runs fast toward the right in place in a smooth looping run cycle, seen strictly from the side in profile, legs and arms clearly alternating, scarf and hair flowing back in the wind, the body never turns toward the camera, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6801
+  },
+  {
+   "id": "r_corredor_buho",
+   "descripcion": "a boy runner with an owl",
+   "ficha": "fabrica/pruebas/animar/reflejo/r_corredor_buho.png",
+   "movimientos": {
+    "run": {
+     "que": "runs fast toward the right in place in a smooth looping run cycle, seen strictly from the side in profile, legs and arms clearly alternating, scarf and hair flowing back in the wind, the body never turns toward the camera, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6802
+  },
+  {
+   "id": "r_corredor_ciervo",
+   "descripcion": "a girl runner with antlers headband",
+   "ficha": "fabrica/pruebas/animar/reflejo/r_corredor_ciervo.png",
+   "movimientos": {
+    "run": {
+     "que": "runs fast toward the right in place in a smooth looping run cycle, seen strictly from the side in profile, legs and arms clearly alternating, scarf and hair flowing back in the wind, the body never turns toward the camera, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6803
+  },
+  {
+   "id": "r_corredor_sol",
+   "descripcion": "a boy runner with a golden sun amulet",
+   "ficha": "fabrica/pruebas/animar/reflejo/r_corredor_sol.png",
+   "movimientos": {
+    "run": {
+     "que": "runs fast toward the right in place in a smooth looping run cycle, seen strictly from the side in profile, legs and arms clearly alternating, scarf and hair flowing back in the wind, the body never turns toward the camera, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6804
+  },
+  {
+   "id": "r_corredor_luna",
+   "descripcion": "a girl runner with a starry cloak",
+   "ficha": "fabrica/pruebas/animar/reflejo/r_corredor_luna.png",
+   "movimientos": {
+    "run": {
+     "que": "runs fast toward the right in place in a smooth looping run cycle, seen strictly from the side in profile, legs and arms clearly alternating, scarf and hair flowing back in the wind, the body never turns toward the camera, stays centered",
+     "frames": 12,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6805
+  }
+ ]
+}
