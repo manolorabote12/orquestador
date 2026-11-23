@@ -1934,6 +1934,15 @@ export const GIROS: Giro[] = [
     "mezcla": true
   },
   {
+    "id": "mutantes",
+    "nombre": "Plaga de animales mutantes",
+    "que": "Los animales de la Tierra se han vuelto locos: lobos, cuervos y un oso mutantes atacan; saquea casas y coches, construye muros y arregla la radio",
+    "generos": [
+      "supervivencia"
+    ],
+    "mezcla": true
+  },
+  {
     "id": "invierno",
     "nombre": "Invierno",
     "que": "Hace frío de noche: hoguera, cama o un abrigo de piel de ciervo para no congelarte",
