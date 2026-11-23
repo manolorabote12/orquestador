@@ -26,3 +26,10 @@
 - v8 (22 nov): arranque más rápido (Alba llega en la noche 1, Koji 3, Tumo 5, Nerea 7; arena desde la 4; 4 de ámbar al empezar para la taberna). Bot 20 noches sin perder.
 - v9 (22 nov): integración: sombra de contacto bajo cada héroe y monstruo, luz de cada marea sobre los sprites, selección como círculo de luz a los pies (no caja), bordes de todos los sprites oscurecidos y suavizados, retratos cortados fundidos por abajo con la niebla.
 - v9.1 (23 nov): pantallas altas sin franjas (fondos al tamaño real). Diseño de la v2 en claude/FARERO-V2-DISENO.md.
+- v10 (23 nov): El Farero v2. Historia con 10 escenas ilustradas y decisiones (Esperanza, Niebla y Deuda
+  abren y cierran opciones), 3 finales y Libro de la Marea; 4 acciones por héroe (atacar, habilidad,
+  técnica de su elemento a 2 luz y definitiva con la técnica gratis) con efectos pintados; los 20 héroes
+  animados con Wan 2.2 (quietos y atacando); La Torre del Faro (50 pisos con reglas, jefe cada 10);
+  portada con haz que gira de verdad, mar que se mueve, rompientes y sonido de olas; botones de madera
+  y latón y láminas de pergamino; textos nuevos en inglés y portugués.
+  Bot: 60 noches en 62 intentos (perdió la 46 dos veces), torre pisos 1 y 10 ganados.
