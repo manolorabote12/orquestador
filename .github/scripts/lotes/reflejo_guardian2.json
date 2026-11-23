@@ -1,0 +1,15 @@
+{
+ "chroma": "#FF00FF",
+ "piezas": [
+  {
+   "id": "r_guardian_ciudad",
+   "motor": "qwen",
+   "ancho": 768,
+   "alto": 768,
+   "semilla": 12050,
+   "recorte": true,
+   "prompt": "a colossal stone golem guardian built from the ruins of a sunken city, towers and arches on its shoulders, seaweed, glowing yellow eyes",
+   "estilo": "2D mobile game boss sprite, painterly fantasy style, majestic and menacing, full body, side view facing left, the creature is completely isolated on a flat solid pure magenta background, no scenery, no landscape, no sky, no water, no ground, no people, no frame, no text"
+  }
+ ]
+}
