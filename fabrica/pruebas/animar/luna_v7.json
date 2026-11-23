@@ -1,0 +1,76 @@
+{
+ "tipo_video": "A painted 2D dark fantasy video game character",
+ "estilo": {
+  "familia": "painterly",
+  "descripcion": "painterly dark fantasy 2D game art",
+  "fondo_chroma": "#FF00FF"
+ },
+ "personajes": [
+  {
+   "id": "lr_reina_lobo",
+   "descripcion": "a young queen with a crown and lantern riding a huge white frost wolf",
+   "ficha": "fabrica/pruebas/animar/luna/lr_reina_lobo.png",
+   "movimientos": {
+    "idle": {
+     "que": "the wolf stands still breathing, its fur moving in the wind, the queen holds up her lantern",
+     "frames": 10,
+     "bucle": true
+    },
+    "run": {
+     "que": "the wolf runs toward the right in place with long bounding strides, the rider bounces with the mount, looping run cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6301
+  },
+  {
+   "id": "lr_reina_dragon",
+   "descripcion": "a young queen with a crown and lantern riding a small crimson dragon",
+   "ficha": "fabrica/pruebas/animar/luna/lr_reina_dragon.png",
+   "movimientos": {
+    "idle": {
+     "que": "the dragon stands still breathing, slowly flapping its wings, small embers from its nostrils",
+     "frames": 10,
+     "bucle": true
+    },
+    "run": {
+     "que": "the dragon runs toward the right in place flapping its wings, the rider bounces with the mount, looping run cycle, stays centered",
+     "frames": 8,
+     "bucle": true,
+     "desde": 4,
+     "hasta": 28
+    }
+   },
+   "semilla": 6302
+  },
+  {
+   "id": "lr_ariete",
+   "descripcion": "a monstrous battering ram on wheels pushed by shadow creatures",
+   "ficha": "fabrica/pruebas/animar/luna/lr_ariete.png",
+   "movimientos": {
+    "walk": {
+     "que": "the shadow creatures push the battering ram forward toward the left in place, wheels turning, looping cycle, stays centered",
+     "frames": 8,
+     "bucle": true
+    }
+   },
+   "semilla": 6303
+  },
+  {
+   "id": "lr_torre_asedio",
+   "descripcion": "a tall wooden siege tower covered in bones on wheels",
+   "ficha": "fabrica/pruebas/animar/luna/lr_torre_asedio.png",
+   "movimientos": {
+    "walk": {
+     "que": "the siege tower rolls slowly forward toward the left in place, swaying, banners waving, looping cycle, stays centered",
+     "frames": 8,
+     "bucle": true
+    }
+   },
+   "semilla": 6304
+  }
+ ]
+}
