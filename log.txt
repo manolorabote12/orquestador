@@ -1,0 +1,3 @@
+[dibujar] icono_posada: (1024, 1024)
+[dibujar] icono_posada_b: (1024, 1024)
+{"piezas": {"icono_posada": {"tam": [1024, 1024]}, "icono_posada_b": {"tam": [1024, 1024]}}, "fallos": {}, "segundos": 88.5, "usd": 0.0343}
