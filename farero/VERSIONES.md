@@ -33,3 +33,6 @@
   portada con haz que gira de verdad, mar que se mueve, rompientes y sonido de olas; botones de madera
   y latón y láminas de pergamino; textos nuevos en inglés y portugués.
   Bot: 60 noches en 62 intentos (perdió la 46 dos veces), torre pisos 1 y 10 ganados.
+- v7 (23 nov): los 25 monstruos y jefes respiran y atacan con animación propia (Wan 2.2 local en RunPod);
+  arreglado el Leviatán, que salía dentro de un cuadro rosa. Hojas en paleta de 256 colores: 5 veces menos peso.
+  Bot: noches 1-3 ganadas.
