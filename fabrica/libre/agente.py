@@ -97,6 +97,17 @@ Lecciones del estudio (juegos que ya se probaron en moviles de verdad):
 - Para voltear un dibujo usa draw_set_transform con escala -1: un Rect2 de ancho negativo lo DESPLAZA en Godot 4.
 - Variedad y profundidad: varias habilidades, mejoras, modos y algo que el jugador quiera desbloquear manana.
 - Pinta tambien un icono del juego con id "icono" (512x512, sin texto, una silueta clara): es el de la tienda.
+- Escenas ilustradas (1024x576, sin recorte) para lo importante: portada, capitulos, entrada de cada jefe y un mapa
+  del mundo como menu (los puntos se colocan sobre la imagen, no sobre la pantalla). Es el mayor salto de calidad.
+- Retratos de busto (512x640, recorte) para los heroes: botones de habilidad, salon de heroes, dialogos.
+- Proyectiles pintados (flecha, bola de fuego, magia) apuntando a la derecha; se dibujan girados segun su vuelo
+  con una estela que se desvanece. Pinta tambien un estallido de impacto y una bocanada de humo.
+- «Juice» en todo golpe: destello blanco, aplastar y estirar al recibir, retroceso, chispas, numero de dano que
+  salta; criticos con numero grande y una pausa de 35 ms; humo al morir; temblor de pantalla en lo grande.
+- Jefes de pelicula: ilustracion al aparecer, barra grande con su nombre, segunda y tercera fase.
+- Profundidad: heroes que suben de nivel (y lo guardan), varias habilidades (una definitiva que se carga),
+  eventos que cambian el dia, clima con efecto en el juego, enemigos de elite, modos (infinito, reto, torre),
+  decisiones con consecuencias y un bestiario o coleccion. Ajusta la dificultad con el bot tras cada novedad.
 
 Usa piezas para ver lo que ya existe en el kit (guardar, sonido, efectos, anuncios, textos) en vez de
 reescribirlo. Lee los archivos del kit que necesites con leer (res://kit/...), pero escribe solo en libre/."""
