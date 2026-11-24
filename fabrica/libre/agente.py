@@ -52,6 +52,21 @@ NEGRA = [r"\bOS\.(execute|create_process|shell_open|kill|create_instance|move_to
 	r"\bExpression\b", r"@tool\b", r"\bEditor(Plugin|Script|Interface|ExportPlugin)\b",
 	r"\bload\(\s*\"(?!res://(kit|libre|assets|scenes)/)", r"\bpreload\(\s*\"(?!res://(kit|libre|assets|scenes)/)"]
 
+## Avisos (no bloquean el escribir/anadir/editar, solo acompañan la respuesta): errores reales que ya
+## costaron tiempo en los 4 juegos top, ahora detectados al momento en vez de esperar a probar a 1080p.
+AVISOS = [
+	(r"COPY_MODE_RECT", "BackBufferCopy con COPY_MODE_RECT: en moviles grandes (1080 px) solo copia un trozo fijo de "
+		"pantalla, no lo que hay detras del nodo (paso en El Reflejo: el agua se veia bien en 540px y rota en 1080px). "
+		"Casi siempre quieres COPY_MODE_VIEWPORT."),
+	(r"Engine\.time_scale\s*=\s*[0-9.]", "Engine.time_scale a pelo (numero fijo) rompe la velocidad acelerada del bot "
+		"de pruebas si no guarda y restaura el valor anterior. Usa Juice.camara_lenta(factor, segundos) del kit."),
+]
+
+
+def _avisos(txt: str) -> str:
+	vistos = [msg for pat, msg in AVISOS if re.search(pat, txt)]
+	return ("\nAviso: " + " / ".join(vistos)) if vistos else ""
+
 SISTEMA = """Eres un estudio de videojuegos independiente con mucho oficio, trabajando SOLO en un juego para movil
 (Godot 4.6, GDScript, pantalla vertical 720x1280, tactil). Te dan una idea y la conviertes en un juego TERMINADO,
 bonito y que se pueda publicar. Tienes libertad total y la usas: la estructura, las pantallas, como se navega,
@@ -351,7 +366,7 @@ class Estudio:
 			return "NO escrito: " + "; ".join(e)
 		f.parent.mkdir(parents=True, exist_ok=True)
 		f.write_text(contenido, encoding="utf-8")
-		return f"Escrito {ruta} ({len(contenido)} caracteres)"
+		return f"Escrito {ruta} ({len(contenido)} caracteres)" + _avisos(contenido)
 
 	def t_anadir(self, ruta: str, contenido: str) -> str:
 		f = self._ruta(ruta, True)
@@ -362,7 +377,7 @@ class Estudio:
 			return "NO anadido: " + "; ".join(e)
 		f.parent.mkdir(parents=True, exist_ok=True)
 		f.write_text(todo, encoding="utf-8")
-		return f"Anadido a {ruta} (ahora {todo.count(chr(10)) + 1} lineas)"
+		return f"Anadido a {ruta} (ahora {todo.count(chr(10)) + 1} lineas)" + _avisos(contenido)
 
 	def t_editar(self, ruta: str, viejo: str, nuevo: str) -> str:
 		f = self._ruta(ruta, True)
@@ -377,7 +392,7 @@ class Estudio:
 		if e:
 			return "NO cambiado: " + "; ".join(e)
 		f.write_text(nuevo_txt, encoding="utf-8")
-		return "Cambiado"
+		return "Cambiado" + _avisos(nuevo)
 
 	def t_piezas(self, tema: str = "") -> str:
 		return piezas.tema(tema)
