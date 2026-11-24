@@ -715,6 +715,17 @@ def atender_libre(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> 
 			archivos["ficha"] = sb.subir(f"{carpeta}/ficha_google_play.zip", zf)
 		except Exception as e:  # noqa: BLE001
 			print(f"[trabajador] ficha de tienda: {e}", flush=True)
+			kit = None
+		## Trailer automatico (slideshow con zoom de las mismas capturas + cartel final + musica si el
+		## juego tiene). No para el juego si algo falla; sin ffmpeg o sin capturas, simplemente no hay trailer.
+		try:
+			if kit and kit.get("capturas"):
+				from play import trailer
+				clip = trailer.generar(proyecto, titulo, kit["capturas"], tmp / "trailer", horizontal=horizontal)
+				if clip:
+					archivos["trailer"] = sb.subir(f"{carpeta}/trailer.mp4", clip)
+		except Exception as e:  # noqa: BLE001
+			print(f"[trabajador] trailer: {e}", flush=True)
 		(proyecto / "fabrica" / "informe.json").write_text(json.dumps(inf, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
 		archivos["informe"] = sb.subir(f"{carpeta}/informe.json", proyecto / "fabrica" / "informe.json")
 		nombre = slug + "_godot.zip"

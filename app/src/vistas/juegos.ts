@@ -1861,6 +1861,10 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
         etiqueta(botonArchivo("btn btn-line", ICONOS.descarga, "APK", p.files?.apk), "Descargar el APK para Android"),
         etiqueta(h("button", { class: "btn btn-line", onclick: () => void verClip(p) }, svg(ICONOS.video), "Clip"), "Clip vertical para TikTok, Shorts y Reels"),
         etiqueta(botonArchivo("btn btn-line", ICONOS.tienda, "Ficha", p.files?.ficha), "Ficha para Google Play (.zip)"),
+        p.files?.trailer
+          ? etiqueta(h("button", { class: "btn btn-line", style: "width:100%", onclick: () => void verTrailer(p.files!.trailer!) },
+              svg(ICONOS.video), "Tráiler"), "Tráiler automático del juego")
+          : null,
         etiqueta(botonArchivo("btn btn-line", ICONOS.caja, "Godot", p.files?.proyecto), "Proyecto de Godot (.zip)")));
 
     // ---- chat

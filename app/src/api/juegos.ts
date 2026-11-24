@@ -31,6 +31,8 @@ export interface Resultado {
   web?: string;
   /** Ficha de Google Play (.zip): icono, gráfico destacado, capturas con mensajes y textos ES/EN. */
   ficha?: string;
+  /** Trailer automático (MP4): slideshow con zoom de las capturas de la ficha, cartel final y música. */
+  trailer?: string;
   /** Clip vertical de 15 s (MP4 1080x1920) jugado por el bot, para TikTok, Shorts y Reels. */
   clip?: string;
   /** Estudio de marketing: 3 clips con guion, subtítulos y voz en off hechos por IA. */
