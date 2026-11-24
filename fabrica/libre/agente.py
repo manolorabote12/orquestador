@@ -43,6 +43,7 @@ MAX_TURNOS = int(os.environ.get("ORQ_ESTUDIO_TURNOS", "90"))
 USD_IMAGEN = 0.006
 USD_ANIMACION = 0.03
 USD_VOZ = 0.008
+USD_MUSICA = 0.04
 
 NEGRA = [r"\bOS\.(execute|create_process|shell_open|kill|create_instance|move_to_trash|get_environment|set_environment)",
 	r"\bDirAccess\b", r"\bHTTPRequest\b", r"\bHTTPClient\b", r"\bStreamPeer", r"\bPacketPeer", r"\bTCPServer\b",
@@ -121,6 +122,9 @@ Recetas de los juegos top del estudio (23 nov: Bajo la Luna Roja, La Posada, El 
   lenta). Camara lenta puntual con Juice.camara_lenta (respeta la velocidad del bot). Nunca Engine.time_scale = 1.0 a pelo.
 - Historia y capitulos con voz: narrar (frases cortas, la misma voz descrita igual en todo el juego) y que suene al
   aparecer la escena ilustrada.
+- Musica propia en vez de silencio o la del kit por defecto: musica para 1-2 pistas (menu y nivel, en bucle) y, si el
+  juego tiene victoria/derrota marcada, una pista corta sin bucle para cada una. No generes mas de 3-4 pistas: el
+  presupuesto es limitado y la mayoria de los juegos no necesitan mas.
 - Poderes de area: varios proyectiles pintados en abanico que revientan al tocar el suelo, no explosiones de la nada.
   Ataques de jefe con aviso: marca donde va a caer antes de que caiga.
 - Modos que hacen volver: reto diario (igual para todos segun la fecha, con una regla rara y racha de dias), prestigio
@@ -169,6 +173,17 @@ HERRAMIENTAS = [
 		"input_schema": {"type": "object", "required": ["id", "texto", "voz"], "properties": {
 			"id": {"type": "string"}, "texto": {"type": "string", "description": "lo que dice (maximo 400 caracteres)"},
 			"voz": {"type": "string", "description": "en ingles, como es la voz (p. ej. an old weathered male sailor, calm and deep, clear Castilian Spanish)"}}}},
+	{"name": "musica", "description": "Pista musical con IA (ACE-Step), instrumental y en bucle, para el menu o el nivel. "
+		"Deja res://assets/libre/musica/<id>.ogg; suena con Audio.play_music(\"<id>\") si la anades al manifest o con un AudioStreamPlayer "
+		"en bucle. No abuses: con 1-2 pistas (menu y juego) suele bastar, o 3 si hay una victoria/derrota corta sin bucle.",
+		"input_schema": {"type": "object", "required": ["id", "descripcion", "segundos"], "properties": {
+			"id": {"type": "string", "description": "nombre corto, minusculas y _ (p. ej. menu, nivel, victoria)"},
+			"descripcion": {"type": "string", "description": "en ingles, estilo/instrumentos/animo (p. ej. tense dark fantasy orchestral, low strings and drums, "
+				"no vocals), sin pedir voz ni letra"},
+			"segundos": {"type": "number", "description": "duracion (6-180; victoria/derrota: 6-15 y sin bucle)"},
+			"bpm": {"type": "integer", "description": "tempo, opcional (por defecto 110)"},
+			"tonalidad": {"type": "string", "description": "opcional, p. ej. 'D minor'"},
+			"bucle": {"type": "boolean", "description": "si suena en bucle sin corte (por defecto true; victoria/derrota: false)"}}}},
 	{"name": "probar", "description": "Prueba el juego en Godot: compilar | recorrer (fotos) | mono | bot | todo.",
 		"input_schema": {"type": "object", "required": ["que"], "properties": {"que": {"enum": ["compilar", "recorrer", "mono", "bot", "todo"]}}}},
 	{"name": "terminar", "description": "Entrega el juego (solo con 'todo' limpio).",
@@ -186,7 +201,8 @@ HERRAMIENTAS = [
 
 
 ## Pasos que la app ensena mientras el estudio trabaja (mismos nombres que su lista de pasos).
-FASE = {"escribir": "programar", "anadir": "programar", "editar": "programar", "dibujar": "arte", "animar": "arte", "narrar": "arte", "probar": "pruebas"}
+FASE = {"escribir": "programar", "anadir": "programar", "editar": "programar", "dibujar": "arte", "animar": "arte", "narrar": "arte",
+	"musica": "arte", "probar": "pruebas"}
 
 
 class Estudio:
@@ -473,6 +489,40 @@ class Estudio:
 		self.usd_img += float(getattr(cli, "usd", 0.0) or USD_VOZ)
 		self._evento("arte", "ok", f"He grabado la voz «{nombre.replace('_', ' ')}»")
 		return f"Guardado res://assets/libre/voces/{nombre}.ogg. Reproducelo con un AudioStreamPlayer (load de esa ruta) cuando salga el texto."
+
+	def t_musica(self, id: str, descripcion: str, segundos: float, bpm: int = 110, tonalidad: str = "", bucle: bool = True) -> str:
+		"""ACE-Step 1.5 XL (el mismo motor que usa el estudio de muestras) para una pista instrumental suelta."""
+		comfy = os.environ.get("ORQ_COMFY", "")
+		flujo = cadena.flujo_musica(comfy)
+		if not flujo:
+			return "La musica con IA no esta disponible en este servidor: sigue sin musica (o con la que ya tenga el kit)."
+		if self.usd() + USD_MUSICA > self.tope:
+			return "Sin presupuesto para mas musica."
+		from arte import musica_ia
+		nombre = re.sub(r"[^a-z0-9_]", "_", id.lower())[:40] or "musica"
+		segundos = max(6.0, min(float(segundos), 180.0))
+		enc = {"etiquetas": (descripcion[:500] + ", instrumental, no vocals, seamless loop" if bucle else descripcion[:500] + ", instrumental, no vocals")[:600],
+			"segundos": segundos, "bpm": int(bpm) or 110, "tonalidad": musica_ia.tonalidad(tonalidad), "semilla": abs(hash(nombre)) % 90000 + 1000}
+		try:
+			cli = self._cli_gpu()
+			ultimo: list[str] = []
+			a = None
+			for intento in range(2):
+				datos = cli.generar(json.loads(Path(flujo).read_text(encoding="utf-8")), musica_ia.valores(enc, intento))[0]
+				a = musica_ia.decodificar(datos)
+				ultimo = musica_ia.revisar(a, segundos)
+				if not ultimo:
+					break
+			if ultimo:
+				return f"La musica salio con problemas ({', '.join(ultimo)}): prueba otra descripcion o duracion mas corta."
+			a = musica_ia.igualar(musica_ia.bucle(a) if bucle else musica_ia.cierre(a))
+			dest = self.p / "assets" / "libre" / "musica" / f"{nombre}.ogg"
+			musica_ia.guardar_ogg(a, dest)
+		except Exception as e:  # noqa: BLE001
+			return f"No se pudo generar la musica: {str(e)[:200]}"
+		self.usd_img += float(getattr(cli, "usd", 0.0) or USD_MUSICA)
+		self._evento("arte", "ok", f"He compuesto la musica «{nombre.replace('_', ' ')}»")
+		return f"Guardada res://assets/libre/musica/{nombre}.ogg. Cargala con un AudioStreamPlayer en bucle (stream.loop si aplica, o conecta finished a play() otra vez)."
 
 	def t_probar(self, que: str) -> list:
 		partes: list = []
