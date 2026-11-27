@@ -1862,7 +1862,7 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
         etiqueta(h("button", { class: "btn btn-line", onclick: () => void verClip(p) }, svg(ICONOS.video), "Clip"), "Clip vertical para TikTok, Shorts y Reels"),
         etiqueta(botonArchivo("btn btn-line", ICONOS.tienda, "Ficha", p.files?.ficha), "Ficha para Google Play (.zip)"),
         p.files?.trailer
-          ? etiqueta(h("button", { class: "btn btn-line", style: "width:100%", onclick: () => void verTrailer(p.files!.trailer!) },
+          ? etiqueta(h("button", { class: "btn btn-line", style: "grid-column: 1 / -1", onclick: () => void verTrailer(p.files!.trailer!) },
               svg(ICONOS.video), "Tráiler"), "Tráiler automático del juego")
           : null,
         etiqueta(botonArchivo("btn btn-line", ICONOS.caja, "Godot", p.files?.proyecto), "Proyecto de Godot (.zip)")));
