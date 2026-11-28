@@ -1845,9 +1845,16 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       void app.api.url(c).then((u) => { img.src = u; }).catch(() => img.remove());
     }
     // Cabecera de la ficha (13 nov): el juego en grande, con su captura de fondo y «Jugar ya» encima.
+    const audio = (p.entrevista?.audio ?? "").toLowerCase();
+    const sinAudio = audio.startsWith("sin ");
+    const insignias = h("div", { class: "insignias" },
+      !sinAudio && (audio.includes("música") || audio.includes("musica")) ? etiqueta(h("span", { class: "pill" }, svg(ICONOS.musica), "Música propia"), "Compuesta por IA para este juego") : null,
+      !sinAudio && audio.includes("voces") ? etiqueta(h("span", { class: "pill" }, svg(ICONOS.voz), "Voces narradas"), "Historia narrada con voz") : null,
+      p.files?.trailer ? etiqueta(h("span", { class: "pill" }, svg(ICONOS.video), "Tráiler"), "Tiene tráiler automático") : null);
     const heroe = h("div", { class: "ficha-heroe" },
       h("div", { class: "detail-head" }, icono(p.files?.icono),
         h("div", {}, h("h2", {}, p.titulo), h("span", { class: "pill done" }, `versión ${p.version}`))),
+      insignias.childNodes.length ? insignias : "",
       h("button", { class: "btn btn-brass", style: "width:100%", onclick: () => void jugar(p, (t) => pedirDesdeJuego?.(t)) }, svg(ICONOS.jugar), "Jugar ya"));
     const fondoHeroe = (p.files?.capturas ?? [])[2] ?? (p.files?.capturas ?? [])[0];
     if (fondoHeroe) void app.api.url(fondoHeroe).then((u) => heroe.style.setProperty("--fondo", `url("${u}")`)).catch(() => undefined);

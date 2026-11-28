@@ -331,6 +331,10 @@ details.plegable > summary:focus-visible { outline: 2px solid var(--brass); outl
 .pill.done { color: var(--ok); }
 .pill.failed { color: var(--err); }
 
+.insignias { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 0; }
+.insignias .pill { display: inline-flex; align-items: center; gap: 5px; margin-top: 0; }
+.insignias .pill svg { width: 13px; height: 13px; flex: none; }
+
 .gallery {
   display: grid; grid-auto-flow: column; grid-auto-columns: 46%;
   gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory;

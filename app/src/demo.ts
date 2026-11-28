@@ -115,6 +115,8 @@ const GUION_LIBRE: [number, Evento][] = [
   [2.0, { paso: "bot", estado: "ok", mensaje: "El bot se lo ha pasado: 6 noches sin perder la hoguera" }],
   [0.8, { paso: "boceto", estado: "ok", mensaje: "Versión nueva para jugar, con lo último que he hecho", boceto: "demo/web/boceto.pck", arte: true }],
   [1.4, { paso: "apk", estado: "ok", mensaje: "APK listo" }],
+  [0.6, { paso: "ficha", estado: "ok", mensaje: "Ficha de la tienda lista: icono, gráfico destacado, capturas y textos" }],
+  [1.0, { paso: "trailer", estado: "ok", mensaje: "Tráiler listo" }],
   [0.8, { paso: "subida", estado: "ok", mensaje: "Juego guardado", titulo: "Bajo la Luna Roja" }],
 ];
 
@@ -194,6 +196,7 @@ interface ProyectoDemo {
   admob?: AdmobIds | null;
   tienda?: TiendaJuego | null;
   ios?: { bundle?: string; build?: number; estado?: string; subido_en?: number } | null;
+  entrevista?: Record<string, string>;
 }
 
 interface Guardado {
@@ -299,6 +302,7 @@ export class Demo implements Backend {
   private s: Guardado = cargar();
   private oyentes = new Map<string, (t: Trabajo) => void>();
   private enMarcha = new Set<string>();
+  private entrevistas = new Map<string, Record<string, string>>();
   private youtubePedido: ModoYoutube = "no";
 
   private guardar() {
@@ -530,7 +534,6 @@ export class Demo implements Backend {
   }
 
   async encargarLibre(idea: string, entrevista: Record<string, string>) {
-    void entrevista;
     if (idea.trim().length < 15) throw new ErrorApp("Describe tu juego con entre 15 y 600 caracteres.");
     if (this.s.tuercas < 150) throw new ErrorApp("No tienes tuercas suficientes para un juego a medida.");
     this.s.tuercas -= 150;
@@ -539,6 +542,7 @@ export class Demo implements Backend {
       id: "demo-" + Date.now(), kind: "game", project_id: null, status: "queued", created_at: new Date().toISOString(), idea: idea.trim(),
       progress: [], result: null, error: null, refunded: false, titulo: null,
     };
+    if (entrevista && Object.keys(entrevista).length) this.entrevistas.set(t.id, entrevista);
     this.s.trabajos.unshift(t);
     this.guardar();
     void this.fabricar(t.id, GUION_LIBRE);
@@ -567,11 +571,14 @@ export class Demo implements Backend {
       web: "demo/web/index.pck",
       ficha: "demo/ficha_google_play.zip",
       clip: "demo/clip_vertical.mp4",
+      trailer: guion === GUION_LIBRE ? "demo/trailer.mp4" : undefined,
       proyecto: "demo/bigotes_veloces_godot.zip",
     };
     const ahora = new Date().toISOString();
     const p: ProyectoDemo = { id: "p-" + t.id, titulo: t.titulo ?? "Bigotes Veloces", version: 1, files: t.result, updated_at: ahora,
-      versiones: [{ version: 1, prompt: t.idea, created_at: ahora, files: t.result, titulo: t.titulo ?? "Bigotes Veloces" }] };
+      versiones: [{ version: 1, prompt: t.idea, created_at: ahora, files: t.result, titulo: t.titulo ?? "Bigotes Veloces" }],
+      entrevista: this.entrevistas.get(t.id) };
+    this.entrevistas.delete(t.id);
     this.s.proyectos.unshift(p);
     t.project_id = p.id;
     this.guardar();

@@ -101,6 +101,8 @@ export interface Proyecto {
   originalidad?: number | null;
   /** Prueba A/B de un nivel en marcha (la mitad de los jugadores juega la versión B). */
   prueba_ab?: { nivel: number; hacia: "mas_facil" | "mas_dificil" | "distinto" } | null;
+  /** Solo en un juego a medida (modo libre): lo que se contestó en la entrevista antes de fabricarlo. */
+  entrevista?: Record<string, string>;
   /** Estado en la App Store de Apple. */
   ios?: { bundle?: string; build?: number; estado?: string; subido_en?: number } | null;
 }
@@ -328,7 +330,7 @@ export function supaJuegos(con: Conexion): ApiJuegos {
 
     async proyecto(id: string): Promise<Proyecto> {
       const [{ data: p, error }, { data: vs }, { data: js }] = await Promise.all([
-        con.sb.from("projects").select("id,title,version,files,updated_at,play,admob,tienda,ios,spec->niveles,spec->>genero,spec->funciones,spec->>publico,spec->prueba_ab,spec->giros,spec->originalidad").eq("id", id).maybeSingle(),
+        con.sb.from("projects").select("id,title,version,files,updated_at,play,admob,tienda,ios,spec->niveles,spec->>genero,spec->funciones,spec->>publico,spec->prueba_ab,spec->giros,spec->originalidad,spec->entrevista").eq("id", id).maybeSingle(),
         con.sb.from("project_versions").select("version,prompt,created_at,files").eq("project_id", id).order("version"),
         con.sb.from("jobs").select(COLUMNAS).eq("project_id", id).in("status", ["queued", "running"]).limit(1),
       ]);
@@ -345,6 +347,7 @@ export function supaJuegos(con: Conexion): ApiJuegos {
         prueba_ab: ((p as { prueba_ab?: Proyecto["prueba_ab"] }).prueba_ab) ?? null,
         giros: Array.isArray((p as { giros?: unknown }).giros) ? (p as { giros: string[] }).giros : [],
         originalidad: typeof (p as { originalidad?: unknown }).originalidad === "number" ? (p as { originalidad: number }).originalidad : null,
+        entrevista: ((p as { entrevista?: Record<string, string> | null }).entrevista) ?? undefined,
         ios: ((p as { ios?: Proyecto["ios"] }).ios) ?? null };
     },
 
