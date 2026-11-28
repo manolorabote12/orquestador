@@ -720,16 +720,18 @@ export function vistaTaller(app: App): VistaHecha {
   const maquina = h("div", { class: "fab", "aria-hidden": "true" },
     svg(ENGRANAJES), h("div", { class: "fab-info" }, barra, porcentaje));
   let hechosAntes = -1;
+  let inicioMs: number | null = null;
   // Escenario (13 nov): el momento estrella de la app. Chispa en grande trabajando dentro de un anillo
   // que se llena, el paso de ahora en grande, la pista de pasos con iconos y curiosidades mientras espera.
   const escChispa = imagenChispa("trabajando", "esc-chispa");
   const anillo = svg(`<svg class="esc-anillo" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="54" class="esc-pista"/><circle cx="60" cy="60" r="54" class="esc-lleno" pathLength="100" stroke-dasharray="0 100"/></svg>`);
   const escPct = h("strong", { class: "esc-pct" }, "0 %");
   const escPaso = h("p", { class: "esc-paso", "aria-live": "polite" }, "Preparando la fábrica...");
+  const escTiempo = h("p", { class: "esc-tiempo muted small" });
   const escFrase = h("p", { class: "esc-frase" });
   const escenario = h("div", { class: "escenario" },
     h("div", { class: "esc-centro" }, anillo, h("div", { class: "esc-halo" }), escChispa),
-    escPct, escPaso);
+    escPct, escPaso, escTiempo);
   const registroPlegado = h("details", { class: "esc-registro" }, h("summary", {}, "Ver lo que hace la fábrica"), registro);
   const banco = h("section", { class: "sheet banco", hidden: true },
     h("div", { class: "sheet-head" }, titulo, tiempo), escenario, maquina, pasos, pasosLibre, jugarBoceto, bitacora, escFrase, registroPlegado);
@@ -813,6 +815,15 @@ export function vistaTaller(app: App): VistaHecha {
     escPct.textContent = `${pctVisto} %`;
     const activo = LISTA.find(([id]) => FILAS.get(id)!.classList.contains("active"));
     escPaso.textContent = t.status === "queued" ? "En la cola de la fábrica..." : activo ? activo[1] + "..." : t.status === "done" ? "¡Terminado!" : "Arrancando las máquinas...";
+    // Estimación simple: con lo que se ha tardado en los pasos ya hechos, cuánto queda para el resto.
+    // Nada de datos ni llamadas nuevas: solo el reloj que ya corre desde que empezó a seguir el trabajo.
+    if (t.status === "running" && inicioMs !== null && nHechos >= 2 && nHechos < LISTA.length) {
+      const segPorPaso = (Date.now() - inicioMs) / 1000 / nHechos;
+      const minRestantes = Math.round((segPorPaso * (LISTA.length - nHechos)) / 60);
+      escTiempo.textContent = minRestantes >= 1 ? `Quedan unos ${minRestantes} min` : "Está a punto de terminar";
+    } else {
+      escTiempo.textContent = "";
+    }
     const pose: Pose = t.status === "queued" ? "durmiendo" : activo ? (POSE_PASO[activo[0]] ?? "trabajando") : "trabajando";
     if (escChispa.dataset.pose !== pose) {
       escChispa.dataset.pose = pose;
@@ -955,6 +966,7 @@ export function vistaTaller(app: App): VistaHecha {
     resultado.hidden = true;
     const inicio = Date.now();
     pararReloj();
+    inicioMs = inicio;
     reloj = window.setInterval(() => {
       const s = Math.floor((Date.now() - inicio) / 1000);
       tiempo.textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
@@ -965,6 +977,7 @@ export function vistaTaller(app: App): VistaHecha {
   function pararReloj() {
     if (reloj !== null) window.clearInterval(reloj);
     reloj = null;
+    inicioMs = null;
   }
 
   function reiniciar() {

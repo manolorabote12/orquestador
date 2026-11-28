@@ -1228,6 +1228,7 @@ details.plegable > summary .tag { padding: 3px 8px; }
 .escenario.parado .esc-halo, .escenario.parado .esc-chispa { animation: none; }
 .esc-pct { font: 800 2.6rem/1 var(--display); color: var(--brass-hi); text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5); font-variant-numeric: tabular-nums; }
 .esc-paso { margin: 0; font-size: 17px; font-weight: 700; color: var(--ink); text-align: center; }
+.esc-tiempo { margin: 2px 0 0; text-align: center; min-height: 1.3em; }
 .banco .steps { grid-template-columns: 1fr 1fr; gap: 6px 10px; margin-bottom: 12px; }
 .banco .step { grid-template-columns: 22px 1fr; padding: 7px 10px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); font-size: 14px; }
 .banco .step .time { display: none; }
