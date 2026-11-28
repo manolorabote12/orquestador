@@ -151,9 +151,84 @@ export function vistaJuegos(app: App, detalle?: string): VistaHecha {
       h("div", { class: "sheet-head" }, h("h2", {}, "Tu próximo juego")),
       h("p", { class: "muted small" }, "Cada juego que publicas es una oportunidad más de dar con el que triunfa. Pide a Chispa tres ideas originales a partir de una palabra."),
       h("button", { class: "btn btn-line", style: "width:100%", onclick: () => app.ir("taller") }, "Ir al taller")) : "";
+    // 4 - Con dos o más juegos ya hechos: comparar capturas y retención de dos, lado a lado.
+    const nProyectos = entradas.filter((e) => e.tipo === "proyecto").length;
     raiz.replaceChildren(h("section", { class: "sheet" },
       h("div", { class: "sheet-head" }, h("h2", {}, "Mis juegos"), h("span", { class: "tag" }, String(entradas.length))),
+      nProyectos >= 2 ? h("button", { class: "btn btn-line btn-small", style: "margin-bottom:10px", onclick: () => void comparar() },
+        svg(ICONOS.comparar), "Comparar dos juegos") : "",
       entradas.length > 4 ? buscador(tarjetas) : "", cuerpo), siguiente);
+  }
+
+  // ------------------------------------------------------------------ comparar dos juegos
+
+  /** Capturas y retención por nivel de dos juegos, uno junto al otro (para ver cuál va mejor). */
+  async function comparar(): Promise<void> {
+    parar();
+    cartel(false);
+    const volver = h("button", { class: "btn btn-line", onclick: () => void lista() }, svg(ICONOS.atras), "Mis juegos");
+    const titulo = h("div", { class: "sheet-head" }, h("h2", {}, "Comparar dos juegos"));
+    raiz.replaceChildren(volver, h("section", { class: "sheet" }, titulo, h("p", { class: "muted" }, "Cargando...")));
+    let entradas: Entrada[];
+    try {
+      entradas = await app.api.juegos();
+    } catch (e) {
+      raiz.replaceChildren(volver, h("section", { class: "sheet" }, titulo, bloqueError(e, "No se pudieron cargar tus juegos.", () => void comparar())));
+      return;
+    }
+    if (!vivo) return;
+    const proyectos = entradas.filter((e): e is Extract<Entrada, { tipo: "proyecto" }> => e.tipo === "proyecto");
+    if (proyectos.length < 2) {
+      raiz.replaceChildren(volver, h("section", { class: "sheet" }, titulo, h("p", { class: "muted" }, "Hace falta tener al menos dos juegos fabricados para compararlos.")));
+      return;
+    }
+    const opcion = (p: (typeof proyectos)[number]) => h("option", { value: p.id }, p.titulo);
+    const selA = h("select", { "aria-label": "Primer juego a comparar" }, ...proyectos.map(opcion)) as HTMLSelectElement;
+    const selB = h("select", { "aria-label": "Segundo juego a comparar" }, ...proyectos.map(opcion)) as HTMLSelectElement;
+    selA.selectedIndex = 0;
+    selB.selectedIndex = 1;
+    const cuerpo = h("div", { class: "comparar-cols" });
+    const cargarLado = async (id: string): Promise<HTMLElement> => {
+      try {
+        const [p, filas] = await Promise.all([app.api.proyecto(id), app.api.informe(id)]);
+        if (!vivo) return h("div", { class: "comparar-col" });
+        const d = diagnosticar(filas, p.niveles);
+        const cap = (p.files?.capturas ?? [])[2] ?? (p.files?.capturas ?? [])[0];
+        const img = h("img", { class: "comparar-captura", alt: `Captura de ${p.titulo}`, loading: "lazy" });
+        if (cap) void app.api.url(cap).then((u) => { img.src = u; }).catch(() => img.remove());
+        const filasNivel = h("div", { class: "niveles-datos" });
+        if (!d.suficiente) {
+          filasNivel.append(h("p", { class: "muted small" },
+            `Aún hay pocos datos (${d.jugadores} jugador${d.jugadores === 1 ? "" : "es"}). Hacen falta ${MIN_INTENTOS} intentos por nivel para ver la retención.`));
+        } else {
+          for (const n of d.niveles) {
+            const barra = h("span", { class: "barra" }, h("i", { style: `width:${Math.round(n.victoria * 100)}%` }));
+            filasNivel.append(h("div", { class: "nivel-dato" }, h("strong", {}, `${n.nivel + 1}. ${n.nombre}`), barra,
+              h("span", { class: "muted small" }, `lo pasa ${Math.round(n.victoria * 100)} % · abandona ${Math.round(n.abandono * 100)} %`)));
+          }
+        }
+        return h("div", { class: "comparar-col" },
+          h("div", { class: "detail-head" }, icono(p.files?.icono), h("div", {}, h("h3", {}, p.titulo), h("span", { class: "pill done" }, `versión ${p.version}`))),
+          cap ? img : "",
+          d.suficiente ? h("p", { class: "muted small" }, `${d.jugadores} jugador${d.jugadores === 1 ? "" : "es"} · versión ${d.version}`) : "",
+          filasNivel);
+      } catch {
+        return h("div", { class: "comparar-col" }, h("p", { class: "muted small" }, "No se pudo cargar este juego."));
+      }
+    };
+    const recargar = async (): Promise<void> => {
+      cuerpo.replaceChildren(h("p", { class: "muted small" }, "Cargando..."));
+      const [a, b] = await Promise.all([cargarLado(selA.value), cargarLado(selB.value)]);
+      if (!vivo) return;
+      cuerpo.replaceChildren(a, b);
+    };
+    selA.addEventListener("change", () => void recargar());
+    selB.addEventListener("change", () => void recargar());
+    raiz.replaceChildren(volver, h("section", { class: "sheet" }, titulo,
+      h("p", { class: "muted small" }, "Capturas y retención por nivel de dos juegos, uno junto al otro."),
+      h("div", { class: "comparar-selects" }, selA, selB),
+      cuerpo));
+    void recargar();
   }
 
   /** 3 - Con muchos juegos: buscar por nombre o idea y filtrar por tipo de juego. */
