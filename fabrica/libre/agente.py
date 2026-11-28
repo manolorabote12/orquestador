@@ -140,6 +140,9 @@ Recetas de los juegos top del estudio (23 nov: Bajo la Luna Roja, La Posada, El 
 - Musica propia en vez de silencio o la del kit por defecto: musica para 1-2 pistas (menu y nivel, en bucle) y, si el
   juego tiene victoria/derrota marcada, una pista corta sin bucle para cada una. No generes mas de 3-4 pistas: el
   presupuesto es limitado y la mayoria de los juegos no necesitan mas.
+- Si la entrevista trae el campo "audio", es lo que el usuario pidio EXPRESO sobre esto y manda sobre lo anterior:
+  "Sin musica ni voces" -> no uses musica ni narrar (ni para menu); "Solo musica" -> musica si, narrar no; cualquier
+  otra respuesta (o que no venga el campo) -> decide tu segun el juego, con el limite de 3-4 pistas de arriba.
 - Poderes de area: varios proyectiles pintados en abanico que revientan al tocar el suelo, no explosiones de la nada.
   Ataques de jefe con aviso: marca donde va a caer antes de que caiga.
 - Modos que hacen volver: reto diario (igual para todos segun la fecha, con una regla rara y racha de dias), prestigio

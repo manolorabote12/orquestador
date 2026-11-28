@@ -31,7 +31,7 @@ const ERRORS: Record<string, { status: number; message: string }> = {
 };
 
 // Entrevista del juego a medida: lo que la app pregunta antes de fabricar (ver app/src/entrevista.ts).
-const PREGUNTAS = ["genero", "fantasia", "mecanica", "unico", "referencias", "estetica", "orientacion", "publico"] as const;
+const PREGUNTAS = ["genero", "fantasia", "mecanica", "unico", "referencias", "estetica", "audio", "orientacion", "publico"] as const;
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

@@ -26,6 +26,8 @@ export const PREGUNTAS: Pregunta[] = [
     sugerencias: ["Tus decisiones cambian la historia", "El mundo se refleja en el agua", "Los que mueren quedan en un libro de leyendas", "Cada partida el mapa es distinto"] },
   { id: "estetica", texto: "¿Cómo se ve?", ayuda: "El estilo del arte. Todo lo pinta la IA: personajes, fondos, botones y menús.",
     sugerencias: ["Pintado oscuro y épico", "Cuento ilustrado cálido", "Acuarela suave", "Grabado antiguo", "Pixel art", "Cartoon colorido"] },
+  { id: "audio", texto: "¿Quieres música y voces propias?", ayuda: "La IA puede componer la banda sonora del juego y narrar la historia con voz. Tarda un poco más en fabricarse.",
+    cerrada: true, opcional: true, sugerencias: ["Música y voces", "Solo música", "Sin música ni voces"] },
   { id: "orientacion", texto: "¿Cómo se coge el móvil?", ayuda: "", cerrada: true, sugerencias: ["Vertical", "Horizontal"] },
   { id: "publico", texto: "¿Para quién es?", ayuda: "", cerrada: true, sugerencias: ["Para todos", "Para niños", "Para mayores de 16"] },
   { id: "referencias", texto: "¿A qué juegos se parece un poco? (opcional)", ayuda: "Solo para inspirarse: nunca se copian nombres ni personajes.",
