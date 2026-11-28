@@ -209,6 +209,8 @@ const PASOS_LIBRE: [string, string][] = [
   ["pruebas", "Probar pantallas"],
   ["bot", "El bot lo juega"],
   ["apk", "APK para Android"],
+  ["ficha", "Ficha de Google Play"],
+  ["trailer", "Tráiler"],
   ["subida", "Guardar en la nube"],
 ];
 

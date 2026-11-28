@@ -697,6 +697,7 @@ def atender_libre(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> 
 		archivos["icono"] = sb.subir(f"{carpeta}/icono.png", proyecto / "icon.png")
 		## Ficha de Google Play (el boton «Ficha» de la app): capturas con titular, grafico destacado, icono y
 		## textos. No para el juego si algo falla.
+		cadena.evento("ficha", "inicio", "Preparando la ficha para Google Play...")
 		try:
 			import zipfile
 			from play import kit_tienda
@@ -713,19 +714,26 @@ def atender_libre(sb: Supabase, trabajo: dict, opciones: argparse.Namespace) -> 
 				z.write(proyecto / "icon.png", "icono_512.png")
 				z.write(tmp / "tienda" / "textos.txt", "textos.txt")
 			archivos["ficha"] = sb.subir(f"{carpeta}/ficha_google_play.zip", zf)
+			cadena.evento("ficha", "ok", "Ficha de la tienda lista: icono, gráfico destacado, capturas y textos")
 		except Exception as e:  # noqa: BLE001
 			print(f"[trabajador] ficha de tienda: {e}", flush=True)
+			cadena.evento("ficha", "aviso", "No se pudo preparar la ficha de la tienda")
 			kit = None
 		## Trailer automatico (slideshow con zoom de las mismas capturas + cartel final + musica si el
 		## juego tiene). No para el juego si algo falla; sin ffmpeg o sin capturas, simplemente no hay trailer.
-		try:
-			if kit and kit.get("capturas"):
+		if kit and kit.get("capturas"):
+			cadena.evento("trailer", "inicio", "Montando el tráiler del juego...")
+			try:
 				from play import trailer
 				clip = trailer.generar(proyecto, titulo, kit["capturas"], tmp / "trailer", horizontal=horizontal)
 				if clip:
 					archivos["trailer"] = sb.subir(f"{carpeta}/trailer.mp4", clip)
-		except Exception as e:  # noqa: BLE001
-			print(f"[trabajador] trailer: {e}", flush=True)
+					cadena.evento("trailer", "ok", "Tráiler listo")
+				else:
+					cadena.evento("trailer", "aviso", "No se pudo montar el tráiler")
+			except Exception as e:  # noqa: BLE001
+				print(f"[trabajador] trailer: {e}", flush=True)
+				cadena.evento("trailer", "aviso", "No se pudo montar el tráiler")
 		(proyecto / "fabrica" / "informe.json").write_text(json.dumps(inf, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
 		archivos["informe"] = sb.subir(f"{carpeta}/informe.json", proyecto / "fabrica" / "informe.json")
 		nombre = slug + "_godot.zip"
