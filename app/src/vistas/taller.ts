@@ -762,7 +762,7 @@ export function vistaTaller(app: App): VistaHecha {
   }
   const POSE_PASO: Record<string, Pose> = { diseno: "pensando", niveles: "trabajando", arte: "trabajando", validacion: "jugando",
     programar: "trabajando", pruebas: "jugando", bot: "jugando",
-    apk: "cohete", ficha: "trabajando", clip: "jugando", subida: "cohete" };
+    apk: "cohete", ficha: "trabajando", clip: "jugando", trailer: "jugando", subida: "cohete" };
 
   // ------------------------------------------------------------ resultado
   const resultado = h("section", { class: "sheet", hidden: true });
